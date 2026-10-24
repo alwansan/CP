@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@id/dlna_cast_button" android:tag="layout/cast_button_0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:tint="@color/white" app:backgroundTint="?cinColorAccent" app:srcCompat="@drawable/ic_mr_button_disconnected_dark" app:tint="@color/white" />
+    <androidx.mediarouter.app.MediaRouteButton android:layout_gravity="center" android:id="@id/media_route_button" android:tag="layout/cast_button_1" android:background="@drawable/comment_submit_circle" android:padding="8.0dip" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="0.0dip" android:elevation="8.0dip" />
+</merge>

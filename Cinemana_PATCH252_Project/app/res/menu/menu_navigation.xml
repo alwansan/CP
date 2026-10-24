@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:icon="@drawable/ic_home" android:id="@id/navigation_home" android:checked="true" android:title="@string/txt_home" android:contentDescription="@string/txt_home" />
+    <item android:icon="@drawable/ic_categories" android:id="@id/navigation_categories" android:checked="false" android:title="@string/txt_categories" android:contentDescription="@string/txt_categories" />
+    <item android:icon="@drawable/ic_search" android:id="@id/navigation_search" android:checked="false" android:title="@string/txt_search" android:contentDescription="@string/txt_search" />
+    <item android:id="@id/navigation_profile" android:checked="false" android:title="@string/txt_profile" android:contentDescription="@string/txt_profile" />
+</menu>

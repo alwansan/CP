@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:tag="layout/fragment_comments_rules_0" android:background="?cinColorSurface" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:acc="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:padding="@dimen/cin_space_sm" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <TextView android:textSize="?cinTextTitle" android:textColor="?cinColorTextPrimary" android:id="@id/rules_header_text_view" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/cin_space_sm" android:layout_marginBottom="@dimen/cin_space_sm" android:lineSpacingMultiplier="0.1" android:layout_marginStart="@dimen/cin_space_sm" android:layout_marginEnd="@dimen/cin_space_sm" style="@style/PrimaryTextAppearance" />
+        <ListView android:id="@id/rules_list_view" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_margin="@dimen/cin_space_sm" android:layout_weight="1.0" />
+        <com.google.android.material.button.MaterialButton android:textSize="?cinTextTitle" android:textColor="?cinColorTextPrimary" android:layout_gravity="center" android:id="@id/agree_button" android:tag="binding_1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginStart="@dimen/cin_space_sm" android:layout_marginEnd="@dimen/cin_space_sm" acc:backgroundTint="?cinColorSurfaceSunken" />
+    </LinearLayout>
+</LinearLayout>

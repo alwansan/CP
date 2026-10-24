@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:tag="layout/item_subtitle_font_0" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:gravity="center" android:id="@id/subtitle_font_title" android:paddingTop="@dimen/cin_space_sm" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <TextView android:textAppearance="@style/TextAppearance.AppCompat.Large" android:textSize="?cinTextTitleLarge" android:id="@id/text" android:background="?selectableItemBackground" android:paddingLeft="@dimen/list_item_spacing" android:paddingTop="@dimen/list_item_spacing_half" android:paddingRight="@dimen/list_item_spacing" android:paddingBottom="@dimen/list_item_spacing_half" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/subtitle_sample_txt" />
+    <View android:background="?cinColorTextPrimary" android:layout_width="fill_parent" android:layout_height="1.1999817dip" android:alpha="0.2" />
+</LinearLayout>

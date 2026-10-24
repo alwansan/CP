@@ -1,0 +1,7 @@
+Build validation performed in the preparation environment:
+Command: build.sh
+Tool: bundled APKTool 2.12.1
+Result: SUCCESS
+Output type: unsigned APK
+The generated test APK was checked for successful APKTool assembly, then removed from the source package so this ZIP contains the complete project rather than only a generated APK.
+Runtime testing on a physical Android device was not performed.

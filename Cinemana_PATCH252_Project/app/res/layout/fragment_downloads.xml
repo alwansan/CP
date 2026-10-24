@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:tag="layout/fragment_downloads_0" android:layout_width="fill_parent" android:layout_height="fill_parent" android:importantForAccessibility="no"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:acc="http://schemas.android.com/apk/res-auto" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:debounce="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.appbar.AppBarLayout android:background="?cinColorSurface" android:layout_width="fill_parent" android:layout_height="wrap_content" android:importantForAccessibility="no" android:backgroundTint="?cinColorSurface">
+        <androidx.appcompat.widget.Toolbar android:id="@id/toolBar" android:background="?cinColorSurface" android:layout_width="fill_parent" android:layout_height="?actionBarSize" android:elevation="0.0dip" debounce:layout_collapseMode="parallax" debounce:layout_scrollFlags="scroll|enterAlways">
+            <FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:elevation="0.0dip">
+                <com.google.android.material.button.MaterialButton android:textSize="?cinTextCaption" android:textColor="?cinColorTextPrimary" android:layout_gravity="end|center" android:id="@id/create_collection_button" android:tag="binding_1" android:layout_width="64.0dip" android:layout_height="28.0dip" android:foreground="?selectableItemBackground" android:insetTop="0.0dip" android:insetBottom="0.0dip" android:alpha="0.0" style="@style/Widget.MaterialComponents.Button.TextButton" />
+                <com.google.android.material.tabs.TabLayout android:layout_gravity="center" android:id="@id/tabLayout" android:layout_width="wrap_content" android:layout_height="28.0dip" android:elevation="0.0dip" style="@style/DownloadTabs" />
+            </FrameLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+    <androidx.viewpager2.widget.ViewPager2 android:id="@id/downloads_viewpager" android:tag="binding_2" android:layout_width="fill_parent" android:layout_height="fill_parent" debounce:layout_behavior="@string/appbar_scrolling_view_behavior" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

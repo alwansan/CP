@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.shabakaty.epom_view.ui.EpomView android:id="@id/epom_view" android:tag="layout/item_home_ad_0" android:saveEnabled="true" android:layout_width="fill_parent" android:layout_height="220.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" />

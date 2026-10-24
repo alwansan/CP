@@ -1,0 +1,56 @@
+.class Landroidx/activity/ComponentActivity$5;
+.super Ljava/lang/Object;
+.source "ComponentActivity.java"
+
+# interfaces
+.implements Landroidx/lifecycle/f;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Landroidx/activity/ComponentActivity;-><init>()V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field public final synthetic r:Landroidx/activity/ComponentActivity;
+
+
+# direct methods
+.method public constructor <init>(Landroidx/activity/ComponentActivity;)V
+    .locals 0
+
+    .line 1
+    iput-object p1, p0, Landroidx/activity/ComponentActivity$5;->r:Landroidx/activity/ComponentActivity;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public j(Lcom/shabakaty/downloader/rh2;Landroidx/lifecycle/e$b;)V
+    .locals 0
+
+    .line 1
+    iget-object p1, p0, Landroidx/activity/ComponentActivity$5;->r:Landroidx/activity/ComponentActivity;
+
+    invoke-virtual {p1}, Landroidx/activity/ComponentActivity;->ensureViewModelStore()V
+
+    .line 2
+    iget-object p1, p0, Landroidx/activity/ComponentActivity$5;->r:Landroidx/activity/ComponentActivity;
+
+    invoke-virtual {p1}, Landroidx/activity/ComponentActivity;->getLifecycle()Landroidx/lifecycle/e;
+
+    move-result-object p1
+
+    invoke-virtual {p1, p0}, Landroidx/lifecycle/e;->c(Lcom/shabakaty/downloader/qh2;)V
+
+    return-void
+.end method

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="." path="." />
+    <files-path name="mod_files" path="." />
+    <cache-path name="mod_cache" path="." />
+    <external-files-path name="mod_ext_files" path="." />
+</paths>

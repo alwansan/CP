@@ -1,0 +1,39 @@
+.class public Lzendesk/messaging/Event$ResponseOptionClicked;
+.super Lzendesk/messaging/Event;
+.source "Event.java"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lzendesk/messaging/Event;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x9
+    name = "ResponseOptionClicked"
+.end annotation
+
+
+# instance fields
+.field public final clickedOption:Lzendesk/messaging/MessagingItem$Option;
+
+.field public final optionsResponse:Lzendesk/messaging/MessagingItem$OptionsResponse;
+
+
+# direct methods
+.method public constructor <init>(Lzendesk/messaging/MessagingItem$OptionsResponse;Lzendesk/messaging/MessagingItem$Option;Ljava/util/Date;)V
+    .locals 1
+
+    const-string v0, "response_option_clicked"
+
+    .line 1
+    invoke-direct {p0, v0, p3}, Lzendesk/messaging/Event;-><init>(Ljava/lang/String;Ljava/util/Date;)V
+
+    .line 2
+    iput-object p1, p0, Lzendesk/messaging/Event$ResponseOptionClicked;->optionsResponse:Lzendesk/messaging/MessagingItem$OptionsResponse;
+
+    .line 3
+    iput-object p2, p0, Lzendesk/messaging/Event$ResponseOptionClicked;->clickedOption:Lzendesk/messaging/MessagingItem$Option;
+
+    return-void
+.end method

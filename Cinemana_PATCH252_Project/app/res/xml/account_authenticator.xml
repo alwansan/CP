@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<account-authenticator android:label="@string/title_shabakaty" android:icon="@drawable/ic_shabakaty" android:accountType="com.shabakaty" android:smallIcon="@drawable/ic_shabakaty"
+  xmlns:android="http://schemas.android.com/apk/res/android" />

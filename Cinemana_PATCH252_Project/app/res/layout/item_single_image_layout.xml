@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.drawee.view.SimpleDraweeView android:id="@id/image" android:tag="layout/item_single_image_layout_0" android:layout_width="fill_parent" android:layout_height="wrap_content" android:importantForAccessibility="no" drawee:actualImageScaleType="centerCrop" drawee:backgroundImage="?cinColorSurfaceRaised" drawee:fadeDuration="800" drawee:placeholderImage="@drawable/ic_video_placeholder" drawee:viewAspectRatio="1.0"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:drawee="http://schemas.android.com/apk/res-auto" />

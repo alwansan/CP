@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="alto">#ffcfd6d8</color>
+    <color name="backgroundTint">@color/bigStone</color>
+    <color name="bigStone">#ff101e2a</color>
+    <color name="black">#ff000000</color>
+    <color name="cardBackgroundColor">@color/bigStone</color>
+    <color name="colorAccentAlt">@color/thunderBird</color>
+    <color name="colorPrimary">@color/blackPearl</color>
+    <color name="colorPrimaryDark">@color/blackPearlDark</color>
+    <color name="gradientShade2">#22030f17</color>
+    <color name="gradientShade3">#77030f17</color>
+    <color name="gradientShade4">#cc030f17</color>
+    <color name="gradientShade5">#ee030f17</color>
+    <color name="gradientShade6">#ff030f17</color>
+    <color name="grayContrast">@color/bigStone</color>
+    <color name="primaryTextColor">@color/white</color>
+    <color name="secondaryTextColor">@color/luckyGrey</color>
+    <color name="tabsBackground">#ff081f2f</color>
+    <color name="white">#ffffffff</color>
+</resources>

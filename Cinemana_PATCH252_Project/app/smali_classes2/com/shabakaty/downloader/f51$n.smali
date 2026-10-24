@@ -1,0 +1,102 @@
+.class public final Lcom/shabakaty/downloader/f51$n;
+.super Lcom/shabakaty/downloader/f51;
+.source "Evaluator.java"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/shabakaty/downloader/f51;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x19
+    name = "n"
+.end annotation
+
+
+# instance fields
+.field public a:Ljava/lang/String;
+
+
+# direct methods
+.method public constructor <init>(Ljava/lang/String;)V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Lcom/shabakaty/downloader/f51;-><init>()V
+
+    .line 2
+    invoke-static {p1}, Lcom/shabakaty/downloader/md0;->D(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object p1
+
+    iput-object p1, p0, Lcom/shabakaty/downloader/f51$n;->a:Ljava/lang/String;
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public a(Lcom/shabakaty/downloader/k21;Lcom/shabakaty/downloader/k21;)Z
+    .locals 1
+
+    .line 1
+    invoke-static {p2}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 2
+    new-instance p1, Ljava/lang/StringBuilder;
+
+    invoke-direct {p1}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 3
+    new-instance v0, Lcom/shabakaty/downloader/j21;
+
+    invoke-direct {v0, p2, p1}, Lcom/shabakaty/downloader/j21;-><init>(Lcom/shabakaty/downloader/k21;Ljava/lang/StringBuilder;)V
+
+    invoke-static {v0, p2}, Lcom/shabakaty/downloader/c12;->d(Lcom/shabakaty/downloader/uz2;Lcom/shabakaty/downloader/sz2;)V
+
+    .line 4
+    invoke-virtual {p1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object p1
+
+    .line 5
+    invoke-static {p1}, Lcom/shabakaty/downloader/md0;->D(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object p1
+
+    iget-object p2, p0, Lcom/shabakaty/downloader/f51$n;->a:Ljava/lang/String;
+
+    invoke-virtual {p1, p2}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+
+    move-result p1
+
+    return p1
+.end method
+
+.method public toString()Ljava/lang/String;
+    .locals 3
+
+    const/4 v0, 0x1
+
+    new-array v0, v0, [Ljava/lang/Object;
+
+    .line 1
+    iget-object v1, p0, Lcom/shabakaty/downloader/f51$n;->a:Ljava/lang/String;
+
+    const/4 v2, 0x0
+
+    aput-object v1, v0, v2
+
+    const-string v1, ":contains(%s)"
+
+    invoke-static {v1, v0}, Ljava/lang/String;->format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v0
+
+    return-object v0
+.end method

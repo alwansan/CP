@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge>
+    <com.google.android.material.appbar.AppBarLayout android:id="@id/main_app_bar" android:tag="@string/main_app_bar_layout_tag" android:animationCache="true" android:layout_width="fill_parent" android:layout_height="wrap_content" android:animateLayoutChanges="true"
+      xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+        <androidx.appcompat.widget.Toolbar android:theme="@style/ToolbarTitleStyle" android:id="@id/main_nav_toolbar" android:background="?cinColorSurface" android:clickable="false" android:animationCache="true" android:layout_width="fill_parent" android:layout_height="?actionBarSize" android:animateLayoutChanges="true" android:textDirection="ltr" app:layout_scrollFlags="scroll|enterAlways|snap" app:subtitleTextColor="?cinColorTextPrimary" app:titleTextAppearance="@style/ToolbarTitleStyle" app:titleTextColor="?cinColorTextPrimary" />
+    </com.google.android.material.appbar.AppBarLayout>
+</merge>

@@ -1,0 +1,90 @@
+.class public final Lcom/shabakaty/downloader/mi5;
+.super Lcom/shabakaty/downloader/br3$g;
+.source "com.google.android.gms:play-services-cast-framework@@19.0.0"
+
+
+# instance fields
+.field public final synthetic r:Lcom/shabakaty/downloader/br3;
+
+
+# direct methods
+.method public constructor <init>(Lcom/shabakaty/downloader/br3;)V
+    .locals 1
+
+    .line 1
+    iput-object p1, p0, Lcom/shabakaty/downloader/mi5;->r:Lcom/shabakaty/downloader/br3;
+
+    const/4 v0, 0x1
+
+    invoke-direct {p0, p1, v0}, Lcom/shabakaty/downloader/br3$g;-><init>(Lcom/shabakaty/downloader/br3;Z)V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public final m()V
+    .locals 8
+
+    .line 1
+    iget-object v0, p0, Lcom/shabakaty/downloader/mi5;->r:Lcom/shabakaty/downloader/br3;
+
+    .line 2
+    iget-object v0, v0, Lcom/shabakaty/downloader/br3;->c:Lcom/shabakaty/downloader/oh5;
+
+    .line 3
+    iget-object v1, p0, Lcom/shabakaty/downloader/br3$g;->o:Lcom/shabakaty/downloader/pj5;
+
+    invoke-static {v0}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 4
+    new-instance v2, Lorg/json/JSONObject;
+
+    invoke-direct {v2}, Lorg/json/JSONObject;-><init>()V
+
+    .line 5
+    invoke-virtual {v0}, Lcom/shabakaty/downloader/l56;->b()J
+
+    move-result-wide v3
+
+    :try_start_0
+    const-string v5, "requestId"
+
+    .line 6
+    invoke-virtual {v2, v5, v3, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
+
+    const-string v5, "type"
+
+    const-string v6, "QUEUE_GET_ITEM_IDS"
+
+    .line 7
+    invoke-virtual {v2, v5, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    const-string v5, "mediaSessionId"
+
+    .line 8
+    invoke-virtual {v0}, Lcom/shabakaty/downloader/oh5;->u()J
+
+    move-result-wide v6
+
+    invoke-virtual {v2, v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
+    :try_end_0
+    .catch Lorg/json/JSONException; {:try_start_0 .. :try_end_0} :catch_0
+
+    .line 9
+    :catch_0
+    invoke-virtual {v2}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
+
+    move-result-object v2
+
+    const/4 v5, 0x0
+
+    invoke-virtual {v0, v2, v3, v4, v5}, Lcom/shabakaty/downloader/l56;->a(Ljava/lang/String;JLjava/lang/String;)V
+
+    .line 10
+    iget-object v0, v0, Lcom/shabakaty/downloader/oh5;->s:Lcom/shabakaty/downloader/ej5;
+
+    invoke-virtual {v0, v3, v4, v1}, Lcom/shabakaty/downloader/ej5;->c(JLcom/shabakaty/downloader/pj5;)V
+
+    return-void
+.end method

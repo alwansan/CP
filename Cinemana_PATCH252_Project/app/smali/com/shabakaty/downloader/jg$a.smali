@@ -1,0 +1,14 @@
+.class public synthetic Lcom/shabakaty/downloader/jg$a;
+.super Ljava/lang/Object;
+.source "AutoValue_CrashlyticsReport_CustomAttribute.java"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/shabakaty/downloader/jg;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1009
+    name = null
+.end annotation

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="DialogTheme" parent="@style/Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <item name="android:background">@color/cardBackgroundColor</item>
+        <item name="android:colorPrimary">@color/primaryTextColor</item>
+        <item name="android:dialogPreferredPadding">32.0dip</item>
+        <item name="android:dialogCornerRadius">16.0dip</item>
+        <item name="background">@color/cardBackgroundColor</item>
+        <item name="colorPrimary">@color/primaryTextColor</item>
+        <item name="dialogCornerRadius">16.0dip</item>
+        <item name="dialogPreferredPadding">32.0dip</item>
+        <item name="cinColorAccent">@color/colorAccent</item>
+        <item name="cinColorAccentSoft">@color/colorAccentAlt</item>
+        <item name="cinColorBackground">@color/colorPrimaryDark</item>
+        <item name="cinColorError">@color/colorAccent</item>
+        <item name="cinColorOnAccent">@color/black</item>
+        <item name="cinColorOutline">@color/secondaryTextColor</item>
+        <item name="cinColorPlayerBackground">@color/black</item>
+        <item name="cinColorPlayerTextSecondary">@color/cin_player_text_secondary</item>
+        <item name="cinColorScrim">@color/black40</item>
+        <item name="cinColorSuccess">@color/cin_success</item>
+        <item name="cinColorSurface">@color/colorPrimary</item>
+        <item name="cinColorSurfaceRaised">@color/cardBackgroundColor</item>
+        <item name="cinColorSurfaceSunken">@color/backgroundTint</item>
+        <item name="cinColorSurfaceTransparent">@color/colorPrimaryTransparent</item>
+        <item name="cinColorTextOnMedia">@color/white</item>
+        <item name="cinColorTextPrimary">@color/primaryTextColor</item>
+        <item name="cinColorTextSecondary">@color/secondaryTextColor</item>
+        <item name="cinColorWarning">@color/cin_warning</item>
+        <item name="cinFontBold">@font/almarai_bold</item>
+        <item name="cinFontLight">@font/almarai_light</item>
+        <item name="cinFontRegular">@font/almarai_regular</item>
+        <item name="cinRadiusCard">@dimen/cin_radius_card</item>
+        <item name="cinRadiusControl">@dimen/cin_radius_control</item>
+        <item name="cinRadiusDialog">@dimen/cin_radius_dialog</item>
+        <item name="cinRadiusLarge">@dimen/cin_radius_large</item>
+        <item name="cinRadiusPill">@dimen/cin_radius_pill</item>
+        <item name="cinRadiusSmall">@dimen/cin_radius_small</item>
+        <item name="cinTextBody">@dimen/cin_text_body</item>
+        <item name="cinTextBodyLarge">@dimen/cin_text_body_large</item>
+        <item name="cinTextCaption">@dimen/cin_text_caption</item>
+        <item name="cinTextDisplay">@dimen/cin_text_display</item>
+        <item name="cinTextHeadline">@dimen/cin_text_headline</item>
+        <item name="cinTextMicro">@dimen/cin_text_micro</item>
+        <item name="cinTextPlayerTitle">@dimen/cin_text_player_title</item>
+        <item name="cinTextTitle">@dimen/cin_text_title</item>
+        <item name="cinTextTitleLarge">@dimen/cin_text_title_large</item>
+    </style>
+</resources>

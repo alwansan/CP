@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:textColorPrimary">?cinColorTextPrimary</item>
+        <item name="android:textColorSecondary">?cinColorTextSecondary</item>
+        <item name="android:windowBackground">?cinColorBackground</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+        <item name="android:textColor">?cinColorTextPrimary</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:colorControlActivated">?cinColorAccent</item>
+        <item name="android:colorPrimary">?cinColorSurface</item>
+        <item name="android:colorPrimaryDark">?cinColorBackground</item>
+        <item name="android:colorAccent">?cinColorAccent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerDialogTheme</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="cardBackgroundColor">?cinColorSurfaceRaised</item>
+        <item name="colorAccent">?cinColorAccent</item>
+        <item name="colorControlActivated">?cinColorAccent</item>
+        <item name="colorPrimary">?cinColorSurface</item>
+        <item name="colorPrimaryDark">?cinColorBackground</item>
+        <item name="fontFamily">?cinFontRegular</item>
+        <item name="materialAlertDialogTheme">@style/DialogTheme</item>
+        <item name="progressBarStyle">@style/ProgressBarStyle</item>
+        <item name="statusBarBackground">@color/transparent</item>
+        <item name="cinColorAccent">@color/colorAccent</item>
+        <item name="cinColorAccentSoft">@color/colorAccentAlt</item>
+        <item name="cinColorBackground">@color/colorPrimaryDark</item>
+        <item name="cinColorError">@color/colorAccent</item>
+        <item name="cinColorOnAccent">@color/black</item>
+        <item name="cinColorOutline">@color/secondaryTextColor</item>
+        <item name="cinColorPlayerBackground">@color/black</item>
+        <item name="cinColorPlayerTextSecondary">@color/cin_player_text_secondary</item>
+        <item name="cinColorScrim">@color/black40</item>
+        <item name="cinColorSuccess">@color/cin_success</item>
+        <item name="cinColorSurface">@color/colorPrimary</item>
+        <item name="cinColorSurfaceRaised">@color/cardBackgroundColor</item>
+        <item name="cinColorSurfaceSunken">@color/backgroundTint</item>
+        <item name="cinColorSurfaceTransparent">@color/colorPrimaryTransparent</item>
+        <item name="cinColorTextOnMedia">@color/white</item>
+        <item name="cinColorTextPrimary">@color/primaryTextColor</item>
+        <item name="cinColorTextSecondary">@color/secondaryTextColor</item>
+        <item name="cinColorWarning">@color/cin_warning</item>
+        <item name="cinFontBold">@font/almarai_bold</item>
+        <item name="cinFontLight">@font/almarai_light</item>
+        <item name="cinFontRegular">@font/almarai_regular</item>
+        <item name="cinRadiusCard">@dimen/cin_radius_card</item>
+        <item name="cinRadiusControl">@dimen/cin_radius_control</item>
+        <item name="cinRadiusDialog">@dimen/cin_radius_dialog</item>
+        <item name="cinRadiusLarge">@dimen/cin_radius_large</item>
+        <item name="cinRadiusPill">@dimen/cin_radius_pill</item>
+        <item name="cinRadiusSmall">@dimen/cin_radius_small</item>
+        <item name="cinTextBody">@dimen/cin_text_body</item>
+        <item name="cinTextBodyLarge">@dimen/cin_text_body_large</item>
+        <item name="cinTextCaption">@dimen/cin_text_caption</item>
+        <item name="cinTextDisplay">@dimen/cin_text_display</item>
+        <item name="cinTextHeadline">@dimen/cin_text_headline</item>
+        <item name="cinTextMicro">@dimen/cin_text_micro</item>
+        <item name="cinTextPlayerTitle">@dimen/cin_text_player_title</item>
+        <item name="cinTextTitle">@dimen/cin_text_title</item>
+        <item name="cinTextTitleLarge">@dimen/cin_text_title_large</item>
+    </style>
+    <style name="DatePickerDialogTheme" parent="@android:style/Theme.Material.Light.Dialog">
+        <item name="android:datePickerStyle">@style/DatePickerStyle</item>
+    </style>
+    <style name="DatePickerStyle" parent="@android:style/Widget.Material.Light.DatePicker">
+        <item name="android:headerBackground">?cinColorAccent</item>
+    </style>
+    <style name="DialogTheme" parent="@style/Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <item name="android:background">@color/cardBackgroundColor</item>
+        <item name="android:colorPrimary">@color/primaryTextColor</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/NeutralButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="background">@color/cardBackgroundColor</item>
+        <item name="colorPrimary">@color/primaryTextColor</item>
+        <item name="dialogCornerRadius">16.0dip</item>
+        <item name="dialogPreferredPadding">32.0dip</item>
+        <item name="cinColorAccent">@color/colorAccent</item>
+        <item name="cinColorAccentSoft">@color/colorAccentAlt</item>
+        <item name="cinColorBackground">@color/colorPrimaryDark</item>
+        <item name="cinColorError">@color/colorAccent</item>
+        <item name="cinColorOnAccent">@color/black</item>
+        <item name="cinColorOutline">@color/secondaryTextColor</item>
+        <item name="cinColorPlayerBackground">@color/black</item>
+        <item name="cinColorPlayerTextSecondary">@color/cin_player_text_secondary</item>
+        <item name="cinColorScrim">@color/black40</item>
+        <item name="cinColorSuccess">@color/cin_success</item>
+        <item name="cinColorSurface">@color/colorPrimary</item>
+        <item name="cinColorSurfaceRaised">@color/cardBackgroundColor</item>
+        <item name="cinColorSurfaceSunken">@color/backgroundTint</item>
+        <item name="cinColorSurfaceTransparent">@color/colorPrimaryTransparent</item>
+        <item name="cinColorTextOnMedia">@color/white</item>
+        <item name="cinColorTextPrimary">@color/primaryTextColor</item>
+        <item name="cinColorTextSecondary">@color/secondaryTextColor</item>
+        <item name="cinColorWarning">@color/cin_warning</item>
+        <item name="cinFontBold">@font/almarai_bold</item>
+        <item name="cinFontLight">@font/almarai_light</item>
+        <item name="cinFontRegular">@font/almarai_regular</item>
+        <item name="cinRadiusCard">@dimen/cin_radius_card</item>
+        <item name="cinRadiusControl">@dimen/cin_radius_control</item>
+        <item name="cinRadiusDialog">@dimen/cin_radius_dialog</item>
+        <item name="cinRadiusLarge">@dimen/cin_radius_large</item>
+        <item name="cinRadiusPill">@dimen/cin_radius_pill</item>
+        <item name="cinRadiusSmall">@dimen/cin_radius_small</item>
+        <item name="cinTextBody">@dimen/cin_text_body</item>
+        <item name="cinTextBodyLarge">@dimen/cin_text_body_large</item>
+        <item name="cinTextCaption">@dimen/cin_text_caption</item>
+        <item name="cinTextDisplay">@dimen/cin_text_display</item>
+        <item name="cinTextHeadline">@dimen/cin_text_headline</item>
+        <item name="cinTextMicro">@dimen/cin_text_micro</item>
+        <item name="cinTextPlayerTitle">@dimen/cin_text_player_title</item>
+        <item name="cinTextTitle">@dimen/cin_text_title</item>
+        <item name="cinTextTitleLarge">@dimen/cin_text_title_large</item>
+    </style>
+    <style name="NegativeButtonStyle" parent="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="PositiveButtonStyle" parent="@style/Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/bigStone</item>
+    </style>
+    <style name="Theme.AppCompat.DayNight" parent="@style/Theme.AppCompat" />
+    <style name="Theme.AppCompat.DayNight.DarkActionBar" parent="@style/Theme.AppCompat" />
+    <style name="Theme.AppCompat.DayNight.Dialog" parent="@style/Theme.AppCompat.Dialog" />
+    <style name="Theme.AppCompat.DayNight.Dialog.Alert" parent="@style/Theme.AppCompat.Dialog.Alert" />
+    <style name="Theme.AppCompat.DayNight.Dialog.MinWidth" parent="@style/Theme.AppCompat.Dialog.MinWidth" />
+    <style name="Theme.AppCompat.DayNight.DialogWhenLarge" parent="@style/Theme.AppCompat.DialogWhenLarge" />
+    <style name="Theme.AppCompat.DayNight.NoActionBar" parent="@style/Theme.AppCompat.NoActionBar" />
+    <style name="Theme.CastVideosTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/alto</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="cinColorAccent">@color/colorAccent</item>
+        <item name="cinColorAccentSoft">@color/colorAccentAlt</item>
+        <item name="cinColorBackground">@color/colorPrimaryDark</item>
+        <item name="cinColorError">@color/colorAccent</item>
+        <item name="cinColorOnAccent">@color/black</item>
+        <item name="cinColorOutline">@color/secondaryTextColor</item>
+        <item name="cinColorPlayerBackground">@color/black</item>
+        <item name="cinColorPlayerTextSecondary">@color/cin_player_text_secondary</item>
+        <item name="cinColorScrim">@color/black40</item>
+        <item name="cinColorSuccess">@color/cin_success</item>
+        <item name="cinColorSurface">@color/colorPrimary</item>
+        <item name="cinColorSurfaceRaised">@color/cardBackgroundColor</item>
+        <item name="cinColorSurfaceSunken">@color/backgroundTint</item>
+        <item name="cinColorSurfaceTransparent">@color/colorPrimaryTransparent</item>
+        <item name="cinColorTextOnMedia">@color/white</item>
+        <item name="cinColorTextPrimary">@color/primaryTextColor</item>
+        <item name="cinColorTextSecondary">@color/secondaryTextColor</item>
+        <item name="cinColorWarning">@color/cin_warning</item>
+        <item name="cinFontBold">@font/almarai_bold</item>
+        <item name="cinFontLight">@font/almarai_light</item>
+        <item name="cinFontRegular">@font/almarai_regular</item>
+        <item name="cinRadiusCard">@dimen/cin_radius_card</item>
+        <item name="cinRadiusControl">@dimen/cin_radius_control</item>
+        <item name="cinRadiusDialog">@dimen/cin_radius_dialog</item>
+        <item name="cinRadiusLarge">@dimen/cin_radius_large</item>
+        <item name="cinRadiusPill">@dimen/cin_radius_pill</item>
+        <item name="cinRadiusSmall">@dimen/cin_radius_small</item>
+        <item name="cinTextBody">@dimen/cin_text_body</item>
+        <item name="cinTextBodyLarge">@dimen/cin_text_body_large</item>
+        <item name="cinTextCaption">@dimen/cin_text_caption</item>
+        <item name="cinTextDisplay">@dimen/cin_text_display</item>
+        <item name="cinTextHeadline">@dimen/cin_text_headline</item>
+        <item name="cinTextMicro">@dimen/cin_text_micro</item>
+        <item name="cinTextPlayerTitle">@dimen/cin_text_player_title</item>
+        <item name="cinTextTitle">@dimen/cin_text_title</item>
+        <item name="cinTextTitleLarge">@dimen/cin_text_title_large</item>
+    </style>
+    <style name="Theme.MaterialComponents.DayNight" parent="@style/Theme.MaterialComponents" />
+    <style name="Theme.MaterialComponents.DayNight.BottomSheetDialog" parent="@style/Theme.MaterialComponents.BottomSheetDialog" />
+    <style name="Theme.MaterialComponents.DayNight.Bridge" parent="@style/Theme.MaterialComponents.Bridge" />
+    <style name="Theme.MaterialComponents.DayNight.DarkActionBar" parent="@style/Theme.MaterialComponents" />
+    <style name="Theme.MaterialComponents.DayNight.DarkActionBar.Bridge" parent="@style/Theme.MaterialComponents.Bridge" />
+    <style name="Theme.MaterialComponents.DayNight.Dialog" parent="@style/Theme.MaterialComponents.Dialog" />
+    <style name="Theme.MaterialComponents.DayNight.Dialog.Alert" parent="@style/Theme.MaterialComponents.Dialog.Alert" />
+    <style name="Theme.MaterialComponents.DayNight.Dialog.Alert.Bridge" parent="@style/Theme.MaterialComponents.Dialog.Alert.Bridge" />
+    <style name="Theme.MaterialComponents.DayNight.Dialog.Bridge" parent="@style/Theme.MaterialComponents.Dialog.Bridge" />
+    <style name="Theme.MaterialComponents.DayNight.Dialog.FixedSize" parent="@style/Theme.MaterialComponents.Dialog.FixedSize" />
+    <style name="Theme.MaterialComponents.DayNight.Dialog.FixedSize.Bridge" parent="@style/Theme.MaterialComponents.Dialog.FixedSize.Bridge" />
+    <style name="Theme.MaterialComponents.DayNight.Dialog.MinWidth" parent="@style/Theme.MaterialComponents.Dialog.MinWidth" />
+    <style name="Theme.MaterialComponents.DayNight.Dialog.MinWidth.Bridge" parent="@style/Theme.MaterialComponents.Dialog.MinWidth.Bridge" />
+    <style name="Theme.MaterialComponents.DayNight.DialogWhenLarge" parent="@style/Theme.MaterialComponents.DialogWhenLarge" />
+    <style name="Theme.MaterialComponents.DayNight.NoActionBar" parent="@style/Theme.MaterialComponents.NoActionBar" />
+    <style name="Theme.MaterialComponents.DayNight.NoActionBar.Bridge" parent="@style/Theme.MaterialComponents.NoActionBar.Bridge" />
+    <style name="ThemeOverlay.AppCompat.DayNight" parent="@style/ThemeOverlay.AppCompat.Dark" />
+    <style name="Widget.MaterialComponents.ActionBar.PrimarySurface" parent="@style/Widget.MaterialComponents.ActionBar.Surface" />
+    <style name="Widget.MaterialComponents.AppBarLayout.PrimarySurface" parent="@style/Widget.MaterialComponents.AppBarLayout.Surface" />
+    <style name="Widget.MaterialComponents.BottomAppBar.PrimarySurface" parent="@style/Widget.MaterialComponents.BottomAppBar" />
+    <style name="Widget.MaterialComponents.BottomNavigationView.PrimarySurface" parent="@style/Widget.MaterialComponents.BottomNavigationView" />
+    <style name="Widget.MaterialComponents.NavigationRailView.PrimarySurface" parent="@style/Widget.MaterialComponents.NavigationRailView" />
+    <style name="Widget.MaterialComponents.TabLayout.PrimarySurface" parent="@style/Widget.MaterialComponents.TabLayout" />
+    <style name="Widget.MaterialComponents.Toolbar.PrimarySurface" parent="@style/Widget.MaterialComponents.Toolbar.Surface" />
+    <style name="NeutralButtonStyle" parent="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

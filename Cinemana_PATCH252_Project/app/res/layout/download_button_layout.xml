@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ProgressBar android:layout_gravity="center" android:id="@id/progressBar" android:tag="layout/download_button_layout_0" android:focusable="false" android:clickable="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:foregroundGravity="center" android:rotation="90.0" android:importantForAccessibility="no" android:layoutDirection="ltr" style="?android:progressBarStyleHorizontal" />
+    <ImageButton android:layout_gravity="center" android:id="@id/download_button_image_button" android:tag="layout/download_button_layout_1" android:background="@color/transparent" android:padding="5.0dip" android:focusable="false" android:clickable="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:scaleType="centerInside" android:foregroundGravity="center" android:importantForAccessibility="no" />
+</merge>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:textColorPrimary">?cinColorTextPrimary</item>
+        <item name="android:textColorSecondary">?cinColorTextSecondary</item>
+        <item name="android:windowBackground">?cinColorBackground</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+        <item name="android:textColor">?cinColorTextPrimary</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:colorControlActivated">?cinColorAccent</item>
+        <item name="android:colorPrimary">?cinColorSurface</item>
+        <item name="android:colorPrimaryDark">?cinColorBackground</item>
+        <item name="android:colorAccent">?cinColorAccent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerDialogTheme</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="cardBackgroundColor">?cinColorSurfaceRaised</item>
+        <item name="colorAccent">?cinColorAccent</item>
+        <item name="colorControlActivated">?cinColorAccent</item>
+        <item name="colorPrimary">?cinColorSurface</item>
+        <item name="colorPrimaryDark">?cinColorBackground</item>
+        <item name="fontFamily">?cinFontRegular</item>
+        <item name="materialAlertDialogTheme">@style/DialogTheme</item>
+        <item name="progressBarStyle">@style/ProgressBarStyle</item>
+        <item name="statusBarBackground">@color/transparent</item>
+        <item name="cinColorAccent">@color/colorAccent</item>
+        <item name="cinColorAccentSoft">@color/colorAccentAlt</item>
+        <item name="cinColorBackground">@color/colorPrimaryDark</item>
+        <item name="cinColorError">@color/colorAccent</item>
+        <item name="cinColorOnAccent">@color/black</item>
+        <item name="cinColorOutline">@color/secondaryTextColor</item>
+        <item name="cinColorPlayerBackground">@color/black</item>
+        <item name="cinColorPlayerTextSecondary">@color/cin_player_text_secondary</item>
+        <item name="cinColorScrim">@color/black40</item>
+        <item name="cinColorSuccess">@color/cin_success</item>
+        <item name="cinColorSurface">@color/colorPrimary</item>
+        <item name="cinColorSurfaceRaised">@color/cardBackgroundColor</item>
+        <item name="cinColorSurfaceSunken">@color/backgroundTint</item>
+        <item name="cinColorSurfaceTransparent">@color/colorPrimaryTransparent</item>
+        <item name="cinColorTextOnMedia">@color/white</item>
+        <item name="cinColorTextPrimary">@color/primaryTextColor</item>
+        <item name="cinColorTextSecondary">@color/secondaryTextColor</item>
+        <item name="cinColorWarning">@color/cin_warning</item>
+        <item name="cinFontBold">@font/almarai_bold</item>
+        <item name="cinFontLight">@font/almarai_light</item>
+        <item name="cinFontRegular">@font/almarai_regular</item>
+        <item name="cinRadiusCard">@dimen/cin_radius_card</item>
+        <item name="cinRadiusControl">@dimen/cin_radius_control</item>
+        <item name="cinRadiusDialog">@dimen/cin_radius_dialog</item>
+        <item name="cinRadiusLarge">@dimen/cin_radius_large</item>
+        <item name="cinRadiusPill">@dimen/cin_radius_pill</item>
+        <item name="cinRadiusSmall">@dimen/cin_radius_small</item>
+        <item name="cinTextBody">@dimen/cin_text_body</item>
+        <item name="cinTextBodyLarge">@dimen/cin_text_body_large</item>
+        <item name="cinTextCaption">@dimen/cin_text_caption</item>
+        <item name="cinTextDisplay">@dimen/cin_text_display</item>
+        <item name="cinTextHeadline">@dimen/cin_text_headline</item>
+        <item name="cinTextMicro">@dimen/cin_text_micro</item>
+        <item name="cinTextPlayerTitle">@dimen/cin_text_player_title</item>
+        <item name="cinTextTitle">@dimen/cin_text_title</item>
+        <item name="cinTextTitleLarge">@dimen/cin_text_title_large</item>
+    </style>
+    <style name="Base.TextAppearance.AppCompat.Widget.ActionBar.Menu" parent="@android:style/TextAppearance.Material.Widget.ActionBar.Menu" />
+    <style name="Base.TextAppearance.AppCompat.Widget.Button.Inverse" parent="@android:style/TextAppearance.Material.Widget.Button.Inverse" />
+    <style name="Base.Theme.AppCompat" parent="@style/Base.V23.Theme.AppCompat" />
+    <style name="Base.Theme.AppCompat.Light" parent="@style/Base.V23.Theme.AppCompat.Light" />
+    <style name="Base.Widget.AppCompat.ActionButton.Overflow" parent="@android:style/Widget.Material.ActionButton.Overflow" />
+    <style name="Base.Widget.AppCompat.Button.Borderless.Colored" parent="@android:style/Widget.Material.Button.Borderless.Colored" />
+    <style name="Base.Widget.AppCompat.Button.Colored" parent="@android:style/Widget.Material.Button.Colored">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Widget.Button.Colored</item>
+    </style>
+    <style name="Base.Widget.AppCompat.EditText" parent="@android:style/Widget.Material.EditText">
+        <item name="android:breakStrategy">simple</item>
+        <item name="android:hyphenationFrequency">none</item>
+    </style>
+    <style name="Base.Widget.AppCompat.RatingBar.Indicator" parent="@android:style/Widget.Material.RatingBar.Indicator" />
+    <style name="Base.Widget.AppCompat.RatingBar.Small" parent="@android:style/Widget.Material.RatingBar.Small" />
+    <style name="Base.Widget.AppCompat.Spinner.Underlined" parent="@android:style/Widget.Material.Spinner.Underlined" />
+    <style name="Base.Widget.AppCompat.TextView" parent="@android:style/Widget.Material.TextView">
+        <item name="android:breakStrategy">high_quality</item>
+        <item name="android:hyphenationFrequency">none</item>
+    </style>
+    <style name="CardView" parent="@style/Base.CardView">
+        <item name="cardBackgroundColor">?android:colorBackgroundFloating</item>
+    </style>
+    <style name="Widget.MaterialComponents.PopupMenu.ContextMenu" parent="@style/Base.Widget.MaterialComponents.PopupMenu.ContextMenu">
+        <item name="android:popupBackground">?popupMenuBackground</item>
+        <item name="android:popupElevation">8.0dip</item>
+    </style>
+    <style name="Widget.MaterialComponents.PopupMenu.ListPopupWindow" parent="@style/Base.Widget.MaterialComponents.PopupMenu.ListPopupWindow">
+        <item name="android:popupBackground">?popupMenuBackground</item>
+        <item name="android:popupElevation">8.0dip</item>
+    </style>
+    <style name="Base.V23.Theme.AppCompat" parent="@style/Base.V22.Theme.AppCompat">
+        <item name="actionBarItemBackground">?android:actionBarItemBackground</item>
+        <item name="actionMenuTextAppearance">?android:actionMenuTextAppearance</item>
+        <item name="actionMenuTextColor">?android:actionMenuTextColor</item>
+        <item name="actionOverflowButtonStyle">?android:actionOverflowButtonStyle</item>
+        <item name="controlBackground">@drawable/abc_control_background_material</item>
+        <item name="ratingBarStyleIndicator">?android:ratingBarStyleIndicator</item>
+        <item name="ratingBarStyleSmall">?android:ratingBarStyleSmall</item>
+    </style>
+    <style name="Base.V23.Theme.AppCompat.Light" parent="@style/Base.V22.Theme.AppCompat.Light">
+        <item name="actionBarItemBackground">?android:actionBarItemBackground</item>
+        <item name="actionMenuTextAppearance">?android:actionMenuTextAppearance</item>
+        <item name="actionMenuTextColor">?android:actionMenuTextColor</item>
+        <item name="actionOverflowButtonStyle">?android:actionOverflowButtonStyle</item>
+        <item name="controlBackground">@drawable/abc_control_background_material</item>
+        <item name="ratingBarStyleIndicator">?android:ratingBarStyleIndicator</item>
+        <item name="ratingBarStyleSmall">?android:ratingBarStyleSmall</item>
+    </style>
+</resources>

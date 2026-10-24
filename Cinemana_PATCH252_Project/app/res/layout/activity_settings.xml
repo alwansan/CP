@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:tag="layout/activity_settings_0" android:layout_width="wrap_content" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.appbar.AppBarLayout android:id="@id/settings_app_bar" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <androidx.appcompat.widget.Toolbar android:theme="@style/ToolbarTitleStyle" android:id="@id/settings_toolbar" android:background="?cinColorSurface" android:layout_width="fill_parent" android:layout_height="?actionBarSize" android:animateLayoutChanges="true" android:textDirection="ltr" app:contentInsetStartWithNavigation="2.0dip" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_scrollFlags="scroll|enterAlways|snap" app:subtitleTextColor="?cinColorTextPrimary" app:titleTextAppearance="@style/ToolbarTitleStyle" app:titleTextColor="?cinColorTextPrimary" />
+    </com.google.android.material.appbar.AppBarLayout>
+    <fragment android:name="androidx.navigation.fragment.NavHostFragment" android:id="@id/settings_fragment_container" android:tag="@string/settings_txt" android:layout_width="fill_parent" android:layout_height="fill_parent" app:defaultNavHost="true" app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

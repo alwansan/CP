@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="days_ago">
+        <item quantity="other">قبل %d يوم</item>
+        <item quantity="zero">أقل من يوم</item>
+        <item quantity="one">البارحة</item>
+        <item quantity="two">قبل يومين</item>
+        <item quantity="few">قبل %d أيام</item>
+        <item quantity="many">قبل %d يوم</item>
+    </plurals>
+    <plurals name="duration_hours">
+        <item quantity="other">%dس</item>
+        <item quantity="zero"></item>
+        <item quantity="one">س</item>
+        <item quantity="two">س</item>
+        <item quantity="few">%dس</item>
+        <item quantity="many">%dس</item>
+    </plurals>
+    <plurals name="duration_hours_descriptive">
+        <item quantity="other">%dساعة</item>
+        <item quantity="zero"></item>
+        <item quantity="one">ساعة</item>
+        <item quantity="two">ساعة</item>
+        <item quantity="few">%dساعة</item>
+        <item quantity="many">%dساعة</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="other">%d د</item>
+        <item quantity="zero"></item>
+        <item quantity="one">د</item>
+        <item quantity="two">د</item>
+        <item quantity="few">%d د</item>
+        <item quantity="many">%d د</item>
+    </plurals>
+    <plurals name="duration_minutes_descriptive">
+        <item quantity="other">%d دقيقة</item>
+        <item quantity="zero"></item>
+        <item quantity="one">دقيقة</item>
+        <item quantity="two">دقيقة</item>
+        <item quantity="few">%d دقيقة</item>
+        <item quantity="many">%d دقيقة</item>
+    </plurals>
+    <plurals name="duration_seconds">
+        <item quantity="other">%d ثانية</item>
+        <item quantity="zero"></item>
+        <item quantity="one">ثانية</item>
+        <item quantity="two">ثانيتين</item>
+        <item quantity="few">%d ثواني</item>
+        <item quantity="many">%d ثانية</item>
+    </plurals>
+    <plurals name="exo_controls_fastforward_by_amount_description">
+        <item quantity="other">تقديم سريع للفيديو بمقدار %d ثانية</item>
+        <item quantity="zero">تقديم سريع للفيديو بمقدار %d ثانية</item>
+        <item quantity="one">تقديم سريع للفيديو بمقدار ثانية واحدة (%d)</item>
+        <item quantity="two">تقديم سريع للفيديو بمقدار ثانيتَين (%d)</item>
+        <item quantity="few">تقديم سريع للفيديو بمقدار %d ثوانٍ</item>
+        <item quantity="many">تقديم سريع للفيديو بمقدار %d ثانية</item>
+    </plurals>
+    <plurals name="exo_controls_rewind_by_amount_description">
+        <item quantity="other">ترجيع الفيديو بمقدار %d ثانية</item>
+        <item quantity="zero">ترجيع الفيديو بمقدار %d ثانية</item>
+        <item quantity="one">ترجيع الفيديو بمقدار ثانية واحدة (%d)</item>
+        <item quantity="two">ترجيع الفيديو بمقدار ثانيتَين (%d)</item>
+        <item quantity="few">ترجيع الفيديو بمقدار %d ثوانٍ</item>
+        <item quantity="many">ترجيع الفيديو بمقدار %d ثانية</item>
+    </plurals>
+    <plurals name="hours_ago">
+        <item quantity="other">قبل %d ساعة</item>
+        <item quantity="zero">أقل من ساعة</item>
+        <item quantity="one">قبل ساعة</item>
+        <item quantity="two">قبل ساعتين</item>
+        <item quantity="few">قبل %d ساعات</item>
+        <item quantity="many">قبل %d ساعة</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="other">%d عنصر</item>
+        <item quantity="zero"></item>
+        <item quantity="one">عنصر واحد</item>
+        <item quantity="two">عنصرين</item>
+        <item quantity="few">%d عناصر</item>
+        <item quantity="many">%d عنصر</item>
+    </plurals>
+    <plurals name="minutes_ago">
+        <item quantity="other">قبل %d دقائق</item>
+        <item quantity="zero">أقل من دقيقة</item>
+        <item quantity="one">قبل دقيقة</item>
+        <item quantity="two">قبل دقيقتين</item>
+        <item quantity="few">قبل %d دقائق</item>
+        <item quantity="many">قبل %d دقيقة</item>
+    </plurals>
+    <plurals name="months_ago">
+        <item quantity="other">قبل %d أشهر</item>
+        <item quantity="zero">أقل من شهر</item>
+        <item quantity="one">قبل شهر</item>
+        <item quantity="two">قبل شهرين</item>
+        <item quantity="few">قبل %d أشهر</item>
+        <item quantity="many">قبل %d شهر</item>
+    </plurals>
+    <plurals name="mtrl_badge_content_description">
+        <item quantity="other">%d إشعار جديد</item>
+        <item quantity="zero">%d إشعار جديد</item>
+        <item quantity="one">إشعار جديد واحد (%d)</item>
+        <item quantity="two">إشعاران جديدان (%d)</item>
+        <item quantity="few">%d إشعارات جديدة</item>
+        <item quantity="many">%d إشعارًا جديدًا</item>
+    </plurals>
+    <plurals name="multiple_downloads">
+        <item quantity="other">جار تحميل %d عنصر</item>
+        <item quantity="zero">لا توجد عناصر</item>
+        <item quantity="one">جار تحميل عنصر واحد</item>
+        <item quantity="two">جار تحميل عنصرين</item>
+        <item quantity="few">جار تحميل %d عناصر</item>
+        <item quantity="many">جار تحميل %d عنصر</item>
+    </plurals>
+    <plurals name="seconds_ago">
+        <item quantity="other">قبل %d ثانية</item>
+        <item quantity="zero">الآن</item>
+        <item quantity="one">قبل ثانية</item>
+        <item quantity="two">قبل ثانيتين</item>
+        <item quantity="few">قبل %d ثواني</item>
+        <item quantity="many">قبل %d ثانية</item>
+    </plurals>
+    <plurals name="weeks_ago">
+        <item quantity="other">قبل %d أسبوع</item>
+        <item quantity="zero">أقل من إسبوع</item>
+        <item quantity="one">قبل إسبوع</item>
+        <item quantity="two">قبل أسبوعين</item>
+        <item quantity="few">قبل %d أسابيع</item>
+        <item quantity="many">قبل %d أسبوع</item>
+    </plurals>
+    <plurals name="years_ago">
+        <item quantity="other">قبل %d سنة</item>
+        <item quantity="zero">أقل من سنة</item>
+        <item quantity="one">قبل سنة</item>
+        <item quantity="two">قبل سنتين</item>
+        <item quantity="few">قبل %d سنين</item>
+        <item quantity="many">قبل %d سنوات</item>
+    </plurals>
+</resources>

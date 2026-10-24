@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scale android:drawable="@drawable/ic_eye" android:scaleWidth="33%" android:scaleHeight="33%" android:scaleGravity="start"
+  xmlns:android="http://schemas.android.com/apk/res/android" />

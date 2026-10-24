@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid android:color="@color/gradientShade3" />
+            <corners android:radius="8.0dip" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <padding android:left="16.0dip" android:right="16.0dip" />
+            <corners android:radius="8.0dip" />
+            <stroke android:width="1.0dip" android:color="?cinColorTextPrimary" />
+            <solid android:color="@color/transparent" />
+        </shape>
+    </item>
+</layer-list>

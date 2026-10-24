@@ -1,0 +1,54 @@
+.class public final Lcom/shabakaty/downloader/r70;
+.super Lcom/shabakaty/downloader/q70;
+.source "CompletableAndThenCompletable.java"
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Lcom/shabakaty/downloader/r70$a;,
+        Lcom/shabakaty/downloader/r70$b;
+    }
+.end annotation
+
+
+# instance fields
+.field public final a:Lcom/shabakaty/downloader/c80;
+
+.field public final b:Lcom/shabakaty/downloader/c80;
+
+
+# direct methods
+.method public constructor <init>(Lcom/shabakaty/downloader/c80;Lcom/shabakaty/downloader/c80;)V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Lcom/shabakaty/downloader/q70;-><init>()V
+
+    .line 2
+    iput-object p1, p0, Lcom/shabakaty/downloader/r70;->a:Lcom/shabakaty/downloader/c80;
+
+    .line 3
+    iput-object p2, p0, Lcom/shabakaty/downloader/r70;->b:Lcom/shabakaty/downloader/c80;
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public f(Lcom/shabakaty/downloader/a80;)V
+    .locals 3
+
+    .line 1
+    iget-object v0, p0, Lcom/shabakaty/downloader/r70;->a:Lcom/shabakaty/downloader/c80;
+
+    new-instance v1, Lcom/shabakaty/downloader/r70$b;
+
+    iget-object v2, p0, Lcom/shabakaty/downloader/r70;->b:Lcom/shabakaty/downloader/c80;
+
+    invoke-direct {v1, p1, v2}, Lcom/shabakaty/downloader/r70$b;-><init>(Lcom/shabakaty/downloader/a80;Lcom/shabakaty/downloader/c80;)V
+
+    invoke-interface {v0, v1}, Lcom/shabakaty/downloader/c80;->a(Lcom/shabakaty/downloader/a80;)V
+
+    return-void
+.end method
