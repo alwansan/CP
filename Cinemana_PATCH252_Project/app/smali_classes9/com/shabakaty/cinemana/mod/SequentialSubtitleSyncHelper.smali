@@ -1173,6 +1173,62 @@
     return-void
 .end method
 
+.method private static addHalfSecondButtons(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+    .locals 4
+
+    check-cast p0, Landroid/content/Context;
+
+    check-cast p1, Landroid/widget/LinearLayout;
+
+    check-cast p2, Landroid/widget/EditText;
+
+    new-instance v0, Landroid/widget/Button;
+
+    invoke-direct {v0, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
+
+    const-string v1, "\\u2212 0.5s"
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->ink(Landroid/content/Context;)I
+
+    move-result v1
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextColor(I)V
+
+    const/4 v1, 0x0
+
+    invoke-virtual {p1, v0, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;I)V
+
+    const/4 v1, -0x5
+
+    invoke-static {v0, p0, p2, v1}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->bindStep(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;I)V
+
+    new-instance v0, Landroid/widget/Button;
+
+    invoke-direct {v0, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
+
+    const-string v1, "+ 0.5s"
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->ink(Landroid/content/Context;)I
+
+    move-result v1
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextColor(I)V
+
+    const/4 v1, 0x4
+
+    invoke-virtual {p1, v0, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;I)V
+
+    const/4 v1, 0x5
+
+    invoke-static {v0, p0, p2, v1}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->bindStep(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;I)V
+
+    return-void
+.end method
+
 .method public static showSequentialDialog(Ljava/lang/Object;)V
     .locals 32
 
@@ -2292,6 +2348,8 @@
     invoke-static/range {v12 .. v17}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addFullWidth(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;)V
 
     .line 139
+    invoke-static {v9, v3, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+
     const/4 v1, -0x1
 
     invoke-static {v0, v9, v4, v1}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->bindStep(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;I)V
