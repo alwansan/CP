@@ -1,4 +1,4 @@
-name: Build and Sign Cinemana PATCH252 APK
+name: Build and Sign Cinemana PATCH254 Decoder Mode
 
 on:
   workflow_dispatch:
@@ -53,14 +53,19 @@ jobs:
           du -sh Cinemana_PATCH252_Project
           ls -lh signing/checkpoint145-debug.keystore
 
-      - name: Verify High10 subtitle-refresh policy wiring
+      - name: Verify FFmpeg-first decoder mode wiring
         shell: bash
         run: |
           set -euo pipefail
-          grep -q 'H26410SoftwareRenderer;->markSubtitleRefresh()V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/y10.smali
-          grep -q 'H26410SoftwareRenderer;->shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/so2.smali
-          grep -q 'H26410SoftwareRenderer;->resolveRefreshFormat(Lcom/shabakaty/downloader/wh1;)Lcom/shabakaty/downloader/wh1;' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
-          echo "High10 refresh policy wiring: PASS"
+          grep -q 'CinemanaDecoderMode;->initialize(Landroid/content/Context;)V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/to0.smali
+          grep -q 'CinemanaDecoderMode;->isFfmpegEnabled()Z' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/to0.smali
+          grep -q 'codecNameForMimeType(Ljava/lang/String;)Ljava/lang/String;' Cinemana_PATCH252_Project/app/smali_classes10/io/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder.smali
+          grep -q 'FfmpegLibrary;->isDecoderAvailable(Ljava/lang/String;)Z' Cinemana_PATCH252_Project/app/smali_classes10/io/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder.smali
+          grep -q 'CinemanaDecoderMode;->setMode(Landroid/content/Context;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Settings94\$DecoderModeClick.smali
+          grep -q 'ca1_decoder_mode' Cinemana_PATCH252_Project/app/res/layout/fragment_settings_list.xml
+          grep -q 'ca1_decoder_mode' Cinemana_PATCH252_Project/app/res/layout-v22/fragment_settings_list.xml
+          grep -q 'CinemanaDecoderMode;->shouldUseSoftware' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali || true
+          echo "FFmpeg-first decoder mode wiring: PASS"
 
       - name: Build unsigned APK
         shell: bash
@@ -83,7 +88,7 @@ jobs:
           KEYSTORE="signing/checkpoint145-debug.keystore"
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
-          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH253_High10Refresh_signed.apk"
+          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH254_FFmpegDefault_signed.apk"
 
           keytool -list -keystore "$KEYSTORE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
           "$TOOL_DIR/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
@@ -103,16 +108,18 @@ jobs:
       - name: Publish signed APK as a direct GitHub Release download
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: PATCH253-refresh-${{ github.run_number }}
+          tag_name: PATCH254-decoder-mode-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana PATCH253 High10 refresh #${{ github.run_number }}"
+          name: "Cinemana PATCH254 FFmpeg default decoder #${{ github.run_number }}"
           body: |
-            PATCH253 High10 subtitle-refresh recovery build.
-            Automated assembly, alignment, signing, and signature verification completed.
+            PATCH254 FFmpeg-first video decoder mode.
+            FFmpeg is preferred for clear video formats supported by the bundled native library.
+            MediaCodec remains available for DRM-protected and FFmpeg-unsupported formats.
+            The original MediaCodec-only mode is selectable in app settings.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_PATCH253_High10Refresh_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH254_FFmpegDefault_signed.apk
             Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           fail_on_unmatched_files: true
           overwrite_files: true
