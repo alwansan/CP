@@ -67,7 +67,7 @@ jobs:
           grep -q 'shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
           test -f Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/player/CinemanaDecoderMode.smali
           test -f 'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Settings94$DecoderModeClick.smali'
-          test -f 'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Settings94$ExternalSyntheticLambda3.smali'
+          test -f 'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Settings94$$ExternalSyntheticLambda3.smali'
           echo "FFmpeg-first decoder mode wiring: PASS"
 
       - name: Build unsigned APK
