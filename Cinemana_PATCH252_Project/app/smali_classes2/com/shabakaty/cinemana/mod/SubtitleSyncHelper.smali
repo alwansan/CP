@@ -288,6 +288,64 @@
     return-void
 .end method
 
+.method private static addHalfSecondButtons(Landroid/content/Context;Landroid/widget/LinearLayout;Landroid/widget/EditText;)V
+    .locals 4
+
+    new-instance v0, Landroid/widget/Button;
+
+    invoke-direct {v0, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
+
+    const-string v1, "\\u2212 0.5s"
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->ink(Landroid/content/Context;)I
+
+    move-result v1
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextColor(I)V
+
+    const/4 v1, 0x0
+
+    invoke-virtual {p1, v0, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;I)V
+
+    new-instance v1, Lcom/shabakaty/cinemana/mod/SubtitleSyncStepListener;
+
+    const/4 v2, -0x5
+
+    invoke-direct {v1, p0, p2, v2}, Lcom/shabakaty/cinemana/mod/SubtitleSyncStepListener;-><init>(Landroid/content/Context;Landroid/widget/EditText;I)V
+
+    invoke-virtual {v0, v1}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    new-instance v0, Landroid/widget/Button;
+
+    invoke-direct {v0, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
+
+    const-string v1, "+ 0.5s"
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->ink(Landroid/content/Context;)I
+
+    move-result v1
+
+    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextColor(I)V
+
+    const/4 v1, 0x4
+
+    invoke-virtual {p1, v0, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;I)V
+
+    new-instance v1, Lcom/shabakaty/cinemana/mod/SubtitleSyncStepListener;
+
+    const/4 v2, 0x5
+
+    invoke-direct {v1, p0, p2, v2}, Lcom/shabakaty/cinemana/mod/SubtitleSyncStepListener;-><init>(Landroid/content/Context;Landroid/widget/EditText;I)V
+
+    invoke-virtual {v0, v1}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    return-void
+.end method
+
 .method public static showDialog(Lcom/shabakaty/cinemana/player/CinemanaPlayerControllerView;)V
     .locals 15
 
@@ -448,6 +506,8 @@
     invoke-direct {v4, v5, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
     invoke-virtual {v2, v7, v4}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    invoke-static {v0, v2, v6}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->addHalfSecondButtons(Landroid/content/Context;Landroid/widget/LinearLayout;Landroid/widget/EditText;)V
 
     invoke-virtual {v1, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
