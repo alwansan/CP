@@ -987,7 +987,10 @@
 .end method
 
 .method public onDestroy()V
-    .locals 0
+    .locals 1
+
+    const-string v0, "activity_on_destroy"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     .line 1
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/player/VideoPlayerActivity;->k0()V
@@ -1002,6 +1005,9 @@
 
 .method public onPause()V
     .locals 2
+
+    const-string v0, "activity_on_pause"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->pause(Ljava/lang/Object;)V
 
@@ -1086,6 +1092,8 @@
     .locals 70
 
     move-object/from16 v0, p0
+    const-string v1, "activity_on_resume"
+    invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     .line 1
     invoke-virtual/range {p0 .. p0}, Lcom/shabakaty/downloader/xi;->F()Lcom/shabakaty/downloader/xk;
@@ -1425,6 +1433,9 @@
 .method public onStart()V
     .locals 2
 
+    const-string v0, "activity_on_start"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
     .line 1
     new-instance v0, Lcom/shabakaty/downloader/p3;
 
@@ -1474,6 +1485,9 @@
 
 .method public onStop()V
     .locals 2
+
+    const-string v0, "activity_on_stop"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->stopEpisodePolling(Ljava/lang/Object;)V
 

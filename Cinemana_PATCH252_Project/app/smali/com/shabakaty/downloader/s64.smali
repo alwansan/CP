@@ -1575,6 +1575,9 @@
 .method public g()V
     .locals 3
 
+    const-string v2, "player_state_refresh_g_enter"
+    invoke-static {v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
     .line 1
     invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->v0()V
 
@@ -1605,6 +1608,8 @@
 
     invoke-virtual {v0}, Lcom/shabakaty/downloader/q71;->g()V
 
+    const-string v2, "player_state_refresh_g_complete"
+    invoke-static {v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     return-void
 .end method
 
@@ -1642,6 +1647,9 @@
 .method public j0()V
     .locals 1
 
+    const-string v0, "surface_detach_enter"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
     .line 1
     invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->v0()V
 
@@ -1658,6 +1666,8 @@
     .line 4
     invoke-virtual {p0, v0, v0}, Lcom/shabakaty/downloader/s64;->m0(II)V
 
+    const-string v0, "surface_detach_complete"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     return-void
 .end method
 
@@ -1872,7 +1882,7 @@
 .end method
 
 .method public o(Ljava/util/List;Z)V
-    .locals 1
+    .locals 3
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "(",
@@ -1882,6 +1892,30 @@
         }
     .end annotation
 
+    const-string v0, "media_item_refresh_request"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
+    invoke-interface {p1}, Ljava/util/List;->size()I
+    move-result v0
+    invoke-static {v0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v1
+    const-string v0, "refresh_item_count"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->C()J
+    move-result-wide v0
+    invoke-static {v0, v1}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+    move-result-object v2
+    const-string v0, "refresh_position_us"
+    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->f()Z
+    move-result v0
+    invoke-static {v0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    const-string v0, "refresh_play_when_ready"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     .line 1
     invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->v0()V
 
@@ -1890,6 +1924,8 @@
 
     invoke-virtual {v0, p1, p2}, Lcom/shabakaty/downloader/q71;->o(Ljava/util/List;Z)V
 
+    const-string v0, "media_item_refresh_request_dispatched"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     return-void
 .end method
 
@@ -1973,6 +2009,9 @@
 .method public final p0(Landroid/view/SurfaceHolder;)V
     .locals 2
 
+    const-string v0, "surface_attach_enter"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
     const/4 v0, 0x0
 
     .line 1
@@ -2027,6 +2066,8 @@
     invoke-virtual {p0, v0, v0}, Lcom/shabakaty/downloader/s64;->m0(II)V
 
     :goto_0
+    const-string v0, "surface_attach_complete"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     return-void
 .end method
 
