@@ -538,6 +538,16 @@
 .method public H(ZI)V
     .locals 4
 
+    const-string v0, "player_playback_state"
+    invoke-static {p2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v1
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-string v0, "player_play_when_ready"
+    invoke-static {p1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     const/4 v0, 0x0
 
     const/4 v1, 0x2
