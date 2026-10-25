@@ -186,7 +186,7 @@
 .end method
 
 .method private static isAmbiguousAvc(Lcom/shabakaty/downloader/wh1;)Z
-    .locals 2
+    .locals 4
 
     if-eqz p0, :no
 
@@ -217,11 +217,30 @@
 
     if-eqz v0, :yes
 
-    invoke-interface {v0}, Ljava/util/List;->isEmpty()Z
+    invoke-interface {v0}, Ljava/util/List;->iterator()Ljava/util/Iterator;
 
-    move-result v0
+    move-result-object v0
 
-    if-eqz v0, :no
+    :scanCsd
+    invoke-interface {v0}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v1
+
+    if-eqz v1, :yes
+
+    invoke-interface {v0}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v1
+
+    if-eqz v1, :scanCsd
+
+    check-cast v1, [B
+
+    array-length v2, v1
+
+    if-lez v2, :scanCsd
+
+    goto :no
 
     :yes
     const/4 v0, 0x1
