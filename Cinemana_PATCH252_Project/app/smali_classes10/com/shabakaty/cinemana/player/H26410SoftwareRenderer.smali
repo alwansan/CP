@@ -988,6 +988,7 @@
     iput-object v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->surface:Landroid/view/Surface;
     const-string v1, "B_after_surface_clear"
     invoke-direct {p0, v1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->logSurfaceState(Ljava/lang/String;)V
+    const/4 v1, 0x0
 
     .line 117
     iput-object v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
