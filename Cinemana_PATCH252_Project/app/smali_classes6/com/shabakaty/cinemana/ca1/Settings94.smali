@@ -396,6 +396,54 @@
     return-void
 .end method
 
+.method static decoderDialog(Landroid/content/Context;)V
+    .locals 6
+
+    const/4 v0, 0x2
+    new-array v0, v0, [Ljava/lang/CharSequence;
+
+    const-string v1, "FFmpeg \u2014 الديكودر البرمجي (الافتراضي)"
+    const/4 v2, 0x0
+    aput-object v1, v0, v2
+
+    const-string v1, "MediaCodec \u2014 ديكودر Cinemana الأصلي"
+    const/4 v2, 0x1
+    aput-object v1, v0, v2
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/player/CinemanaDecoderMode;->getMode(Landroid/content/Context;)I
+    move-result v1
+
+    new-instance v2, Lcom/shabakaty/cinemana/ca1/Settings94$DecoderModeClick;
+    invoke-direct {v2, p0}, Lcom/shabakaty/cinemana/ca1/Settings94$DecoderModeClick;-><init>(Landroid/content/Context;)V
+
+    new-instance v3, Landroid/app/AlertDialog$Builder;
+    invoke-direct {v3, p0}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+
+    const-string v4, "طريقة فك ترميز الفيديو"
+    invoke-virtual {v3, v4}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+    move-result-object v3
+
+    const-string v4, "يستخدم FFmpeg جميع الترميزات التي تدعمها المكتبة. يبقى MediaCodec متاحاً للمحتوى المحمي أو الترميزات غير المدعومة."
+    invoke-virtual {v3, v4}, Landroid/app/AlertDialog$Builder;->setMessage(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+    move-result-object v3
+
+    invoke-virtual {v3, v0, v1, v2}, Landroid/app/AlertDialog$Builder;->setSingleChoiceItems([Ljava/lang/CharSequence;ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+    move-result-object v3
+
+    const-string v4, "إلغاء"
+    const/4 v5, 0x0
+    invoke-virtual {v3, v4, v5}, Landroid/app/AlertDialog$Builder;->setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+    move-result-object v3
+
+    invoke-virtual {v3}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
+    move-result-object v3
+
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/Dialog95;->show(Landroid/app/AlertDialog;)V
+
+    return-void
+.end method
+
+
 .method static synthetic lambda$settings$0(Landroid/widget/CompoundButton;Z)V
     .locals 0
 
@@ -418,8 +466,19 @@
     return-void
 .end method
 
+.method static synthetic lambda$settings$2(Landroid/view/View;)V
+    .locals 1
+
+    invoke-virtual {p0}, Landroid/view/View;->getContext()Landroid/content/Context;
+    move-result-object v0
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/Settings94;->decoderDialog(Landroid/content/Context;)V
+    return-void
+.end method
+
+
 .method public static settings(Landroid/view/View;)V
-    .locals 2
+    .locals 3
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/CacheCleaner124;->settings(Ljava/lang/Object;)V
 
@@ -427,6 +486,8 @@
 
     .line 4
     :try_start_0
+    move-object v2, p0
+
     invoke-virtual {p0}, Landroid/view/View;->getContext()Landroid/content/Context;
 
     move-result-object v0
@@ -471,6 +532,18 @@
     invoke-direct {v0}, Lcom/shabakaty/cinemana/ca1/Settings94$$ExternalSyntheticLambda1;-><init>()V
 
     invoke-virtual {p0, v0}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    const-string v0, "ca1_decoder_mode"
+    invoke-virtual {v2, v0}, Landroid/view/View;->findViewWithTag(Ljava/lang/Object;)Landroid/view/View;
+    move-result-object v1
+
+    if-eqz v1, :decoder_mode_listener_done
+
+    new-instance v0, Lcom/shabakaty/cinemana/ca1/Settings94$ExternalSyntheticLambda3;
+    invoke-direct {v0}, Lcom/shabakaty/cinemana/ca1/Settings94$ExternalSyntheticLambda3;-><init>()V
+    invoke-virtual {v1, v0}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    :decoder_mode_listener_done
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
