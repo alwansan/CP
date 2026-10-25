@@ -543,6 +543,30 @@
     move-result-object v1
     invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
 
+    iget-object v0, p0, Lcom/shabakaty/downloader/wc3;->r:Lcom/shabakaty/downloader/s64;
+    invoke-virtual {v0}, Lcom/shabakaty/downloader/s64;->a()Z
+    move-result v0
+    invoke-static {v0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    const-string v0, "player_is_loading"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    iget-object v0, p0, Lcom/shabakaty/downloader/wc3;->r:Lcom/shabakaty/downloader/s64;
+    invoke-virtual {v0}, Lcom/shabakaty/downloader/s64;->C()J
+    move-result-wide v0
+    invoke-static {v0, v1}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+    move-result-object v2
+    const-string v0, "player_state_position_us"
+    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    iget-object v0, p0, Lcom/shabakaty/downloader/wc3;->r:Lcom/shabakaty/downloader/s64;
+    invoke-virtual {v0}, Lcom/shabakaty/downloader/ak;->X()J
+    move-result-wide v0
+    invoke-static {v0, v1}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+    move-result-object v2
+    const-string v0, "player_duration_us"
+    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     const-string v0, "player_play_when_ready"
     invoke-static {p1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
     move-result-object v1
@@ -686,7 +710,18 @@
 .end method
 
 .method public a(Lcom/shabakaty/downloader/xc3;)V
-    .locals 1
+    .locals 2
+
+    const-string v0, "player_error_callback"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+    const-string v0, "player_error_exception"
+    invoke-static {v0, p1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    invoke-virtual {p1}, Ljava/lang/Exception;->getCause()Ljava/lang/Throwable;
+    move-result-object v0
+    if-eqz v0, :error_context_logged
+    const-string v1, "player_error_cause"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    :error_context_logged
 
     const-string v0, "e"
 
