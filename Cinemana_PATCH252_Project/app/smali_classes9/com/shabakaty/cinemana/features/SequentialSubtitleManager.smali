@@ -503,62 +503,44 @@
 .end method
 
 .method private static styleDialogButtons(Ljava/lang/Object;Ljava/lang/Object;)V
-    .locals 4
+    .locals 3
 
     :try_start_0
-    check-cast p0, Landroid/content/Context;
+    check-cast p1, Landroid/app/AlertDialog;
 
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->ink(Landroid/content/Context;)I
+    const/4 v0, -0x1
 
-    move-result v0
+    const/4 v1, -0x1
 
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->playerSurface(Landroid/content/Context;)I
-
-    move-result v1
-
-    invoke-static {v1}, Landroid/content/res/ColorStateList;->valueOf(I)Landroid/content/res/ColorStateList;
+    invoke-virtual {p1, v1}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
 
     move-result-object v1
 
-    check-cast p1, Landroid/app/AlertDialog;
+    if-eqz v1, :after_positive_button
 
-    const/4 v2, -0x1
-
-    invoke-virtual {p1, v2}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
-
-    move-result-object v2
-
-    if-eqz v2, :after_positive_button
-
-    invoke-virtual {v2, v0}, Landroid/widget/TextView;->setTextColor(I)V
-
-    invoke-virtual {v2, v1}, Landroid/view/View;->setBackgroundTintList(Landroid/content/res/ColorStateList;)V
+    invoke-virtual {v1, v0}, Landroid/widget/TextView;->setTextColor(I)V
 
     :after_positive_button
-    const/4 v2, -0x2
+    const/4 v1, -0x2
 
-    invoke-virtual {p1, v2}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
+    invoke-virtual {p1, v1}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
 
-    move-result-object v2
+    move-result-object v1
 
-    if-eqz v2, :after_negative_button
+    if-eqz v1, :after_negative_button
 
-    invoke-virtual {v2, v0}, Landroid/widget/TextView;->setTextColor(I)V
-
-    invoke-virtual {v2, v1}, Landroid/view/View;->setBackgroundTintList(Landroid/content/res/ColorStateList;)V
+    invoke-virtual {v1, v0}, Landroid/widget/TextView;->setTextColor(I)V
 
     :after_negative_button
-    const/4 v2, -0x3
+    const/4 v1, -0x3
 
-    invoke-virtual {p1, v2}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
+    invoke-virtual {p1, v1}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
 
-    move-result-object v2
+    move-result-object v1
 
-    if-eqz v2, :after_neutral_button
+    if-eqz v1, :after_neutral_button
 
-    invoke-virtual {v2, v0}, Landroid/widget/TextView;->setTextColor(I)V
-
-    invoke-virtual {v2, v1}, Landroid/view/View;->setBackgroundTintList(Landroid/content/res/ColorStateList;)V
+    invoke-virtual {v1, v0}, Landroid/widget/TextView;->setTextColor(I)V
 
     :after_neutral_button
     :try_end_0
@@ -567,20 +549,18 @@
     return-void
 
     :catchall_0
-    move-exception v3
+    move-exception v2
 
     return-void
 .end method
 
 .method private static addSettingsButton(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Runnable;[Ljava/lang/Object;)V
-    .locals 8
+    .locals 7
     .annotation system Ldalvik/annotation/Throws;
         value = {
             Ljava/lang/Exception;
         }
     .end annotation
-
-    move-object v7, p0
 
     .line 499
     const-string v0, "android.content.Context"
@@ -646,26 +626,10 @@
 
     invoke-static {p0, p2, v0, v1}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    # Apply Cinemana's adaptive ink and surface colors.
-    check-cast v7, Landroid/content/Context;
-
-    check-cast p0, Landroid/widget/Button;
-
-    invoke-static {v7}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->ink(Landroid/content/Context;)I
-
-    move-result v0
+    # This panel uses a gray surface; keep action labels white and high-contrast.
+    const/4 v0, -0x1
 
     invoke-virtual {p0, v0}, Landroid/widget/TextView;->setTextColor(I)V
-
-    invoke-static {v7}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->playerSurface(Landroid/content/Context;)I
-
-    move-result v0
-
-    invoke-static {v0}, Landroid/content/res/ColorStateList;->valueOf(I)Landroid/content/res/ColorStateList;
-
-    move-result-object v0
-
-    invoke-virtual {p0, v0}, Landroid/view/View;->setBackgroundTintList(Landroid/content/res/ColorStateList)V
 
     .line 505
     new-array p2, v4, [Ljava/lang/Class;
