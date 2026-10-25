@@ -2157,6 +2157,9 @@
 
     move-object v3, v15
 
+    # Preserve the sync row: v3 is later reused for the setPadding method name.
+    move-object/from16 v24, v3
+
     move-object v15, v1
 
     move-object/from16 v16, v18
@@ -2405,8 +2408,10 @@
 
     invoke-static/range {v12 .. v17}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addFullWidth(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;)V
 
-    # Keep the active row register: v3 was reused for the "setPadding" method name above.
     invoke-static {v9, v12, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addZeroButton(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+
+    # Restore the saved row into a low register before the invoke instruction.
+    move-object/from16 v13, v24
 
     .line 139
     invoke-static {v9, v13, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
