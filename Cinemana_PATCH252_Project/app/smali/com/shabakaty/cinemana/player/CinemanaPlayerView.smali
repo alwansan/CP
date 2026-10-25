@@ -1330,6 +1330,11 @@
 .method public b(Z)V
     .locals 2
 
+    const-string v0, "player_loading_spinner_visible"
+    invoke-static {p1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     .line 1
     invoke-direct {p0}, Lcom/shabakaty/cinemana/player/CinemanaPlayerView;->getPlayerActivity()Lcom/shabakaty/cinemana/player/VideoPlayerActivity;
 
