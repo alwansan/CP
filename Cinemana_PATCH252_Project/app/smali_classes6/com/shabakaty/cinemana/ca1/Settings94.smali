@@ -539,8 +539,8 @@
 
     if-eqz v1, :decoder_mode_listener_done
 
-    new-instance v0, Lcom/shabakaty/cinemana/ca1/Settings94$ExternalSyntheticLambda3;
-    invoke-direct {v0}, Lcom/shabakaty/cinemana/ca1/Settings94$ExternalSyntheticLambda3;-><init>()V
+    new-instance v0, Lcom/shabakaty/cinemana/ca1/Settings94$$ExternalSyntheticLambda3;
+    invoke-direct {v0}, Lcom/shabakaty/cinemana/ca1/Settings94$$ExternalSyntheticLambda3;-><init>()V
     invoke-virtual {v1, v0}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     :decoder_mode_listener_done
