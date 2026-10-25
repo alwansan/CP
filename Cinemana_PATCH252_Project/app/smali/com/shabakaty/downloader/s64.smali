@@ -1882,7 +1882,7 @@
 .end method
 
 .method public o(Ljava/util/List;Z)V
-    .locals 7
+    .locals 8
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "(",
