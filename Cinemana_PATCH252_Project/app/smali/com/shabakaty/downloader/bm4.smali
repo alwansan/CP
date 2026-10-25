@@ -1048,8 +1048,10 @@
 .method public o(JJ)V
     .locals 8
 
-    # The combined offset includes the general sync and the optional sequential sync.
-    invoke-static {}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->getOffsetUs()J
+    # Resolve timing for the currently selected subtitle format.
+    iget-object v4, p0, Lcom/shabakaty/downloader/bm4;->K:Lcom/shabakaty/downloader/wh1;
+
+    invoke-static {v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->getOffsetUsForFormat(Lcom/shabakaty/downloader/wh1;)J
 
     move-result-wide v0
 
@@ -1066,7 +1068,9 @@
     iput-wide v0, p0, Lcom/shabakaty/downloader/bm4;->R:J
 
     :cond_0
-    invoke-static {p1, p2}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->adjustPositionUs(J)J
+    iget-object v4, p0, Lcom/shabakaty/downloader/bm4;->K:Lcom/shabakaty/downloader/wh1;
+
+    invoke-static {p1, p2, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->adjustPositionUsForFormat(JLcom/shabakaty/downloader/wh1;)J
 
     move-result-wide p1
 
