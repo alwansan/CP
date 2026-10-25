@@ -101,6 +101,10 @@
     const-string v0, "decoder_policy_subtitle_refresh_check"
     invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
+    invoke-static {}, Lcom/shabakaty/cinemana/player/CinemanaDecoderMode;->isFfmpegEnabled()Z
+    move-result v1
+    if-eqz v1, :done
+
     sget-object v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
 
     if-eqz v0, :done
@@ -393,7 +397,8 @@
     invoke-static {v1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
     move-result-object v1
     invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
-    return v1
+    const/4 v0, 0x0
+    return v0
 .end method
 
 .method public static isHigh10(Lcom/shabakaty/downloader/wh1;)Z
