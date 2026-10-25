@@ -263,6 +263,59 @@
     return-wide p0
 .end method
 
+.method public static getOffsetUsForFormat(Lcom/shabakaty/downloader/wh1;)J
+    .locals 4
+
+    # The global sync applies to all subtitle tracks.
+    invoke-static {}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->getOffsetUs()J
+
+    move-result-wide v0
+
+    # The Follow Subtitles feature imports its external track with id/type "file".
+    # Apply this feature's independent offset only to that track, not embedded captions.
+    if-eqz p0, :format_offset_done
+
+    iget-object v2, p0, Lcom/shabakaty/downloader/wh1;->r:Ljava/lang/String;
+
+    if-eqz v2, :format_offset_done
+
+    const-string v3, "file"
+
+    invoke-virtual {v3, v2}, Ljava/lang/String;->equalsIgnoreCase(Ljava/lang/String;)Z
+
+    move-result v2
+
+    if-eqz v2, :format_offset_done
+
+    sget-wide v2, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->sequentialOffsetUs:J
+
+    add-long/2addr v0, v2
+
+    :format_offset_done
+    return-wide v0
+.end method
+
+.method public static adjustPositionUsForFormat(JLcom/shabakaty/downloader/wh1;)J
+    .locals 3
+
+    invoke-static {p2}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->getOffsetUsForFormat(Lcom/shabakaty/downloader/wh1;)J
+
+    move-result-wide v0
+
+    sub-long/2addr p0, v0
+
+    const-wide/16 v0, 0x0
+
+    cmp-long v2, p0, v0
+
+    if-gez v2, :format_adjust_done
+
+    move-wide p0, v0
+
+    :format_adjust_done
+    return-wide p0
+.end method
+
 .method private static bindStep(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;I)V
     .locals 6
     .annotation system Ldalvik/annotation/Throws;
