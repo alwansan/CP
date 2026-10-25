@@ -247,6 +247,8 @@
 
     move-result-object p1
 
+    invoke-static {}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->markSubtitleRefresh()V
+
     invoke-virtual {v0, p1, v1}, Lcom/shabakaty/downloader/s64;->o(Ljava/util/List;Z)V
 
     .line 19
