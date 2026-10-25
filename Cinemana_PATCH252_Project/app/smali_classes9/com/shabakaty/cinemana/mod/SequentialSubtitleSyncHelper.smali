@@ -271,11 +271,11 @@
 
     move-result-wide v0
 
-    # The Follow Subtitles feature imports its external track with id/type "file".
+    # The Follow Subtitles feature stores the imported track's source type in Format.t as "file".
     # Apply this feature's independent offset only to that track, not embedded captions.
     if-eqz p0, :format_offset_done
 
-    iget-object v2, p0, Lcom/shabakaty/downloader/wh1;->r:Ljava/lang/String;
+    iget-object v2, p0, Lcom/shabakaty/downloader/wh1;->t:Ljava/lang/String;
 
     if-eqz v2, :format_offset_done
 
