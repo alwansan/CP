@@ -869,4 +869,5 @@ on the details screen"</string>
     <string name="ca1_subtitle_preview">Subtitle preview</string>
     <string name="ca1_subtitle_settings">Subtitle settings</string>
     <string name="ca1_zero_selected">0 episodes selected</string>
+    <string name="ca1_decoder_mode_title">Video decoder</string>
 </resources>
