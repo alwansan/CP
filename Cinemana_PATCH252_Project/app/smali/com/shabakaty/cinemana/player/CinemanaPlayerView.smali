@@ -4444,6 +4444,11 @@
 .method public final y()V
     .locals 11
 
+    const-string v9, "video_model_at_quality_switch"
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/player/CinemanaPlayerView;->getVideoModel()Lcom/shabakaty/cinemana/domain/models/local/VideoModel;
+    move-result-object v10
+    invoke-static {v9, v10}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     .line 1
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/player/CinemanaPlayerView;->getVideoModel()Lcom/shabakaty/cinemana/domain/models/local/VideoModel;
 
