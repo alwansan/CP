@@ -17,14 +17,14 @@
 - إذا أُعيد إنشاء المصدر وظهر تنسيق AVC غامض بلا codec string وبلا initialization data، ترفض سياسة MediaCodec هذا التنسيق أثناء التحديث، ويُبقي renderer البرمجي على Format السابق المعروف لتكوين FFmpeg. هذا يمنع فقدان هوية High 10 عند إعادة بناء المصدر.
 - لا يفرض fallback على أي Format غير High 10 إذا بقي codec string أو initialization data واضحين؛ تُمسح علامة التحديث في هذه الحالة.
 - يتم استهلاك العلامة عند حل Format، وتُلغى حالة الاحتفاظ بعد ظهور إطار. إذا استهلك FFmpeg 120 عينة دون إخراج إطار، يكتب سجل تشخيص واحد في `CinemanaDecoderPolicy` بدل إغراق Logcat.
-- بعد مراجعة فشل PATCH253 على الجهاز، لم يعد `H(Format[], ...)` يعيد استخدام Format قديم عندما تصل قائمة Formats فارغة أثناء تبديل الـStream. في هذه الحالة يُحرر decoder ويؤجل التهيئة إلى أن يقرأ `SampleStream` نتيجة `RESULT_FORMAT_READ` الفعلية، حتى لا يُستخدم CSD من Stream سابق مع عينات Stream جديد.
 
 ## الملفات المعدلة
 
 - `app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali`
 - `app/smali/com/shabakaty/downloader/so2.smali`
 - `app/smali/com/shabakaty/downloader/y10.smali`
-- `patch_notes/PATCH253_HIGH10_REFRESH_REPORT_AR.md`
+- `.github/workflows/build-apk.yml`
+- `CI_BUILD.md`
 
 ## ما يجب اختباره على الجهاز
 
@@ -36,4 +36,4 @@
 
 ## حدود الثقة
 
-هذا تعديل موجّه إلى دورة حياة `H26410SoftwareRenderer` عند تبديل Stream، وبالأخص منع إعادة تهيئة FFmpeg بتهيئة CSD قديمة قبل وصول Format الجديد. نجاح البناء يثبت صحة تجميع Smali فقط؛ لم يتوفر جهاز Android أو Logcat خام في هذه البيئة، لذلك لا يمكن ادعاء تحقق التشغيل النهائي. لا يتم دمج هذا الفرع في `main` تلقائيًا.
+هذا تعديل موجّه إلى فرضية فقدان/غموض Format أثناء تحديث مصدر الترجمة. نجاح البناء يثبت صحة تجميع Smali وتوقيع APK، لكنه لا يثبت الإصلاح وظيفيًا على جهاز Android؛ تأكيد الحل النهائي يتطلب اختبارات الجهاز أعلاه. لا يتم دمج هذا الفرع في `main` تلقائيًا.
