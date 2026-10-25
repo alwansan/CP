@@ -144,59 +144,48 @@
 
     if-eqz p0, :notSupported
 
-    invoke-static {p0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
-
+    invoke-static {}, Lcom/shabakaty/cinemana/player/CinemanaDecoderMode;->isFfmpegEnabled()Z
     move-result v0
-
-    if-eqz v0, :refreshCheck
-
-    const-string v1, "decoder_policy_high10_true"
-    invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
-    const/4 v0, 0x1
-
-    return v0
-
-    :refreshCheck
-    sget-boolean v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->subtitleRefreshPending:Z
-
-    if-eqz v0, :notSupported
-
-    sget-object v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
-
-    if-eqz v0, :notSupported
-
-    invoke-static {v0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
-
-    move-result v0
-
     if-eqz v0, :notSupported
 
     iget-object v0, p0, Lcom/shabakaty/downloader/wh1;->F:Lcom/shabakaty/downloader/o01;
+    if-nez v0, :notSupported
 
-    if-eqz v0, :checkAmbiguous
-
-    goto :notSupported
-
-    :checkAmbiguous
-    invoke-static {p0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isAmbiguousAvc(Lcom/shabakaty/downloader/wh1;)Z
-
-    move-result v0
+    iget-object v0, p0, Lcom/shabakaty/downloader/wh1;->C:Ljava/lang/String;
+    invoke-static {v0}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->codecNameForMimeType(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
 
     if-eqz v0, :notSupported
 
-    const-string v1, "decoder_policy_ambiguous_refresh_true"
-    invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
-    const/4 v0, 0x1
+    invoke-static {v0}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->isDecoderAvailable(Ljava/lang/String;)Z
+    move-result v1
 
+    if-eqz v1, :notSupported
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+    move-result v1
+
+    if-eqz v1, :supported
+
+    sput-object p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
+
+    const-string v1, "decoder_policy_high10_true"
+    invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
+    :supported
+    const-string v1, "decoder_policy_software_supported"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    const/4 v0, 0x1
     return v0
 
     :notSupported
     const/4 v0, 0x0
 
-        const-string v1, "decoder_policy_software_false"
-        invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+    const-string v1, "decoder_policy_software_false"
+    invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
-        return v0
+    return v0
 .end method
 
 .method private static isAmbiguousAvc(Lcom/shabakaty/downloader/wh1;)Z
@@ -360,60 +349,51 @@
 
 
 .method private configure(Lcom/shabakaty/downloader/wh1;)Z
-    .locals 2
+    .locals 3
 
     const-string v0, "ffmpeg_configure_enter"
     invoke-static {v0, p1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
 
-    .line 86
     const/4 v0, 0x0
-
     iput-boolean v0, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->configured:Z
 
-    .line 87
     iget-object v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->decoder:Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;
-
     invoke-virtual {v1}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->release()V
 
-    .line 88
-    invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+    invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z
+    move-result v0
+    if-eqz v0, :configurationFailed
 
-    move-result v1
+    iget-object v0, p1, Lcom/shabakaty/downloader/wh1;->C:Ljava/lang/String;
+    invoke-static {v0}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->codecNameForMimeType(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
 
-    if-nez v1, :cond_0
+    if-eqz v2, :configurationFailed
 
-    return v0
-
-    .line 89
-    :cond_0
-    iget-object v1, p1, Lcom/shabakaty/downloader/wh1;->F:Lcom/shabakaty/downloader/o01;
-
-    if-eqz v1, :cond_1
-
-    return v0
-
-    .line 90
-    :cond_1
     iget-object v0, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->decoder:Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;
-
     iget-object v1, p1, Lcom/shabakaty/downloader/wh1;->E:Ljava/util/List;
-
     iget p1, p1, Lcom/shabakaty/downloader/wh1;->K:I
 
-    invoke-virtual {v0, v1, p1}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->configure(Ljava/util/List;I)Z
-
+    invoke-virtual {v0, v1, p1, v2}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->configure(Ljava/util/List;ILjava/lang/String;)Z
     move-result p1
 
     iput-boolean p1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->configured:Z
+
     const-string v0, "ffmpeg_configure_result"
     invoke-static {p1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
     move-result-object v1
     invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
 
-    .line 91
     iget-boolean p1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->configured:Z
-
     return p1
+
+    :configurationFailed
+    const-string v0, "ffmpeg_configure_result"
+    const/4 v1, 0x0
+    invoke-static {v1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    return v1
 .end method
 
 .method public static isHigh10(Lcom/shabakaty/downloader/wh1;)Z
@@ -997,23 +977,11 @@
     .locals 2
 
     invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z
-
-    move-result v0
-
-    if-eqz v0, :unsupported
-
-    iget-object v0, p1, Lcom/shabakaty/downloader/wh1;->F:Lcom/shabakaty/downloader/o01;
-
-    if-nez v0, :unsupported
-
-    invoke-static {}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->isH264Available()Z
-
     move-result v0
 
     if-eqz v0, :unsupported
 
     invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
-
     move-result v0
 
     if-eqz v0, :supported
@@ -1022,12 +990,10 @@
 
     :supported
     const/4 p1, 0x4
-
     return p1
 
     :unsupported
     const/4 v0, 0x0
-
     return v0
 .end method
 
@@ -1082,7 +1048,7 @@
     .locals 1
 
     .line 52
-    const-string v0, "H264-High10-FFmpeg"
+    const-string v0, "FFmpeg-Software-Video"
 
     return-object v0
 .end method
