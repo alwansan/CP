@@ -36,6 +36,128 @@
     return-void
 .end method
 
+.method public static codecNameForMimeType(Ljava/lang/String;)Ljava/lang/String;
+    .locals 1
+
+    if-eqz p0, :unsupported
+
+    const-string v0, "video/avc"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_hevc
+    const-string v0, "h264"
+    return-object v0
+
+    :check_hevc
+    const-string v0, "video/hevc"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_vp9
+    const-string v0, "hevc"
+    return-object v0
+
+    :check_vp9
+    const-string v0, "video/x-vnd.on2.vp9"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_av1
+    const-string v0, "vp9"
+    return-object v0
+
+    :check_av1
+    const-string v0, "video/av01"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_vp8
+    const-string v0, "av1"
+    return-object v0
+
+    :check_vp8
+    const-string v0, "video/x-vnd.on2.vp8"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_mpeg4
+    const-string v0, "vp8"
+    return-object v0
+
+    :check_mpeg4
+    const-string v0, "video/mp4v-es"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_mpeg2
+    const-string v0, "mpeg4"
+    return-object v0
+
+    :check_mpeg2
+    const-string v0, "video/mpeg2"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_mpeg1
+    const-string v0, "mpeg2video"
+    return-object v0
+
+    :check_mpeg1
+    const-string v0, "video/mpeg"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_h263
+    const-string v0, "mpeg1video"
+    return-object v0
+
+    :check_h263
+    const-string v0, "video/3gpp"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_vc1
+    const-string v0, "h263"
+    return-object v0
+
+    :check_vc1
+    const-string v0, "video/wvc1"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_wmv
+    const-string v0, "vc1"
+    return-object v0
+
+    :check_wmv
+    const-string v0, "video/x-ms-wmv"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_flv
+    const-string v0, "wmv3"
+    return-object v0
+
+    :check_flv
+    const-string v0, "video/x-flv"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_mjpeg
+    const-string v0, "flv"
+    return-object v0
+
+    :check_mjpeg
+    const-string v0, "video/mjpeg"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :check_raw
+    const-string v0, "mjpeg"
+    return-object v0
+
+    :check_raw
+    const-string v0, "video/raw"
+    invoke-virtual {v0, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :unsupported
+    const-string v0, "rawvideo"
+    return-object v0
+
+    :unsupported
+    const/4 v0, 0x0
+    return-object v0
+.end method
+
+
 .method private static combineCsd(Ljava/util/List;)[B
     .locals 8
     .annotation system Ldalvik/annotation/Signature;
@@ -276,103 +398,97 @@
 
 # virtual methods
 .method public configure(Ljava/util/List;I)Z
+    .locals 1
+
+    const-string v0, "h264"
+    invoke-virtual {p0, p1, p2, v0}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->configure(Ljava/util/List;ILjava/lang/String;)Z
+    move-result v0
+
+    return v0
+.end method
+
+.method public configure(Ljava/util/List;ILjava/lang/String;)Z
     .locals 5
     .annotation system Ldalvik/annotation/Signature;
         value = {
-            "(",
-            "Ljava/util/List<",
-            "[B>;I)Z"
+            "(Ljava/util/List<[B>;ILjava/lang/String;)Z"
         }
     .end annotation
 
     const-string v4, "ffmpeg_decoder_configure_enter"
     invoke-static {v4}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
-    .line 9
-    invoke-virtual {p0}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->release()V
+    if-eqz p3, :unavailable
 
-    invoke-static {}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->isH264Available()Z
+    const-string v4, "ffmpeg_decoder_codec"
+    invoke-static {v4, p3}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
 
+    invoke-static {p3}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->isDecoderAvailable(Ljava/lang/String;)Z
     move-result v0
 
     const/4 v1, 0x0
+    if-eqz v0, :unavailable
 
-    if-nez v0, :cond_0
+    invoke-virtual {p0}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->release()V
 
-    const-string v0, "ffmpeg_decoder_library_unavailable"
-    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
-    return v1
-
-    :cond_0
     invoke-static {p2}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->normalize(I)I
-
     move-result p2
-
     iput p2, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->rotationDegrees:I
 
     invoke-static {}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->inputPadding()I
-
     move-result p2
-
     iput p2, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->padding:I
 
     invoke-static {p1}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->combineCsd(Ljava/util/List;)[B
-
     move-result-object p1
 
     invoke-static {}, Ljava/lang/Runtime;->getRuntime()Ljava/lang/Runtime;
-
     move-result-object p2
-
     invoke-virtual {p2}, Ljava/lang/Runtime;->availableProcessors()I
-
     move-result p2
 
     const/4 v0, 0x4
-
     invoke-static {v0, p2}, Ljava/lang/Math;->min(II)I
-
     move-result p2
 
     const/4 v0, 0x1
-
     invoke-static {v0, p2}, Ljava/lang/Math;->max(II)I
-
     move-result p2
 
     const-wide/16 v2, 0x0
 
     :try_start_0
-    const-string v4, "h264"
-
-    invoke-direct {p0, v4, p1, p2}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->ffmpegInitialize(Ljava/lang/String;[BI)J
-
+    invoke-direct {p0, p3, p1, p2}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->ffmpegInitialize(Ljava/lang/String;[BI)J
     move-result-wide p1
 
     iput-wide p1, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->nativeContext:J
-
     iget-wide p1, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->nativeContext:J
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
     cmp-long v4, p1, v2
-
-    if-eqz v4, :cond_1
+    if-eqz v4, :configured_result
 
     const/4 v1, 0x1
-    :cond_1
-        const-string v4, "ffmpeg_decoder_configure_complete"
-        invoke-static {v4}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
-        return v1
 
-        :catchall_0
+    :configured_result
+    const-string v4, "ffmpeg_decoder_configure_complete"
+    invoke-static {v4}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+    return v1
+
+    :catchall_0
     move-exception p1
-
     iput-wide v2, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->nativeContext:J
 
     const-string v0, "ffmpeg_decoder_configure_exception"
     invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     return v1
+
+    :unavailable
+    const-string v0, "ffmpeg_decoder_unavailable_for_format"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+    const/4 v0, 0x0
+    return v0
 .end method
 
 .method public decode(Ljava/nio/ByteBuffer;JJ)Landroidx/media3/decoder/VideoDecoderOutputBuffer;
