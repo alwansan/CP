@@ -4486,6 +4486,8 @@
 
     check-cast v5, Lcom/shabakaty/cinemana/domain/models/local/Quality;
 
+    iget-object v4, v5, Lcom/shabakaty/cinemana/domain/models/local/Quality;->url:Ljava/lang/String;
+
     .line 7
     iget-object v5, v5, Lcom/shabakaty/cinemana/domain/models/local/Quality;->resolution:Ljava/lang/String;
 
@@ -4553,6 +4555,14 @@
     .line 16
     :goto_0
     iput-object v8, v7, Lcom/shabakaty/cinemana/domain/models/local/Quality;->resolution:Ljava/lang/String;
+
+    iget-object v6, v7, Lcom/shabakaty/cinemana/domain/models/local/Quality;->url:Ljava/lang/String;
+
+    invoke-static {v4, v6}, Lcom/shabakaty/downloader/j32;->a(Ljava/lang/Object;Ljava/lang/Object;)Z
+
+    move-result v6
+
+    if-nez v6, :goto_1
 
     .line 17
     invoke-static {v5, v8}, Lcom/shabakaty/downloader/j32;->a(Ljava/lang/Object;Ljava/lang/Object;)Z
