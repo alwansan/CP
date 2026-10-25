@@ -54,6 +54,30 @@
     return v0
 .end method
 
+.method public static isDecoderAvailable(Ljava/lang/String;)Z
+    .locals 1
+
+    if-eqz p0, :unavailable
+
+    invoke-static {}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->isH264Available()Z
+
+    sget-boolean v0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->loaded:Z
+
+    if-eqz v0, :unavailable
+
+    invoke-static {p0}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->ffmpegHasDecoder(Ljava/lang/String;)Z
+
+    move-result v0
+
+    return v0
+
+    :unavailable
+    const/4 v0, 0x0
+
+    return v0
+.end method
+
+
 .method public static isH264Available()Z
     .locals 5
 
