@@ -1,0 +1,70 @@
+name: Build Cinemana PATCH252 APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "Cinemana_PATCH252_Project/**"
+      - ".github/workflows/build-apk.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinemana-patch252-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    name: Assemble APKTool project
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Validate project inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f Cinemana_PATCH252_Project/app/apktool.yml
+          test -f Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar
+          test -f Cinemana_PATCH252_Project/tools/framework/1.apk
+          test -x /usr/bin/unzip
+          java -version
+          du -sh Cinemana_PATCH252_Project
+
+      - name: Build unsigned APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x Cinemana_PATCH252_Project/build.sh
+          ./Cinemana_PATCH252_Project/build.sh
+
+      - name: Verify APK archive and checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          sha256sum "$APK" | tee Cinemana_PATCH252_Project/output/SHA256SUMS.txt
+          ls -lh "$APK"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cinemana-PATCH252-unsigned-APK
+          path: |
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
+            Cinemana_PATCH252_Project/output/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
