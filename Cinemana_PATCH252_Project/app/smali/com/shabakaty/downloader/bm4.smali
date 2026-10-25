@@ -39,6 +39,8 @@
 
 .field public R:J
 
+.field public S:J
+
 
 # direct methods
 .method public constructor <init>(Lcom/shabakaty/downloader/am4;Landroid/os/Looper;)V
@@ -1046,6 +1048,24 @@
 .method public o(JJ)V
     .locals 8
 
+    # Detect global subtitle-sync changes and refresh only the text renderer output.
+    invoke-static {}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->getOffsetUs()J
+
+    move-result-wide v0
+
+    iget-wide v2, p0, Lcom/shabakaty/downloader/bm4;->S:J
+
+    cmp-long v4, v0, v2
+
+    if-eqz v4, :subtitle_sync_global_done
+
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/bm4;->J()V
+
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/bm4;->N()V
+
+    iput-wide v0, p0, Lcom/shabakaty/downloader/bm4;->S:J
+
+    :subtitle_sync_global_done
     invoke-static {}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->getOffsetUs()J
 
     move-result-wide v0
@@ -1064,6 +1084,10 @@
 
     :cond_0
     invoke-static {p1, p2}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->adjustPositionUs(J)J
+
+    move-result-wide p1
+
+    invoke-static {p1, p2}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->adjustPositionUs(J)J
 
     move-result-wide p1
 
