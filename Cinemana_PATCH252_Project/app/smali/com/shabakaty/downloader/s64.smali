@@ -1893,6 +1893,39 @@
     return-void
 .end method
 
+.method public w0(Ljava/util/List;Z)V
+    .locals 6
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/util/List<",
+            "Lcom/shabakaty/downloader/dp2;",
+            ">;Z)V"
+        }
+    .end annotation
+
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->v0()V
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->C()J
+    move-result-wide v0
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->f()Z
+    move-result v2
+    iget-object v3, p0, Lcom/shabakaty/downloader/s64;->u:Landroid/view/SurfaceHolder;
+
+    const/4 v4, 0x0
+    invoke-virtual {p0, v4}, Lcom/shabakaty/downloader/s64;->z(Z)V
+    invoke-virtual {p0, p1, p2}, Lcom/shabakaty/downloader/s64;->o(Ljava/util/List;Z)V
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->g()V
+
+    if-eqz v3, :restorePosition
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->j0()V
+    invoke-virtual {p0, v3}, Lcom/shabakaty/downloader/s64;->p0(Landroid/view/SurfaceHolder;)V
+
+    :restorePosition
+    invoke-virtual {p0, v0, v1}, Lcom/shabakaty/downloader/ak;->q(J)V
+    invoke-virtual {p0, v2}, Lcom/shabakaty/downloader/s64;->z(Z)V
+    return-void
+.end method
+
 .method public final o0(IILjava/lang/Object;)V
     .locals 5
 

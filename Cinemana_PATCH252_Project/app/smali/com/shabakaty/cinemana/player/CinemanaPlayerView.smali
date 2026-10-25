@@ -4813,7 +4813,7 @@
     move-result-object v1
 
     .line 53
-    invoke-virtual {v0, v1, v3}, Lcom/shabakaty/downloader/s64;->o(Ljava/util/List;Z)V
+    invoke-virtual {v0, v1, v3}, Lcom/shabakaty/downloader/s64;->w0(Ljava/util/List;Z)V
 
     .line 54
     :goto_6
