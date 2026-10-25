@@ -10,7 +10,7 @@ on:
       - ".github/workflows/build-apk.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: cinemana-patch252-build-${{ github.ref }}
@@ -59,12 +59,19 @@ jobs:
           sha256sum "$APK" | tee Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           ls -lh "$APK"
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      - name: Publish APK as a direct GitHub Release download
+        uses: softprops/action-gh-release@v3
         with:
-          name: Cinemana-PATCH252-unsigned-APK
-          path: |
+          tag_name: PATCH252-build-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: Cinemana PATCH252 build #${{ github.run_number }}
+          body: |
+            Automated APKTool build from commit ${{ github.sha }}.
+
+            The APK is unsigned. Sign it with your own key before installing.
+          files: |
             Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
             Cinemana_PATCH252_Project/output/SHA256SUMS.txt
-          if-no-files-found: error
-          retention-days: 30
+          fail_on_unmatched_files: true
+          overwrite_files: true
+          make_latest: "true"
