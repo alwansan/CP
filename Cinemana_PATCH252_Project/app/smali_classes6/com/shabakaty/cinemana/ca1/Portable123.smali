@@ -54,7 +54,7 @@
 
 # direct methods
 .method static constructor <clinit>()V
-    .locals 10
+    .locals 11
 
     .line 9
     new-instance v0, Ljava/util/LinkedHashSet;
@@ -106,7 +106,9 @@
 
     const-string v9, "com.shabakaty.cinemana_preferences"
 
-    filled-new-array/range {v1 .. v9}, [Ljava/lang/String;
+    const-string v10, "CinemanaVideoDecoder"
+
+    filled-new-array/range {v1 .. v10}, [Ljava/lang/String;
 
     move-result-object v1
 
