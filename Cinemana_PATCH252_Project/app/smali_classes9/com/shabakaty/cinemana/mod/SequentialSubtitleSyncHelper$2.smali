@@ -69,9 +69,21 @@
 
     iget-object p2, p0, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper$2;->val$editor:Ljava/lang/Object;
 
+    iget p3, p0, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper$2;->val$step:I
+
+    const v0, 0x7fffffff
+
+    if-ne p3, v0, :normal_step
+
+    const/4 p3, 0x0
+
+    invoke-static {p1, p3}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->saveSequential(Ljava/lang/Object;I)V
+
+    goto :write_editor
+
+    :normal_step
     invoke-static {p1, p2}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->access$000(Ljava/lang/Object;Ljava/lang/Object;)V
 
-    .line 168
     iget-object p1, p0, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper$2;->val$context:Ljava/lang/Object;
 
     invoke-static {}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->getSequentialTenths()I
@@ -84,6 +96,7 @@
 
     invoke-static {p1, p2}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->saveSequential(Ljava/lang/Object;I)V
 
+    :write_editor
     .line 169
     :try_start_0
     iget-object p1, p0, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper$2;->val$editor:Ljava/lang/Object;
