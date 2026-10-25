@@ -3096,7 +3096,7 @@
 
     const-string v0, "CinemanaDecoderPolicy"
 
-    const-string v1, "MediaCodec renderer declined High 10 or ambiguous AVC after subtitle refresh; using bundled FFmpeg renderer"
+    const-string v1, "MediaCodec renderer declined H.264 High 10 or ambiguous AVC during subtitle refresh; using bundled FFmpeg renderer"
 
     invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
