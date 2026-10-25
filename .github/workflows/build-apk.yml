@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - fix/high10-subtitle-refresh
+      - diagnostics/high10-player-trace
     paths:
       - "Cinemana_PATCH252_Project/**"
       - "signing/checkpoint145-debug.keystore"
@@ -60,7 +61,11 @@ jobs:
           grep -q 'H26410SoftwareRenderer;->markSubtitleRefresh()V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/y10.smali
           grep -q 'H26410SoftwareRenderer;->shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/so2.smali
           grep -q 'H26410SoftwareRenderer;->resolveRefreshFormat(Lcom/shabakaty/downloader/wh1;)Lcom/shabakaty/downloader/wh1;' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
-          echo "High10 refresh policy wiring: PASS"
+          grep -q 'renderer_surface_snapshot' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
+          grep -q 'diagnosticLogRendererStates()V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/s64.smali
+          grep -q 'media_refresh_item_uri' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/s64.smali
+          grep -q 'player_error_exception' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/wc3.smali
+          echo "High10 diagnostic instrumentation wiring: PASS"
 
       - name: Build unsigned APK
         shell: bash
@@ -83,7 +88,7 @@ jobs:
           KEYSTORE="signing/checkpoint145-debug.keystore"
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
-          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH253_High10Refresh_signed.apk"
+          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH253_High10Diagnostics_signed.apk"
 
           keytool -list -keystore "$KEYSTORE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
           "$TOOL_DIR/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
@@ -103,16 +108,17 @@ jobs:
       - name: Publish signed APK as a direct GitHub Release download
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: PATCH253-refresh-${{ github.run_number }}
+          tag_name: PATCH253-diagnostics-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana PATCH253 High10 refresh #${{ github.run_number }}"
+          name: "Cinemana PATCH253 High10 Diagnostics #${{ github.run_number }}"
           body: |
-            PATCH253 High10 subtitle-refresh recovery build.
+            PATCH253 High10 diagnostic build for investigating playback BUFFERING, renderer readiness, source refresh, and Surface lifecycle.
+            This build adds logging and does not claim to fix the playback issue.
             Automated assembly, alignment, signing, and signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_PATCH253_High10Refresh_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH253_High10Diagnostics_signed.apk
             Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           fail_on_unmatched_files: true
           overwrite_files: true
