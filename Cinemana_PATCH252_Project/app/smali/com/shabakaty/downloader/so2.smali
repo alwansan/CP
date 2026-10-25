@@ -3079,37 +3079,21 @@
     .locals 2
 
     invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z
-
-    move-result v0
-
-    if-eqz v0, :normalSupport
-
-    iget-object v0, p1, Lcom/shabakaty/downloader/wh1;->F:Lcom/shabakaty/downloader/o01;
-
-    if-nez v0, :normalSupport
-
-    invoke-static {}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->isH264Available()Z
-
     move-result v0
 
     if-eqz v0, :normalSupport
 
     const-string v0, "CinemanaDecoderPolicy"
-
-    const-string v1, "MediaCodec renderer declined H.264 High 10 or ambiguous AVC during subtitle refresh; using bundled FFmpeg renderer"
-
+    const-string v1, "MediaCodec declined a video format handled by the selected FFmpeg software decoder"
     invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     const/4 v0, 0x1
-
     return v0
 
     :normalSupport
     :try_start_0
     iget-object v0, p0, Lcom/shabakaty/downloader/so2;->D:Lcom/shabakaty/downloader/uo2;
-
     invoke-virtual {p0, v0, p1}, Lcom/shabakaty/downloader/so2;->y0(Lcom/shabakaty/downloader/uo2;Lcom/shabakaty/downloader/wh1;)I
-
     move-result p1
     :try_end_0
     .catch Lcom/shabakaty/downloader/wo2$c; {:try_start_0 .. :try_end_0} :catch_0
@@ -3119,13 +3103,10 @@
     :catch_0
     move-exception v0
 
-    const/16 v1, 0xfa2
+    invoke-virtual {v0}, Lcom/shabakaty/downloader/wo2$c;->a()I
+    move-result p1
 
-    invoke-virtual {p0, v0, p1, v1}, Lcom/shabakaty/downloader/bk;->y(Ljava/lang/Throwable;Lcom/shabakaty/downloader/wh1;I)Lcom/shabakaty/downloader/i71;
-
-    move-result-object p1
-
-    throw p1
+    return p1
 .end method
 
 
