@@ -285,6 +285,9 @@
         }
     .end annotation
 
+    const-string v4, "ffmpeg_decoder_configure_enter"
+    invoke-static {v4}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
     .line 9
     invoke-virtual {p0}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->release()V
 
@@ -296,6 +299,8 @@
 
     if-nez v0, :cond_0
 
+    const-string v0, "ffmpeg_decoder_library_unavailable"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     return v1
 
     :cond_0
@@ -355,15 +360,18 @@
     if-eqz v4, :cond_1
 
     const/4 v1, 0x1
-
     :cond_1
-    return v1
+        const-string v4, "ffmpeg_decoder_configure_complete"
+        invoke-static {v4}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+        return v1
 
-    :catchall_0
+        :catchall_0
     move-exception p1
 
     iput-wide v2, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->nativeContext:J
 
+    const-string v0, "ffmpeg_decoder_configure_exception"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     return v1
 .end method
 
@@ -509,6 +517,9 @@
 .method public release()V
     .locals 5
 
+    const-string v4, "ffmpeg_decoder_release"
+    invoke-static {v4}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
     .line 14
     iget-wide v0, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->nativeContext:J
 
@@ -620,9 +631,12 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    if-nez v0, :cond_1
-
+    if-nez v0, :render_failed
     const/4 v9, 0x1
+
+    goto :cond_1
+
+    :render_failed
 
     :cond_1
     return v9
@@ -637,6 +651,9 @@
 
 .method public reset()Z
     .locals 8
+
+    const-string v7, "ffmpeg_decoder_reset"
+    invoke-static {v7}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     .line 13
     iget-wide v0, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->nativeContext:J

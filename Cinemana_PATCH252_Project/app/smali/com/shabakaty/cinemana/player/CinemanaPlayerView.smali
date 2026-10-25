@@ -1330,6 +1330,11 @@
 .method public b(Z)V
     .locals 2
 
+    const-string v0, "player_loading_spinner_visible"
+    invoke-static {p1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     .line 1
     invoke-direct {p0}, Lcom/shabakaty/cinemana/player/CinemanaPlayerView;->getPlayerActivity()Lcom/shabakaty/cinemana/player/VideoPlayerActivity;
 
@@ -4486,6 +4491,8 @@
 
     check-cast v5, Lcom/shabakaty/cinemana/domain/models/local/Quality;
 
+    iget-object v4, v5, Lcom/shabakaty/cinemana/domain/models/local/Quality;->url:Ljava/lang/String;
+
     .line 7
     iget-object v5, v5, Lcom/shabakaty/cinemana/domain/models/local/Quality;->resolution:Ljava/lang/String;
 
@@ -4554,6 +4561,14 @@
     :goto_0
     iput-object v8, v7, Lcom/shabakaty/cinemana/domain/models/local/Quality;->resolution:Ljava/lang/String;
 
+    iget-object v6, v7, Lcom/shabakaty/cinemana/domain/models/local/Quality;->url:Ljava/lang/String;
+
+    invoke-static {v4, v6}, Lcom/shabakaty/downloader/j32;->a(Ljava/lang/Object;Ljava/lang/Object;)Z
+
+    move-result v6
+
+    if-nez v6, :goto_1
+
     .line 17
     invoke-static {v5, v8}, Lcom/shabakaty/downloader/j32;->a(Ljava/lang/Object;Ljava/lang/Object;)Z
 
@@ -4571,6 +4586,9 @@
     check-cast v2, Lcom/shabakaty/cinemana/domain/models/local/Quality;
 
     if-eqz v2, :cond_4
+
+    const-string v5, "quality_switch_selected_quality"
+    invoke-static {v5, v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
 
     .line 19
     iget-object v1, v2, Lcom/shabakaty/cinemana/domain/models/local/Quality;->name:Ljava/lang/String;
@@ -4598,6 +4616,9 @@
     .line 23
     :cond_4
     :goto_2
+    const-string v1, "quality_switch_fallback_to_default_quality"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/player/CinemanaPlayerView;->getVideoModel()Lcom/shabakaty/cinemana/domain/models/local/VideoModel;
 
     move-result-object v1
@@ -4659,6 +4680,9 @@
 
     .line 29
     :cond_8
+    const-string v2, "quality_switch_target_url"
+    invoke-static {v2, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     invoke-static {v1}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
 
     move-result v2
@@ -4741,52 +4765,6 @@
 
     .line 40
     :goto_5
-    iget-object v2, v0, Lcom/shabakaty/downloader/q10;->h:Lcom/shabakaty/downloader/rh3$b;
-
-    .line 41
-    invoke-virtual {v2, v1}, Lcom/shabakaty/downloader/rh3$b;->b(Lcom/shabakaty/downloader/dp2;)Lcom/shabakaty/downloader/rh3;
-
-    move-result-object v1
-
-    .line 42
-    iget-object v2, v0, Lcom/shabakaty/downloader/q10;->k:Lcom/shabakaty/downloader/s64;
-
-    const/4 v5, 0x0
-
-    .line 43
-    invoke-virtual {v2}, Lcom/shabakaty/downloader/s64;->v0()V
-
-    .line 44
-    iget-object v2, v2, Lcom/shabakaty/downloader/s64;->d:Lcom/shabakaty/downloader/q71;
-
-    invoke-static {v2}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;
-
-    .line 45
-    invoke-static {v1}, Ljava/util/Collections;->singletonList(Ljava/lang/Object;)Ljava/util/List;
-
-    move-result-object v1
-
-    invoke-virtual {v2, v1, v5}, Lcom/shabakaty/downloader/q71;->t0(Ljava/util/List;Z)V
-
-    .line 46
-    iget-object v1, v0, Lcom/shabakaty/downloader/q10;->k:Lcom/shabakaty/downloader/s64;
-
-    .line 47
-    invoke-virtual {v1}, Lcom/shabakaty/downloader/s64;->g()V
-
-    .line 48
-    iget-object v1, v0, Lcom/shabakaty/downloader/q10;->k:Lcom/shabakaty/downloader/s64;
-
-    .line 49
-    invoke-virtual {v1}, Lcom/shabakaty/downloader/ak;->Y()Lcom/shabakaty/downloader/dp2;
-
-    move-result-object v1
-
-    if-nez v1, :cond_c
-
-    goto :goto_6
-
-    :cond_c
     invoke-virtual {v1}, Lcom/shabakaty/downloader/dp2;->a()Lcom/shabakaty/downloader/dp2$c;
 
     move-result-object v1
@@ -4797,26 +4775,28 @@
 
     invoke-virtual {v1, v2}, Lcom/shabakaty/downloader/dp2$c;->c(Ljava/util/List;)Lcom/shabakaty/downloader/dp2$c;
 
-    .line 50
+    .line 41
     iget-object v0, v0, Lcom/shabakaty/downloader/q10;->k:Lcom/shabakaty/downloader/s64;
 
-    .line 51
+    .line 42
     invoke-virtual {v1}, Lcom/shabakaty/downloader/dp2$c;->a()Lcom/shabakaty/downloader/dp2;
 
     move-result-object v1
 
     invoke-static {v0}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;
 
-    .line 52
+    .line 43
     invoke-static {v1}, Ljava/util/Collections;->singletonList(Ljava/lang/Object;)Ljava/util/List;
 
     move-result-object v1
 
-    .line 53
     invoke-virtual {v0, v1, v3}, Lcom/shabakaty/downloader/s64;->o(Ljava/util/List;Z)V
+    const-string v1, "quality_switch_source_and_subtitles_refresh_dispatched"
+    invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     .line 54
     :goto_6
+    const/4 v4, 0x0
     invoke-direct {p0}, Lcom/shabakaty/cinemana/player/CinemanaPlayerView;->getPlayerActivity()Lcom/shabakaty/cinemana/player/VideoPlayerActivity;
 
     move-result-object v0

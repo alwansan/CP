@@ -121,6 +121,9 @@
 .method public final t(Ljava/lang/Object;)Ljava/lang/Object;
     .locals 5
 
+    const-string v4, "subtitle_import_coroutine_enter"
+    invoke-static {v4}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
     sget-object v0, Lcom/shabakaty/downloader/te0;->r:Lcom/shabakaty/downloader/te0;
 
     .line 1
@@ -180,6 +183,8 @@
 
     if-nez p1, :cond_3
 
+    const-string v0, "subtitle_import_video_model_missing"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     goto :goto_1
 
     .line 8
@@ -188,6 +193,8 @@
 
     if-nez p1, :cond_4
 
+    const-string v0, "subtitle_import_video_subtitles_missing"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     goto :goto_1
 
     .line 9
@@ -210,6 +217,8 @@
 
     if-nez p1, :cond_5
 
+    const-string v0, "subtitle_import_current_media_item_missing"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     goto :goto_2
 
     :cond_5
@@ -246,6 +255,10 @@
     invoke-static {p1}, Ljava/util/Collections;->singletonList(Ljava/lang/Object;)Ljava/util/List;
 
     move-result-object p1
+
+    const-string v2, "subtitle_import_refresh_source"
+    invoke-static {v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->markSubtitleRefresh()V
 
     invoke-virtual {v0, p1, v1}, Lcom/shabakaty/downloader/s64;->o(Ljava/util/List;Z)V
 
