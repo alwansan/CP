@@ -79,7 +79,7 @@ jobs:
           grep -q 'getOffsetUsForFormat' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
           grep -q 'adjustPositionUsForFormat' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/bm4.smali
           grep -q 'styleDialogButtons' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
-          grep -q 'ThemeEngine142;->ink(Landroid/content/Context;)I' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
+          grep -q 'action labels white' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
           grep -q 'device_build_fingerprint' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/player/PlayerDiagnosticLog.smali
           grep -q '.method public toString()Ljava/lang/String;' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/domain/models/local/VideoModel.smali
           echo "High10 diagnostic instrumentation wiring: PASS"
@@ -132,7 +132,7 @@ jobs:
             PATCH256 external subtitle synchronization and Follow Subtitles UI candidate based on the confirmed-stable High10 Surface branch.
             Keeps the global sync offset for ordinary subtitle tracks and applies the Follow Subtitles offset only to imported file tracks marked by Format.t='file'.
             Fixes the Follow Subtitles sync dialog row reference, retains +/- 0.1 second controls, and adds +/- 0.5 second controls.
-            Styles Follow Subtitles settings buttons and dialog actions using Cinemana theme colors. Subtitle refresh is intended to reuse the active cue without seeking or reloading the video/source.
+            Styles Follow Subtitles settings buttons and dialog actions with high-contrast white labels on the gray control surfaces. Subtitle refresh is intended to reuse the active cue without seeking or reloading the video/source.
             This is a candidate build and still requires playback tests on the user's device; the external subtitle sync and UI changes are not yet confirmed fixed on-device.
             Automated assembly, alignment, signing, and signature verification completed.
             Source commit: ${{ github.sha }}.
