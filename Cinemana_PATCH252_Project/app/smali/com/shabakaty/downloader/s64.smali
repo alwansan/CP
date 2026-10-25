@@ -1957,6 +1957,7 @@
         }
     .end annotation
 
+    invoke-static {}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->environmentOnce()V
     const-string v0, "media_item_refresh_request"
     invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->diagnosticLogRendererStates()V
