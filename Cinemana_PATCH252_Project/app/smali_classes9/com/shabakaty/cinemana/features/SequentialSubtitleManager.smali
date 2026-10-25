@@ -559,6 +559,9 @@
 
     move-result-object p0
 
+    # Constructor.newInstance returns Object; cast before invoking TextView APIs.
+    check-cast p0, Landroid/widget/Button;
+
     .line 504
     new-array v0, v4, [Ljava/lang/Class;
 
@@ -573,6 +576,11 @@
     const-string p2, "setText"
 
     invoke-static {p0, p2, v0, v1}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    # The sequence manager draws its action buttons on a gray surface.
+    const/4 v0, -0x1
+
+    invoke-virtual {p0, v0}, Landroid/widget/TextView;->setTextColor(I)V
 
     .line 505
     new-array p2, v4, [Ljava/lang/Class;
@@ -7157,123 +7165,110 @@
     return-void
 .end method
 
-.method private static openSubtitleSyncDialog(Ljava/lang/Object;)V
-    .locals 8
 
-    .line 591
+.method private static styleDialogButtons(Ljava/lang/Object;Ljava/lang/Object;)V
+    .locals 3
+
     :try_start_0
-    const-string v0, "p0"
+    check-cast p1, Landroid/app/AlertDialog;
 
-    sget-object v1, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->NO_TYPES:[Ljava/lang/Class;
+    const/4 v0, -0x1
 
-    const/4 v2, 0x0
+    const/4 v1, -0x1
 
-    new-array v3, v2, [Ljava/lang/Object;
-
-    invoke-static {p0, v0, v1, v3}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;
-
-    move-result-object v0
-
-    .line 592
-    if-eqz v0, :cond_0
-
-    .line 593
-    const-string v1, "com.shabakaty.cinemana.player.CinemanaPlayerControllerView"
-
-    invoke-static {v1}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
-
-    .line 594
-    const-string v1, "com.shabakaty.cinemana.mod.SequentialSubtitleSyncHelper"
-
-    invoke-static {v1}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+    invoke-virtual {p1, v1}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
 
     move-result-object v1
 
-    .line 595
-    const-string v3, "init"
+    if-eqz v1, :after_positive_button
 
-    const/4 v4, 0x1
+    invoke-virtual {v1, v0}, Landroid/widget/TextView;->setTextColor(I)V
 
-    new-array v5, v4, [Ljava/lang/Class;
+    :after_positive_button
+    const/4 v1, -0x2
 
-    const-class v6, Ljava/lang/Object;
-
-    aput-object v6, v5, v2
-
-    invoke-virtual {v1, v3, v5}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
-
-    move-result-object v3
-
-    new-array v5, v4, [Ljava/lang/Object;
-
-    aput-object v0, v5, v2
-
-    const/4 v6, 0x0
-
-    invoke-virtual {v3, v6, v5}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
-
-    .line 596
-    const-string v3, "showSequentialDialog"
-
-    new-array v5, v4, [Ljava/lang/Class;
-
-    const-class v7, Ljava/lang/Object;
-
-    aput-object v7, v5, v2
-
-    invoke-virtual {v1, v3, v5}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+    invoke-virtual {p1, v1}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
 
     move-result-object v1
 
-    new-array v3, v4, [Ljava/lang/Object;
+    if-eqz v1, :after_negative_button
 
-    aput-object v0, v3, v2
+    invoke-virtual {v1, v0}, Landroid/widget/TextView;->setTextColor(I)V
 
-    invoke-virtual {v1, v6, v3}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    :after_negative_button
+    const/4 v1, -0x3
 
-    .line 600
-    goto :goto_1
+    invoke-virtual {p1, v1}, Landroid/app/AlertDialog;->getButton(I)Landroid/widget/Button;
 
-    .line 592
-    :cond_0
-    new-instance v0, Ljava/lang/IllegalStateException;
+    move-result-object v1
 
-    const-string v1, "Player controller is unavailable"
+    if-eqz v1, :after_neutral_button
 
-    invoke-direct {v0, v1}, Ljava/lang/IllegalStateException;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v1, v0}, Landroid/widget/TextView;->setTextColor(I)V
 
-    throw v0
+    :after_neutral_button
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 597
+    return-void
+
+    :catchall_0
+    move-exception v2
+
+    return-void
+.end method
+
+.method private static openSubtitleSyncDialog(Ljava/lang/Object;)V
+    .locals 3
+
+    :try_start_0
+    check-cast p0, Lcom/shabakaty/cinemana/player/VideoPlayerActivity;
+
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/player/VideoPlayerActivity;->p0()Lcom/shabakaty/cinemana/player/CinemanaPlayerControllerView;
+
+    move-result-object v0
+
+    if-eqz v0, :controller_unavailable
+
+    # Call the working sequential sync dialog directly, avoiding reflective lookup.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->init(Ljava/lang/Object;)V
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->showSequentialDialog(Ljava/lang/Object;)V
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    return-void
+
+    :controller_unavailable
+    const-string v0, "Player controller is unavailable"
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->showToast(Ljava/lang/Object;Ljava/lang/String;)V
+
+    return-void
+
     :catchall_0
     move-exception v0
 
-    .line 598
     const-string v1, "Could not open subtitle sync dialog"
 
     invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->logError(Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 599
     invoke-static {}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->isArabic()Z
 
     move-result v0
 
-    if-eqz v0, :cond_1
+    if-eqz v0, :sync_error_english
 
-    const-string v0, "\u062a\u0639\u0630\u0631 \u0641\u062a\u062d \u0645\u0632\u0627\u0645\u0646\u0629 \u0627\u0644\u062a\u0631\u062c\u0645\u0629"
+    const-string v0, "\\u062a\\u0639\\u0630\\u0631 \\u0641\\u062a\\u062d \\u0645\\u0632\\u0627\\u0645\\u0646\\u0629 \\u0627\\u0644\\u062a\\u0631\\u062c\\u0645\\u0629"
 
-    goto :goto_0
+    goto :sync_error_show
 
-    :cond_1
+    :sync_error_english
     const-string v0, "Could not open subtitle sync settings"
 
-    :goto_0
-    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->showToast(Ljava/lang/Object;Ljava/lang/String;)V
+    :sync_error_show
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features.SequentialSubtitleManager;->showToast(Ljava/lang/Object;Ljava/lang/String;)V
 
-    .line 601
-    :goto_1
     return-void
 .end method
 
@@ -12349,6 +12344,10 @@
     new-array v4, v4, [Ljava/lang/Object;
 
     invoke-static {v0, v2, v3, v4}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->styleDialogButtons(Ljava/lang/Object;Ljava/lang/Object;)V
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_1
 
@@ -12924,6 +12923,8 @@
     invoke-static {v2, v0, v3, v4}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;
 
     move-result-object v0
+
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->styleDialogButtons(Ljava/lang/Object;Ljava/lang/Object;)V
 
     aput-object v0, v9, v5
     :try_end_0
