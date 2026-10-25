@@ -295,7 +295,7 @@
 
     invoke-direct {v0, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
 
-    const-string v1, "\\u2212 0.5s"
+    const-string v1, "\u2212 0.5s"
 
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
