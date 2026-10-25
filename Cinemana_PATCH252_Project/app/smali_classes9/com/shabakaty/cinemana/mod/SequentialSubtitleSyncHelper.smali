@@ -2225,6 +2225,8 @@
 
     invoke-static/range {v12 .. v17}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addFullWidth(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;)V
 
+    invoke-static {v9, v12, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addZeroButton(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+
     .line 130
     const/4 v3, 0x1
 
@@ -2408,9 +2410,7 @@
 
     invoke-static/range {v12 .. v17}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addFullWidth(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;)V
 
-    invoke-static {v9, v12, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addZeroButton(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
-
-    # Restore the saved row into a low register before the invoke instruction.
+    # Restore the saved sync row into a low register before the invoke instruction.
     move-object/from16 v13, v24
 
     .line 139
