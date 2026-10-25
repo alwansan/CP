@@ -4840,6 +4840,7 @@
 
     .line 54
     :goto_6
+    const/4 v4, 0x0
     invoke-direct {p0}, Lcom/shabakaty/cinemana/player/CinemanaPlayerView;->getPlayerActivity()Lcom/shabakaty/cinemana/player/VideoPlayerActivity;
 
     move-result-object v0
