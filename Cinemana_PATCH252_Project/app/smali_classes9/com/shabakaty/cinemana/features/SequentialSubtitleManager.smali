@@ -7259,7 +7259,7 @@
 
     if-eqz v0, :sync_error_english
 
-    const-string v0, "\\u062a\\u0639\\u0630\\u0631 \\u0641\\u062a\\u062d \\u0645\\u0632\\u0627\\u0645\\u0646\\u0629 \\u0627\\u0644\\u062a\\u0631\\u062c\\u0645\\u0629"
+    const-string v0, "\u062a\u0639\u0630\u0631 \u0641\u062a\u062d \u0645\u0632\u0627\u0645\u0646\u0629 \u0627\u0644\u062a\u0631\u062c\u0645\u0629"
 
     goto :sync_error_show
 
