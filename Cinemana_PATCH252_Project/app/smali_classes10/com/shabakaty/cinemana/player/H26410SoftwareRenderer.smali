@@ -46,6 +46,10 @@
 
 .field private outputStartUs:J
 
+.field private noOutputSamples:I
+
+.field private noOutputWarningReported:Z
+
 .field private pending:Landroidx/media3/decoder/VideoDecoderOutputBuffer;
 
 .field private surface:Landroid/view/Surface;
@@ -905,6 +909,10 @@
 
     iput-object v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastVideoSize:Lcom/shabakaty/downloader/p25;
 
+    iput v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputSamples:I
+
+    iput-boolean v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputWarningReported:Z
+
     invoke-direct {p0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->releasePending()V
 
     iget-object p1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
@@ -1314,6 +1322,12 @@
     .line 170
     if-eqz v8, :cond_10
 
+    const/4 v9, 0x0
+
+    iput v9, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputSamples:I
+
+    iput-boolean v9, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputWarningReported:Z
+
     .line 171
     iput-object v8, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->pending:Landroidx/media3/decoder/VideoDecoderOutputBuffer;
 
@@ -1392,6 +1406,30 @@
 
     .line 147
     :cond_10
+    iget v9, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputSamples:I
+
+    add-int/lit8 v9, v9, 0x1
+
+    iput v9, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputSamples:I
+
+    const/16 v10, 0x78
+
+    if-lt v9, v10, :goto_3
+
+    iget-boolean v10, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputWarningReported:Z
+
+    if-nez v10, :goto_3
+
+    const/4 v10, 0x1
+
+    iput-boolean v10, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputWarningReported:Z
+
+    const-string v9, "CinemanaDecoderPolicy"
+
+    const-string v10, "FFmpeg consumed 120 video samples without producing a frame after source refresh; verify the active Format, codec-specific data, and packet stream"
+
+    invoke-static {v9, v10}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
     :goto_3
     add-int/lit8 v7, v7, 0x1
 
