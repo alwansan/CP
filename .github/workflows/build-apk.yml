@@ -10,6 +10,7 @@ on:
       - fix/high10-preserve-surface
       - feature/subtitle-sync-live-refresh
       - fix/external-subtitle-sync-ui
+      - fix/sequential-sync-dialog-zero
     paths:
       - "Cinemana_PATCH252_Project/**"
       - "signing/checkpoint145-debug.keystore"
@@ -73,8 +74,14 @@ jobs:
           ! grep -q 'renderer_surface_cleared_by_B_cleanup' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
           grep -q 'subtitle_sync_force_refresh_done' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/bm4.smali
           grep -q 'addHalfSecondButtons' Cinemana_PATCH252_Project/app/smali_classes2/com/shabakaty/cinemana/mod/SubtitleSyncHelper.smali
+          grep -q 'addZeroButton' Cinemana_PATCH252_Project/app/smali_classes2/com/shabakaty/cinemana/mod/SubtitleSyncHelper.smali
+          grep -q 'const v0, 0x7fffffff' Cinemana_PATCH252_Project/app/smali_classes2/com/shabakaty/cinemana/mod/SubtitleSyncHelper.smali
           grep -q '0.5s' Cinemana_PATCH252_Project/app/smali_classes2/com/shabakaty/cinemana/mod/SubtitleSyncHelper.smali
           grep -q 'addHalfSecondButtons' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
+          grep -q 'addZeroButton' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
+          grep -q 'invoke-static {v9, v13, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
+          ! grep -q 'invoke-static {v9, v3, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
+          grep -q 'const v0, 0x7fffffff' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper\$2.smali
           grep -q '0.5s' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
           grep -q 'check-cast p0, Landroid/widget/Button;' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
           grep -q 'showSequentialDialog(Ljava/lang/Object;)V' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
@@ -105,7 +112,7 @@ jobs:
           KEYSTORE="signing/checkpoint145-debug.keystore"
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
-          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH256_SequentialSubtitleUIFix_signed.apk"
+          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk"
 
           keytool -list -keystore "$KEYSTORE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
           "$TOOL_DIR/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
@@ -125,15 +132,15 @@ jobs:
       - name: Publish signed APK as a direct GitHub Release download
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: PATCH256-sequential-subtitle-ui-${{ github.run_number }}
+          tag_name: PATCH257-sequential-sync-zero-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana PATCH256 Sequential Subtitle UI Fix #${{ github.run_number }}"
+          name: "Cinemana PATCH257 Subtitle Sync Dialog & Zero #${{ github.run_number }}"
           body: |
-            PATCH256 is based on the tested PATCH255 sync behavior and preserves its subtitle offset calculations and live-refresh implementation.
-            Fixes the Sequential Subtitle Manager's sync action to open SequentialSubtitleSyncHelper directly through the current VideoPlayerActivity player controller.
-            Fixes the verifier issue by explicitly casting the reflected Button object before calling TextView APIs.
-            Sets custom action-button labels and AlertDialog action labels to white for stronger contrast on the gray subtitle-manager surfaces.
-            No changes were made to subtitle synchronization math or the video renderer. Device testing is still required to confirm the sync dialog opens and the manager UI is legible.
+            PATCH257 is based on the user-tested subtitle sync and UI behavior.
+            Fixes the SequentialSubtitleSyncHelper dialog construction: the active sync-row reference was overwritten by the setPadding method name before being passed to the button builder, so the dialog failed before it could be displayed.
+            Adds a centered 0 reset button to both general player subtitle sync and Sequential Subtitle Manager sync dialogs. It resets only the relevant saved offset and displayed value.
+            Existing +/-0.1s and +/-0.5s step values and normal offset calculations are unchanged. Existing UI contrast and player renderer behavior are preserved.
+            Device testing is still required to confirm the previously missing dialog now opens and both reset buttons behave correctly.
             Automated assembly, alignment, signing, and signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
