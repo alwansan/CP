@@ -1,4 +1,4 @@
-name: Build Cinemana PATCH252 APK
+name: Build and Sign Cinemana PATCH252 APK
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "Cinemana_PATCH252_Project/**"
+      - "signing/checkpoint145-debug.keystore"
       - ".github/workflows/build-apk.yml"
 
 permissions:
@@ -17,10 +18,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-apk:
-    name: Assemble APKTool project
+  build-sign-release:
+    name: Build, sign, and publish APK
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -31,16 +32,25 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Validate project inputs
+      - name: Set up Android SDK Build Tools
+        uses: android-actions/setup-android@v4
+        with:
+          packages: "build-tools;35.0.0"
+
+      - name: Validate project and signing inputs
         shell: bash
         run: |
           set -euo pipefail
           test -f Cinemana_PATCH252_Project/app/apktool.yml
           test -f Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar
           test -f Cinemana_PATCH252_Project/tools/framework/1.apk
+          test -f signing/checkpoint145-debug.keystore
           test -x /usr/bin/unzip
+          test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/zipalign"
           java -version
           du -sh Cinemana_PATCH252_Project
+          ls -lh signing/checkpoint145-debug.keystore
 
       - name: Build unsigned APK
         shell: bash
@@ -49,28 +59,49 @@ jobs:
           chmod +x Cinemana_PATCH252_Project/build.sh
           ./Cinemana_PATCH252_Project/build.sh
 
-      - name: Verify APK archive and checksum
+      - name: Align and sign APK
         shell: bash
+        env:
+          # If the keystore uses non-default credentials, define these in
+          # GitHub repository Settings > Secrets and variables > Actions.
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
         run: |
           set -euo pipefail
-          APK="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
-          test -s "$APK"
-          unzip -t "$APK"
-          sha256sum "$APK" | tee Cinemana_PATCH252_Project/output/SHA256SUMS.txt
-          ls -lh "$APK"
+          TOOL_DIR="$ANDROID_HOME/build-tools/35.0.0"
+          KEYSTORE="signing/checkpoint145-debug.keystore"
+          UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
+          ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
+          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_signed.apk"
 
-      - name: Publish APK as a direct GitHub Release download
+          keytool -list -keystore "$KEYSTORE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
+          "$TOOL_DIR/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
+          "$TOOL_DIR/zipalign" -c -p 4 "$ALIGNED"
+          "$TOOL_DIR/apksigner" sign \
+            --ks "$KEYSTORE" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass "env:KEYSTORE_PASSWORD" \
+            --key-pass "env:KEY_PASSWORD" \
+            --out "$SIGNED" \
+            "$ALIGNED"
+          "$TOOL_DIR/apksigner" verify --verbose --print-certs "$SIGNED"
+          unzip -t "$SIGNED"
+          sha256sum "$SIGNED" | tee Cinemana_PATCH252_Project/output/SHA256SUMS.txt
+          ls -lh "$SIGNED"
+
+      - name: Publish signed APK as a direct GitHub Release download
         uses: softprops/action-gh-release@v3
         with:
           tag_name: PATCH252-build-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: Cinemana PATCH252 build #${{ github.run_number }}
+          name: "Cinemana PATCH252 signed build #${{ github.run_number }}"
           body: |
-            Automated APKTool build from commit ${{ github.sha }}.
-
-            The APK is unsigned. Sign it with your own key before installing.
+            Automated build and APK signature verification completed.
+            Source commit: ${{ github.sha }}.
+            The APK is signed with signing/checkpoint145-debug.keystore.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH252_signed.apk
             Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           fail_on_unmatched_files: true
           overwrite_files: true
