@@ -4572,6 +4572,9 @@
 
     if-eqz v2, :cond_4
 
+    const-string v5, "quality_switch_selected_quality"
+    invoke-static {v5, v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     .line 19
     iget-object v1, v2, Lcom/shabakaty/cinemana/domain/models/local/Quality;->name:Ljava/lang/String;
 
@@ -4598,6 +4601,9 @@
     .line 23
     :cond_4
     :goto_2
+    const-string v1, "quality_switch_fallback_to_default_quality"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/player/CinemanaPlayerView;->getVideoModel()Lcom/shabakaty/cinemana/domain/models/local/VideoModel;
 
     move-result-object v1
@@ -4659,6 +4665,9 @@
 
     .line 29
     :cond_8
+    const-string v2, "quality_switch_target_url"
+    invoke-static {v2, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     invoke-static {v1}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
 
     move-result v2
