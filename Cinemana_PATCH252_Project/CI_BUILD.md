@@ -1,37 +1,26 @@
-# البناء والتوقيع الآلي عبر GitHub Actions
+# PATCH253 — إصلاح استعادة Decoder بعد تحديث الترجمة
 
-ملف سير العمل موجود في `.github/workflows/build-apk.yml` في جذر المستودع.
+## البناء والاختبار
 
-## ماذا يحدث عند كل بناء؟
+فرع الإصلاح: `fix/high10-subtitle-refresh`
 
-1. يفك GitHub المشروع ويعيد تجميعه باستخدام Java 17 وAPKTool المضمّن.
-2. يضبط Android SDK Build Tools.
-3. يطبّق `zipalign` قبل التوقيع، ثم يوقّع APK باستخدام `signing/checkpoint145-debug.keystore`.
-4. يتحقق من التوقيع باستخدام `apksigner verify`، ويفحص أرشيف APK، ويحسب SHA-256.
-5. ينشر ملف APK الموقّع كملف مستقل في GitHub Releases.
+عند دفع تعديل إلى هذا الفرع، يشغّل GitHub Actions فحص توصيل سياسة الإصلاح، ثم يجمع المشروع باستخدام APKTool، ويحاذي APK، ويوقّعه بمفتاح المستودع، ويتحقق من التوقيع ويرفعه كملف APK مستقل في إصدار تجريبي (Pre-release). لا يغيّر بناء الفرع رابط `releases/latest` الخاص بإصدار `main`.
 
-## تنزيل أحدث APK موقّع مباشرة
+- [سجل البناء على GitHub Actions](https://github.com/alwansan/CP/actions)
+- [الإصدارات المنشورة](https://github.com/alwansan/CP/releases)
 
-https://github.com/alwansan/CP/releases/latest/download/Cinemana_PATCH252_signed.apk
+## تنزيل بناء فرع الإصلاح
 
-صفحة الإصدارات:
-https://github.com/alwansan/CP/releases
+سيظهر ملف `Cinemana_PATCH253_High10Refresh_signed.apk` ضمن إصدار تجريبي يبدأ اسمه `Cinemana PATCH253 High10 refresh` بعد نجاح البناء.
 
-سجل عمليات البناء:
-https://github.com/alwansan/CP/actions
+## نطاق الإصلاح
 
-## بيانات المفتاح
+- تستعمل ميزة «من الملف» والميزة الآلية «متابعة الترجمات» المسار المشترك `CinemanaVideoPlayerViewModel$setSubtitleFromFile$3` (`y10.smali`) لتحديث قائمة ملفات الترجمة ثم إعادة بناء `MediaItem` عبر `s64.o(List, false)`.
+- قبل هذا التحديث، تُسجّل السياسة آخر `Format` مؤكّد أنه H.264 High 10.
+- إذا أصبح التنسيق الممرّر بعد تحديث المصدر غامضًا (H.264/AVC من دون codec string أو initialization data)، تُبقي السياسة مشغل FFmpeg مختارًا وتعيد استخدام `Format` المعروف لتكوين decoder، بدل السماح لـ MediaCodec بالاستحواذ على المسار.
+- إذا بقي التنسيق الجديد واضحًا وغير High 10، لا يُجبر على FFmpeg؛ ولا يُفعل المسار الاحتياطي للمقاطع غير المتوافقة أو المحمية بـ DRM.
+- أضيف سجل واحد إذا استهلك FFmpeg 120 عينة فيديو متتالية بلا إطار لتسهيل تشخيص أي فشل متبقٍ.
 
-إذا كانت بيانات المفتاح هي إعدادات Android debug الافتراضية، يستخدم سير العمل كلمة المرور `android` والاسم `androiddebugkey`. لتجاوز القيم الافتراضية، أضف أسرار مستودع GitHub التالية من **Settings → Secrets and variables → Actions**:
+## حدود التحقق
 
-- `CINEMANA_KEYSTORE_PASSWORD`: كلمة مرور ملف keystore.
-- `CINEMANA_KEY_PASSWORD`: كلمة مرور المفتاح، إذا كانت مختلفة عن كلمة مرور الملف.
-- `CINEMANA_KEY_ALIAS`: أضفه كـ **Repository variable** إذا كان الاسم المستعار مختلفًا عن `androiddebugkey`.
-
-## تحذير أمني مهم
-
-المستودع عام والملف `signing/checkpoint145-debug.keystore` موجود فيه، لذلك يمكن للآخرين تنزيل ملف المفتاح ومحاولة التوقيع به. كلمة المرور في GitHub Actions Secret وحدها لا تعيد سرية الملف إذا كان ملف keystore منشورًا في المستودع.
-
-هذا مناسب للتجارب الشخصية فقط، وليس لتوقيع إصدار موثوق للتوزيع العام. للاستخدام طويل الأمد، انقل ملف keystore خارج المستودع إلى GitHub Actions Secret مشفّر بصيغة Base64، ثم احذفه من المستودع وتاريخه إن كان ذلك مطلوبًا. لا تستخدم مفتاح debug مكشوفًا بوصفه مفتاح إصدار خاصًا.
-
-نجاح البناء والتحقق من التوقيع لا يُثبت أن التطبيق يعمل على جهاز Android؛ يجب إجراء اختبار تشغيل منفصل.
+ينفّذ GitHub Actions إعادة التجميع والتحقق من بنية APK والتوقيع. لا يوجد اختبار تشغيل على جهاز Android فعلي داخل CI. يجب اختبار المقاطع نفسها على الجهاز لتأكيد أن الشاشة تتجاوز التحميل بعد استيراد ترجمة يدوية وبعد اختيار «متابعة الترجمات»، مع إعادة اختبار مقطع H.264 8-bit للتأكد من بقاء سلوكه طبيعيًا.
