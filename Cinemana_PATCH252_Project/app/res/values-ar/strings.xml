@@ -774,4 +774,5 @@
     <string name="ca1_subtitle_preview">معاينة الترجمة</string>
     <string name="ca1_subtitle_settings">اعدادات الترجمة</string>
     <string name="ca1_zero_selected">0 حلقة محددة</string>
+    <string name="ca1_decoder_mode_title">طريقة فك ترميز الفيديو</string>
 </resources>
