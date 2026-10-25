@@ -44,6 +44,10 @@
 
     invoke-direct {v1}, Ljava/util/ArrayList;-><init>()V
 
+    iget-object v3, v0, Lcom/shabakaty/downloader/to0;->a:Landroid/content/Context;
+    invoke-static {v3}, Lcom/shabakaty/cinemana/player/CinemanaDecoderMode;->initialize(Landroid/content/Context;)V
+
+
     .line 2
     iget-object v3, v0, Lcom/shabakaty/downloader/to0;->a:Landroid/content/Context;
 
@@ -80,6 +84,11 @@
     .line 7
     invoke-virtual {v1, v11}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z
 
+    invoke-static {}, Lcom/shabakaty/cinemana/player/CinemanaDecoderMode;->isFfmpegEnabled()Z
+    move-result v3
+
+    if-eqz v3, :decoder_mode_complete
+
     new-instance v11, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;
 
     invoke-direct {v11, p1, p2}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;-><init>(Landroid/os/Handler;Lcom/shabakaty/downloader/o25;)V
@@ -87,6 +96,8 @@
     const/4 v3, 0x0
 
     invoke-virtual {v1, v3, v11}, Ljava/util/ArrayList;->add(ILjava/lang/Object;)V
+
+    :decoder_mode_complete
 
     .line 8
     iget-object v3, v0, Lcom/shabakaty/downloader/to0;->a:Landroid/content/Context;
