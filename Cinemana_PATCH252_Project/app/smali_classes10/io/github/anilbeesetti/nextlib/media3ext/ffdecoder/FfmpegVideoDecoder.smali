@@ -708,9 +708,6 @@
 .method public render(Landroidx/media3/decoder/VideoDecoderOutputBuffer;Landroid/view/Surface;)Z
     .locals 10
 
-    const-string v0, "ffmpeg_render_enter"
-    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
-
     .line 11
     iget-wide v1, p0, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegVideoDecoder;->nativeContext:J
 
@@ -751,29 +748,20 @@
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
     if-nez v0, :render_failed
-
-    const-string v0, "ffmpeg_render_success"
-    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     const/4 v9, 0x1
 
     goto :cond_1
 
     :render_failed
-    const-string v0, "ffmpeg_render_native_failure"
-    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     :cond_1
     return v9
 
     :catchall_0
     move-exception v0
-    const-string v0, "ffmpeg_render_exception"
-    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     :cond_2
     :goto_0
-    const-string v0, "ffmpeg_render_unavailable_or_failed"
-    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
     return v9
 .end method
 
