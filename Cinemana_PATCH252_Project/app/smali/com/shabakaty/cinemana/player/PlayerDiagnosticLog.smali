@@ -4,9 +4,50 @@
 
 .field private static final TAG:Ljava/lang/String; = "CinemanaPlayerDiag"
 
+.field private static environmentLogged:Z
+
 .method private constructor <init>()V
     .locals 0
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    return-void
+.end method
+
+
+.method public static declared-synchronized environmentOnce()V
+    .locals 2
+
+    sget-boolean v0, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->environmentLogged:Z
+    if-nez v0, :environment_done
+    const/4 v0, 0x1
+    sput-boolean v0, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->environmentLogged:Z
+
+    sget-object v0, Landroid/os/Build;->MANUFACTURER:Ljava/lang/String;
+    const-string v1, "device_manufacturer"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    sget-object v0, Landroid/os/Build;->MODEL:Ljava/lang/String;
+    const-string v1, "device_model"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    sget-object v0, Landroid/os/Build;->DEVICE:Ljava/lang/String;
+    const-string v1, "device_codename"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    sget-object v0, Landroid/os/Build$VERSION;->RELEASE:Ljava/lang/String;
+    const-string v1, "android_release"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    sget v0, Landroid/os/Build$VERSION;->SDK_INT:I
+    invoke-static {v0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v0
+    const-string v1, "android_sdk_int"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    sget-object v0, Landroid/os/Build;->FINGERPRINT:Ljava/lang/String;
+    const-string v1, "device_build_fingerprint"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    :environment_done
     return-void
 .end method
 
