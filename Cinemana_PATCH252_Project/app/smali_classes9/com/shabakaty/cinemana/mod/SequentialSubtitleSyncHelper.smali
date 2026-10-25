@@ -2099,6 +2099,9 @@
 
     move-object v3, v15
 
+    # Preserve the row because v3 is reused for the setPadding method name.
+    move-object/from16 v22, v3
+
     move-object v15, v1
 
     move-object/from16 v16, v18
@@ -2348,7 +2351,7 @@
     invoke-static/range {v12 .. v17}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addFullWidth(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;)V
 
     .line 139
-    invoke-static {v9, v3, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+    invoke-static {v9, v22, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
 
     const/4 v1, -0x1
 
