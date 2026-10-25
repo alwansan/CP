@@ -1040,12 +1040,10 @@
     .line 116
     const/4 v1, 0x0
 
-    const-string v1, "renderer_surface_cleared_by_B_cleanup"
+    # Generic disable/reset cleanup does not mean the player removed its output.
+    # Preserve the Surface; an actual detach arrives through output message type 1/null.
+    const-string v1, "renderer_surface_retained_by_B_cleanup"
     invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
-    const/4 v1, 0x0
-    iput-object v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->surface:Landroid/view/Surface;
-    const-string v1, "B_after_surface_clear"
-    invoke-direct {p0, v1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->logSurfaceState(Ljava/lang/String;)V
     const/4 v1, 0x0
 
     .line 117
