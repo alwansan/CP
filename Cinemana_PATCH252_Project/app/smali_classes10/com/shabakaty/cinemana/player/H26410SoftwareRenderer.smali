@@ -16,6 +16,10 @@
 
 .field private static final VIDEO_TRACK_TYPE:I = 0x2
 
+.field private static lastHigh10Format:Lcom/shabakaty/downloader/wh1;
+
+.field private static subtitleRefreshPending:Z
+
 
 # instance fields
 .field private configured:Z
@@ -33,6 +37,8 @@
 .field private failedFrames:J
 
 .field private firstFrameReported:Z
+
+.field private forceHigh10AfterRefresh:Z
 
 .field private final input:Lcom/shabakaty/downloader/bn0;
 
@@ -83,6 +89,238 @@
     .line 50
     return-void
 .end method
+
+
+.method public static markSubtitleRefresh()V
+    .locals 2
+
+    sget-object v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
+
+    if-eqz v0, :done
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+
+    move-result v1
+
+    if-eqz v1, :done
+
+    iget-object v1, v0, Lcom/shabakaty/downloader/wh1;->F:Lcom/shabakaty/downloader/o01;
+
+    if-nez v1, :done
+
+    invoke-static {}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->isH264Available()Z
+
+    move-result v1
+
+    if-eqz v1, :done
+
+    const/4 v1, 0x1
+
+    sput-boolean v1, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->subtitleRefreshPending:Z
+
+    const-string v0, "CinemanaDecoderPolicy"
+
+    const-string v1, "Subtitle-driven MediaItem refresh armed to preserve the active High 10 FFmpeg decoder"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    :done
+    return-void
+.end method
+
+.method public static shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z
+    .locals 3
+
+    if-eqz p0, :notSupported
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+
+    move-result v0
+
+    if-eqz v0, :refreshCheck
+
+    const/4 v0, 0x1
+
+    return v0
+
+    :refreshCheck
+    sget-boolean v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->subtitleRefreshPending:Z
+
+    if-eqz v0, :notSupported
+
+    sget-object v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
+
+    if-eqz v0, :notSupported
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+
+    move-result v0
+
+    if-eqz v0, :notSupported
+
+    iget-object v0, p0, Lcom/shabakaty/downloader/wh1;->F:Lcom/shabakaty/downloader/o01;
+
+    if-eqz v0, :checkAmbiguous
+
+    goto :notSupported
+
+    :checkAmbiguous
+    invoke-static {p0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isAmbiguousAvc(Lcom/shabakaty/downloader/wh1;)Z
+
+    move-result v0
+
+    if-eqz v0, :notSupported
+
+    const/4 v0, 0x1
+
+    return v0
+
+    :notSupported
+    const/4 v0, 0x0
+
+    return v0
+.end method
+
+.method private static isAmbiguousAvc(Lcom/shabakaty/downloader/wh1;)Z
+    .locals 2
+
+    if-eqz p0, :no
+
+    const-string v0, "video/avc"
+
+    iget-object v1, p0, Lcom/shabakaty/downloader/wh1;->C:Ljava/lang/String;
+
+    invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v0
+
+    if-eqz v0, :no
+
+    iget-object v0, p0, Lcom/shabakaty/downloader/wh1;->z:Ljava/lang/String;
+
+    if-eqz v0, :checkCsd
+
+    invoke-virtual {v0}, Ljava/lang/String;->length()I
+
+    move-result v1
+
+    if-lez v1, :checkCsd
+
+    goto :no
+
+    :checkCsd
+    iget-object v0, p0, Lcom/shabakaty/downloader/wh1;->E:Ljava/util/List;
+
+    if-eqz v0, :yes
+
+    invoke-interface {v0}, Ljava/util/List;->isEmpty()Z
+
+    move-result v0
+
+    if-eqz v0, :no
+
+    :yes
+    const/4 v0, 0x1
+
+    return v0
+
+    :no
+    const/4 v0, 0x0
+
+    return v0
+.end method
+
+.method private resolveRefreshFormat(Lcom/shabakaty/downloader/wh1;)Lcom/shabakaty/downloader/wh1;
+    .locals 4
+
+    if-eqz p1, :checkFallback
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+
+    move-result v0
+
+    if-eqz v0, :checkFallback
+
+    sput-object p1, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
+
+    const/4 v0, 0x0
+
+    iput-boolean v0, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->forceHigh10AfterRefresh:Z
+
+    sput-boolean v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->subtitleRefreshPending:Z
+
+    return-object p1
+
+    :checkFallback
+    sget-boolean v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->subtitleRefreshPending:Z
+
+    if-nez v0, :tryFallback
+
+    iget-boolean v0, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->forceHigh10AfterRefresh:Z
+
+    if-eqz v0, :normalFormat
+
+    :tryFallback
+    if-eqz p1, :findCachedFormat
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isAmbiguousAvc(Lcom/shabakaty/downloader/wh1;)Z
+
+    move-result v0
+
+    if-eqz v0, :normalFormat
+
+    :findCachedFormat
+    iget-object v0, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
+
+    if-eqz v0, :staticFallback
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+
+    move-result v1
+
+    if-nez v1, :useCachedFormat
+
+    :staticFallback
+    sget-object v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
+
+    if-eqz v0, :normalFormat
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+
+    move-result v1
+
+    if-eqz v1, :normalFormat
+
+    :useCachedFormat
+    const/4 v1, 0x1
+
+    iput-boolean v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->forceHigh10AfterRefresh:Z
+
+    const/4 v1, 0x0
+
+    sput-boolean v1, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->subtitleRefreshPending:Z
+
+    const-string v1, "CinemanaDecoderPolicy"
+
+    const-string v2, "Subtitle refresh produced an ambiguous H.264 format; reusing the last verified High 10 Format and FFmpeg decoder"
+
+    invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    return-object v0
+
+    :normalFormat
+    const/4 v0, 0x0
+
+    iput-boolean v0, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->forceHigh10AfterRefresh:Z
+
+    sput-boolean v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->subtitleRefreshPending:Z
+
+    sput-object v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
+
+    return-object p1
+.end method
+
+
 
 .method private configure(Lcom/shabakaty/downloader/wh1;)Z
     .locals 2
@@ -625,105 +863,116 @@
     return-void
 .end method
 
+
 .method public H([Lcom/shabakaty/downloader/wh1;JJ)V
-    .locals 2
+    .locals 3
 
-    .line 95
-    const/4 p4, 0x0
+    const/4 v2, 0x0
 
-    const/4 p5, 0x0
-
-    if-eqz p1, :cond_0
+    if-eqz p1, :useCurrentFormat
 
     array-length v0, p1
 
-    if-lez v0, :cond_0
+    if-lez v0, :useCurrentFormat
 
-    aget-object p1, p1, p5
+    const/4 v0, 0x0
 
-    goto :goto_0
+    aget-object p1, p1, v0
 
-    :cond_0
-    const-string v0, "CinemanaDecoderPolicy"
+    goto :resolveFormat
 
-    const-string v1, "Source refresh supplied no video formats; retaining cached Format while awaiting updated stream metadata"
-
-    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-
+    :useCurrentFormat
     iget-object p1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
 
-    :goto_0
+    :resolveFormat
+    invoke-direct {p0, p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->resolveRefreshFormat(Lcom/shabakaty/downloader/wh1;)Lcom/shabakaty/downloader/wh1;
+
+    move-result-object p1
+
     iput-object p1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
 
     const-string v0, "CinemanaDecoderPolicy"
 
-    const-string v1, "H26410 software renderer received stream/source refresh; reconfiguring software decoder"
+    const-string v1, "H26410 software renderer handling stream/source refresh; resolving the video Format before configuring FFmpeg"
 
     invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 96
     iput-wide p2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->outputStartUs:J
 
-    .line 97
-    iput-boolean p5, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->ended:Z
+    iput-boolean v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->ended:Z
 
-    .line 98
-    iput-boolean p5, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->firstFrameReported:Z
+    iput-boolean v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->firstFrameReported:Z
 
-    .line 99
-    iput-object p4, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastVideoSize:Lcom/shabakaty/downloader/p25;
+    iput-object v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastVideoSize:Lcom/shabakaty/downloader/p25;
 
-    .line 100
     invoke-direct {p0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->releasePending()V
 
-    .line 101
     iget-object p1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
 
     invoke-direct {p0, p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->configure(Lcom/shabakaty/downloader/wh1;)Z
 
-    .line 102
+    iget-boolean v0, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->configured:Z
+
+    if-eqz v0, :configurationFailed
+
+    const-string v0, "CinemanaDecoderPolicy"
+
+    const-string v1, "FFmpeg video decoder configured for refreshed stream"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    return-void
+
+    :configurationFailed
+    const-string v0, "CinemanaDecoderPolicy"
+
+    const-string v1, "FFmpeg video decoder configuration failed for refreshed stream"
+
+    invoke-static {v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
+
     return-void
 .end method
+
+
 
 .method public a(Lcom/shabakaty/downloader/wh1;)I
     .locals 2
 
-    .line 55
-    invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
+    invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z
 
     move-result v0
 
-    const/4 v1, 0x0
+    if-eqz v0, :unsupported
 
-    if-eqz v0, :cond_2
+    iget-object v0, p1, Lcom/shabakaty/downloader/wh1;->F:Lcom/shabakaty/downloader/o01;
+
+    if-nez v0, :unsupported
 
     invoke-static {}, Lio/github/anilbeesetti/nextlib/media3ext/ffdecoder/FfmpegLibrary;->isH264Available()Z
 
     move-result v0
 
-    if-nez v0, :cond_0
+    if-eqz v0, :unsupported
 
-    goto :goto_0
+    invoke-static {p1}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->isHigh10(Lcom/shabakaty/downloader/wh1;)Z
 
-    .line 56
-    :cond_0
-    iget-object p1, p1, Lcom/shabakaty/downloader/wh1;->F:Lcom/shabakaty/downloader/o01;
+    move-result v0
 
-    if-eqz p1, :cond_1
+    if-eqz v0, :supported
 
-    return v1
+    sput-object p1, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastHigh10Format:Lcom/shabakaty/downloader/wh1;
 
-    .line 57
-    :cond_1
+    :supported
     const/4 p1, 0x4
 
     return p1
 
-    .line 55
-    :cond_2
-    :goto_0
-    return v1
+    :unsupported
+    const/4 v0, 0x0
+
+    return v0
 .end method
+
 
 .method public b()Z
     .locals 1
@@ -855,6 +1104,10 @@
     .line 139
     if-eqz v2, :cond_3
 
+    const/4 v3, 0x0
+
+    iput-boolean v3, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->forceHigh10AfterRefresh:Z
+
     iget v3, v1, Landroidx/media3/decoder/VideoDecoderOutputBuffer;->width:I
 
     iget v4, v1, Landroidx/media3/decoder/VideoDecoderOutputBuffer;->height:I
@@ -946,6 +1199,10 @@
     .line 154
     :cond_7
     check-cast v8, Lcom/shabakaty/downloader/wh1;
+
+    invoke-direct {p0, v8}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->resolveRefreshFormat(Lcom/shabakaty/downloader/wh1;)Lcom/shabakaty/downloader/wh1;
+
+    move-result-object v8
 
     iput-object v8, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
 
@@ -1092,6 +1349,10 @@
 
     .line 177
     if-eqz v2, :cond_e
+
+    const/4 v3, 0x0
+
+    iput-boolean v3, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->forceHigh10AfterRefresh:Z
 
     iget v3, v1, Landroidx/media3/decoder/VideoDecoderOutputBuffer;->width:I
 
