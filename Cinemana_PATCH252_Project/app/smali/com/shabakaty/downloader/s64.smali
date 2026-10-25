@@ -1013,6 +1013,71 @@
 .end method
 
 
+# direct methods
+
+.method public final diagnosticLogRendererStates()V
+    .locals 7
+
+    iget-object v0, p0, Lcom/shabakaty/downloader/s64;->b:[Lcom/shabakaty/downloader/lr3;
+    if-eqz v0, :renderer_snapshot_done
+
+    array-length v1, v0
+    const/4 v2, 0x0
+
+    :renderer_snapshot_loop
+    if-ge v2, v1, :renderer_snapshot_done
+
+    aget-object v3, v0, v2
+    if-eqz v3, :renderer_snapshot_next
+
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v5, "renderer_snapshot index="
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string v5, " name="
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-interface {v3}, Lcom/shabakaty/downloader/lr3;->getName()Ljava/lang/String;
+    move-result-object v5
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v5, " state="
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-interface {v3}, Lcom/shabakaty/downloader/lr3;->getState()I
+    move-result v6
+    invoke-virtual {v4, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string v5, " ready="
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-interface {v3}, Lcom/shabakaty/downloader/lr3;->b()Z
+    move-result v6
+    invoke-static {v6}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v5
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    const-string v5, " ended="
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-interface {v3}, Lcom/shabakaty/downloader/lr3;->d()Z
+    move-result v6
+    invoke-static {v6}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v5
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {v5}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
+    :renderer_snapshot_next
+    add-int/lit8 v2, v2, 0x1
+    goto :renderer_snapshot_loop
+
+    :renderer_snapshot_done
+    return-void
+.end method
+
+
 # virtual methods
 .method public A()J
     .locals 2
@@ -1894,6 +1959,7 @@
 
     const-string v0, "media_item_refresh_request"
     invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->diagnosticLogRendererStates()V
 
     invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->h()I
     move-result v0
@@ -1956,6 +2022,7 @@
     iget-object v0, p0, Lcom/shabakaty/downloader/s64;->d:Lcom/shabakaty/downloader/q71;
 
     invoke-virtual {v0, p1, p2}, Lcom/shabakaty/downloader/q71;->o(Ljava/util/List;Z)V
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->diagnosticLogRendererStates()V
 
     const-string v0, "media_item_refresh_request_dispatched"
     invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
