@@ -1882,7 +1882,7 @@
 .end method
 
 .method public o(Ljava/util/List;Z)V
-    .locals 3
+    .locals 7
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "(",
@@ -1895,9 +1895,42 @@
     const-string v0, "media_item_refresh_request"
     invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
-    invoke-interface {p1}, Ljava/util/List;->size()I
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->h()I
     move-result v0
     invoke-static {v0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v1
+    const-string v0, "refresh_playback_state"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->a()Z
+    move-result v0
+    invoke-static {v0}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    const-string v0, "refresh_is_loading"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
+    invoke-interface {p1}, Ljava/util/List;->size()I
+    move-result v0
+    move v2, v0
+    const/4 v3, 0x0
+    :diag_refresh_item_loop
+    if-ge v3, v2, :diag_refresh_item_loop_done
+    invoke-interface {p1, v3}, Ljava/util/List;->get(I)Ljava/lang/Object;
+    move-result-object v4
+    check-cast v4, Lcom/shabakaty/downloader/dp2;
+    iget-object v5, v4, Lcom/shabakaty/downloader/dp2;->a:Ljava/lang/String;
+    const-string v6, "media_refresh_item_id"
+    invoke-static {v6, v5}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    iget-object v5, v4, Lcom/shabakaty/downloader/dp2;->b:Lcom/shabakaty/downloader/dp2$g;
+    if-eqz v5, :diag_refresh_item_next
+    iget-object v6, v5, Lcom/shabakaty/downloader/dp2$g;->a:Landroid/net/Uri;
+    const-string v7, "media_refresh_item_uri"
+    invoke-static {v7, v6}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    :diag_refresh_item_next
+    add-int/lit8 v3, v3, 0x1
+    goto :diag_refresh_item_loop
+    :diag_refresh_item_loop_done
+    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v1
     const-string v0, "refresh_item_count"
     invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
@@ -2682,7 +2715,34 @@
 .end method
 
 .method public final u0(ZII)V
-    .locals 2
+    .locals 5
+
+    const-string v0, "player_state_update_enter"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+    invoke-static {p1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v0
+    const-string v1, "player_state_update_playing_flag"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    invoke-static {p2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v0
+    const-string v1, "player_state_update_reason"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    invoke-static {p3}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v0
+    const-string v1, "player_state_update_extra"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->h()I
+    move-result v0
+    invoke-static {v0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    move-result-object v1
+    const-string v0, "player_state_update_playback_state"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/s64;->C()J
+    move-result-wide v0
+    invoke-static {v0, v1}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+    move-result-object v2
+    const-string v0, "player_state_update_position_us"
+    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
 
     const/4 v0, 0x0
 
