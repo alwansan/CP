@@ -62,6 +62,8 @@
 
 .field private lastLoggedReadyState:I
 
+.field private renderGateRepeatCounter:I
+
 .field private pending:Landroidx/media3/decoder/VideoDecoderOutputBuffer;
 
 .field private surface:Landroid/view/Surface;
@@ -901,6 +903,48 @@
     move-result-object v1
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
+    const-string v1, " decodedFrames="
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-wide v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->decodedFrames:J
+    invoke-virtual {v0, v1, v2}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    const-string v1, " failedFrames="
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-wide v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->failedFrames:J
+    invoke-virtual {v0, v1, v2}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    const-string v1, " noOutputSamples="
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->noOutputSamples:I
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string v1, " firstFrameReported="
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-boolean v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->firstFrameReported:Z
+    invoke-static {v1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    const-string v1, " streamRefreshPendingPositionReset="
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-boolean v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->streamRefreshPendingPositionReset:Z
+    invoke-static {v1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    const-string v1, " pendingFrame="
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-object v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->pending:Landroidx/media3/decoder/VideoDecoderOutputBuffer;
+    if-eqz v1, :snapshot_no_pending
+    const/4 v1, 0x1
+    goto :snapshot_pending_known
+    :snapshot_no_pending
+    const/4 v1, 0x0
+    :snapshot_pending_known
+    invoke-static {v1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+    move-result-object v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v0
     invoke-static {v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
@@ -929,9 +973,23 @@
     :gate_compare
     iget v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastLoggedRenderGate:I
     if-ne v1, v2, :gate_changed
+
+    iget v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->renderGateRepeatCounter:I
+    add-int/lit8 v2, v2, 0x1
+    iput v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->renderGateRepeatCounter:I
+    rem-int/lit8 v2, v2, 0x78
+    if-nez v2, :gate_same_return
+    iget v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastLoggedRenderGate:I
+    const/4 v1, 0x1
+    if-ne v2, v1, :gate_same_return
+    const-string v0, "render_skip_surface_null_persisting"
+    invoke-direct {p0, v0}, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->logSurfaceState(Ljava/lang/String;)V
+    :gate_same_return
     return-void
 
     :gate_changed
+    const/4 v2, 0x0
+    iput v2, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->renderGateRepeatCounter:I
     iput v1, p0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->lastLoggedRenderGate:I
     invoke-static {v1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
     move-result-object v2
