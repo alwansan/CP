@@ -4767,6 +4767,8 @@
     move-result-object v1
 
     invoke-virtual {v2, v1, v5}, Lcom/shabakaty/downloader/q71;->t0(Ljava/util/List;Z)V
+    const-string v1, "quality_switch_source_rebuild_dispatched"
+    invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     .line 46
     iget-object v1, v0, Lcom/shabakaty/downloader/q10;->k:Lcom/shabakaty/downloader/s64;
@@ -4814,6 +4816,8 @@
 
     .line 53
     invoke-virtual {v0, v1, v3}, Lcom/shabakaty/downloader/s64;->o(Ljava/util/List;Z)V
+    const-string v1, "quality_switch_subtitle_source_refresh_dispatched"
+    invoke-static {v1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
 
     .line 54
     :goto_6
