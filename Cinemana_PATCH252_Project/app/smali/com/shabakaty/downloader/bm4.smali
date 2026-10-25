@@ -41,6 +41,8 @@
 
 .field public S:J
 
+.field public T:Z
+
 
 # direct methods
 .method public constructor <init>(Lcom/shabakaty/downloader/am4;Landroid/os/Looper;)V
@@ -1059,9 +1061,9 @@
 
     if-eqz v4, :subtitle_sync_global_done
 
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/bm4;->J()V
+    const/4 v4, 0x1
 
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/bm4;->N()V
+    iput-boolean v4, p0, Lcom/shabakaty/downloader/bm4;->T:Z
 
     iput-wide v0, p0, Lcom/shabakaty/downloader/bm4;->S:J
 
@@ -1076,9 +1078,9 @@
 
     if-eqz v4, :cond_0
 
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/bm4;->J()V
+    const/4 v4, 0x1
 
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/bm4;->N()V
+    iput-boolean v4, p0, Lcom/shabakaty/downloader/bm4;->T:Z
 
     iput-wide v0, p0, Lcom/shabakaty/downloader/bm4;->R:J
 
@@ -1318,6 +1320,23 @@
 
     :cond_a
     :goto_2
+    # If timing changed, re-emit the active subtitle cue from the existing output buffer.
+    # Do not empty the cue list or flush the decoder/input stream.
+    iget-boolean v2, p0, Lcom/shabakaty/downloader/bm4;->T:Z
+
+    if-eqz v2, :subtitle_sync_force_refresh_done
+
+    iget-object v2, p0, Lcom/shabakaty/downloader/bm4;->N:Lcom/shabakaty/downloader/mg4;
+
+    if-eqz v2, :subtitle_sync_force_refresh_done
+
+    const/4 p3, 0x1
+
+    const/4 v2, 0x0
+
+    iput-boolean v2, p0, Lcom/shabakaty/downloader/bm4;->T:Z
+
+    :subtitle_sync_force_refresh_done
     if-eqz p3, :cond_c
 
     .line 35
