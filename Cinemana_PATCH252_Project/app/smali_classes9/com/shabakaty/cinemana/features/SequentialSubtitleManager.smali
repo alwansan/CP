@@ -7267,7 +7267,7 @@
     const-string v0, "Could not open subtitle sync settings"
 
     :sync_error_show
-    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features.SequentialSubtitleManager;->showToast(Ljava/lang/Object;Ljava/lang/String;)V
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/SequentialSubtitleManager;->showToast(Ljava/lang/Object;Ljava/lang/String;)V
 
     return-void
 .end method
