@@ -138,7 +138,7 @@ jobs:
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_PATCH255_SubtitleSyncFix_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH256_ExternalSubtitleSyncUI_signed.apk
             Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           fail_on_unmatched_files: true
           overwrite_files: true
