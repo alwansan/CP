@@ -346,6 +346,62 @@
     return-void
 .end method
 
+.method private static addZeroButton(Landroid/content/Context;Landroid/widget/LinearLayout;Landroid/widget/EditText;)V
+    .locals 4
+
+    new-instance v0, Landroid/widget/LinearLayout;
+
+    invoke-direct {v0, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
+
+    const/4 v1, 0x0
+
+    invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->setOrientation(I)V
+
+    const/16 v1, 0x11
+
+    invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->setGravity(I)V
+
+    const/4 v1, 0x0
+
+    const/16 v2, 0x8
+
+    invoke-virtual {v0, v1, v2, v1, v2}, Landroid/view/View;->setPadding(IIII)V
+
+    new-instance v1, Landroid/widget/Button;
+
+    invoke-direct {v1, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
+
+    const-string v2, "0"
+
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->ink(Landroid/content/Context;)I
+
+    move-result v2
+
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setTextColor(I)V
+
+    new-instance v2, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/4 v3, -0x2
+
+    invoke-direct {v2, v3, v3}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+
+    invoke-virtual {v0, v1, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    const v2, 0x7fffffff
+
+    new-instance v3, Lcom/shabakaty/cinemana/mod/SubtitleSyncStepListener;
+
+    invoke-direct {v3, p0, p2, v2}, Lcom/shabakaty/cinemana/mod/SubtitleSyncStepListener;-><init>(Landroid/content/Context;Landroid/widget/EditText;I)V
+
+    invoke-virtual {v1, v3}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    invoke-virtual {p1, v0}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+
+    return-void
+.end method
+
 .method public static showDialog(Lcom/shabakaty/cinemana/player/CinemanaPlayerControllerView;)V
     .locals 15
 
@@ -511,6 +567,8 @@
 
     invoke-virtual {v1, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
+    invoke-static {v0, v1, v6}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->addZeroButton(Landroid/content/Context;Landroid/widget/LinearLayout;Landroid/widget/EditText;)V
+
     new-instance v2, Landroid/widget/TextView;
 
     invoke-direct {v2, v0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
@@ -608,6 +666,23 @@
 .method public static step(Landroid/content/Context;Landroid/widget/EditText;I)V
     .locals 2
 
+    const v0, 0x7fffffff
+
+    if-ne p2, v0, :normal_step
+
+    const/4 v0, 0x0
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->save(Landroid/content/Context;I)V
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->formatTenths(I)Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-virtual {p1, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    return-void
+
+    :normal_step
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->commitText(Landroid/content/Context;Landroid/widget/EditText;)V
 
     invoke-static {}, Lcom/shabakaty/cinemana/mod/SubtitleSyncHelper;->getTenths()I
