@@ -682,6 +682,8 @@
     invoke-virtual {p1}, Lcom/shabakaty/downloader/s64;->g()V
 
     :goto_3
+    iget-object v0, p0, Lcom/shabakaty/downloader/wc3;->r:Lcom/shabakaty/downloader/s64;
+    invoke-virtual {v0}, Lcom/shabakaty/downloader/s64;->diagnosticLogRendererStates()V
     return-void
 .end method
 
