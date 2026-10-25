@@ -1229,6 +1229,64 @@
     return-void
 .end method
 
+.method private static addZeroButton(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+    .locals 4
+
+    check-cast p0, Landroid/content/Context;
+
+    check-cast p1, Landroid/widget/LinearLayout;
+
+    check-cast p2, Landroid/widget/EditText;
+
+    new-instance v0, Landroid/widget/LinearLayout;
+
+    invoke-direct {v0, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
+
+    const/4 v1, 0x0
+
+    invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->setOrientation(I)V
+
+    const/16 v1, 0x11
+
+    invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->setGravity(I)V
+
+    const/4 v1, 0x0
+
+    const/16 v2, 0x8
+
+    invoke-virtual {v0, v1, v2, v1, v2}, Landroid/view/View;->setPadding(IIII)V
+
+    new-instance v1, Landroid/widget/Button;
+
+    invoke-direct {v1, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
+
+    const-string v2, "0"
+
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->ink(Landroid/content/Context;)I
+
+    move-result v2
+
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setTextColor(I)V
+
+    new-instance v2, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/4 v3, -0x2
+
+    invoke-direct {v2, v3, v3}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+
+    invoke-virtual {v0, v1, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    const v2, 0x7fffffff
+
+    invoke-static {v1, p0, p2, v2}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->bindStep(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;I)V
+
+    invoke-virtual {p1, v0}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+
+    return-void
+.end method
+
 .method public static showSequentialDialog(Ljava/lang/Object;)V
     .locals 32
 
@@ -2347,8 +2405,11 @@
 
     invoke-static/range {v12 .. v17}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addFullWidth(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Class;)V
 
+    # Keep the active row register: v3 was reused for the "setPadding" method name above.
+    invoke-static {v9, v12, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addZeroButton(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+
     .line 139
-    invoke-static {v9, v3, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+    invoke-static {v9, v13, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
 
     const/4 v1, -0x1
 
