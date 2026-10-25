@@ -1318,6 +1318,31 @@
 
     move-result-object v8
 
+    # Do not release/reinitialize FFmpeg twice when the stream reports the
+    # same Format that was configured after onPositionReset.
+    iget-boolean v9, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->configured:Z
+
+    if-eqz v9, :formatNeedsConfigure
+
+    iget-object v9, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
+
+    if-eqz v9, :formatNeedsConfigure
+
+    if-eqz v8, :formatNeedsConfigure
+
+    invoke-virtual {v8, v9}, Lcom/shabakaty/downloader/wh1;->equals(Ljava/lang/Object;)Z
+
+    move-result v9
+
+    if-eqz v9, :formatNeedsConfigure
+
+    const-string v9, "renderer_stream_format_unchanged_after_position_reset"
+
+    invoke-static {v9}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->event(Ljava/lang/String;)V
+
+    goto :goto_3
+
+    :formatNeedsConfigure
     iput-object v8, v0, Lcom/shabakaty/cinemana/player/H26410SoftwareRenderer;->currentFormat:Lcom/shabakaty/downloader/wh1;
 
     const-string v9, "CinemanaDecoderPolicy"
