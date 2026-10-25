@@ -181,6 +181,9 @@
 
     check-cast p1, Lcom/shabakaty/cinemana/domain/models/local/VideoModel;
 
+    const-string v0, "video_model_at_subtitle_refresh"
+    invoke-static {v0, p1}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
+
     if-nez p1, :cond_3
 
     const-string v0, "subtitle_import_video_model_missing"
@@ -200,6 +203,8 @@
     .line 9
     :cond_4
     iget-object v0, p0, Lcom/shabakaty/downloader/y10;->x:Lcom/shabakaty/cinemana/domain/models/local/Subtitle;
+    const-string v1, "subtitle_import_requested"
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/player/PlayerDiagnosticLog;->value(Ljava/lang/String;Ljava/lang/Object;)V
 
     invoke-interface {p1, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
