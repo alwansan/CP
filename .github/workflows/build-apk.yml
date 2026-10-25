@@ -65,6 +65,9 @@ jobs:
           grep -q 'diagnosticLogRendererStates()V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/s64.smali
           grep -q 'media_refresh_item_uri' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/s64.smali
           grep -q 'player_error_exception' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/wc3.smali
+          grep -q 'render_skip_surface_null_persisting' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
+          grep -q 'device_build_fingerprint' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/player/PlayerDiagnosticLog.smali
+          grep -q 'VideoModel;->toString()Ljava/lang/String;' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/domain/models/local/VideoModel.smali
           echo "High10 diagnostic instrumentation wiring: PASS"
 
       - name: Build unsigned APK
