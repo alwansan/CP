@@ -1688,9 +1688,6 @@
     const/4 v0, 0x4
     if-gt p2, v0, :scan_disk_tree_done
 
-    invoke-virtual {p3}, [I->clone()Ljava/lang/Object;
-    move-result-object v0
-    check-cast v0, [I
     const/4 v1, 0x0
     aget v0, p3, v1
     const/16 v1, 0x9c4
