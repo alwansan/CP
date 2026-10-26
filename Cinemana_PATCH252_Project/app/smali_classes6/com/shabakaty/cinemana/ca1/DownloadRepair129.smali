@@ -148,6 +148,7 @@
 
     :try_start_2
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->start(Landroid/content/Context;)V
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->repairDiskMp4(Landroid/content/Context;)V
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileAll()V
     :try_end_2
     .catch Ljava/lang/Throwable; {:try_start_2 .. :try_end_2} :mkv_failed
@@ -686,3 +687,261 @@
     invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
     return-void
 .end method
+
+
+.method private static repairDiskMp4(Landroid/content/Context;)V
+    .locals 8
+    const/4 v0, 0x4
+    new-array v0, v0, [I
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v1
+    new-instance v2, Ljava/io/File;
+    const-string v3, "Cinemana/work"
+    invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const/4 v3, 0x0
+    invoke-static {p0, v2, v3, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanWorkTree(Landroid/content/Context;Ljava/io/File;I[I)V
+    new-instance v2, Ljava/io/File;
+    const-string v3, "Download/Cinemana/work"
+    invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const/4 v3, 0x0
+    invoke-static {p0, v2, v3, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanWorkTree(Landroid/content/Context;Ljava/io/File;I[I)V
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v4, "DISK_MKV_SCAN mp4="
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const/4 v4, 0x0
+    aget v4, v0, v4
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const-string v4, " queued="
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const/4 v4, 0x1
+    aget v4, v0, v4
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const-string v4, " existing_mkv="
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const/4 v4, 0x2
+    aget v4, v0, v4
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const-string v4, " deferred="
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const/4 v4, 0x3
+    aget v4, v0, v4
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const-string v4, " max_depth=4; disk evidence must match the saved subtitle plan"
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v3
+    const-string v4, "download_repair_findings.log"
+    invoke-static {p0, v4, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+    return-void
+.end method
+
+.method private static scanWorkTree(Landroid/content/Context;Ljava/io/File;I[I)V
+    .locals 6
+    if-eqz p1, :work_scan_done
+    const/4 v0, 0x4
+    if-ge p2, v0, :work_scan_done
+    invoke-virtual {p1}, Ljava/io/File;->exists()Z
+    move-result v0
+    if-eqz v0, :work_scan_done
+    invoke-virtual {p1}, Ljava/io/File;->isDirectory()Z
+    move-result v0
+    if-eqz v0, :work_scan_done
+    invoke-virtual {p1}, Ljava/io/File;->listFiles()[Ljava/io/File;
+    move-result-object v0
+    if-eqz v0, :work_scan_done
+    array-length v1, v0
+    const/4 v2, 0x0
+    :work_scan_loop
+    if-ge v2, v1, :work_scan_done
+    aget-object v3, v0, v2
+    if-eqz v3, :work_scan_next
+    invoke-virtual {v3}, Ljava/io/File;->isDirectory()Z
+    move-result v4
+    if-eqz v4, :work_scan_file
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    sget-object v5, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v4, v5}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v4
+    const-string v5, "data"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v5
+    if-nez v5, :work_scan_next
+    const-string v5, "log"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v5
+    if-nez v5, :work_scan_next
+    add-int/lit8 v4, p2, 0x1
+    invoke-static {p0, v3, v4, p3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanWorkTree(Landroid/content/Context;Ljava/io/File;I[I)V
+    goto :work_scan_next
+    :work_scan_file
+    invoke-virtual {v3}, Ljava/io/File;->isFile()Z
+    move-result v4
+    if-eqz v4, :work_scan_next
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    sget-object v5, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v4, v5}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v4
+    const-string v5, ".mp4"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v4
+    if-eqz v4, :work_scan_next
+    const/4 v4, 0x0
+    invoke-static {p3, v4}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+    invoke-static {p0, v3, p3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->repairOneDiskMp4(Landroid/content/Context;Ljava/io/File;[I)V
+    :work_scan_next
+    add-int/lit8 v2, v2, 0x1
+    goto :work_scan_loop
+    :work_scan_done
+    return-void
+.end method
+
+.method private static repairOneDiskMp4(Landroid/content/Context;Ljava/io/File;[I)V
+    .locals 8
+    if-eqz p1, :disk_mp4_done
+    invoke-virtual {p1}, Ljava/io/File;->isFile()Z
+    move-result v0
+    if-eqz v0, :disk_mp4_done
+    invoke-virtual {p1}, Ljava/io/File;->length()J
+    move-result-wide v0
+    const-wide/16 v2, 0x400
+    cmp-long v4, v0, v2
+    if-ltz v4, :disk_mp4_too_small
+    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/String;->length()I
+    move-result v2
+    if-lez v2, :disk_mp4_no_token
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->hasExistingMkvForToken(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :disk_mp4_try_reconcile
+    const/4 v2, 0x2
+    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+    const-string v2, "download_repair_findings.log"
+    const-string v3, "MP4_DISK_SKIP_ALREADY_MKV"
+    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    return-void
+    :disk_mp4_try_reconcile
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->reconcileDiskReady(Landroid/content/Context;Ljava/io/File;)Z
+    move-result v2
+    if-eqz v2, :disk_mp4_unresolved
+    const/4 v2, 0x1
+    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v2
+    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
+    const-string v2, "download_repair_actions.log"
+    const-string v3, "MP4_DISK_READY_FOR_MKV"
+    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    return-void
+    :disk_mp4_unresolved
+    const/4 v2, 0x3
+    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+    const-string v2, "download_repair_unresolved.log"
+    const-string v3, "MP4_DISK_DEFERRED_SUBTITLES_OR_PLAN_NOT_VERIFIED"
+    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    return-void
+    :disk_mp4_no_token
+    const/4 v2, 0x3
+    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+    const-string v2, "download_repair_unresolved.log"
+    const-string v3, "MP4_DISK_DEFERRED_NO_CONTENT_TOKEN"
+    const-string v1, ""
+    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    return-void
+    :disk_mp4_too_small
+    const/4 v2, 0x3
+    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+    const-string v2, "download_repair_unresolved.log"
+    const-string v3, "MP4_DISK_DEFERRED_FILE_TOO_SMALL"
+    const-string v1, ""
+    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    :disk_mp4_done
+    return-void
+.end method
+
+.method private static hasExistingMkvForToken(Ljava/io/File;Ljava/lang/String;)Z
+    .locals 14
+    invoke-virtual {p0}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v0
+    if-eqz v0, :no_existing_mkv
+    invoke-virtual {v0}, Ljava/io/File;->listFiles()[Ljava/io/File;
+    move-result-object v0
+    if-eqz v0, :no_existing_mkv
+    array-length v1, v0
+    const/4 v2, 0x0
+    :existing_mkv_loop
+    if-ge v2, v1, :no_existing_mkv
+    aget-object v3, v0, v2
+    if-eqz v3, :existing_mkv_next
+    invoke-virtual {v3}, Ljava/io/File;->isFile()Z
+    move-result v4
+    if-eqz v4, :existing_mkv_next
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    sget-object v5, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v4, v5}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v4
+    const-string v5, ".mkv"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :existing_mkv_next
+    invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {v5}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v6
+    invoke-virtual {p1, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v7
+    if-eqz v7, :existing_mkv_next
+    invoke-virtual {v3}, Ljava/io/File;->length()J
+    move-result-wide v8
+    const-wide/16 v10, 0x400
+    cmp-long v12, v8, v10
+    if-ltz v12, :existing_mkv_next
+    const/4 v0, 0x1
+    return v0
+    :existing_mkv_next
+    add-int/lit8 v2, v2, 0x1
+    goto :existing_mkv_loop
+    :no_existing_mkv
+    const/4 v0, 0x0
+    return v0
+.end method
+
+.method private static logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    .locals 3
+    new-instance v0, Ljava/lang/StringBuilder;
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v0, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v0
+    const-string v1, " token="
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v0
+    invoke-virtual {v0, p3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v0
+    const-string v1, " path="
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v0
+    invoke-virtual {p4}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v0
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {p0, p1, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+    return-void
+.end method
+

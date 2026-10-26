@@ -12,6 +12,7 @@ on:
       - fix/external-subtitle-sync-ui
       - fix/sequential-sync-dialog-zero
       - fix/download-mkv-self-repair
+      - fix/download-mkv-disk-recovery
     paths:
       - "Cinemana_PATCH252_Project/**"
       - "signing/checkpoint145-debug.keystore"
@@ -95,6 +96,9 @@ jobs:
           grep -q 'ca1_download_repair129' Cinemana_PATCH252_Project/app/res/layout-v22/fragment_profile.xml
           grep -q 'download_repair_findings.log' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
           grep -q 'cond_task_verified129' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Restart108.smali
+          grep -q 'reconcileDiskReady(Landroid/content/Context;Ljava/io/File;)Z' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvManifestStore.smali
+          grep -q 'MP4_DISK_READY_FOR_MKV' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          grep -q 'repairDiskMp4(Landroid/content/Context;)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
           echo "Stable playback, subtitle sync, and UI fix wiring: PASS"
           echo "Download/MKV repair wiring: PASS"
 
@@ -120,7 +124,12 @@ jobs:
           KEYSTORE="signing/checkpoint145-debug.keystore"
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
-          if [[ "$GITHUB_REF_NAME" == "fix/download-mkv-self-repair" ]]; then
+          if [[ "$GITHUB_REF_NAME" == "fix/download-mkv-disk-recovery" ]]; then
+            SIGNED_NAME="Cinemana_PATCH259_MkvDiskRecovery_signed.apk"
+            TAG_SUFFIX="mkv-disk-recovery"
+            DISPLAY_NAME="Disk MKV Recovery"
+            PATCH_VERSION="259"
+          elif [[ "$GITHUB_REF_NAME" == "fix/download-mkv-self-repair" ]]; then
             SIGNED_NAME="Cinemana_PATCH258_DownloadRepair_signed.apk"
             TAG_SUFFIX="download-repair"
             DISPLAY_NAME="Download Repair"
@@ -160,7 +169,7 @@ jobs:
           name: "Cinemana PATCH${{ steps.sign.outputs.patch_version }} ${{ steps.sign.outputs.display_name }} #${{ github.run_number }}"
           body: |
             Build for branch ${{ github.ref_name }}.
-            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'Adds a guarded manual download/MKV recovery pass, separate repair logs, and fixes stale zero-task recovery after path and size verification. It does not blindly duplicate terminal downloads or delete source files.' || 'Fixes the sequential subtitle sync dialog and adds zero-offset reset buttons while preserving existing playback and subtitle behavior.' }}
+            ${{ github.ref_name == 'fix/download-mkv-disk-recovery' && 'Adds a bounded disk scan of existing MP4 files in Cinemana/work, verifies subtitle inputs against the saved manifest plan, reconstructs stale aggregate readiness only when the exact plan is present, and nudges the existing guarded MKV exporter. Existing MKV files are skipped; missing/unknown subtitle plans are logged as unresolved.' || github.ref_name == 'fix/download-mkv-self-repair' && 'Adds a guarded manual download/MKV recovery pass, separate repair logs, and fixes stale zero-task recovery after path and size verification. It does not blindly duplicate terminal downloads or delete source files.' || 'Fixes the sequential subtitle sync dialog and adds zero-offset reset buttons while preserving existing playback and subtitle behavior.' }}
             Automated assembly, alignment, signing, and signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
