@@ -6213,7 +6213,7 @@
 .end method
 
 .method public static onVideoCompleted(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/Object;)V
-    .locals 8
+    .locals 10
 
     .line 80
     if-eqz p0, :cond_3
@@ -6467,8 +6467,21 @@
     .line 105
     invoke-static {v3}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->expectedSubtitleCount(Ljava/lang/String;)I
+    move-result v8
+    new-instance v9, Ljava/lang/StringBuilder;
+    invoke-direct {v9}, Ljava/lang/StringBuilder;-><init>()V
+    const-string p1, "expected_subtitles="
+    invoke-virtual {v9, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v9
+    invoke-virtual {v9, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v9
+    const-string p1, ";subtitle_plan=ready_manifest;export_queue_guard=accepted"
+    invoke-virtual {v9, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v9
+    invoke-virtual {v9}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object p1
     const-string p0, "MKV_EXPORT_QUEUED"
-    const-string p1, "queued_under_original_exporter_guard"
     invoke-static {v1, v0, p0, v3, p1}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
     .line 106
