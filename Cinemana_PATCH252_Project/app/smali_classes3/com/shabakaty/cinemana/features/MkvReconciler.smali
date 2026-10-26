@@ -289,6 +289,49 @@
     return-void
 
     :token_scan_items
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->findDiskMp4ForToken(Ljava/lang/String;)Ljava/io/File;
+    move-result-object v3
+    if-eqz v3, :token_no_disk_mp4
+
+    invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v4
+    invoke-static {v1, v0, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordDiscovery(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+
+    invoke-static {v1, v3}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
+    move-result v3
+    if-eqz v3, :token_disk_attempt_rejected
+    return-void
+
+    :token_disk_attempt_rejected
+    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->isMp4Path(Ljava/lang/String;)Z
+    move-result v3
+    if-eqz v3, :token_done
+    goto :try_start_token_scan
+
+    :token_no_disk_mp4
+    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->isMp4Path(Ljava/lang/String;)Z
+    move-result v3
+    if-eqz v3, :token_wait_for_mp4
+    goto :try_start_token_scan
+
+    :token_wait_for_mp4
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->isQueued(Landroid/content/Context;Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :token_write_wait_for_mp4
+    goto :token_done
+
+    :token_write_wait_for_mp4
+    const-string v3, "WAITING_MP4_SOURCE"
+    const-string v4, "subtitle_event_without_matching_mp4_in_work_roots"
+    move-object v5, v1
+    move-object v6, v0
+    move-object v7, v3
+    const-string v8, ""
+    const-string v9, ""
+    move-object v10, v4
+    invoke-static/range {v5 .. v10}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    goto :token_done
+
     :try_start_token_scan
     invoke-virtual {v1}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
     move-result-object v3
@@ -1210,8 +1253,7 @@
     if-eqz v7, :disk_item_manager_loop
 
     check-cast v6, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-    iget-object v7, v6, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
-    invoke-static {p1, v7}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {p0, p1, v6}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskItem(Landroid/content/Context;Ljava/io/File;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
     move-result v7
     if-eqz v7, :disk_item_manager_loop
 
@@ -1277,7 +1319,7 @@
     const-string v8, "x"
     invoke-static {v7, v8}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
     move-result-object v8
-    invoke-static {p1, v8}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {p1, v8}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskVideoPath(Ljava/io/File;Ljava/lang/String;)Z
     move-result v9
     if-eqz v9, :disk_item_dao_loop
 
@@ -1303,8 +1345,7 @@
     if-eqz v12, :disk_item_dao_loop
 
     check-cast v11, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-    iget-object v12, v11, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
-    invoke-static {p1, v12}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {p0, p1, v11}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskItem(Landroid/content/Context;Ljava/io/File;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
     move-result v12
     if-eqz v12, :disk_item_dao_loop
 
@@ -1497,4 +1538,229 @@
     :disk_inputs_no
     const/4 v0, 0x0
     return v0
+.end method
+
+.method private static isMp4Path(Ljava/lang/String;)Z
+    .locals 2
+
+    if-eqz p0, :is_mp4_path_no
+
+    sget-object v0, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {p0, v0}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v0
+
+    const-string v1, ".mp4"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v0
+    return v0
+
+    :is_mp4_path_no
+    const/4 v0, 0x0
+    return v0
+.end method
+
+.method private static matchesDiskVideoPath(Ljava/io/File;Ljava/lang/String;)Z
+    .locals 5
+
+    if-eqz p0, :matches_disk_video_path_no
+    if-eqz p1, :matches_disk_video_path_no
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v0
+    if-eqz v0, :matches_disk_video_path_token
+    const/4 v0, 0x1
+    return v0
+
+    :matches_disk_video_path_token
+    invoke-virtual {p0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :matches_disk_video_path_no
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :matches_disk_video_path_no
+
+    new-instance v0, Ljava/io/File;
+    invoke-direct {v0, p1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v0
+    sget-object v2, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v0, v2}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v0
+    const-string v2, ".mp4"
+    invoke-virtual {v0, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v2
+    if-nez v2, :matches_disk_video_path_compare
+    const-string v2, ".mkv"
+    invoke-virtual {v0, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :matches_disk_video_path_no
+
+    :matches_disk_video_path_compare
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    if-eqz v0, :matches_disk_video_path_no
+    invoke-virtual {v1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    return v0
+
+    :matches_disk_video_path_no
+    const/4 v0, 0x0
+    return v0
+.end method
+
+.method private static matchesDiskItem(Landroid/content/Context;Ljava/io/File;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
+    .locals 3
+
+    if-eqz p0, :matches_disk_item_no
+    if-eqz p1, :matches_disk_item_no
+    if-eqz p2, :matches_disk_item_no
+
+    iget-object v0, p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskVideoPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v0
+    if-eqz v0, :matches_disk_item_exact_video
+    const/4 v0, 0x1
+    return v0
+
+    :matches_disk_item_exact_video
+    invoke-static {p0, p2}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
+    move-result-object v1
+    if-eqz v1, :matches_disk_item_no
+    invoke-virtual {v1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v2
+    invoke-static {p1, v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskVideoPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v0
+    return v0
+
+    :matches_disk_item_no
+    const/4 v0, 0x0
+    return v0
+.end method
+
+.method private static findDiskMp4ForToken(Ljava/lang/String;)Ljava/io/File;
+    .locals 4
+
+    if-eqz p0, :find_disk_mp4_done
+    invoke-virtual {p0}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :find_disk_mp4_done
+
+    const/4 v0, 0x1
+    new-array v0, v0, [I
+    const/4 v1, 0x0
+    aput v1, v0, v1
+
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v1
+
+    new-instance v2, Ljava/io/File;
+    const-string v3, "Cinemana/work"
+    invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const/4 v3, 0x0
+    invoke-static {v2, p0, v3, v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanDiskTreeForToken(Ljava/io/File;Ljava/lang/String;I[I)Ljava/io/File;
+    move-result-object v2
+    if-eqz v2, :find_disk_mp4_second_root
+    return-object v2
+
+    :find_disk_mp4_second_root
+    new-instance v2, Ljava/io/File;
+    const-string v3, "Download/Cinemana/work"
+    invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const/4 v3, 0x0
+    invoke-static {v2, p0, v3, v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanDiskTreeForToken(Ljava/io/File;Ljava/lang/String;I[I)Ljava/io/File;
+    move-result-object v2
+    return-object v2
+
+    :find_disk_mp4_done
+    const/4 v0, 0x0
+    return-object v0
+.end method
+
+.method private static scanDiskTreeForToken(Ljava/io/File;Ljava/lang/String;I[I)Ljava/io/File;
+    .locals 8
+
+    if-eqz p0, :scan_disk_tree_done
+    if-eqz p1, :scan_disk_tree_done
+    if-eqz p3, :scan_disk_tree_done
+
+    const/4 v0, 0x4
+    if-gt p2, v0, :scan_disk_tree_done
+
+    invoke-virtual {p3}, [I->clone()Ljava/lang/Object;
+    move-result-object v0
+    check-cast v0, [I
+    const/4 v1, 0x0
+    aget v0, p3, v1
+    const/16 v1, 0x9c4
+    if-ge v0, v1, :scan_disk_tree_done
+
+    invoke-virtual {p0}, Ljava/io/File;->isDirectory()Z
+    move-result v0
+    if-eqz v0, :scan_disk_tree_done
+    invoke-virtual {p0}, Ljava/io/File;->listFiles()[Ljava/io/File;
+    move-result-object v0
+    if-eqz v0, :scan_disk_tree_done
+    array-length v1, v0
+    const/4 v2, 0x0
+
+    :scan_disk_tree_loop
+    if-ge v2, v1, :scan_disk_tree_done
+    aget-object v3, v0, v2
+    if-eqz v3, :scan_disk_tree_next
+
+    const/4 v4, 0x0
+    aget v5, p3, v4
+    const/16 v6, 0x9c4
+    if-ge v5, v6, :scan_disk_tree_done
+    add-int/lit8 v5, v5, 0x1
+    aput v5, p3, v4
+
+    invoke-virtual {v3}, Ljava/io/File;->isFile()Z
+    move-result v4
+    if-eqz v4, :scan_disk_tree_maybe_dir
+
+    invoke-virtual {v3}, Ljava/io/File;->length()J
+    move-result-wide v4
+    const-wide/16 v6, 0x400
+    cmp-long v4, v4, v6
+    if-lez v4, :scan_disk_tree_next
+
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    sget-object v5, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v4, v5}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v4
+    const-string v5, ".mp4"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :scan_disk_tree_next
+
+    invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v4
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
+    if-eqz v4, :scan_disk_tree_next
+    invoke-virtual {p1, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-eqz v4, :scan_disk_tree_next
+    return-object v3
+
+    :scan_disk_tree_maybe_dir
+    const/4 v4, 0x4
+    if-ge p2, v4, :scan_disk_tree_next
+    add-int/lit8 v4, p2, 0x1
+    invoke-static {v3, p1, v4, p3}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanDiskTreeForToken(Ljava/io/File;Ljava/lang/String;I[I)Ljava/io/File;
+    move-result-object v4
+    if-eqz v4, :scan_disk_tree_next
+    return-object v4
+
+    :scan_disk_tree_next
+    add-int/lit8 v2, v2, 0x1
+    goto :scan_disk_tree_loop
+
+    :scan_disk_tree_done
+    const/4 v0, 0x0
+    return-object v0
 .end method
