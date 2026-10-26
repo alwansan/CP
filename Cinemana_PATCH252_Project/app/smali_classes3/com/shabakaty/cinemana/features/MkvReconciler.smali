@@ -186,11 +186,24 @@
     move-result-object v0
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V
 
-    const-string v1, "MKV_QUEUED"
-    const-string v2, "subtitle_plan_and_files_verified;manifest_ready_or_rebuilt"
-    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
+    move-result-object v3
+    if-eqz v3, :reconcile_export_rejected
 
-    invoke-static {p0, p1, p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->onVideoCompleted(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/Object;)V
+    # Use the already verified concrete MP4 path rather than asking a token-based search to rediscover it.
+    invoke-static {p0, p1, v3}, Lcom/shabakaty/cinemana/features/MkvExporter;->onRecoveredVideo(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
+    move-result v4
+    if-eqz v4, :reconcile_export_rejected
+
+    const-string v1, "MKV_QUEUED"
+    const-string v2, "source_mp4_and_exact_subtitle_plan_verified;explicit_source_path_accepted_by_guarded_exporter"
+    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    goto :reconcile_try_done
+
+    :reconcile_export_rejected
+    const-string v1, "MKV_QUEUE_REJECTED"
+    const-string v2, "subtitle_plan_verified_but_explicit_exporter_did_not_accept_source"
+    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
     goto :reconcile_try_done
 
     :reconcile_wait
@@ -247,143 +260,168 @@
 .end method
 
 .method public static reconcileToken(Ljava/lang/String;)V
-    .locals 8
+    .locals 13
 
-    if-eqz p0, :cond_4
+    if-eqz p0, :token_done
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
-
     move-result-object v0
-
-    invoke-virtual {v0}, Ljava/lang/String;->length()I
-
-    move-result v1
-
-    if-lez v1, :cond_4
+    if-eqz v0, :token_done
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :token_done
 
     sget-object v1, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
-
     invoke-virtual {v1}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
-
     move-result-object v1
-
     check-cast v1, Landroid/content/Context;
-
-    if-eqz v1, :cond_4
+    if-eqz v1, :token_done
 
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->init(Landroid/content/Context;)V
 
     sget-object v2, Lcom/shabakaty/cinemana/features/MkvReconciler;->ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
-
     invoke-virtual {v2, v0}, Ljava/util/concurrent/ConcurrentHashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
-
     move-result-object v3
-
     check-cast v3, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-
-    if-eqz v3, :cond_0
+    if-eqz v3, :token_scan_items
 
     invoke-static {v1, v3}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)V
-
     return-void
 
-    :cond_0
-    :try_start_0
+    :token_scan_items
+    :try_start_token_scan
     invoke-virtual {v1}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
-
     move-result-object v3
-
-    if-eqz v3, :cond_1
-
+    if-eqz v3, :token_use_context
     move-object v4, v3
+    goto :token_app_checked
 
-    goto :goto_0
-
-    :cond_1
+    :token_use_context
     move-object v4, v1
 
-    :goto_0
+    :token_app_checked
     instance-of v3, v4, Lcom/shabakaty/cinemana/CinemanaApplication;
-
-    if-eqz v3, :cond_3
+    if-eqz v3, :token_wait_mapping
 
     check-cast v4, Lcom/shabakaty/cinemana/CinemanaApplication;
-
     invoke-virtual {v4}, Lcom/shabakaty/cinemana/CinemanaApplication;->h()Lcom/shabakaty/downloader/jw0;
-
     move-result-object v3
-
     invoke-interface {v3}, Lcom/shabakaty/downloader/jw0;->j()Ljava/util/List;
-
     move-result-object v3
-
-    if-eqz v3, :cond_3
-
+    if-eqz v3, :token_wait_mapping
     invoke-interface {v3}, Ljava/util/List;->iterator()Ljava/util/Iterator;
-
     move-result-object v3
 
-    :cond_2
+    :token_item_loop
     invoke-interface {v3}, Ljava/util/Iterator;->hasNext()Z
-
     move-result v4
-
-    if-eqz v4, :cond_3
+    if-eqz v4, :token_wait_mapping
 
     invoke-interface {v3}, Ljava/util/Iterator;->next()Ljava/lang/Object;
-
     move-result-object v4
-
     check-cast v4, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    if-eqz v4, :token_item_loop
 
-    if-eqz v4, :cond_2
-
+    # Fast path: the existing identity already equals the filename token.
     invoke-static {v4}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
-
     move-result-object v5
-
     invoke-virtual {v0, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :token_try_path_identity
+    goto :token_item_found
 
-    move-result v5
+    # Recovery path: task identity may have changed after promotion. Match the actual MP4 path tag instead.
+    :token_try_path_identity
+    invoke-static {v1, v4}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
+    move-result-object v6
+    if-eqz v6, :token_item_loop
+    invoke-virtual {v6}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v6
+    invoke-static {v6}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v6
+    invoke-virtual {v0, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :token_item_loop
 
-    if-eqz v5, :cond_2
-
-    invoke-virtual {v2, v0, v4}, Ljava/util/concurrent/ConcurrentHashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-
-    new-instance v5, Ljava/lang/StringBuilder;
-
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v6, "MKV_DB_RECOVER token="
-
-    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
+    :token_item_found
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
     move-result-object v5
+    if-eqz v5, :token_record_wait
+    invoke-virtual {v5}, Ljava/lang/String;->isEmpty()Z
+    move-result v6
+    if-eqz v6, :token_store_item
 
-    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    :token_record_wait
+    const-string v5, "WAIT_ITEM_IDENTITY"
+    const-string v6, "matching_mp4_path_found_but_download_identity_is_empty"
+    move-object v7, v1
+    move-object v8, v0
+    move-object v9, v5
+    move-object v10, p0
+    const-string v11, ""
+    move-object v12, v6
+    invoke-static/range {v7 .. v12}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    goto :token_done
 
-    move-result-object v5
+    :token_store_item
+    invoke-virtual {v2, v5, v4}, Ljava/util/concurrent/ConcurrentHashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
-    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    const-string v6, "ITEM_MATCHED"
+    const-string v7, "filename_token_matched_to_database_item;verifying_exact_subtitle_plan"
+    invoke-static {v1, v4, v6, v7}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
 
-    move-result-object v5
+    # Drop the discovery-only raw-token entry after transferring it to the durable item identity.
+    invoke-virtual {v0, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-nez v6, :token_reconcile_matched
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
 
-    invoke-static {v1, v5}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V
-
+    :token_reconcile_matched
+    new-instance v6, Ljava/lang/StringBuilder;
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v7, "MKV_DB_RECOVER rawToken="
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    const-string v7, " itemKey="
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v6
+    invoke-static {v1, v6}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V
     invoke-static {v1, v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)V
-
+    :try_end_token_scan
+    .catch Ljava/lang/Throwable; {:try_start_token_scan .. :try_end_token_scan} :token_scan_failed
     return-void
-    :try_end_0
-    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
-    :cond_3
-    goto :goto_1
+    :token_wait_mapping
+    const-string v3, "WAIT_ITEM_MAPPING"
+    const-string v4, "no_database_item_matched_filename_token_or_exact_mp4_path"
+    move-object v5, v1
+    move-object v6, v0
+    move-object v7, v3
+    move-object v8, p0
+    const-string v9, ""
+    move-object v10, v4
+    invoke-static/range {v5 .. v10}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    goto :token_done
 
-    :catch_0
-    move-exception v0
+    :token_scan_failed
+    move-exception v2
+    const-string v3, "ITEM_SCAN_FAILED"
+    const-string v4, "exception_during_item_or_mp4_identity_lookup"
+    move-object v5, v1
+    move-object v6, v0
+    move-object v7, v3
+    move-object v8, p0
+    const-string v9, ""
+    move-object v10, v4
+    invoke-static/range {v5 .. v10}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
-    :cond_4
-    :goto_1
+    :token_done
     return-void
 .end method
 
