@@ -3334,25 +3334,13 @@
     :try_end_b
     .catchall {:try_start_b .. :try_end_b} :catchall_6
 
-    # This point is reached only after the MKV was sorted to its final path and DB promotion succeeded.
-    # Remove the compact pending row now; failed promotion never passes this point.
-    move-object/from16 v15, p4
-    instance-of v9, v15, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-    if-eqz v9, :repair_journal_token_from_path
-
-    check-cast v15, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-    invoke-static {v15}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
-    move-result-object v15
-    goto :repair_journal_complete
-
-    :repair_journal_token_from_path
+    # The journal is keyed by the cnm token parsed from the source MP4 path in every entry point.
+    # Clear it only after final sorting and successful database promotion have completed.
     move-object/from16 v10, p1
     invoke-virtual {v10}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v15
     invoke-static {v15}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v15
-
-    :repair_journal_complete
     invoke-static {v1, v15}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->complete(Landroid/content/Context;Ljava/lang/String;)V
 
     .line 578
