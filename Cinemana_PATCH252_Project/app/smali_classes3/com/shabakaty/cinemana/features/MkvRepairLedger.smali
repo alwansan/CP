@@ -411,8 +411,8 @@
     invoke-virtual {v0, p1}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v1
 
-    # Repair stale entries created by subtitle FileObserver events. A token may first be
-    # recorded against an SRT/ASS path; replace only that discovery with the real MP4.
+    # Repair stale entries created by subtitle observer events. Do not downgrade a queued
+    # conversion or an item already waiting for final MKV promotion.
     if-eqz v1, :discovery_validate_mp4
     const-string v2, "\\|"
     invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
@@ -435,6 +435,9 @@
     const/4 v3, 0x2
     aget-object v3, v2, v3
     if-eqz v3, :discovery_validate_mp4
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v4
+    if-nez v4, :discovery_validate_mp4
     sget-object v4, Ljava/util/Locale;->US:Ljava/util/Locale;
     invoke-virtual {v3, v4}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
     move-result-object v3
@@ -458,16 +461,9 @@
     invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v4
     if-nez v4, :discovery_validate_mp4
-    const-string v4, "WAITING_MP4_SOURCE"
-    const-string v5, "WAIT_ITEM_MAPPING"
-    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v4
-    # Existing non-subtitle source/diagnostics remain untouched.
-    if-eqz v4, :discovery_done
-    goto :discovery_validate_mp4
+    goto :discovery_done
 
     :discovery_existing_source_unknown
-    # A previous empty-source wait is safe to replace with a confirmed MP4.
     const-string v3, "WAITING_MP4_SOURCE"
     invoke-virtual {v1, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
     move-result v3
@@ -522,7 +518,7 @@
 
     :discovery_done
     return-void
-.end methodd
+.end methoddd
 
 
 
