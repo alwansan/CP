@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView android:tag="layout/fragment_search_all_tab_0" android:layout_width="fill_parent" android:layout_height="fill_parent"
+<androidx.core.widget.NestedScrollView android:tag="layout/fragment_search_all_tab_0" android:clipToPadding="false" android:paddingBottom="88dp" android:layout_width="fill_parent" android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:acc="http://schemas.android.com/apk/res-auto" xmlns:debounce="http://schemas.android.com/apk/res-auto">
     <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
         <androidx.constraintlayout.helper.widget.Flow android:orientation="vertical" android:tag="binding_1" android:layout_width="fill_parent" android:layout_height="wrap_content" debounce:flow_verticalGap="4.0dip" debounce:layout_constraintEnd_toEndOf="parent" debounce:layout_constraintStart_toStartOf="parent" debounce:layout_constraintTop_toTopOf="parent" />
