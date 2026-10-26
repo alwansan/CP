@@ -1145,7 +1145,7 @@
 .end method
 
 .method private static findItemForDiskSource(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-    .locals 16
+    .locals 14
 
     const/4 v0, 0x0
     if-eqz p0, :disk_item_not_found
