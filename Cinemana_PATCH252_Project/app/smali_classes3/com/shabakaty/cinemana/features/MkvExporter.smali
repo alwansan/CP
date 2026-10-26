@@ -3090,6 +3090,12 @@
 
     invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->completed(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)V
 
+    # Retire the compact pending-work ledger only after the canonical MKV promotion/DB commit.
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v1, v0, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeAliasFromSource(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)V
+    invoke-static {v1, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+
     .line 564
     new-instance v0, Ljava/io/File;
 
