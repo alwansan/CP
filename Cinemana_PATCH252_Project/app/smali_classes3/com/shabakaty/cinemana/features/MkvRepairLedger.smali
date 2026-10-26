@@ -196,6 +196,76 @@
     return-void
 .end method
 
+.method public static declared-synchronized sweep(Landroid/content/Context;)V
+    .locals 8
+
+    if-eqz p0, :sweep_done
+
+    :try_start_sweep
+    invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
+    move-result-object v0
+    if-eqz v0, :sweep_done
+
+    instance-of v2, v0, Lcom/shabakaty/cinemana/CinemanaApplication;
+    if-eqz v2, :sweep_done
+
+    check-cast v0, Lcom/shabakaty/cinemana/CinemanaApplication;
+    invoke-virtual {v0}, Lcom/shabakaty/cinemana/CinemanaApplication;->h()Lcom/shabakaty/downloader/jw0;
+    move-result-object v0
+    invoke-interface {v0}, Lcom/shabakaty/downloader/jw0;->j()Ljava/util/List;
+    move-result-object v1
+    if-eqz v1, :sweep_done
+
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/util/Properties;->keySet()Ljava/util/Set;
+    move-result-object v2
+    invoke-interface {v2}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+    move-result-object v3
+
+    :sweep_token_loop
+    invoke-interface {v3}, Ljava/util/Iterator;->hasNext()Z
+    move-result v2
+    if-eqz v2, :sweep_done
+
+    invoke-interface {v3}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v4
+    check-cast v4, Ljava/lang/String;
+
+    invoke-interface {v1}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+    move-result-object v5
+
+    :sweep_item_loop
+    invoke-interface {v5}, Ljava/util/Iterator;->hasNext()Z
+    move-result v2
+    if-eqz v2, :sweep_token_loop
+
+    invoke-interface {v5}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v6
+    if-eqz v6, :sweep_item_loop
+
+    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Restart108;->identityToken(Ljava/lang/Object;)Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v4, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v2
+    if-eqz v2, :sweep_item_loop
+
+    # Clear only after the database identity resolves to a valid final MKV file.
+    invoke-static {p0, v6}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+    goto :sweep_token_loop
+
+    :try_end_sweep
+    .catch Ljava/lang/Throwable; {:try_start_sweep .. :try_end_sweep} :sweep_failed
+
+    goto :sweep_done
+
+    :sweep_failed
+    move-exception v0
+
+    :sweep_done
+    return-void
+.end method
+
 .method public static completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
     .locals 6
 
@@ -236,9 +306,8 @@
     goto :complete_done
 
     :complete_unverified
-    const-string v1, "FINAL_MKV_NOT_VERIFIED"
-    const-string v2, "worker_finished_but_database_final_mkv_path_or_size_not_verified"
-    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    # Keep the previous pending state intact until a later sweep verifies the final MKV.
+    nop
     :try_end_complete
     .catch Ljava/lang/Throwable; {:try_start_complete .. :try_end_complete} :complete_failed
 
