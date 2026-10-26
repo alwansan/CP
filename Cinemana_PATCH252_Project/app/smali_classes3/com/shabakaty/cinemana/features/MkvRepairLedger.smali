@@ -90,16 +90,52 @@
 .end method
 
 .method public static declared-synchronized record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-    .locals 4
+    .locals 6
 
     if-eqz p1, :record_done
     invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
-    move-result v0
-    if-nez v0, :record_done
+    move-result v5
+    if-nez v5, :record_done
 
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
     move-result-object v0
 
+    # Transitions may have no new path information. Preserve the last known source and target
+    # rather than blanking them when recordItem cannot resolve a transient/stale DB identity.
+    invoke-virtual {v0, p1}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :record_paths_ready
+
+    const-string v2, "\\\\|"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
+    move-result-object v4
+
+    if-eqz p3, :record_restore_source
+    invoke-virtual {p3}, Ljava/lang/String;->isEmpty()Z
+    move-result v5
+    if-eqz v5, :record_restore_target
+
+    :record_restore_source
+    array-length v5, v4
+    const/4 v2, 0x3
+    if-lt v5, v2, :record_restore_target
+    const/4 v5, 0x2
+    aget-object p3, v4, v5
+
+    :record_restore_target
+    if-eqz p4, :record_restore_target_value
+    invoke-virtual {p4}, Ljava/lang/String;->isEmpty()Z
+    move-result v5
+    if-eqz v5, :record_paths_ready
+
+    :record_restore_target_value
+    array-length v5, v4
+    const/4 v2, 0x4
+    if-lt v5, v2, :record_paths_ready
+    const/4 v5, 0x3
+    aget-object p4, v4, v5
+
+    :record_paths_ready
     new-instance v1, Ljava/lang/StringBuilder;
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
 
