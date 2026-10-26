@@ -197,7 +197,7 @@
 .end method
 
 .method public static completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
-    .locals 5
+    .locals 6
 
     if-eqz p0, :complete_done
     if-eqz p1, :complete_done
