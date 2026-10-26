@@ -1610,6 +1610,8 @@
 
     invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/ca1/Restart108;->bootstrap(Ljava/lang/Object;)V
 
+    invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->startup(Landroid/content/Context;)V
+
     return-void
 
     :cond_a
