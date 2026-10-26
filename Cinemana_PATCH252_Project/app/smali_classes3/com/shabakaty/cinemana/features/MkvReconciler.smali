@@ -1124,16 +1124,13 @@
     return v0
 
     :disk_video_mapping_wait
-    const-string v2, "WAIT_ITEM_MAPPING"
-    const-string v3, "no_unique_download_item_matches_exact_mkv_destination_basename"
-    const-string v4, ""
-    move-object v5, p0
-    move-object v6, v1
-    move-object v7, v2
-    move-object v2, v0
-    move-object v3, v4
-    const-string v4, "no_unique_download_item_matches_exact_mkv_destination_basename"
-    invoke-static/range {v5 .. v10}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    move-object v4, p0
+    move-object v5, v1
+    const-string v6, "WAIT_ITEM_MAPPING"
+    move-object v7, v0
+    const-string v8, ""
+    const-string v9, "no_unique_download_item_matches_exact_mkv_destination_basename"
+    invoke-static/range {v4 .. v9}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     :try_end_disk_video
     .catch Ljava/lang/Throwable; {:try_start_disk_video .. :try_end_disk_video} :disk_video_exception
 
