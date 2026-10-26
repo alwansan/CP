@@ -17,6 +17,22 @@
     return-void
 .end method
 
+.method public static startup(Landroid/content/Context;)V
+    .locals 2
+
+    if-eqz p0, :startup_done
+
+    new-instance v0, Lcom/shabakaty/cinemana/features/MkvRepairStartup;
+    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/features/MkvRepairStartup;-><init>(Landroid/content/Context;)V
+
+    new-instance v1, Ljava/lang/Thread;
+    invoke-direct {v1, v0}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
+    invoke-virtual {v1}, Ljava/lang/Thread;->start()V
+
+    :startup_done
+    return-void
+.end method
+
 .method public static profile(Landroid/view/View;)V
     .locals 4
     if-eqz p0, :done
