@@ -1126,7 +1126,14 @@
     :disk_video_mapping_wait
     const-string v2, "WAIT_ITEM_MAPPING"
     const-string v3, "no_unique_download_item_matches_exact_mkv_destination_basename"
-    invoke-static {p0, v1, v2, v0, v0, v3}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v4, ""
+    move-object v5, p0
+    move-object v6, v1
+    move-object v7, v2
+    move-object v2, v0
+    move-object v3, v4
+    const-string v4, "no_unique_download_item_matches_exact_mkv_destination_basename"
+    invoke-static/range {v5 .. v10}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     :try_end_disk_video
     .catch Ljava/lang/Throwable; {:try_start_disk_video .. :try_end_disk_video} :disk_video_exception
 
@@ -1136,6 +1143,7 @@
 
     :disk_video_exception
     move-exception v0
+    const/4 v0, 0x0
     return v0
 .end method
 
@@ -1366,17 +1374,24 @@
     move-result v3
     if-eqz v3, :disk_one_no
 
-    const-string v3, "MKV_QUEUED"
-    const-string v4, "explicit_disk_mp4_and_exact_subtitle_plan_verified;guarded_exporter_accepted"
-    invoke-static {p0, v2, v3, v1, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    move-object v4, p0
+    move-object v5, v2
+    const-string v6, "MKV_QUEUED"
+    move-object v7, v1
+    iget-object v8, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    const-string v9, "explicit_disk_mp4_and_exact_subtitle_plan_verified;guarded_exporter_accepted"
+    invoke-static/range {v4 .. v9}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     const/4 v0, 0x1
     return v0
 
     :disk_one_wait
-    const-string v3, "WAITING_PLAN_OR_SUBTITLES"
-    const-string v4, "source_mp4_found_but_exact_saved_subtitle_plan_not_verified;no_conversion_started"
-    iget-object v5, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
-    invoke-static {p0, v2, v3, v1, v5, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    move-object v4, p0
+    move-object v5, v2
+    const-string v6, "WAITING_PLAN_OR_SUBTITLES"
+    move-object v7, v1
+    iget-object v8, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    const-string v9, "source_mp4_found_but_exact_saved_subtitle_plan_not_verified;no_conversion_started"
+    invoke-static/range {v4 .. v9}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     :try_end_disk_one
     .catch Ljava/lang/Throwable; {:try_start_disk_one .. :try_end_disk_one} :disk_one_exception
 
