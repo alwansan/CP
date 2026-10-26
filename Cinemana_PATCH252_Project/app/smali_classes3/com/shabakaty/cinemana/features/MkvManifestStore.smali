@@ -1285,9 +1285,10 @@
     if-eqz v10, :disk_manifest_not_ready
     invoke-virtual {v9}, Ljava/io/File;->length()J
     move-result-wide v10
-    const-wide/16 v12, 0x0
-    cmp-long v0, v10, v12
-    if-lez v0, :disk_manifest_not_ready
+    # Use v0/v1 for the zero constant; v12 is adjacent to parameter p0 in this .locals method.
+    const-wide/16 v0, 0x0
+    cmp-long v2, v10, v0
+    if-lez v2, :disk_manifest_not_ready
     goto :disk_subtitle_check_loop
     :disk_subtitles_verified
     const-string v0, "cnm_mkv_manifest_v66"
