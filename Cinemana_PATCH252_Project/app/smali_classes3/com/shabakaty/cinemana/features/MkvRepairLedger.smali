@@ -117,7 +117,7 @@
 .end method
 
 .method public static recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
-    .locals 13
+    .locals 11
 
     if-eqz p0, :record_item_done
     if-eqz p1, :record_item_done
@@ -166,13 +166,13 @@
     move-result-object v3
 
     :record_item_write
-    move-object v7, p0
-    move-object v8, v0
-    move-object v9, p2
-    move-object v10, v2
-    move-object v11, v3
-    move-object v12, p3
-    invoke-static/range {v7 .. v12}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    move-object v5, p0
+    move-object v6, v0
+    move-object v7, p2
+    move-object v8, v2
+    move-object v9, v3
+    move-object v10, p3
+    invoke-static/range {v5 .. v10}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     :try_end_record_item
     .catch Ljava/lang/Throwable; {:try_start_record_item .. :try_end_record_item} :record_item_failed
 
