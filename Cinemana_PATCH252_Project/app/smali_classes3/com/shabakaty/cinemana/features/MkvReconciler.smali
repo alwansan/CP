@@ -659,7 +659,7 @@
     const/4 v0, 0x0
 
     return v0
-.end methodd
+.end method
 
 .method private static scanExistingRoot(Ljava/io/File;)V
     .locals 7
