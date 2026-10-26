@@ -106,7 +106,7 @@
     move-result-object v1
     if-eqz v1, :record_paths_ready
 
-    const-string v2, "\\\\|"
+    const-string v2, "\\|"
     invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
     move-result-object v4
 
@@ -465,7 +465,7 @@
     if-eqz v1, :final_token_done
 
     # Values are compact: timestamp|state|source|target|reason.
-    const-string v2, "\\\\|"
+    const-string v2, "\\|"
     invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
     move-result-object v1
     array-length v2, v1
