@@ -1190,7 +1190,7 @@
 
     check-cast v6, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
     iget-object v7, v6, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
-    invoke-static {p1, v7}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {p1, v7}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
     move-result v7
     if-eqz v7, :disk_item_manager_loop
 
@@ -1256,7 +1256,7 @@
     const-string v8, "x"
     invoke-static {v7, v8}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
     move-result-object v8
-    invoke-static {p1, v8}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {p1, v8}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
     move-result v9
     if-eqz v9, :disk_item_dao_loop
 
@@ -1283,7 +1283,7 @@
 
     check-cast v11, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
     iget-object v12, v11, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
-    invoke-static {p1, v12}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {p1, v12}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
     move-result v12
     if-eqz v12, :disk_item_dao_loop
 
@@ -1325,7 +1325,7 @@
 
     :try_start_disk_one
     iget-object v0, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
-    invoke-static {p2, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {p2, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
     move-result v0
     if-eqz v0, :disk_one_no
 
@@ -1338,8 +1338,14 @@
     move-result v3
     if-nez v3, :disk_one_no
 
-    # If the exact destination is already complete, retire the recovery entries instead of rebuilding.
+    # Only a matching MKV destination can count as already complete. An item still pointing at the MP4
+    # source must continue through subtitle validation and the guarded conversion path.
     iget-object v3, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    invoke-static {p2, v3}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :disk_one_check_manifest
+
+    # If the exact destination is already complete, retire the recovery entries instead of rebuilding.
     new-instance v4, Ljava/io/File;
     invoke-direct {v4, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
     invoke-virtual {v4}, Ljava/io/File;->isFile()Z
