@@ -13087,7 +13087,7 @@
 
 
 .method public static onRecoveredVideo(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
-    .locals 16
+    .locals 13
 
     if-eqz p0, :recovered_reject
     if-eqz p1, :recovered_reject
@@ -13168,19 +13168,27 @@
     const-string v1, "QUEUED"
     invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
-    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
-    new-instance v1, Lcom/shabakaty/cinemana/features/MkvExporter$2;
-    move-object v2, p0
-    move-object v8, v1
-    move-object v9, p0
+    # Save original parameters before reusing the highest parameter registers for the contiguous constructor range.
+    move-object v0, p0
+    move-object v1, p1
+    move-object v2, p2
+
+    new-instance v8, Lcom/shabakaty/cinemana/features/MkvExporter$2;
+    move-object v9, v0
     move-object v10, v3
     move-object v11, v7
     move-object v12, v4
-    move-object v13, v5
-    move-object v14, v6
-    move-object v15, p1
+    move-object p0, v5
+    move-object p1, v6
+    move-object p2, v1
     invoke-direct/range {v8 .. v15}, Lcom/shabakaty/cinemana/features/MkvExporter$2;-><init>(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
-    invoke-interface {v0, v1}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
+
+    move-object p0, v0
+    move-object p1, v1
+    move-object p2, v2
+
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
+    invoke-interface {v0, v8}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
     :try_end_recovered_queue
     .catch Ljava/lang/Throwable; {:try_start_recovered_queue .. :try_end_recovered_queue} :recovered_queue_failed
 
