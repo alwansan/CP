@@ -269,11 +269,14 @@
     move-result-object v1
     if-eqz v1, :sweep_done
 
+    # Iterate a snapshot because successful entries are deleted from Properties while sweeping.
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
     move-result-object v2
     invoke-virtual {v2}, Ljava/util/Properties;->keySet()Ljava/util/Set;
-    move-result-object v2
-    invoke-interface {v2}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+    move-result-object v3
+    new-instance v2, Ljava/util/ArrayList;
+    invoke-direct {v2, v3}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
+    invoke-virtual {v2}, Ljava/util/ArrayList;->iterator()Ljava/util/Iterator;
     move-result-object v3
 
     :sweep_token_loop
@@ -301,10 +304,16 @@
     move-result-object v7
     invoke-virtual {v4, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v2
-    if-eqz v2, :sweep_item_loop
+    if-eqz v2, :sweep_try_disk_alias
 
-    # Clear only after the database identity resolves to a valid final MKV file.
+    # Identity-keyed entries still require a valid final MKV in the database's canonical path.
     invoke-static {p0, v6}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+
+    :sweep_try_disk_alias
+    # A raw MP4 token is different from the item's stable identity. Clear it only after the saved MKV target is final.
+    invoke-static {p0, v4, v6}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeDiskAliasIfFinal(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)Z
+    move-result v2
+    if-eqz v2, :sweep_item_loop
     goto :sweep_token_loop
 
     :try_end_sweep
@@ -317,7 +326,7 @@
 
     :sweep_done
     return-void
-.end method
+.end methodd
 
 .method public static completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
     .locals 7
@@ -457,3 +466,104 @@
 
 
 
+
+
+.method private static completeDiskAliasIfFinal(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)Z
+    .locals 10
+
+    if-eqz p0, :disk_alias_no
+    if-eqz p1, :disk_alias_no
+    if-eqz p2, :disk_alias_no
+
+    :try_start_disk_alias
+    instance-of v0, p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    if-eqz v0, :disk_alias_no
+
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
+    move-result-object v0
+    invoke-virtual {v0, p1}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :disk_alias_no
+
+    const-string v2, "\\|"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
+    move-result-object v2
+    array-length v3, v2
+    const/4 v4, 0x4
+    if-lt v3, v4, :disk_alias_no
+
+    # Only a queued entry has an exact destination path supplied by the guarded pipeline.
+    const/4 v3, 0x1
+    aget-object v3, v2, v3
+    const-string v4, "MKV_QUEUED"
+    invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v3
+    if-eqz v3, :disk_alias_no
+
+    const/4 v3, 0x2
+    aget-object v3, v2, v3
+    if-eqz v3, :disk_alias_no
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v4
+    if-nez v4, :disk_alias_no
+
+    const/4 v4, 0x3
+    aget-object v4, v2, v4
+    if-eqz v4, :disk_alias_no
+    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
+    move-result v5
+    if-nez v5, :disk_alias_no
+
+    check-cast p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    iget-object v5, p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    if-eqz v5, :disk_alias_no
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-nez v6, :disk_alias_target_matches
+
+    # Canonicalize paths for devices that normalize storage prefixes differently.
+    new-instance v6, Ljava/io/File;
+    invoke-direct {v6, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v6}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
+    move-result-object v6
+    new-instance v7, Ljava/io/File;
+    invoke-direct {v7, v5}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v7}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :disk_alias_no
+
+    :disk_alias_target_matches
+    new-instance v6, Ljava/io/File;
+    invoke-direct {v6, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v6}, Ljava/io/File;->isFile()Z
+    move-result v7
+    if-eqz v7, :disk_alias_no
+    invoke-virtual {v6}, Ljava/io/File;->length()J
+    move-result-wide v7
+    const-wide/16 v8, 0x400
+    cmp-long v7, v7, v8
+    if-lez v7, :disk_alias_no
+
+    new-instance v7, Ljava/io/File;
+    invoke-direct {v7, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-static {v7, v4}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v7
+    if-eqz v7, :disk_alias_no
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
+    invoke-static {p0, p2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+    :try_end_disk_alias
+    .catch Ljava/lang/Throwable; {:try_start_disk_alias .. :try_end_disk_alias} :disk_alias_exception
+
+    const/4 v0, 0x1
+    return v0
+
+    :disk_alias_exception
+    move-exception v0
+
+    :disk_alias_no
+    const/4 v0, 0x0
+    return v0
+.end method
