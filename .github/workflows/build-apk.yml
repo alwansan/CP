@@ -96,6 +96,12 @@ jobs:
           grep -q 'ca1_download_repair129' Cinemana_PATCH252_Project/app/res/layout-v22/fragment_profile.xml
           grep -q 'download_repair_findings.log' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
           grep -q 'cond_task_verified129' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Restart108.smali
+grep -q 'cnm_repair_journal_v1' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RepairJournal129.smali
+grep -q 'RepairJournal129;->scheduleAuto' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Restart108.smali
+grep -q 'RepairJournal129;->record' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+grep -q 'RepairJournal129;->complete' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+grep -q 'recoverExpectedFromDependencyPlan' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvManifestStore.smali
+
           grep -q 'reconcileDiskReady(Landroid/content/Context;Ljava/io/File;)Z' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvManifestStore.smali
           grep -q 'MP4_DISK_READY_FOR_MKV' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
           grep -q 'repairDiskMp4(Landroid/content/Context;)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
