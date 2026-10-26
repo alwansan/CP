@@ -103,6 +103,14 @@
 
     invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
+    iget-object v4, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$initialRawPath:Ljava/lang/String;
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    iget-object v6, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$app:Landroid/content/Context;
+    const-string v7, "MKV_EXPORT_RUNNING"
+    const-string v8, "worker_started"
+    invoke-static {v6, v5, v7, v4, v8}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
     .line 110
     nop
 
@@ -377,6 +385,19 @@
     .line 141
     :cond_3
     :goto_4
+    if-eqz v3, :journal_mark_export_pending
+    goto :journal_stage_done
+
+    :journal_mark_export_pending
+    iget-object v4, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$initialRawPath:Ljava/lang/String;
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    iget-object v6, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$app:Landroid/content/Context;
+    const-string v7, "MKV_EXPORT_UNRESOLVED"
+    const-string v8, "worker_finished_but_source_mp4_remains"
+    invoke-static {v6, v5, v7, v4, v8}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    :journal_stage_done
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvExporter;->access$400()Ljava/lang/Object;
 
     move-result-object v0
@@ -509,6 +530,14 @@
     const-string v4, "FAILED"
 
     invoke-static {v1, v2, v3, v4}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+
+    iget-object v4, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$initialRawPath:Ljava/lang/String;
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    iget-object v6, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$app:Landroid/content/Context;
+    const-string v7, "MKV_EXPORT_EXCEPTION"
+    const-string v8, "worker_exception;source_mp4_may_remain"
+    invoke-static {v6, v5, v7, v4, v8}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
     .line 145
     throw v0
