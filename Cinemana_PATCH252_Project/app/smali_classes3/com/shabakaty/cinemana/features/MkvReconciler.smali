@@ -95,6 +95,8 @@
 
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
 
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
+
     new-instance v1, Ljava/io/File;
 
     invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
@@ -156,13 +158,20 @@
 
     move-result v1
 
+    if-nez v1, :repair_inputs_ready
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->filesystemInputsReady(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
+
+    move-result v1
+
+    :repair_inputs_ready
     if-eqz v1, :cond_0
 
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v2, "MKV_MANIFEST_READY token="
+    const-string v2, "MKV_READY token="
 
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -540,5 +549,162 @@
     goto :goto_0
 
     :cond_1
+    return-void
+.end method
+
+.method private static filesystemInputsReady(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
+    .locals 5
+
+    if-eqz p0, :fs_not_ready
+
+    if-eqz p1, :fs_not_ready
+
+    :try_start_fs_ready
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
+
+    move-result-object v0
+
+    if-eqz v0, :fs_not_ready
+
+    invoke-virtual {v0}, Ljava/io/File;->isFile()Z
+
+    move-result v1
+
+    if-eqz v1, :fs_not_ready
+
+    invoke-virtual {v0}, Ljava/io/File;->length()J
+
+    move-result-wide v1
+
+    const-wide/16 v3, 0x400
+
+    cmp-long v1, v1, v3
+
+    if-lez v1, :fs_not_ready
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/Inputs114;->verified(Ljava/lang/Object;Ljava/io/File;)Ljava/util/List;
+
+    move-result-object v0
+
+    if-eqz v0, :fs_not_ready
+
+    const/4 v0, 0x1
+    :try_end_fs_ready
+    .catch Ljava/lang/Throwable; {:try_start_fs_ready .. :try_end_fs_ready} :fs_ready_exception
+
+    return v0
+
+    :fs_ready_exception
+    move-exception v0
+
+    :fs_not_ready
+    const/4 v0, 0x0
+
+    return v0
+.end method
+
+.method private static scanExistingRoot(Ljava/io/File;)V
+    .locals 7
+
+    if-eqz p0, :scan_root_done
+
+    invoke-virtual {p0}, Ljava/io/File;->isDirectory()Z
+
+    move-result v0
+
+    if-eqz v0, :scan_root_done
+
+    invoke-virtual {p0}, Ljava/io/File;->listFiles()[Ljava/io/File;
+
+    move-result-object v0
+
+    if-eqz v0, :scan_root_done
+
+    array-length v1, v0
+
+    const/4 v2, 0x0
+
+    :scan_root_loop
+    if-ge v2, v1, :scan_root_done
+
+    aget-object v3, v0, v2
+
+    invoke-virtual {v3}, Ljava/io/File;->isFile()Z
+
+    move-result v4
+
+    if-eqz v4, :scan_root_next
+
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+
+    move-result-object v4
+
+    sget-object v5, Ljava/util/Locale;->US:Ljava/util/Locale;
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+
+    move-result-object v4
+
+    const-string v5, ".mp4"
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-nez v6, :scan_root_trigger
+
+    const-string v5, ".srt"
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-nez v6, :scan_root_trigger
+
+    const-string v5, ".ass"
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-nez v6, :scan_root_trigger
+
+    const-string v5, ".ssa"
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-nez v6, :scan_root_trigger
+
+    const-string v5, ".vtt"
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-nez v6, :scan_root_trigger
+
+    const-string v5, ".sub"
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+
+    move-result v6
+
+    if-eqz v6, :scan_root_next
+
+    :scan_root_trigger
+    invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+
+    move-result-object v4
+
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
+
+    :scan_root_next
+    add-int/lit8 v2, v2, 0x1
+
+    goto :scan_root_loop
+
+    :scan_root_done
     return-void
 .end method
