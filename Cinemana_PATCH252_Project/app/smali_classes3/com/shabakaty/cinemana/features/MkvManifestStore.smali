@@ -1226,3 +1226,63 @@
 
     return-object p0
 .end method
+
+.method public static recoverReadyFromVerifiedFiles(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;II)Z
+    .locals 4
+
+    if-eqz p0, :recover_ready_no
+    if-eqz p1, :recover_ready_no
+    if-eqz p2, :recover_ready_no
+
+    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :recover_ready_no
+
+    if-ltz p3, :recover_ready_no
+    if-ne p3, p4, :recover_ready_no
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->init(Landroid/content/Context;)V
+
+    # Keep the plan count in the same durable store used by the normal pipeline.
+    const-string v0, "cnm_mkv_plan_v54"
+    const/4 v1, 0x0
+    invoke-virtual {p0, v0, v1}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+    move-result-object v0
+    invoke-interface {v0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+    move-result-object v0
+    invoke-interface {v0, p1, p3}, Landroid/content/SharedPreferences$Editor;->putInt(Ljava/lang/String;I)Landroid/content/SharedPreferences$Editor;
+    invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->commit()Z
+
+    const-string v0, "cnm_mkv_manifest_v66"
+    invoke-virtual {p0, v0, v1}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+    move-result-object v0
+    invoke-interface {v0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+    move-result-object v0
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->videoPathKey(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    invoke-interface {v0, v2, p2}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->videoStateKey(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    const-string v3, "COMPLETED_VERIFIED"
+    invoke-interface {v0, v2, v3}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->terminalKey(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    invoke-interface {v0, v2, p3}, Landroid/content/SharedPreferences$Editor;->putInt(Ljava/lang/String;I)Landroid/content/SharedPreferences$Editor;
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->completedKey(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    invoke-interface {v0, v2, p3}, Landroid/content/SharedPreferences$Editor;->putInt(Ljava/lang/String;I)Landroid/content/SharedPreferences$Editor;
+
+    invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->commit()Z
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->isReadyToken(Ljava/lang/String;)Z
+    move-result v0
+    return v0
+
+    :recover_ready_no
+    const/4 v0, 0x0
+    return v0
+.end method
