@@ -670,7 +670,7 @@
 .end methodd
 
 .method private static scanExistingRoot(Ljava/io/File;)V
-    .locals 7
+    .locals 9
 
     if-eqz p0, :scan_root_done
 
@@ -764,6 +764,36 @@
 
     move-result-object v4
 
+    # Record MP4s even when no matching download-row identity can be recovered.
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v5
+    sget-object v6, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v5, v6}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v5
+    const-string v6, ".mp4"
+    invoke-virtual {v5, v6}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v6
+    if-eqz v6, :scan_root_reconcile
+
+    sget-object v5, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
+    invoke-virtual {v5}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
+    move-result-object v5
+    check-cast v5, Landroid/content/Context;
+    if-eqz v5, :scan_root_reconcile
+
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v6
+    if-eqz v6, :scan_root_reconcile
+    invoke-virtual {v6}, Ljava/lang/String;->isEmpty()Z
+    move-result v7
+    if-nez v7, :scan_root_reconcile
+
+    const-string v7, "DISCOVERED_MP4"
+    const-string v8, "filesystem_mp4_found;checking_item_identity_plan_subtitles_and_final_mkv"
+    const-string v3, ""
+    invoke-static {v5, v6, v7, v4, v3, v8}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    :scan_root_reconcile
     invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
 
     :scan_root_next
