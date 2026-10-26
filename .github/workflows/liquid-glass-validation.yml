@@ -129,7 +129,26 @@ jobs:
               "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/ThemeEngine142.smali"
           ).read_text(encoding="utf-8")
           assert 'const-string p0, "Custom"' in smali, "Custom mode label is missing"
-          print("Navigation/scrim wiring and Custom label checks: PASS")
+
+          mode_start = smali.index(".method public static getMode(")
+          mode_end = smali.index(".end method", mode_start)
+          get_mode = smali[mode_start:mode_end]
+          assert 'const-string v0, "mode"' in get_mode, "getMode preference key changed unexpectedly"
+          assert "const/4 v1, 0x3" in get_mode, "getMode must accept Custom mode 3"
+          assert "->clamp(III)I" in get_mode, "getMode must clamp mode values to the supported range"
+          assert "const/4 v1, 0x2" not in get_mode, "getMode still appears to clamp to mode 2"
+
+          selector_root = parsed["liquid_glass_control_selector.xml"]
+          selector_items = list(selector_root)
+          state_order = [
+              (item.get(ns + "state_enabled"), item.get(ns + "state_pressed"), item.get(ns + "state_focused"))
+              for item in selector_items
+          ]
+          assert state_order[0] == ("false", None, None), "Disabled state must have priority"
+          assert state_order[1] == (None, "true", None), "Pressed feedback must outrank focused state"
+          assert state_order[2] == (None, None, "true"), "Focused ring must remain before the default state"
+
+          print("Navigation/scrim wiring, Custom mode, and state-priority checks: PASS")
           PY
 
       - name: Build unsigned APK with bundled APKTool
