@@ -13214,3 +13214,53 @@
     const/4 v0, 0x0
     return v0
 .end method
+
+
+.method public static matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    .locals 7
+
+    if-eqz p0, :disk_output_no_match
+    if-eqz p1, :disk_output_no_match
+
+    new-instance v0, Ljava/io/File;
+    invoke-direct {v0, p1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvExporter;->extension(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    const-string v3, "mkv"
+    invoke-virtual {v3, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v2
+    if-eqz v2, :disk_output_no_match
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvExporter;->stripExtension(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvExporter;->normalizeName(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+
+    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v2
+    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvExporter;->stripExtension(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+
+    # Strip only the unique [cnm-token] suffix from the source MP4; don't fuzzy-match episode numbers alone.
+    const-string v3, " [cnm-"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->indexOf(Ljava/lang/String;)I
+    move-result v4
+    if-ltz v4, :disk_output_normalize_source
+    const/4 v5, 0x0
+    invoke-virtual {v2, v5, v4}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    move-result-object v2
+
+    :disk_output_normalize_source
+    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvExporter;->normalizeName(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    return v0
+
+    :disk_output_no_match
+    const/4 v0, 0x0
+    return v0
+.end method
