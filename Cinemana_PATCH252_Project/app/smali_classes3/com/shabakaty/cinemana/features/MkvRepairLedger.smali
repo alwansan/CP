@@ -326,7 +326,7 @@
 
     :sweep_done
     return-void
-.end methodd
+.end method
 
 .method public static completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
     .locals 7
