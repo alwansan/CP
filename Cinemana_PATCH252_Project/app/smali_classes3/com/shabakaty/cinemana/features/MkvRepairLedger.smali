@@ -518,7 +518,7 @@
 
     :discovery_done
     return-void
-.end methoddd
+.end method
 
 
 
