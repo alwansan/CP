@@ -11,6 +11,7 @@ on:
       - feature/subtitle-sync-live-refresh
       - fix/external-subtitle-sync-ui
       - fix/sequential-sync-dialog-zero
+      - fix/download-mkv-self-repair
     paths:
       - "Cinemana_PATCH252_Project/**"
       - "signing/checkpoint145-debug.keystore"
@@ -89,7 +90,13 @@ jobs:
           grep -q 'const/4 v0, -0x1' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
           grep -q 'device_build_fingerprint' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/player/PlayerDiagnosticLog.smali
           grep -q '.method public toString()Ljava/lang/String;' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/domain/models/local/VideoModel.smali
+          grep -q 'DownloadRepair129;->profile(Landroid/view/View;)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Enhancements.smali
+          grep -q 'ca1_download_repair129' Cinemana_PATCH252_Project/app/res/layout/fragment_profile.xml
+          grep -q 'ca1_download_repair129' Cinemana_PATCH252_Project/app/res/layout-v22/fragment_profile.xml
+          grep -q 'download_repair_findings.log' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          grep -q 'cond_task_verified129' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Restart108.smali
           echo "Stable playback, subtitle sync, and UI fix wiring: PASS"
+          echo "Download/MKV repair wiring: PASS"
 
       - name: Build unsigned APK
         shell: bash
@@ -99,6 +106,7 @@ jobs:
           ./Cinemana_PATCH252_Project/build.sh
 
       - name: Align and sign APK
+        id: sign
         shell: bash
         env:
           # If the keystore uses non-default credentials, define these in
@@ -112,7 +120,18 @@ jobs:
           KEYSTORE="signing/checkpoint145-debug.keystore"
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
-          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk"
+          if [[ "$GITHUB_REF_NAME" == "fix/download-mkv-self-repair" ]]; then
+            SIGNED_NAME="Cinemana_PATCH258_DownloadRepair_signed.apk"
+            TAG_SUFFIX="download-repair"
+            DISPLAY_NAME="Download Repair"
+            PATCH_VERSION="258"
+          else
+            SIGNED_NAME="Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk"
+            TAG_SUFFIX="sequential-sync-zero"
+            DISPLAY_NAME="Subtitle Sync Dialog & Zero"
+            PATCH_VERSION="257"
+          fi
+          SIGNED="Cinemana_PATCH252_Project/output/$SIGNED_NAME"
 
           keytool -list -keystore "$KEYSTORE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
           "$TOOL_DIR/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
@@ -128,24 +147,25 @@ jobs:
           unzip -t "$SIGNED"
           sha256sum "$SIGNED" | tee Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           ls -lh "$SIGNED"
+          echo "signed_name=$SIGNED_NAME" >> "$GITHUB_OUTPUT"
+          echo "tag_suffix=$TAG_SUFFIX" >> "$GITHUB_OUTPUT"
+          echo "display_name=$DISPLAY_NAME" >> "$GITHUB_OUTPUT"
+          echo "patch_version=$PATCH_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Publish signed APK as a direct GitHub Release download
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: PATCH257-sequential-sync-zero-${{ github.run_number }}
+          tag_name: PATCH${{ steps.sign.outputs.patch_version }}-${{ steps.sign.outputs.tag_suffix }}-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana PATCH257 Subtitle Sync Dialog & Zero #${{ github.run_number }}"
+          name: "Cinemana PATCH${{ steps.sign.outputs.patch_version }} ${{ steps.sign.outputs.display_name }} #${{ github.run_number }}"
           body: |
-            PATCH257 is based on the user-tested subtitle sync and UI behavior.
-            Fixes the SequentialSubtitleSyncHelper dialog construction: the active sync-row reference was overwritten by the setPadding method name before being passed to the button builder, so the dialog failed before it could be displayed.
-            Adds a centered 0 reset button to both general player subtitle sync and Sequential Subtitle Manager sync dialogs. It resets only the relevant saved offset and displayed value.
-            Existing +/-0.1s and +/-0.5s step values and normal offset calculations are unchanged. Existing UI contrast and player renderer behavior are preserved.
-            Device testing is still required to confirm the previously missing dialog now opens and both reset buttons behave correctly.
+            Build for branch ${{ github.ref_name }}.
+            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'Adds a guarded manual download/MKV recovery pass, separate repair logs, and fixes stale zero-task recovery after path and size verification. It does not blindly duplicate terminal downloads or delete source files.' || 'Fixes the sequential subtitle sync dialog and adds zero-offset reset buttons while preserving existing playback and subtitle behavior.' }}
             Automated assembly, alignment, signing, and signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk
+            Cinemana_PATCH252_Project/output/${{ steps.sign.outputs.signed_name }}
             Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           fail_on_unmatched_files: true
           overwrite_files: true
