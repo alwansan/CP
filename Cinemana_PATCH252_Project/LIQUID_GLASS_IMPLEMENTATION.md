@@ -10,7 +10,7 @@ This phase lays down an isolated, reviewable base for the Liquid Glass rollout:
 - Reports the Custom mode correctly from modeName().
 - Adds reusable Android XML drawables for a layered glass shell, a stabilized contrast plate, pressed/focused/disabled/error recipes, a control-state selector, and an error helper line.
 
-The shell and independent scrim are now wired into one limited pilot: the home bottom-navigation container. All other production screens remain unchanged until the pilot passes APK build, screenshot, touch, and accessibility checks. This phase does not claim to ship optical refraction.
+The shell and independent scrim are wired into a home bottom-navigation pilot that now uses a true overlay arrangement: the activity's fragment host extends to the bottom of the screen and is drawn behind the higher-elevation navigation shell. The Home feed, Categories grid, Search scroll surfaces and Profile scroll surface reserve 88dp of bottom scroll reach so final rows can move clear of the floating bar. This is a targeted layout change, not a mass rewrite of every screen. Device screenshots, insets, touch and accessibility checks are still required. This phase does not claim to ship optical refraction.
 
 ## Baseline confirmed in the APKTool project
 
@@ -26,9 +26,9 @@ All drawable gradients share a fixed top/left highlight direction. No random or 
 
 | Token / property | Value | Purpose |
 |---|---:|---|
-| Shell base start | #C61D2630 | Tinted outer material; 78% alpha |
-| Shell base center | #B218202A | Mid-layer tint; 70% alpha |
-| Shell base end | #D20B1118 | Dark lower material; 82% alpha |
+| Shell base start | #8C1D2630 | Tinted outer material; 55% alpha, exposing more live content beneath it |
+| Shell base center | #8418202A | Mid-layer tint; 52% alpha |
+| Shell base end | #A30B1118 | Dark lower material; 64% alpha |
 | Outer hairline | #5CFFFFFF, 1dp | Defines silhouette |
 | Top specular start | #2DFFFFFF | Consistent upper highlight |
 | Left specular start | #20FFFFFF | Low-intensity left edge cue |
@@ -64,8 +64,11 @@ Because original Java/Kotlin project sources are absent, do not add a Maven UI d
 
 ## Next implementation phases
 
-### Phase 2 — validate the home navigation pilot
-- Build the APK and verify all new drawables compile on the declared minimum SDK.
+### Phase 2 — validate the home navigation overlay pilot
+- Build the APK and verify all changed layouts and drawables compile on the declared minimum SDK.
+- Confirm the activity fragment host is constrained to the screen bottom, not to the top edge of the navigation wrapper; the elevated navigation wrapper must draw above content.
+- Verify the shell lets artwork and page content show through without sacrificing label/icon legibility on the independent inner scrim.
+- Confirm the final row in Home, Categories, Search and Profile can scroll above the floating bar instead of ending beneath it.
 - Capture before/after screenshots on portrait phones and with large-font/RTL settings.
 - Verify bottom insets, touch targets, icon tinting, selected-state indicators and navigation behavior.
 - Verify contrast over light posters, dark backdrops, high-saturation artwork and dynamic content before adding any other surface.
