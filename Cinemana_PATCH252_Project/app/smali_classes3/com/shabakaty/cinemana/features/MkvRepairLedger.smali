@@ -564,3 +564,35 @@
     :disk_alias_source_done
     return-void
 .end method
+
+
+.method public static isQueued(Landroid/content/Context;Ljava/lang/String;)Z
+    .locals 4
+
+    if-eqz p0, :is_queued_no
+    if-eqz p1, :is_queued_no
+
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
+    move-result-object v0
+    invoke-virtual {v0, p1}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :is_queued_no
+
+    const-string v2, "\\|"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
+    move-result-object v1
+    array-length v2, v1
+    const/4 v3, 0x2
+    if-lt v2, v3, :is_queued_no
+
+    const/4 v2, 0x1
+    aget-object v1, v1, v2
+    const-string v2, "MKV_QUEUED"
+    invoke-virtual {v2, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    return v0
+
+    :is_queued_no
+    const/4 v0, 0x0
+    return v0
+.end method
