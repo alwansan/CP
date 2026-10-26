@@ -278,6 +278,10 @@
     iget-object v12, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$downloadItem:Ljava/lang/Object;
     invoke-static {v11, v12}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
 
+    # The database item may have started with an MP4 path. Resolve and clear its raw filename-token alias too.
+    iget-object v7, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$initialRawPath:Ljava/lang/String;
+    invoke-static {v11, v7, v12}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeAliasFromSource(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)V
+
     .line 130
     nop
 
