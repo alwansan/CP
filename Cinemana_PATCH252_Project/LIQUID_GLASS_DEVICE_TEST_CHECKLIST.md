@@ -6,9 +6,9 @@
 
 - PR: https://github.com/alwansan/CP/pull/2
 - Feature branch: `feat/liquid-glass-phase1`
-- Latest validation workflow: https://github.com/alwansan/CP/actions/runs/40266612699
-- QA artifact (signed APK and SHA-256 file): https://github.com/alwansan/CP/actions/runs/40266612699/artifacts/12626014740
-- APK SHA-256: `e3ebc127f90ac998e65f41ddf5bc5998212a5494e93542e65355cd94755f3534`
+- Latest source/layout validation workflow: https://github.com/alwansan/CP/actions/runs/40271807317
+- QA artifact (signed APK and SHA-256 file): https://github.com/alwansan/CP/actions/runs/40271807317/artifacts/12629041593
+- APK SHA-256: `8a2645a38d219397e03ca57647ce7c8838c4e56f171638dc33ce9eabd74b2753`
 - Package baseline from the decompiled project: `com.cinemana.pro`; app metadata lists version code `50382` / version name `6.0.0`.
 
 The APK is signed with the repository's Android Debug certificate for QA. If Android refuses to update an installed app due to a signing-certificate mismatch, do not uninstall a daily-use install without first backing up user data/preferences; prefer a spare test device or a deliberately backed-up test install.
@@ -34,7 +34,7 @@ Mark each case PASS / FAIL / BLOCKED and attach screenshots or logs for failures
 | ID | Test | Acceptance criteria | Status |
 |---|---|---|---|
 | LG-01 | Install and first launch | APK installs; app starts without crash or resource inflation error. | NOT RUN |
-| LG-02 | Main navigation appearance | Shell is clipped to the intended rounded shape; no square corners, white seams, unexpected padding, or visual clipping. | NOT RUN |
+| LG-02 | Main navigation appearance and backdrop | Page/poster content is visible behind the translucent floating shell at its edges; the inner scrim keeps icons/labels readable; no square corners, white seams, unexpected padding, or clipping. | NOT RUN |
 | LG-03 | Navigation destinations | Home, Categories, Search, and Profile all open their expected destinations; selected icon/label tint remains correct. | NOT RUN |
 | LG-04 | Tap and back-stack behavior | All four destinations remain responsive; back navigation and repeated taps do not leave a stale fragment or overlay. | NOT RUN |
 | LG-05 | Bottom system inset | Navigation shell and items remain clear of gesture handle / system navigation area in gesture and 3-button modes. | NOT RUN |
