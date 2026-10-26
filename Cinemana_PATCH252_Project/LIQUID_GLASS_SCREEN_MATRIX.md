@@ -42,7 +42,7 @@ Files:
 - app/res/menu/menu_navigation.xml
 - app/res/color/bottom_navigation_selector.xml
 
-Material approach: the home bottom-navigation pilot uses liquid_glass_shell as its outer background and a bounded child scrim behind the retained BottomNavigationView. Preserve all four destinations, selected-state tint, labels, accessibility descriptions, CastButton positioning, fragment-container constraints, system insets, and touch targets. Do not change the menu IDs.
+Material approach: the home bottom-navigation pilot uses liquid_glass_shell as its outer background and a bounded child scrim behind the retained BottomNavigationView. The activity-level fragment_container now spans to the parent's bottom so live page content can extend underneath the higher-elevation floating nav shell; it must not be constrained to the wrapper's top edge. The CastButton stays anchored above the nav wrapper. Home, Categories, Search and Profile scroll surfaces receive 88dp of bottom padding with clipToPadding=false so content can travel behind the bar but the final row can still be scrolled fully into view. Preserve all four destinations, selected-state tint, labels, accessibility descriptions, system insets, and touch targets. Do not change menu IDs.
 
 Toolbar follow-up: main_toolbar.xml is included with a merge root inside a CoordinatorLayout. Do not wrap the AppBarLayout in a generic FrameLayout without proving that CoordinatorLayout scrolling behavior remains attached to the AppBarLayout. First prototype a safe inner plate without breaking nested scrolling/collapse behavior.
 
@@ -57,7 +57,7 @@ Files:
 - app/res/layout/item_horizontal_scroll_videos.xml, item_slider.xml, item_slider_view.xml
 - app/res/layout/item_category.xml, item_franchise.xml, item_franchise_large.xml
 
-Material approach: preserve poster imagery and recycler performance. Apply glass only to transient filter/navigation controls or small overlay actions after the main navigation pilot is validated. Keep labels on opaque or stabilized plates instead of using a translucent background directly over busy poster art.
+Material approach: preserve poster imagery and recycler performance. The page now extends behind the bottom-navigation overlay; RecyclerView bottom padding is scroll reach rather than an opaque footer, so cards may visually pass behind the translucent nav shell while the last row remains reachable. Apply additional glass only to transient controls or small overlay actions after this pilot is validated. Keep text and icons on the independently stabilized plate.
 
 ### P1 — Search and advanced filters
 
@@ -200,7 +200,7 @@ OLED theme colors include canvas #000000, surface #080808, raised surface #10101
 
 ## Rollout priority and gates
 
-1. Home bottom navigation pilot (implemented in the feature branch; build/device checks pending).
+1. Home bottom navigation overlay pilot (content host underlap and scroll reach implemented; fresh build/device checks pending).
 2. Search/advanced-filter control and shared toolbar prototype.
 3. Bottom sheets, comments and season/episode selection.
 4. Settings/profile controls and download panels.
