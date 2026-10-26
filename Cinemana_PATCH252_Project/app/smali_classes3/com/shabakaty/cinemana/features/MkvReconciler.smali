@@ -143,94 +143,94 @@
 .end method
 
 .method private static reconcileOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)V
-    .locals 3
+    .locals 6
 
-    if-eqz p0, :cond_1
+    if-eqz p0, :reconcile_done
+    if-eqz p1, :reconcile_done
 
-    if-eqz p1, :cond_1
-
-    :try_start_0
+    :try_start_reconcile
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->init(Landroid/content/Context;)V
-
     invoke-static {p1}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
-
     move-result-object v0
 
     invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->isReadyToken(Ljava/lang/String;)Z
-
     move-result v1
-
-    if-nez v1, :repair_inputs_ready
+    if-nez v1, :reconcile_ready
 
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->filesystemInputsReady(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
-
     move-result v1
 
-    :repair_inputs_ready
-    if-eqz v1, :cond_0
+    :reconcile_ready
+    if-eqz v1, :reconcile_wait
 
     new-instance v1, Ljava/lang/StringBuilder;
-
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-
     const-string v2, "MKV_READY token="
-
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
     move-result-object v1
-
     invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
     move-result-object v0
-
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
     move-result-object v0
-
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V
 
     const-string v1, "MKV_QUEUED"
-    const-string v2, "verified_manifest_or_rebuilt_from_verified_file_plan"
+    const-string v2, "subtitle_plan_and_files_verified;manifest_ready_or_rebuilt"
     invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
 
     invoke-static {p0, p1, p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->onVideoCompleted(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/Object;)V
+    goto :reconcile_try_done
 
-    goto :goto_0
-
-    :cond_0
+    :reconcile_wait
     new-instance v1, Ljava/lang/StringBuilder;
-
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
-
     const-string v2, "MKV_MANIFEST_WAIT token="
-
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
     move-result-object v1
-
     invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
     move-result-object v0
-
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
     move-result-object v0
-
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V
 
+    # Store compact actionable counts; this is separate from the optional diagnostic logs.
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->expectedSubtitleCount(Ljava/lang/String;)I
+    move-result v3
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->completedSubtitleCount(Ljava/lang/String;)I
+    move-result v4
+
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "expected_subtitles="
+    invoke-virtual {v5, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v2, ";terminal_subtitle_callbacks="
+    invoke-virtual {v5, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v2, ";reason=manifest_or_plan_or_filesystem_verification_not_ready"
+    invoke-virtual {v5, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+
     const-string v1, "WAITING_PLAN_OR_SUBTITLES"
-    const-string v2, "manifest_or_original_subtitle_plan_missing_or_file_count_mismatch"
     invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
-    :try_end_0
-    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
-    goto :goto_0
+    :reconcile_try_done
+    :try_end_reconcile
+    .catch Ljava/lang/Throwable; {:try_start_reconcile .. :try_end_reconcile} :reconcile_failed
+    goto :reconcile_done
 
-    :catch_0
+    :reconcile_failed
     move-exception v0
 
-    :cond_1
-    :goto_0
+    :reconcile_done
     return-void
 .end method
 
@@ -667,7 +667,7 @@
     :fs_not_ready
     const/4 v0, 0x0
     return v0
-.end methodd
+.end method
 
 .method private static scanExistingRoot(Ljava/io/File;)V
     .locals 9
