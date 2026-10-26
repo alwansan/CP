@@ -352,6 +352,13 @@
     if-eqz v6, :token_store_item
 
     :token_record_wait
+    # Do not let a stale subtitle/observer event downgrade an already queued MP4 recovery.
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->isQueued(Landroid/content/Context;Ljava/lang/String;)Z
+    move-result v6
+    if-eqz v6, :token_record_wait_write
+    goto :token_done
+
+    :token_record_wait_write
     const-string v5, "WAIT_ITEM_IDENTITY"
     const-string v6, "matching_mp4_path_found_but_download_identity_is_empty"
     move-object v7, v1
@@ -431,6 +438,13 @@
     return-void
 
     :token_mapping_unresolved
+    # Keep the MKV_QUEUED raw-token state until the exporter confirms success/failure.
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->isQueued(Landroid/content/Context;Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :token_mapping_unresolved_write
+    goto :token_done
+
+    :token_mapping_unresolved_write
     const-string v3, "WAIT_ITEM_MAPPING"
     const-string v4, "no_database_item_matched_filename_token_or_exact_mp4_path"
     move-object v5, v1
@@ -444,6 +458,13 @@
 
     :token_scan_failed
     move-exception v2
+    # Observer exceptions must not overwrite a conversion that is already queued.
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->isQueued(Landroid/content/Context;Ljava/lang/String;)Z
+    move-result v3
+    if-eqz v3, :token_scan_failed_write
+    goto :token_done
+
+    :token_scan_failed_write
     const-string v3, "ITEM_SCAN_FAILED"
     const-string v4, "exception_during_item_or_mp4_identity_lookup"
     move-object v5, v1
