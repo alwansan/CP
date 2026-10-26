@@ -1084,3 +1084,378 @@
     :find_db_item_done
     return-object v0
 .end method
+
+.method public static reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
+    .locals 8
+
+    if-eqz p0, :disk_video_rejected
+    if-eqz p1, :disk_video_rejected
+
+    :try_start_disk_video
+    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->start(Landroid/content/Context;)V
+
+    invoke-virtual {p1}, Ljava/io/File;->isFile()Z
+    move-result v0
+    if-eqz v0, :disk_video_rejected
+
+    invoke-virtual {p1}, Ljava/io/File;->length()J
+    move-result-wide v0
+    const-wide/16 v2, 0x400
+    cmp-long v0, v0, v2
+    if-lez v0, :disk_video_rejected
+
+    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :disk_video_rejected
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :disk_video_rejected
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->findItemForDiskSource(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    move-result-object v2
+    if-eqz v2, :disk_video_mapping_wait
+
+    invoke-static {p0, v2, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
+    move-result v3
+    if-eqz v3, :disk_video_rejected
+    const/4 v0, 0x1
+    return v0
+
+    :disk_video_mapping_wait
+    const-string v2, "WAIT_ITEM_MAPPING"
+    const-string v3, "no_unique_download_item_matches_exact_mkv_destination_basename"
+    invoke-static {p0, v1, v2, v0, v0, v3}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_disk_video
+    .catch Ljava/lang/Throwable; {:try_start_disk_video .. :try_end_disk_video} :disk_video_exception
+
+    :disk_video_rejected
+    const/4 v0, 0x0
+    return v0
+
+    :disk_video_exception
+    move-exception v0
+    return v0
+.end method
+
+.method private static findItemForDiskSource(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    .locals 16
+
+    const/4 v0, 0x0
+    if-eqz p0, :disk_item_not_found
+    if-eqz p1, :disk_item_not_found
+
+    :try_start_disk_item
+    invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
+    move-result-object v1
+    if-eqz v1, :disk_item_context_ready
+    move-object p0, v1
+
+    :disk_item_context_ready
+    instance-of v1, p0, Lcom/shabakaty/cinemana/CinemanaApplication;
+    if-eqz v1, :disk_item_not_found
+
+    check-cast p0, Lcom/shabakaty/cinemana/CinemanaApplication;
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/CinemanaApplication;->h()Lcom/shabakaty/downloader/jw0;
+    move-result-object v1
+    if-eqz v1, :disk_item_not_found
+
+    # First, match the app's actual download items against the exact intended MKV basename.
+    invoke-interface {v1}, Lcom/shabakaty/downloader/jw0;->j()Ljava/util/List;
+    move-result-object v2
+    const/4 v3, 0x0
+    const/4 v4, 0x0
+    if-eqz v2, :disk_item_try_dao
+
+    invoke-interface {v2}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+    move-result-object v5
+
+    :disk_item_manager_loop
+    invoke-interface {v5}, Ljava/util/Iterator;->hasNext()Z
+    move-result v6
+    if-eqz v6, :disk_item_manager_done
+
+    invoke-interface {v5}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v6
+    if-eqz v6, :disk_item_manager_loop
+
+    instance-of v7, v6, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    if-eqz v7, :disk_item_manager_loop
+
+    check-cast v6, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    iget-object v7, v6, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    invoke-static {p1, v7}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v7
+    if-eqz v7, :disk_item_manager_loop
+
+    const-string v7, "id"
+    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v7
+    if-eqz v7, :disk_item_manager_ambiguous
+    invoke-virtual {v7}, Ljava/lang/String;->isEmpty()Z
+    move-result v8
+    if-nez v8, :disk_item_manager_ambiguous
+
+    if-nez v3, :disk_item_manager_compare
+    move-object v3, v6
+    move-object v4, v7
+    goto :disk_item_manager_loop
+
+    :disk_item_manager_compare
+    invoke-virtual {v4, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v8
+    if-nez v8, :disk_item_manager_loop
+    goto :disk_item_not_found
+
+    :disk_item_manager_ambiguous
+    goto :disk_item_not_found
+
+    :disk_item_manager_done
+    if-eqz v3, :disk_item_try_dao
+    move-object v0, v3
+    goto :disk_item_end
+
+    # If the live manager list lacks a row, resolve through the persistent downloads DAO.
+    :disk_item_try_dao
+    const-string v2, "getDownloadsDao"
+    filled-new-array {p0, p0}, [Ljava/lang/Object;
+    move-result-object v3
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v2
+    if-eqz v2, :disk_item_not_found
+
+    const-string v3, "readAllDownloads"
+    filled-new-array {v2}, [Ljava/lang/Object;
+    move-result-object v4
+    invoke-static {v3, v4}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v3
+    instance-of v4, v3, Ljava/util/List;
+    if-eqz v4, :disk_item_not_found
+    check-cast v3, Ljava/util/List;
+    invoke-interface {v3}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+    move-result-object v4
+
+    const/4 v5, 0x0
+    const/4 v6, 0x0
+
+    :disk_item_dao_loop
+    invoke-interface {v4}, Ljava/util/Iterator;->hasNext()Z
+    move-result v7
+    if-eqz v7, :disk_item_dao_done
+
+    invoke-interface {v4}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v7
+    if-eqz v7, :disk_item_dao_loop
+
+    const-string v8, "x"
+    invoke-static {v7, v8}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v8
+    invoke-static {p1, v8}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v9
+    if-eqz v9, :disk_item_dao_loop
+
+    const-string v9, "s"
+    invoke-static {v7, v9}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v9
+    if-eqz v9, :disk_item_dao_loop
+    invoke-virtual {v9}, Ljava/lang/String;->isEmpty()Z
+    move-result v10
+    if-nez v10, :disk_item_dao_loop
+
+    const-string v10, "readCombinedById"
+    filled-new-array {v1, v9}, [Ljava/lang/Object;
+    move-result-object v11
+    invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v10
+    if-eqz v10, :disk_item_dao_loop
+
+    const-string v11, "cinemanaDownloadItem"
+    invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v11
+    instance-of v12, v11, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    if-eqz v12, :disk_item_dao_loop
+
+    check-cast v11, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    iget-object v12, v11, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    invoke-static {p1, v12}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v12
+    if-eqz v12, :disk_item_dao_loop
+
+    if-nez v5, :disk_item_dao_compare
+    move-object v5, v11
+    move-object v6, v9
+    goto :disk_item_dao_loop
+
+    :disk_item_dao_compare
+    invoke-virtual {v6, v9}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v12
+    if-nez v12, :disk_item_dao_loop
+    goto :disk_item_not_found
+
+    :disk_item_dao_done
+    if-eqz v5, :disk_item_not_found
+    move-object v0, v5
+
+    :disk_item_end
+    :try_end_disk_item
+    .catch Ljava/lang/Throwable; {:try_start_disk_item .. :try_end_disk_item} :disk_item_failed
+
+    return-object v0
+
+    :disk_item_failed
+    move-exception v1
+
+    :disk_item_not_found
+    const/4 v0, 0x0
+    return-object v0
+.end method
+
+.method private static reconcileDiskOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
+    .locals 10
+
+    if-eqz p0, :disk_one_no
+    if-eqz p1, :disk_one_no
+    if-eqz p2, :disk_one_no
+
+    :try_start_disk_one
+    iget-object v0, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    invoke-static {p2, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v0
+    if-eqz v0, :disk_one_no
+
+    invoke-virtual {p2}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    if-eqz v2, :disk_one_no
+    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
+    move-result v3
+    if-nez v3, :disk_one_no
+
+    # If the exact destination is already complete, retire the recovery entries instead of rebuilding.
+    iget-object v3, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    new-instance v4, Ljava/io/File;
+    invoke-direct {v4, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v4}, Ljava/io/File;->isFile()Z
+    move-result v5
+    if-eqz v5, :disk_one_check_manifest
+    invoke-virtual {v4}, Ljava/io/File;->length()J
+    move-result-wide v5
+    const-wide/16 v7, 0x400
+    cmp-long v5, v5, v7
+    if-lez v5, :disk_one_check_manifest
+
+    invoke-static {p0, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+    const/4 v0, 0x1
+    return v0
+
+    :disk_one_check_manifest
+    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->init(Landroid/content/Context;)V
+    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->isReadyToken(Ljava/lang/String;)Z
+    move-result v3
+    if-nez v3, :disk_one_ready
+    invoke-static {p0, p1, p2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->filesystemInputsReadyForDisk(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
+    move-result v3
+
+    :disk_one_ready
+    if-eqz v3, :disk_one_wait
+
+    invoke-static {p0, p1, p2}, Lcom/shabakaty/cinemana/features/MkvExporter;->onRecoveredVideo(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
+    move-result v3
+    if-eqz v3, :disk_one_no
+
+    const-string v3, "MKV_QUEUED"
+    const-string v4, "explicit_disk_mp4_and_exact_subtitle_plan_verified;guarded_exporter_accepted"
+    invoke-static {p0, v2, v3, v1, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    const/4 v0, 0x1
+    return v0
+
+    :disk_one_wait
+    const-string v3, "WAITING_PLAN_OR_SUBTITLES"
+    const-string v4, "source_mp4_found_but_exact_saved_subtitle_plan_not_verified;no_conversion_started"
+    iget-object v5, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    invoke-static {p0, v2, v3, v1, v5, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_disk_one
+    .catch Ljava/lang/Throwable; {:try_start_disk_one .. :try_end_disk_one} :disk_one_exception
+
+    :disk_one_no
+    const/4 v0, 0x0
+    return v0
+
+    :disk_one_exception
+    move-exception v0
+    const/4 v0, 0x0
+    return v0
+.end method
+
+.method private static filesystemInputsReadyForDisk(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
+    .locals 7
+
+    if-eqz p0, :disk_inputs_no
+    if-eqz p1, :disk_inputs_no
+    if-eqz p2, :disk_inputs_no
+
+    :try_start_disk_inputs
+    invoke-virtual {p2}, Ljava/io/File;->isFile()Z
+    move-result v0
+    if-eqz v0, :disk_inputs_no
+    invoke-virtual {p2}, Ljava/io/File;->length()J
+    move-result-wide v0
+    const-wide/16 v2, 0x400
+    cmp-long v0, v0, v2
+    if-lez v0, :disk_inputs_no
+
+    invoke-virtual {p2}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :disk_inputs_no
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :disk_inputs_no
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->expectedSubtitleCount(Ljava/lang/String;)I
+    move-result v2
+    if-ltz v2, :disk_inputs_recover_plan
+
+    :disk_inputs_plan_ready
+    invoke-static {p0, p2}, Lcom/shabakaty/cinemana/ca1/Inputs114;->verified(Ljava/lang/Object;Ljava/io/File;)Ljava/util/List;
+    move-result-object v3
+    if-eqz v3, :disk_inputs_no
+    invoke-interface {v3}, Ljava/util/List;->size()I
+    move-result v4
+    if-ne v4, v2, :disk_inputs_no
+
+    invoke-virtual {p2}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {p0, v1, v5, v2, v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->recoverReadyFromVerifiedFiles(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;II)Z
+    move-result v0
+    :try_end_disk_inputs
+    .catch Ljava/lang/Throwable; {:try_start_disk_inputs .. :try_end_disk_inputs} :disk_inputs_exception
+
+    if-eqz v0, :disk_inputs_no
+    const/4 v0, 0x1
+    return v0
+
+    :disk_inputs_recover_plan
+    # Rebuild only the count from the persisted dependency plan, never from arbitrary neighboring files.
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/Inputs114;->model(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v3
+    if-eqz v3, :disk_inputs_no
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/Dependencies112;->subtitles(Ljava/lang/Object;)Ljava/util/List;
+    move-result-object v3
+    if-eqz v3, :disk_inputs_no
+    invoke-interface {v3}, Ljava/util/List;->size()I
+    move-result v2
+    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->beginPlan(Landroid/content/Context;Ljava/lang/String;I)V
+    goto :disk_inputs_plan_ready
+
+    :disk_inputs_exception
+    move-exception v0
+
+    :disk_inputs_no
+    const/4 v0, 0x0
+    return v0
+.end method
