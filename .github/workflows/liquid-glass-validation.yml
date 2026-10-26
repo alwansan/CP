@@ -36,6 +36,11 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Set up Android SDK Build Tools
+        uses: android-actions/setup-android@v4
+        with:
+          packages: "build-tools;35.0.0"
+
       - name: Validate bundled APKTool inputs
         shell: bash
         run: |
@@ -44,6 +49,9 @@ jobs:
           test -f Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar
           test -f Cinemana_PATCH252_Project/tools/framework/1.apk
           test -f Cinemana_PATCH252_Project/build.sh
+          test -f signing/checkpoint145-debug.keystore
+          test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/zipalign"
           java -version
 
       - name: Parse Liquid Glass XML and verify navigation wiring
@@ -130,10 +138,42 @@ jobs:
           chmod +x Cinemana_PATCH252_Project/build.sh
           ./Cinemana_PATCH252_Project/build.sh
 
-      - name: Upload unsigned APK for review
+      - name: Align, sign, and verify QA APK
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: |
+          set -euo pipefail
+          TOOL_DIR="$ANDROID_HOME/build-tools/35.0.0"
+          OUT_DIR="Cinemana_PATCH252_Project/output"
+          KEYSTORE="signing/checkpoint145-debug.keystore"
+          UNSIGNED="$OUT_DIR/Cinemana_PATCH252_unsigned.apk"
+          ALIGNED="$OUT_DIR/Cinemana_PATCH252_LiquidGlass_QA_aligned.apk"
+          SIGNED="$OUT_DIR/Cinemana_PATCH252_LiquidGlass_QA_signed.apk"
+
+          keytool -list -keystore "$KEYSTORE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
+          "$TOOL_DIR/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
+          "$TOOL_DIR/zipalign" -c -p 4 "$ALIGNED"
+          "$TOOL_DIR/apksigner" sign \
+            --ks "$KEYSTORE" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass "env:KEYSTORE_PASSWORD" \
+            --key-pass "env:KEY_PASSWORD" \
+            --out "$SIGNED" \
+            "$ALIGNED"
+          "$TOOL_DIR/apksigner" verify --verbose --print-certs "$SIGNED"
+          unzip -t "$SIGNED"
+          sha256sum "$SIGNED" | tee "$OUT_DIR/Cinemana_PATCH252_LiquidGlass_QA_signed.apk.sha256"
+          ls -lh "$SIGNED"
+
+      - name: Upload signed QA APK for device testing
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-phase1-unsigned-apk
-          path: Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
+          name: liquid-glass-phase1-qa-signed-apk
+          path: |
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH252_LiquidGlass_QA_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH252_LiquidGlass_QA_signed.apk.sha256
           if-no-files-found: error
           retention-days: 7
