@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Apply to interactive glass controls. The inner contrast plate remains a separate child in the view hierarchy. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false" android:drawable="@drawable/liquid_glass_shell_disabled" />
+    <item android:state_pressed="true" android:drawable="@drawable/liquid_glass_shell_pressed" />
+    <item android:state_focused="true" android:drawable="@drawable/liquid_glass_shell_focused" />
+    <item android:drawable="@drawable/liquid_glass_shell" />
+</selector>

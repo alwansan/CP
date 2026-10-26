@@ -1,0 +1,250 @@
+name: Validate Liquid Glass APK
+
+on:
+  push:
+    branches:
+      - feat/liquid-glass-phase1
+    paths:
+      - "Cinemana_PATCH252_Project/**"
+      - ".github/workflows/liquid-glass-validation.yml"
+  pull_request:
+    branches:
+      - ui/ux-test
+    paths:
+      - "Cinemana_PATCH252_Project/**"
+      - ".github/workflows/liquid-glass-validation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: liquid-glass-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-build:
+    name: XML checks and APKTool build
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK Build Tools
+        uses: android-actions/setup-android@v4
+        with:
+          packages: "build-tools;35.0.0"
+
+      - name: Validate bundled APKTool inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f Cinemana_PATCH252_Project/app/apktool.yml
+          test -f Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar
+          test -f Cinemana_PATCH252_Project/tools/framework/1.apk
+          test -f Cinemana_PATCH252_Project/build.sh
+          test -f signing/checkpoint145-debug.keystore
+          test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/zipalign"
+          java -version
+
+      - name: Parse Liquid Glass XML and verify navigation wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          root = Path("Cinemana_PATCH252_Project/app/res")
+          drawable_names = [
+              "liquid_glass_shell.xml",
+              "liquid_glass_scrim.xml",
+              "liquid_glass_shell_pressed.xml",
+              "liquid_glass_shell_focused.xml",
+              "liquid_glass_shell_disabled.xml",
+              "liquid_glass_shell_error.xml",
+              "liquid_glass_error_helper_line.xml",
+              "liquid_glass_control_selector.xml",
+          ]
+          ns = "{http://schemas.android.com/apk/res/android}"
+          parsed = {}
+          for name in drawable_names:
+              path = root / "drawable" / name
+              assert path.is_file(), f"Missing drawable: {path}"
+              parsed[name] = ET.parse(path).getroot()
+              print(f"XML parse PASS: {path}")
+
+          layout_paths = [
+              "activity_home.xml",
+              "fragment_home.xml",
+              "fragment_categories.xml",
+              "fragment_search.xml",
+              "fragment_search_all_tab.xml",
+              "fragment_profile.xml",
+          ]
+          layouts = {}
+          for name in layout_paths:
+              path = root / "layout" / name
+              assert path.is_file(), f"Missing layout: {path}"
+              layouts[name] = ET.parse(path).getroot()
+              print(f"XML parse PASS: {path}")
+
+          ns_app = "{http://schemas.android.com/apk/res-auto}"
+          layout = layouts["activity_home.xml"]
+          views = list(layout.iter())
+          containers = [
+              e for e in views
+              if e.tag == "FrameLayout"
+              and e.get(ns + "id") == "@+id/home_bottom_nav_glass_container"
+          ]
+          assert len(containers) == 1, "Expected exactly one glass navigation container"
+          container = containers[0]
+          assert container.get(ns + "background") == "@drawable/liquid_glass_shell"
+
+          scrims = [
+              e for e in list(container)
+              if e.tag == "View"
+              and e.get(ns + "background") == "@drawable/liquid_glass_scrim"
+          ]
+          assert len(scrims) == 1, "Expected an independent scrim child"
+          assert scrims[0].get(ns + "layout_height") == "64.0dip"
+          assert scrims[0].get(ns + "clickable") == "false"
+          assert scrims[0].get(ns + "focusable") == "false"
+
+          navs = [
+              e for e in list(container)
+              if e.tag.endswith("BottomNavigationView")
+              and e.get(ns + "id") == "@id/home_bottom_nav"
+          ]
+          assert len(navs) == 1, "Original home_bottom_nav ID must be preserved"
+          nav = navs[0]
+          assert nav.get(ns_app + "menu") == "@menu/menu_navigation"
+          assert nav.get(ns_app + "itemIconTint") == "@color/bottom_navigation_selector"
+          assert nav.get(ns_app + "itemTextColor") == "@color/bottom_navigation_selector"
+
+          fragment_host = next((e for e in views if e.get(ns + "id") == "@id/fragment_container"), None)
+          assert fragment_host is not None, "Missing fragment_container"
+          assert fragment_host.get(ns_app + "layout_constraintBottom_toBottomOf") == "parent", (
+              "Content host must extend behind the floating glass navigation"
+          )
+          assert fragment_host.get(ns_app + "layout_constraintBottom_toTopOf") is None, (
+              "Content host is still clipped above the floating glass navigation"
+          )
+
+          cast_fab = next((e for e in views if e.get(ns + "id") == "@id/cast_fab"), None)
+          assert cast_fab is not None, "Missing cast_fab"
+          assert cast_fab.get(ns_app + "layout_constraintBottom_toTopOf") == "@id/home_bottom_nav_glass_container", (
+              "Cast button must remain anchored above the glass navigation"
+          )
+
+          home_recycler = next(
+              (e for e in layouts["fragment_home.xml"].iter()
+               if e.get(ns + "id") == "@id/home_page_main_recycler"),
+              None,
+          )
+          assert home_recycler is not None and home_recycler.get(ns + "paddingBottom") == "88dp"
+          assert home_recycler.get(ns + "clipToPadding") == "false"
+
+          categories_recycler = next(
+              (e for e in layouts["fragment_categories.xml"].iter()
+               if e.get(ns + "id") == "@id/categories_recycler"),
+              None,
+          )
+          assert categories_recycler is not None
+          assert categories_recycler.get(ns + "paddingBottom") == "88dp"
+          assert categories_recycler.get(ns + "clipToPadding") == "false"
+
+          for layout_name, view_id in [
+              ("fragment_search.xml", None),
+              ("fragment_search_all_tab.xml", None),
+              ("fragment_profile.xml", "@id/profile_scroll_view"),
+          ]:
+              scrolls = [
+                  e for e in layouts[layout_name].iter()
+                  if e.tag.endswith("NestedScrollView")
+                  and (view_id is None or e.get(ns + "id") == view_id)
+              ]
+              assert scrolls, f"Expected scroll view in {layout_name}"
+              assert any(
+                  e.get(ns + "paddingBottom") == "88dp" and e.get(ns + "clipToPadding") == "false"
+                  for e in scrolls
+              ), f"{layout_name} must scroll clear of floating nav"
+
+          smali = Path(
+              "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/ThemeEngine142.smali"
+          ).read_text(encoding="utf-8")
+          assert 'const-string p0, "Custom"' in smali, "Custom mode label is missing"
+
+          mode_start = smali.index(".method public static getMode(")
+          mode_end = smali.index(".end method", mode_start)
+          get_mode = smali[mode_start:mode_end]
+          assert 'const-string v0, "mode"' in get_mode, "getMode preference key changed unexpectedly"
+          assert "const/4 v1, 0x3" in get_mode, "getMode must accept Custom mode 3"
+          assert "->clamp(III)I" in get_mode, "getMode must clamp mode values to the supported range"
+          assert "const/4 v1, 0x2" not in get_mode, "getMode still appears to clamp to mode 2"
+
+          selector_root = parsed["liquid_glass_control_selector.xml"]
+          selector_items = list(selector_root)
+          state_order = [
+              (item.get(ns + "state_enabled"), item.get(ns + "state_pressed"), item.get(ns + "state_focused"))
+              for item in selector_items
+          ]
+          assert state_order[0] == ("false", None, None), "Disabled state must have priority"
+          assert state_order[1] == (None, "true", None), "Pressed feedback must outrank focused state"
+          assert state_order[2] == (None, None, "true"), "Focused ring must remain before the default state"
+
+          print("Navigation/scrim wiring, Custom mode, and state-priority checks: PASS")
+          PY
+
+      - name: Build unsigned APK with bundled APKTool
+        shell: bash
+        run: |
+          chmod +x Cinemana_PATCH252_Project/build.sh
+          ./Cinemana_PATCH252_Project/build.sh
+
+      - name: Align, sign, and verify QA APK
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: |
+          set -euo pipefail
+          TOOL_DIR="$ANDROID_HOME/build-tools/35.0.0"
+          OUT_DIR="Cinemana_PATCH252_Project/output"
+          KEYSTORE="signing/checkpoint145-debug.keystore"
+          UNSIGNED="$OUT_DIR/Cinemana_PATCH252_unsigned.apk"
+          ALIGNED="$OUT_DIR/Cinemana_PATCH252_LiquidGlass_QA_aligned.apk"
+          SIGNED="$OUT_DIR/Cinemana_PATCH252_LiquidGlass_QA_signed.apk"
+
+          keytool -list -keystore "$KEYSTORE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
+          "$TOOL_DIR/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
+          "$TOOL_DIR/zipalign" -c -p 4 "$ALIGNED"
+          "$TOOL_DIR/apksigner" sign \
+            --ks "$KEYSTORE" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass "env:KEYSTORE_PASSWORD" \
+            --key-pass "env:KEY_PASSWORD" \
+            --out "$SIGNED" \
+            "$ALIGNED"
+          "$TOOL_DIR/apksigner" verify --verbose --print-certs "$SIGNED"
+          unzip -t "$SIGNED"
+          sha256sum "$SIGNED" | tee "$OUT_DIR/Cinemana_PATCH252_LiquidGlass_QA_signed.apk.sha256"
+          ls -lh "$SIGNED"
+
+      - name: Upload signed QA APK for device testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-phase1-qa-signed-apk
+          path: |
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH252_LiquidGlass_QA_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_PATCH252_LiquidGlass_QA_signed.apk.sha256
+          if-no-files-found: error
+          retention-days: 7
