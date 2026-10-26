@@ -13163,10 +13163,14 @@
     invoke-interface {v9, v3}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
     monitor-exit v8
 
+    # Keep stable context/item copies for the exception path before any parameter register is reused.
+    move-object v0, p0
+    move-object v1, p1
+
     :try_start_recovered_queue
-    const/4 v0, 0x1
-    const-string v1, "QUEUED"
-    invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    const/4 v2, 0x1
+    const-string v8, "QUEUED"
+    invoke-static {p0, p1, v2, v8}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
     # Save original parameters before reusing the highest parameter registers for the contiguous constructor range.
     move-object v0, p0
@@ -13187,8 +13191,8 @@
     move-object p1, v1
     move-object p2, v2
 
-    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
-    invoke-interface {v0, v8}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
+    sget-object v7, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
+    invoke-interface {v7, v8}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
     :try_end_recovered_queue
     .catch Ljava/lang/Throwable; {:try_start_recovered_queue .. :try_end_recovered_queue} :recovered_queue_failed
 
@@ -13202,9 +13206,9 @@
     sget-object v2, Lcom/shabakaty/cinemana/features/MkvExporter;->ACTIVE_JOB_KEYS:Ljava/util/Set;
     invoke-interface {v2, v3}, Ljava/util/Set;->remove(Ljava/lang/Object;)Z
     monitor-exit v1
-    const/4 v1, 0x0
-    const-string v2, "FAILED"
-    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    const/4 v2, 0x0
+    const-string v3, "FAILED"
+    invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
     :recovered_reject
     const/4 v0, 0x0
