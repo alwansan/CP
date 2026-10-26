@@ -3334,6 +3334,26 @@
     :try_end_b
     .catchall {:try_start_b .. :try_end_b} :catchall_6
 
+    # This point is reached only after the MKV was sorted to its final path and DB promotion succeeded.
+    # Remove the compact pending row now; failed promotion never passes this point.
+    move-object/from16 v15, p4
+    instance-of v16, v15, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    if-eqz v16, :repair_journal_token_from_path
+
+    check-cast v15, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    invoke-static {v15}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
+    move-result-object v15
+    goto :repair_journal_complete
+
+    :repair_journal_token_from_path
+    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v15
+    invoke-static {v15}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v15
+
+    :repair_journal_complete
+    invoke-static {v1, v15}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->complete(Landroid/content/Context;Ljava/lang/String;)V
+
     .line 578
     if-eqz v8, :cond_27
 
@@ -6443,6 +6463,13 @@
     monitor-exit p0
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    .line 105
+    invoke-static {v3}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    const-string p0, "MKV_EXPORT_QUEUED"
+    const-string p1, "queued_under_original_exporter_guard"
+    invoke-static {v1, v0, p0, v3, p1}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
     .line 106
     const/4 p0, 0x1
