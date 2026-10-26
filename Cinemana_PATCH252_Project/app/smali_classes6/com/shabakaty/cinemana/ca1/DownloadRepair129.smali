@@ -870,16 +870,14 @@
     invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
     return-void
     :disk_mp4_try_reconcile
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->reconcileDiskReady(Landroid/content/Context;Ljava/io/File;)Z
+    # Resolve by the source MP4 and the item's exact MKV destination, then queue through the guarded exporter.
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
     move-result v2
     if-eqz v2, :disk_mp4_unresolved
     const/4 v2, 0x1
     invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v2
-    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
     const-string v2, "download_repair_actions.log"
-    const-string v3, "MP4_DISK_READY_FOR_MKV"
+    const-string v3, "MP4_DISK_REPAIR_ACCEPTED_BY_GUARDED_MKV_PIPELINE"
     invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
     return-void
     :disk_mp4_unresolved
@@ -888,9 +886,8 @@
     invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v2
     invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordDiscovery(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
-    const-string v2, "download_repair_findings.log"
-    const-string v3, "MP4_DISK_FALLBACK_RECONCILE_TRIGGERED"
+    const-string v2, "download_repair_unresolved.log"
+    const-string v3, "MP4_DISK_DEFERRED_MAPPING_OR_SUBTITLE_PLAN"
     invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
     return-void
     :disk_mp4_no_token
