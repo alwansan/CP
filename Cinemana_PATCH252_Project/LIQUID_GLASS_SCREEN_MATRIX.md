@@ -164,7 +164,7 @@ Files:
 - app/res/layout/fragment_franchises.xml
 - app/res/layout/franchises_view.xml, groups_view.xml
 - app/res/layout/fragment_staff_info.xml
-- app/res/layout/fragment_status.xml when present; activity_status.xml and status_view_layout.xml
+- app/res/layout/activity_status.xml and status_view_layout.xml
 - app/res/layout/discover_more_apps_layout.xml
 
 Material approach: preserve logos, portraits, app artwork and service-status indicators. Glass can be introduced on small action controls or modal panels, but not as a full-page wash over service outage/maintenance text.
@@ -186,7 +186,7 @@ Material approach: the video frame stays untouched and opaque. Later glass candi
 
 Files:
 - app/res/layout/activity_dlna_controls.xml
-- app/res/layout/expanded_controller.xml is in app/res/menu/expanded_controller.xml
+- app/res/menu/expanded_controller.xml
 - app/res/layout/activity_splash.xml
 - app/res/layout/activity_status.xml
 
