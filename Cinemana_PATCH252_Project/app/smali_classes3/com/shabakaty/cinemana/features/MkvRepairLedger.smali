@@ -1,0 +1,252 @@
+.class public final Lcom/shabakaty/cinemana/features/MkvRepairLedger;
+.super Ljava/lang/Object;
+.source "MkvRepairLedger.java"
+
+
+# This is a compact unresolved-work ledger, not a verbose debug log.
+# It lives under Cinemana/work/data and is independent of the user-facing log toggle.
+
+.method private constructor <init>()V
+    .locals 0
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+    return-void
+.end method
+
+.method private static ledgerFile()Ljava/io/File;
+    .locals 4
+
+    new-instance v0, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v1
+    const-string v2, "Cinemana/work/data"
+    invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v0}, Ljava/io/File;->mkdirs()Z
+
+    new-instance v1, Ljava/io/File;
+    const-string v2, "mkv_repair_pending.properties"
+    invoke-direct {v1, v0, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    return-object v1
+.end method
+
+.method private static load()Ljava/util/Properties;
+    .locals 4
+
+    new-instance v0, Ljava/util/Properties;
+    invoke-direct {v0}, Ljava/util/Properties;-><init>()V
+
+    :try_start_load
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->ledgerFile()Ljava/io/File;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/io/File;->isFile()Z
+    move-result v2
+    if-eqz v2, :load_done
+
+    new-instance v2, Ljava/io/FileInputStream;
+    invoke-direct {v2, v1}, Ljava/io/FileInputStream;-><init>(Ljava/io/File;)V
+    invoke-virtual {v0, v2}, Ljava/util/Properties;->load(Ljava/io/InputStream;)V
+    invoke-virtual {v2}, Ljava/io/FileInputStream;->close()V
+    :try_end_load
+    .catch Ljava/lang/Throwable; {:try_start_load .. :try_end_load} :load_failed
+
+    :load_done
+    return-object v0
+
+    :load_failed
+    move-exception v1
+    return-object v0
+.end method
+
+.method private static save(Ljava/util/Properties;)V
+    .locals 3
+
+    :try_start_save
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->ledgerFile()Ljava/io/File;
+    move-result-object v0
+    new-instance v1, Ljava/io/FileOutputStream;
+    invoke-direct {v1, v0}, Ljava/io/FileOutputStream;-><init>(Ljava/io/File;)V
+
+    const/4 v0, 0x0
+    invoke-virtual {p0, v1, v0}, Ljava/util/Properties;->store(Ljava/io/OutputStream;Ljava/lang/String;)V
+    invoke-virtual {v1}, Ljava/io/FileOutputStream;->close()V
+    :try_end_save
+    .catch Ljava/lang/Throwable; {:try_start_save .. :try_end_save} :save_failed
+
+    return-void
+
+    :save_failed
+    move-exception v0
+    return-void
+.end method
+
+.method public static declared-synchronized record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    .locals 4
+
+    if-eqz p1, :record_done
+    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :record_done
+
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
+    move-result-object v0
+
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v2
+    invoke-static {v2, v3}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v2, "|"
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1, p5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v0, p1, v1}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->save(Ljava/util/Properties;)V
+
+    :record_done
+    return-void
+.end method
+
+.method public static recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    .locals 7
+
+    if-eqz p0, :record_item_done
+    if-eqz p1, :record_item_done
+
+    :try_start_record_item
+    invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->identityToken(Ljava/lang/Object;)Ljava/lang/String;
+    move-result-object v0
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
+    move-result v1
+    if-nez v1, :record_item_done
+
+    const-string v2, ""
+    const-string v3, ""
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
+    move-result-object v4
+    if-eqz v4, :record_item_write
+
+    invoke-virtual {v4}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v2
+
+    invoke-virtual {v4}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v5
+    sget-object v6, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v5, v6}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v6
+    const-string v1, ".mp4"
+    invoke-virtual {v6, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v6
+    if-eqz v6, :record_item_write
+
+    invoke-virtual {v5}, Ljava/lang/String;->length()I
+    move-result v6
+    add-int/lit8 v6, v6, -0x4
+    const/4 v1, 0x0
+    invoke-virtual {v5, v1, v6}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    move-result-object v5
+    const-string v1, ".mkv"
+    invoke-virtual {v5, v1}, Ljava/lang/String;->concat(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    new-instance v6, Ljava/io/File;
+    invoke-virtual {v4}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v1
+    invoke-direct {v6, v1, v5}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v6}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v3
+
+    :record_item_write
+    invoke-static {p0, v0, p2, v2, v3, p3}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_record_item
+    .catch Ljava/lang/Throwable; {:try_start_record_item .. :try_end_record_item} :record_item_failed
+
+    goto :record_item_done
+
+    :record_item_failed
+    move-exception v0
+
+    :record_item_done
+    return-void
+.end method
+
+.method public static declared-synchronized clear(Landroid/content/Context;Ljava/lang/String;)V
+    .locals 2
+
+    if-eqz p1, :clear_done
+    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :clear_done
+
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
+    move-result-object v0
+    invoke-virtual {v0, p1}, Ljava/util/Properties;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->save(Ljava/util/Properties;)V
+
+    :clear_done
+    return-void
+.end method
+
+.method public static completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+    .locals 5
+
+    if-eqz p0, :complete_done
+    if-eqz p1, :complete_done
+
+    :try_start_complete
+    invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->identityToken(Ljava/lang/Object;)Ljava/lang/String;
+    move-result-object v0
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
+    move-result v1
+    if-nez v1, :complete_done
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
+    move-result-object v1
+    if-eqz v1, :complete_unverified
+
+    invoke-virtual {v1}, Ljava/io/File;->isFile()Z
+    move-result v2
+    if-eqz v2, :complete_unverified
+    invoke-virtual {v1}, Ljava/io/File;->length()J
+    move-result-wide v2
+    const-wide/16 v4, 0x400
+    cmp-long v2, v2, v4
+    if-lez v2, :complete_unverified
+
+    invoke-virtual {v1}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    sget-object v2, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v1, v2}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v1
+    const-string v2, ".mkv"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :complete_unverified
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
+    goto :complete_done
+
+    :complete_unverified
+    const-string v1, "FINAL_MKV_NOT_VERIFIED"
+    const-string v2, "worker_finished_but_database_final_mkv_path_or_size_not_verified"
+    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_complete
+    .catch Ljava/lang/Throwable; {:try_start_complete .. :try_end_complete} :complete_failed
+
+    goto :complete_done
+
+    :complete_failed
+    move-exception v0
+
+    :complete_done
+    return-void
+.end method
