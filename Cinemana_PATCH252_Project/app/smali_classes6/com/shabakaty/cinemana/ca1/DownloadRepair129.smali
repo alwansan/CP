@@ -756,7 +756,7 @@
     aget v4, v0, v4
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
     move-result-object v3
-    const-string v4, " deferred="
+    const-string v4, " fallback_attempted="
     invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v3
     const/4 v4, 0x3
@@ -885,8 +885,12 @@
     :disk_mp4_unresolved
     const/4 v2, 0x3
     invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
-    const-string v2, "download_repair_unresolved.log"
-    const-string v3, "MP4_DISK_DEFERRED_SUBTITLES_OR_PLAN_NOT_VERIFIED"
+    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v2
+    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordDiscovery(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
+    const-string v2, "download_repair_findings.log"
+    const-string v3, "MP4_DISK_FALLBACK_RECONCILE_TRIGGERED"
     invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
     return-void
     :disk_mp4_no_token
