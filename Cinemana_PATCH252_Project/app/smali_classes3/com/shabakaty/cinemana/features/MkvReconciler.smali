@@ -553,7 +553,7 @@
 .end method
 
 .method private static filesystemInputsReady(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
-    .locals 5
+    .locals 6
 
     if-eqz p0, :fs_not_ready
 
@@ -582,6 +582,64 @@
 
     if-lez v1, :fs_not_ready
 
+    # If the sibling MKV is already present, leave finalization/promotion to Restart108 instead of rebuilding it.
+    invoke-virtual {v0}, Ljava/io/File;->getName()Ljava/lang/String;
+
+    move-result-object v1
+
+    const-string v2, ".mp4"
+
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+
+    move-result v2
+
+    if-eqz v2, :fs_check_subtitles
+
+    invoke-virtual {v1}, Ljava/lang/String;->length()I
+
+    move-result v2
+
+    add-int/lit8 v2, v2, -0x4
+
+    const/4 v3, 0x0
+
+    invoke-virtual {v1, v3, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+
+    move-result-object v1
+
+    const-string v2, ".mkv"
+
+    invoke-virtual {v1, v2}, Ljava/lang/String;->concat(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    new-instance v2, Ljava/io/File;
+
+    invoke-virtual {v0}, Ljava/io/File;->getParentFile()Ljava/io/File;
+
+    move-result-object v3
+
+    invoke-direct {v2, v3, v1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+
+    invoke-virtual {v2}, Ljava/io/File;->isFile()Z
+
+    move-result v3
+
+    if-eqz v3, :fs_check_subtitles
+
+    invoke-virtual {v2}, Ljava/io/File;->length()J
+
+    move-result-wide v2
+
+    const-wide/16 v4, 0x400
+
+    cmp-long v2, v2, v4
+
+    if-lez v2, :fs_check_subtitles
+
+    goto :fs_not_ready
+
+    :fs_check_subtitles
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/Inputs114;->verified(Ljava/lang/Object;Ljava/io/File;)Ljava/util/List;
 
     move-result-object v0
@@ -601,7 +659,7 @@
     const/4 v0, 0x0
 
     return v0
-.end method
+.end methodd
 
 .method private static scanExistingRoot(Ljava/io/File;)V
     .locals 7
