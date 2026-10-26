@@ -273,6 +273,11 @@
     :goto_2
     if-nez v6, :cond_1
 
+    # Only clear a ledger entry after Restart108 resolves an existing final MKV path and size.
+    iget-object v11, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$app:Landroid/content/Context;
+    iget-object v12, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$downloadItem:Ljava/lang/Object;
+    invoke-static {v11, v12}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+
     .line 130
     nop
 
@@ -307,6 +312,12 @@
 
     .line 132
     :cond_1
+    iget-object v11, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$app:Landroid/content/Context;
+    iget-object v12, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$downloadItem:Ljava/lang/Object;
+    const-string v10, "EXPORT_STILL_MP4"
+    const-string v9, "source_mp4_remained_after_export_attempt"
+    invoke-static {v11, v12, v10, v9}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+
     if-ge v2, v4, :cond_2
 
     .line 133
