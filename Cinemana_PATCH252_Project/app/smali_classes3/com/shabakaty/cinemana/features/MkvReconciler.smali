@@ -189,6 +189,10 @@
 
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V
 
+    const-string v1, "MKV_QUEUED"
+    const-string v2, "verified_manifest_or_rebuilt_from_verified_file_plan"
+    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+
     invoke-static {p0, p1, p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->onVideoCompleted(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/Object;)V
 
     goto :goto_0
@@ -213,6 +217,10 @@
     move-result-object v0
 
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V
+
+    const-string v1, "WAITING_PLAN_OR_SUBTITLES"
+    const-string v2, "manifest_or_original_subtitle_plan_missing_or_file_count_mismatch"
+    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
     :try_end_0
     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
@@ -555,98 +563,97 @@
 .end method
 
 .method private static filesystemInputsReady(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
-    .locals 6
+    .locals 7
 
     if-eqz p0, :fs_not_ready
-
     if-eqz p1, :fs_not_ready
 
     :try_start_fs_ready
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
-
     move-result-object v0
-
     if-eqz v0, :fs_not_ready
 
     invoke-virtual {v0}, Ljava/io/File;->isFile()Z
-
     move-result v1
-
     if-eqz v1, :fs_not_ready
 
     invoke-virtual {v0}, Ljava/io/File;->length()J
-
     move-result-wide v1
-
     const-wide/16 v3, 0x400
-
     cmp-long v1, v1, v3
-
     if-lez v1, :fs_not_ready
 
-    # If the sibling MKV is already present, leave finalization/promotion to Restart108 instead of rebuilding it.
+    # A valid sibling MKV means this path should be handled by finalization/promotion, not rebuilt.
     invoke-virtual {v0}, Ljava/io/File;->getName()Ljava/lang/String;
-
     move-result-object v1
-
     const-string v2, ".mp4"
-
     invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
     move-result v2
-
-    if-eqz v2, :fs_check_subtitles
+    if-eqz v2, :fs_check_token
 
     invoke-virtual {v1}, Ljava/lang/String;->length()I
-
     move-result v2
-
     add-int/lit8 v2, v2, -0x4
-
     const/4 v3, 0x0
-
     invoke-virtual {v1, v3, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
-
     move-result-object v1
-
     const-string v2, ".mkv"
-
     invoke-virtual {v1, v2}, Ljava/lang/String;->concat(Ljava/lang/String;)Ljava/lang/String;
-
     move-result-object v1
-
     new-instance v2, Ljava/io/File;
-
     invoke-virtual {v0}, Ljava/io/File;->getParentFile()Ljava/io/File;
-
     move-result-object v3
-
     invoke-direct {v2, v3, v1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-
     invoke-virtual {v2}, Ljava/io/File;->isFile()Z
-
     move-result v3
-
-    if-eqz v3, :fs_check_subtitles
-
+    if-eqz v3, :fs_check_token
     invoke-virtual {v2}, Ljava/io/File;->length()J
-
     move-result-wide v2
-
     const-wide/16 v4, 0x400
-
     cmp-long v2, v2, v4
-
-    if-lez v2, :fs_check_subtitles
-
+    if-lez v2, :fs_check_token
     goto :fs_not_ready
 
-    :fs_check_subtitles
+    :fs_check_token
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :fs_not_ready
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->expectedSubtitleCount(Ljava/lang/String;)I
+    move-result v2
+    if-gez v2, :fs_plan_ready
+
+    # The detailed subtitle plan lives in the queue's persisted data, not the optional debug logs.
+    # Recover the expected count only from that original plan; never guess from the files that happen to exist.
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/Inputs114;->model(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v3
+    if-eqz v3, :fs_not_ready
+
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/Dependencies112;->subtitles(Ljava/lang/Object;)Ljava/util/List;
+    move-result-object v4
+    if-eqz v4, :fs_not_ready
+    invoke-interface {v4}, Ljava/util/List;->size()I
+    move-result v2
+
+    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->beginPlan(Landroid/content/Context;Ljava/lang/String;I)V
+
+    :fs_plan_ready
+    # This verifies the exact requested subtitle plan against the files and pending dependency state.
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/Inputs114;->verified(Ljava/lang/Object;Ljava/io/File;)Ljava/util/List;
+    move-result-object v3
+    if-eqz v3, :fs_not_ready
 
-    move-result-object v0
+    invoke-interface {v3}, Ljava/util/List;->size()I
+    move-result v4
+    if-ne v4, v2, :fs_not_ready
 
-    if-eqz v0, :fs_not_ready
+    invoke-virtual {v0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {p0, v1, v5, v2, v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->recoverReadyFromVerifiedFiles(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;II)Z
+    move-result v6
+    if-eqz v6, :fs_not_ready
 
     const/4 v0, 0x1
     :try_end_fs_ready
@@ -659,9 +666,8 @@
 
     :fs_not_ready
     const/4 v0, 0x0
-
     return v0
-.end method
+.end methodd
 
 .method private static scanExistingRoot(Ljava/io/File;)V
     .locals 7
