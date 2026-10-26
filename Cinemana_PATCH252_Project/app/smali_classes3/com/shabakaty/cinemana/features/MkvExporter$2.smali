@@ -444,6 +444,9 @@
 
     invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
+    # Resweep compact pending records after the exporter/promotion attempt. Failed MP4s remain pending.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
+
     .line 145
     nop
 
@@ -520,6 +523,9 @@
     const-string v4, "FAILED"
 
     invoke-static {v1, v2, v3, v4}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+
+    # A late successful promotion is cleared; an actual failure remains in the compact ledger.
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
 
     .line 145
     throw v0
