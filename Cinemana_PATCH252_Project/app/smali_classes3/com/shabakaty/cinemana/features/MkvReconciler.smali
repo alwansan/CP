@@ -670,7 +670,7 @@
 .end method
 
 .method private static scanExistingRoot(Ljava/io/File;)V
-    .locals 9
+    .locals 15
 
     if-eqz p0, :scan_root_done
 
@@ -791,7 +791,13 @@
     const-string v7, "DISCOVERED_MP4"
     const-string v8, "filesystem_mp4_found;checking_item_identity_plan_subtitles_and_final_mkv"
     const-string v3, ""
-    invoke-static {v5, v6, v7, v4, v3, v8}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    move-object v9, v5
+    move-object v10, v6
+    move-object v11, v7
+    move-object v12, v4
+    move-object v13, v3
+    move-object v14, v8
+    invoke-static/range {v9 .. v14}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
     :scan_root_reconcile
     invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
