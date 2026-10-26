@@ -73,6 +73,7 @@
     :start_failed
     move-exception v2
     sget-object v3, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->RUNNING:Ljava/util/concurrent/atomic/AtomicBoolean;
+    const/4 v1, 0x0
     invoke-virtual {v3, v1}, Ljava/util/concurrent/atomic/AtomicBoolean;->set(Z)V
     const-string v3, "REPAIR_START_FAILED"
     invoke-static {p0, v3, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
