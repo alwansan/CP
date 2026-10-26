@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Stabilized contrast plate. Place as an independent child behind text/icons, not as the only glass effect. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <gradient android:type="linear" android:angle="270" android:startColor="#D90B1118" android:centerColor="#D90D131B" android:endColor="#E60A0E14" />
+    <gradient android:type="linear" android:angle="270" android:startColor="#B30B1118" android:centerColor="#B30D131B" android:endColor="#C60A0E14" />
     <corners android:radius="16dp" />
     <stroke android:width="1dp" android:color="#20FFFFFF" />
 </shape>

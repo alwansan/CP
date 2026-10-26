@@ -8,7 +8,7 @@ This phase lays down an isolated, reviewable base for the Liquid Glass rollout:
 - Reports the Custom mode correctly from modeName().
 - Adds reusable Android XML drawables for a layered glass shell, a stabilized contrast plate, pressed/focused/disabled/error recipes, a control-state selector, and an error helper line.
 
-The new drawables are **primitives, not yet wired into production screens**. This is deliberate: replacing live navigation or player surfaces before layout-by-layout screenshot and interaction testing would be an unsafe broad restyle. This phase does not claim to ship optical refraction.
+The shell and independent scrim are now wired into one limited pilot: the home bottom-navigation container. All other production screens remain unchanged until the pilot passes APK build, screenshot, touch, and accessibility checks. This phase does not claim to ship optical refraction.
 
 ## Baseline confirmed in the APKTool project
 
@@ -24,14 +24,14 @@ All drawable gradients share a fixed top/left highlight direction. No random or 
 
 | Token / property | Value | Purpose |
 |---|---:|---|
-| Shell base start | #E61D2630 | Tinted outer material |
-| Shell base center | #D218202A | Mid-layer tint |
-| Shell base end | #E60B1118 | Dark lower material |
+| Shell base start | #C61D2630 | Tinted outer material; 78% alpha |
+| Shell base center | #B218202A | Mid-layer tint; 70% alpha |
+| Shell base end | #D20B1118 | Dark lower material; 82% alpha |
 | Outer hairline | #5CFFFFFF, 1dp | Defines silhouette |
 | Top specular start | #2DFFFFFF | Consistent upper highlight |
 | Left specular start | #20FFFFFF | Low-intensity left edge cue |
 | Inner cross-section stroke | #22FFFFFF, 1dp | Implies edge thickness |
-| Stabilized plate start | #D90B1118 | Reduces background variance behind text/icons |
+| Stabilized plate start | #B30B1118 | Reduces background variance behind text/icons; 70% alpha |
 | Standard shell radius | 22dp | Primary material radius |
 | Stabilized plate radius | 16dp | Keeps the plate inset from the shell |
 | Focus ring | #FF5DA9FF, 2dp | Crisp outer keyboard/accessibility focus |
@@ -62,11 +62,11 @@ Because original Java/Kotlin project sources are absent, do not add a Maven UI d
 
 ## Next implementation phases
 
-### Phase 2 — safe pilot component
-- Wire the shell and independent scrim into one non-player surface, starting with the home bottom-navigation container.
-- Preserve insets, touch targets, icon tinting, selected-state indicators and navigation behavior.
-- Capture before/after screenshots for portrait phones and large-font/RTL settings.
-- Verify contrast over light posters, dark backdrops, high-saturation artwork and dynamic content.
+### Phase 2 — validate the home navigation pilot
+- Build the APK and verify all new drawables compile on the declared minimum SDK.
+- Capture before/after screenshots on portrait phones and with large-font/RTL settings.
+- Verify bottom insets, touch targets, icon tinting, selected-state indicators and navigation behavior.
+- Verify contrast over light posters, dark backdrops, high-saturation artwork and dynamic content before adding any other surface.
 
 ### Phase 3 — shader capability gate
 - Choose AGSL for API 33+ only after confirming the actual runtime device distribution; otherwise prototype a bounded OpenGL ES / displacement-map implementation.
@@ -91,5 +91,5 @@ Because original Java/Kotlin project sources are absent, do not add a Maven UI d
 - Custom mode reads back as 3; all Custom color accessors return the saved values.
 - modeName() reports Custom when mode 3 is selected.
 - The new drawable resources compile on the declared minimum SDK.
-- The first integrated pilot keeps foreground text/icons on a separate stable plate and meets contrast requirements over varied content.
+- The home navigation pilot keeps foreground icons/labels above a separate stable plate and passes screenshot, contrast, touch, insets and navigation tests over varied content.
 - The shader-backed version is only labeled Liquid Glass after live backdrop refraction, locked light direction, and state deltas are verified; older Android builds clearly use the non-refractive fallback.
