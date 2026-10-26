@@ -1179,16 +1179,9 @@
 
     move-result p0
 
-    const/4 v0, 0x3
-
-    if-ne p0, v0, :cond_0
-
-    const/4 p0, 0x1
-
-    :cond_0
     const/4 v0, 0x0
 
-    const/4 v1, 0x2
+    const/4 v1, 0x3
 
     invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->clamp(III)I
 
@@ -1821,6 +1814,15 @@
     return-object p0
 
     :cond_1
+    const/4 p0, 0x3
+
+    if-ne v0, p0, :cond_2
+
+    const-string p0, "Custom"
+
+    return-object p0
+
+    :cond_2
     const-string p0, "\u0627\u0644\u0627\u0641\u062a\u0631\u0627\u0636\u064a"
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/I18n161;->t(Ljava/lang/String;)Ljava/lang/String;
