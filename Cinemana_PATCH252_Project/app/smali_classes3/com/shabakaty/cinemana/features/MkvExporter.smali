@@ -6369,6 +6369,10 @@
     nop
 
     .line 95
+    const-string p0, "MKV_QUEUED"
+    const-string p1, "exporter_entered_after_final_mp4_check"
+    invoke-static {v1, p2, p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+
     invoke-static {p2, v4, v5, v6, v3}, Lcom/shabakaty/cinemana/features/MkvExporter;->buildJobKey(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v2
