@@ -3337,8 +3337,8 @@
     # This point is reached only after the MKV was sorted to its final path and DB promotion succeeded.
     # Remove the compact pending row now; failed promotion never passes this point.
     move-object/from16 v15, p4
-    instance-of v16, v15, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-    if-eqz v16, :repair_journal_token_from_path
+    instance-of v9, v15, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    if-eqz v9, :repair_journal_token_from_path
 
     check-cast v15, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
     invoke-static {v15}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
@@ -3346,7 +3346,8 @@
     goto :repair_journal_complete
 
     :repair_journal_token_from_path
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-object/from16 v10, p1
+    invoke-virtual {v10}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v15
     invoke-static {v15}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v15
