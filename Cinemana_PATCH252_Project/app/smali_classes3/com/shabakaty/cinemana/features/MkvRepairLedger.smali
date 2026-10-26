@@ -255,7 +255,6 @@
     if-eqz p0, :sweep_done
 
     :try_start_sweep
-    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweepFinalFiles(Landroid/content/Context;)V
     invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
     move-result-object v0
     if-eqz v0, :sweep_done
@@ -321,12 +320,15 @@
 .end method
 
 .method public static completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
-    .locals 2
+    .locals 7
 
     if-eqz p0, :complete_done
     if-eqz p1, :complete_done
 
     :try_start_complete
+    instance-of v0, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    if-eqz v0, :complete_done
+
     invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->identityToken(Ljava/lang/Object;)Ljava/lang/String;
     move-result-object v0
     if-eqz v0, :complete_done
@@ -334,8 +336,47 @@
     move-result v1
     if-nez v1, :complete_done
 
-    # Verify the recorded destination; exactVideo is a source-MP4 resolver.
-    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinalToken(Landroid/content/Context;Ljava/lang/String;)V
+    # The DB item's current path is the authoritative final destination. A sibling file alone
+    # is not enough: it may exist while the DB promotion/commit is still pending.
+    check-cast p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    iget-object v1, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    if-eqz v1, :complete_done
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :complete_done
+
+    sget-object v2, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v1, v2}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v2
+    const-string v3, ".mkv"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :complete_done
+
+    new-instance v2, Ljava/io/File;
+    invoke-direct {v2, v1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v2}, Ljava/io/File;->isFile()Z
+    move-result v3
+    if-eqz v3, :complete_done
+    invoke-virtual {v2}, Ljava/io/File;->length()J
+    move-result-wide v3
+    const-wide/16 v5, 0x400
+    cmp-long v3, v3, v5
+    if-lez v3, :complete_done
+
+    # If the final filename contains a cnm token, it must match the same DB item.
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    if-eqz v2, :complete_clear
+    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
+    move-result v3
+    if-nez v3, :complete_clear
+    invoke-virtual {v0, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v3
+    if-eqz v3, :complete_done
+
+    :complete_clear
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
     :try_end_complete
     .catch Ljava/lang/Throwable; {:try_start_complete .. :try_end_complete} :complete_failed
 
@@ -413,149 +454,6 @@
     return-void
 .end method
 
-.method private static sweepFinalFiles(Landroid/content/Context;)V
-    .locals 5
 
-    if-eqz p0, :sweep_files_done
 
-    :try_start_sweep_files
-    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
-    move-result-object v0
-    invoke-virtual {v0}, Ljava/util/Properties;->keySet()Ljava/util/Set;
-    move-result-object v1
-    new-instance v2, Ljava/util/ArrayList;
-    invoke-direct {v2, v1}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
-    invoke-virtual {v2}, Ljava/util/ArrayList;->iterator()Ljava/util/Iterator;
-    move-result-object v2
 
-    :sweep_files_loop
-    invoke-interface {v2}, Ljava/util/Iterator;->hasNext()Z
-    move-result v3
-    if-eqz v3, :try_end_sweep_files
-
-    invoke-interface {v2}, Ljava/util/Iterator;->next()Ljava/lang/Object;
-    move-result-object v3
-    check-cast v3, Ljava/lang/String;
-    invoke-static {p0, v3}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinalToken(Landroid/content/Context;Ljava/lang/String;)V
-    goto :sweep_files_loop
-
-    :try_end_sweep_files
-    .catch Ljava/lang/Throwable; {:try_start_sweep_files .. :try_end_sweep_files} :sweep_files_failed
-
-    goto :sweep_files_done
-
-    :sweep_files_failed
-    move-exception v0
-
-    :sweep_files_done
-    return-void
-.end method
-
-.method private static completeIfFinalToken(Landroid/content/Context;Ljava/lang/String;)V
-    .locals 9
-
-    if-eqz p0, :final_token_done
-    if-eqz p1, :final_token_done
-
-    :try_start_final_token
-    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
-    move-result-object v0
-    invoke-virtual {v0, p1}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v1
-    if-eqz v1, :final_token_done
-
-    # Values are compact: timestamp|state|source|target|reason.
-    const-string v2, "\\|"
-    invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
-    move-result-object v1
-    array-length v2, v1
-    const/4 v3, 0x4
-    if-lt v2, v3, :final_token_done
-
-    const/4 v2, 0x2
-    aget-object v3, v1, v2
-    const/4 v2, 0x3
-    aget-object v4, v1, v2
-
-    if-eqz v4, :final_target_from_source
-    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
-    move-result v2
-    if-nez v2, :final_target_from_source
-    goto :final_target_ready
-
-    :final_target_from_source
-    # Existing older journal entries may not store the target; derive the sibling from MP4.
-    if-eqz v3, :final_token_done
-    new-instance v4, Ljava/io/File;
-    invoke-direct {v4, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-virtual {v4}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v5
-    sget-object v6, Ljava/util/Locale;->US:Ljava/util/Locale;
-    invoke-virtual {v5, v6}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
-    move-result-object v6
-    const-string v7, ".mp4"
-    invoke-virtual {v6, v7}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-    move-result v6
-    if-eqz v6, :final_token_done
-    invoke-virtual {v5}, Ljava/lang/String;->length()I
-    move-result v6
-    add-int/lit8 v6, v6, -0x4
-    const/4 v7, 0x0
-    invoke-virtual {v5, v7, v6}, Ljava/lang/String;->substring(II)Ljava/lang/String;
-    move-result-object v5
-    const-string v6, ".mkv"
-    invoke-virtual {v5, v6}, Ljava/lang/String;->concat(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v5
-    new-instance v6, Ljava/io/File;
-    invoke-virtual {v4}, Ljava/io/File;->getParentFile()Ljava/io/File;
-    move-result-object v7
-    invoke-direct {v6, v7, v5}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    invoke-virtual {v6}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v4
-
-    :final_target_ready
-    new-instance v5, Ljava/io/File;
-    invoke-direct {v5, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-virtual {v5}, Ljava/io/File;->isFile()Z
-    move-result v6
-    if-eqz v6, :final_token_done
-    invoke-virtual {v5}, Ljava/io/File;->length()J
-    move-result-wide v6
-    const-wide/16 v7, 0x400
-    cmp-long v6, v6, v7
-    if-lez v6, :final_token_done
-
-    invoke-virtual {v5}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v5
-    sget-object v6, Ljava/util/Locale;->US:Ljava/util/Locale;
-    invoke-virtual {v5, v6}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
-    move-result-object v5
-    const-string v6, ".mkv"
-    invoke-virtual {v5, v6}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-    move-result v5
-    if-eqz v5, :final_token_done
-
-    # A token-bearing target must agree with this journal entry.
-    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v5
-    if-eqz v5, :final_clear
-    invoke-virtual {v5}, Ljava/lang/String;->isEmpty()Z
-    move-result v6
-    if-nez v6, :final_clear
-    invoke-virtual {p1, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v6
-    if-eqz v6, :final_token_done
-
-    :final_clear
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
-    :try_end_final_token
-    .catch Ljava/lang/Throwable; {:try_start_final_token .. :try_end_final_token} :final_token_failed
-
-    goto :final_token_done
-
-    :final_token_failed
-    move-exception v0
-
-    :final_token_done
-    return-void
-.end method
