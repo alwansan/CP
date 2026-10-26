@@ -13264,3 +13264,39 @@
     const/4 v0, 0x0
     return v0
 .end method
+
+
+.method public static matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
+    .locals 4
+
+    if-eqz p0, :source_output_no_match
+    if-eqz p1, :source_output_no_match
+
+    :try_start_source_output_match
+    new-instance v0, Ljava/io/File;
+    invoke-direct {v0, p1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {p0}, Ljava/io/File;->getCanonicalFile()Ljava/io/File;
+    move-result-object v1
+    invoke-virtual {v0}, Ljava/io/File;->getCanonicalFile()Ljava/io/File;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/io/File;->equals(Ljava/lang/Object;)Z
+    move-result v3
+    :try_end_source_output_match
+    .catch Ljava/lang/Throwable; {:try_start_source_output_match .. :try_end_source_output_match} :source_output_compare_failed
+
+    if-eqz v3, :source_output_check_target
+    const/4 v0, 0x1
+    return v0
+
+    :source_output_compare_failed
+    move-exception v0
+
+    :source_output_check_target
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v0
+    return v0
+
+    :source_output_no_match
+    const/4 v0, 0x0
+    return v0
+.end method
