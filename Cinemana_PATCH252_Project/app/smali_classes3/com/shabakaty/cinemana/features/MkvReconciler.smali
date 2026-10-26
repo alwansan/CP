@@ -734,11 +734,25 @@
     goto :fs_not_ready
 
     :fs_check_token
+    # The raw cnm tag in the actual source filename is the key used by subtitle plans.
+    # Do not use the DB task identity here: it may change after the MP4 was promoted/recovered.
+    invoke-virtual {v0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :fs_fallback_item_token
+    goto :fs_token_ready
+
+    :fs_fallback_item_token
     invoke-static {p1}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
     move-result-object v1
     invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
     move-result v2
     if-nez v2, :fs_not_ready
+
+    :fs_token_ready
 
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->expectedSubtitleCount(Ljava/lang/String;)I
     move-result v2
