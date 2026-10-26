@@ -586,6 +586,15 @@
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Persistence123;->start(Ljava/lang/Object;)V
 
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Restart108;->wake()V
+
+    # The normal recovery bootstrap runs first. A delayed, bounded second audit then looks for
+    # MP4 files that missed registration while the app was restoring its download manager.
+    sget-object p0, Lcom/shabakaty/cinemana/ca1/Restart108;->context:Ljava/lang/Object;
+    instance-of v0, p0, Landroid/content/Context;
+    if-eqz v0, :repair_autostart_done
+    check-cast p0, Landroid/content/Context;
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->scheduleAuto(Landroid/content/Context;)V
+    :repair_autostart_done
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 
