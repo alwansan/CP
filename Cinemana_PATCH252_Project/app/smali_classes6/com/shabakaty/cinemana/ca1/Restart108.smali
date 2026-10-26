@@ -5503,7 +5503,19 @@
 
     cmp-long v19, v7, v17
 
+    if-eqz v19, :cond_task_verified129
+
+    const-wide/16 v17, 0x0
+
+    cmp-long v19, v7, v17
+
     if-nez v19, :cond_e
+
+    const-string v7, "RECOVERY_ACCEPT_ZERO_TASK_AFTER_PATH_SIZE_CHECK"
+
+    invoke-static {v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->trace(Ljava/lang/String;)V
+
+    :cond_task_verified129
 
     .line 112
     new-array v0, v12, [Ljava/lang/Object;
