@@ -1,0 +1,137 @@
+name: Validate Liquid Glass APK
+
+on:
+  push:
+    branches:
+      - feat/liquid-glass-phase1
+    paths:
+      - "Cinemana_PATCH252_Project/**"
+      - ".github/workflows/liquid-glass-validation.yml"
+  pull_request:
+    branches:
+      - ui/ux-test
+    paths:
+      - "Cinemana_PATCH252_Project/**"
+      - ".github/workflows/liquid-glass-validation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: liquid-glass-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-build:
+    name: XML checks and APKTool build
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Validate bundled APKTool inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f Cinemana_PATCH252_Project/app/apktool.yml
+          test -f Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar
+          test -f Cinemana_PATCH252_Project/tools/framework/1.apk
+          test -x Cinemana_PATCH252_Project/build.sh
+          java -version
+
+      - name: Parse Liquid Glass XML and verify navigation wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          root = Path("Cinemana_PATCH252_Project/app/res")
+          drawable_names = [
+              "liquid_glass_shell.xml",
+              "liquid_glass_scrim.xml",
+              "liquid_glass_shell_pressed.xml",
+              "liquid_glass_shell_focused.xml",
+              "liquid_glass_shell_disabled.xml",
+              "liquid_glass_shell_error.xml",
+              "liquid_glass_error_helper_line.xml",
+              "liquid_glass_control_selector.xml",
+          ]
+          ns = "{http://schemas.android.com/apk/res/android}"
+          parsed = {}
+          for name in drawable_names:
+              path = root / "drawable" / name
+              assert path.is_file(), f"Missing drawable: {path}"
+              parsed[name] = ET.parse(path).getroot()
+              print(f"XML parse PASS: {path}")
+
+          layout_path = root / "layout" / "activity_home.xml"
+          layout = ET.parse(layout_path).getroot()
+          print(f"XML parse PASS: {layout_path}")
+
+          views = list(layout.iter())
+          containers = [
+              e for e in views
+              if e.tag == "FrameLayout"
+              and e.get(ns + "id") == "@+id/home_bottom_nav_glass_container"
+          ]
+          assert len(containers) == 1, "Expected exactly one glass navigation container"
+          container = containers[0]
+          assert container.get(ns + "background") == "@drawable/liquid_glass_shell"
+
+          scrims = [
+              e for e in list(container)
+              if e.tag == "View"
+              and e.get(ns + "background") == "@drawable/liquid_glass_scrim"
+          ]
+          assert len(scrims) == 1, "Expected an independent scrim child"
+          assert scrims[0].get(ns + "layout_height") == "64.0dip"
+          assert scrims[0].get(ns + "clickable") == "false"
+          assert scrims[0].get(ns + "focusable") == "false"
+
+          navs = [
+              e for e in list(container)
+              if e.tag.endswith("BottomNavigationView")
+              and e.get(ns + "id") == "@id/home_bottom_nav"
+          ]
+          assert len(navs) == 1, "Original home_bottom_nav ID must be preserved"
+          nav = navs[0]
+          assert nav.get("{http://schemas.android.com/apk/res-auto}menu") == "@menu/menu_navigation"
+          assert nav.get("{http://schemas.android.com/apk/res-auto}itemIconTint") == "@color/bottom_navigation_selector"
+          assert nav.get("{http://schemas.android.com/apk/res-auto}itemTextColor") == "@color/bottom_navigation_selector"
+
+          for view_id in ("@id/fragment_container", "@id/cast_fab"):
+              view = next((e for e in views if e.get(ns + "id") == view_id), None)
+              assert view is not None, f"Missing preserved view: {view_id}"
+              assert "@id/home_bottom_nav_glass_container" in (
+                  view.get("{http://schemas.android.com/apk/res-auto}layout_constraintBottom_toTopOf")
+                  or view.get("{http://schemas.android.com/apk/res-auto}layout_constraintBottom_toBottomOf")
+                  or ""
+              ), f"{view_id} no longer anchors to glass navigation container"
+
+          smali = Path(
+              "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/ThemeEngine142.smali"
+          ).read_text(encoding="utf-8")
+          assert 'const-string p0, "Custom"' in smali, "Custom mode label is missing"
+          print("Navigation/scrim wiring and Custom label checks: PASS")
+          PY
+
+      - name: Build unsigned APK with bundled APKTool
+        shell: bash
+        run: ./Cinemana_PATCH252_Project/build.sh
+
+      - name: Upload unsigned APK for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-phase1-unsigned-apk
+          path: Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
+          if-no-files-found: error
+          retention-days: 7
