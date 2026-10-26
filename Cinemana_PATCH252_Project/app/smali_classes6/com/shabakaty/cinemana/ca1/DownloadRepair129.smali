@@ -808,70 +808,184 @@
 .end method
 
 .method private static repairOneDiskMp4(Landroid/content/Context;Ljava/io/File;[I)V
-    .locals 8
+    .locals 10
+
     if-eqz p1, :disk_mp4_done
+
     invoke-virtual {p1}, Ljava/io/File;->isFile()Z
-    move-result v0
-    if-eqz v0, :disk_mp4_done
-    invoke-virtual {p1}, Ljava/io/File;->length()J
-    move-result-wide v0
-    const-wide/16 v2, 0x400
-    cmp-long v4, v0, v2
-    if-ltz v4, :disk_mp4_too_small
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v0
-    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v1
-    invoke-virtual {v1}, Ljava/lang/String;->length()I
-    move-result v2
-    if-lez v2, :disk_mp4_no_token
-    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->hasExistingMkvForToken(Ljava/io/File;Ljava/lang/String;)Z
-    move-result v2
-    if-eqz v2, :disk_mp4_try_reconcile
-    const/4 v2, 0x2
-    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
-    const-string v2, "download_repair_findings.log"
-    const-string v3, "MP4_DISK_SKIP_ALREADY_MKV"
-    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
-    return-void
-    :disk_mp4_try_reconcile
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->reconcileDiskReady(Landroid/content/Context;Ljava/io/File;)Z
-    move-result v2
-    if-eqz v2, :disk_mp4_unresolved
-    const/4 v2, 0x1
-    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+    move-result v6
+    if-eqz v6, :disk_mp4_done
+
     invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v2
+
+    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+
+    invoke-virtual {p1}, Ljava/io/File;->length()J
+    move-result-wide v0
+
+    # Record a stable, bounded state row before any recovery decision.
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v5, "size="
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v4
+    invoke-virtual {v4, v0, v1}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+    move-result-object v4
+    const-string v5, ";location=work;subtitle_plan=not_checked"
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v4
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v4
+
+    const-string v5, "MP4_DISCOVERED"
+    invoke-static {p0, v3, v5, v2, v4}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    const-wide/16 v4, 0x400
+    cmp-long v6, v0, v4
+    if-ltz v6, :disk_mp4_too_small
+
+    invoke-virtual {v3}, Ljava/lang/String;->length()I
+    move-result v4
+    if-lez v4, :disk_mp4_no_token
+
+    invoke-static {v3}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->expectedSubtitleCount(Ljava/lang/String;)I
+    move-result v4
+
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v6, "size="
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5, v0, v1}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v6, ";expected_subtitles="
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v6, ";verified_subtitles=not_checked"
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+
+    const-string v6, "CHECKING_SUBTITLE_PLAN"
+    invoke-static {p0, v3, v6, v2, v5}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    invoke-static {p1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->hasExistingMkvForToken(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v6
+    if-eqz v6, :disk_mp4_try_reconcile
+
+    const/4 v6, 0x2
+    invoke-static {p2, v6}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    const-string v6, "WAIT_MKV_PROMOTION"
+    const-string v7, "matching_mkv_in_work=true;canonical_final_not_proven"
+    invoke-static {p0, v3, v6, v2, v7}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    const-string v6, "download_repair_findings.log"
+    const-string v7, "MP4_DISK_SKIP_ALREADY_MKV"
+    invoke-static {p0, v6, v7, v3, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    return-void
+
+    :disk_mp4_try_reconcile
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->reconcileDiskReady(Landroid/content/Context;Ljava/io/File;)Z
+    move-result v6
+    if-eqz v6, :disk_mp4_unresolved
+
+    const/4 v6, 0x1
+    invoke-static {p2, v6}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v6, "size="
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5, v0, v1}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v6, ";expected_subtitles="
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v6, ";verified_subtitles=matched_plan"
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+
+    const-string v6, "READY_FOR_MKV_RECONCILE"
+    invoke-static {p0, v3, v6, v2, v5}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
     invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
-    const-string v2, "download_repair_actions.log"
-    const-string v3, "MP4_DISK_READY_FOR_MKV"
-    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+
+    const-string v6, "download_repair_actions.log"
+    const-string v7, "MP4_DISK_READY_FOR_MKV"
+    invoke-static {p0, v6, v7, v3, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
     return-void
+
     :disk_mp4_unresolved
-    const/4 v2, 0x3
-    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
-    const-string v2, "download_repair_unresolved.log"
-    const-string v3, "MP4_DISK_DEFERRED_SUBTITLES_OR_PLAN_NOT_VERIFIED"
-    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    const/4 v6, 0x3
+    invoke-static {p2, v6}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v6, "size="
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5, v0, v1}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v6, ";expected_subtitles="
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v6, ";verified_subtitles=failed_or_unavailable;reason=plan_or_dependency_check"
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+
+    const-string v6, "WAIT_PLAN_OR_SUBTITLES"
+    invoke-static {p0, v3, v6, v2, v5}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    const-string v6, "download_repair_unresolved.log"
+    const-string v7, "MP4_DISK_DEFERRED_SUBTITLES_OR_PLAN_NOT_VERIFIED"
+    invoke-static {p0, v6, v7, v3, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
     return-void
+
     :disk_mp4_no_token
-    const/4 v2, 0x3
-    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
-    const-string v2, "download_repair_unresolved.log"
-    const-string v3, "MP4_DISK_DEFERRED_NO_CONTENT_TOKEN"
-    const-string v1, ""
-    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    const/4 v6, 0x3
+    invoke-static {p2, v6}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    const-string v6, "BLOCKED_NO_CONTENT_TOKEN"
+    const-string v7, "reason=filename_has_no_cnm_token"
+    const-string v8, ""
+    invoke-static {p0, v8, v6, v2, v7}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    const-string v6, "download_repair_unresolved.log"
+    const-string v7, "MP4_DISK_DEFERRED_NO_CONTENT_TOKEN"
+    const-string v8, ""
+    invoke-static {p0, v6, v7, v8, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
     return-void
+
     :disk_mp4_too_small
-    const/4 v2, 0x3
-    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
-    const-string v2, "download_repair_unresolved.log"
-    const-string v3, "MP4_DISK_DEFERRED_FILE_TOO_SMALL"
-    const-string v1, ""
-    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+    const/4 v6, 0x3
+    invoke-static {p2, v6}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    const-string v6, "BLOCKED_FILE_TOO_SMALL"
+    const-string v7, "reason=source_file_under_1KiB"
+    invoke-static {p0, v3, v6, v2, v7}, Lcom/shabakaty/cinemana/ca1/RepairJournal129;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    const-string v6, "download_repair_unresolved.log"
+    const-string v7, "MP4_DISK_DEFERRED_FILE_TOO_SMALL"
+    invoke-static {p0, v6, v7, v3, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
+
     :disk_mp4_done
     return-void
-.end method
+.end methodd
 
 .method private static hasExistingMkvForToken(Ljava/io/File;Ljava/lang/String;)Z
     .locals 14
