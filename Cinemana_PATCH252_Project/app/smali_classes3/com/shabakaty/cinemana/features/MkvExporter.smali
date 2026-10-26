@@ -13200,15 +13200,15 @@
     return v0
 
     :recovered_queue_failed
-    move-exception v0
-    sget-object v1, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_LOCK:Ljava/lang/Object;
-    monitor-enter v1
-    sget-object v2, Lcom/shabakaty/cinemana/features/MkvExporter;->ACTIVE_JOB_KEYS:Ljava/util/Set;
-    invoke-interface {v2, v3}, Ljava/util/Set;->remove(Ljava/lang/Object;)Z
-    monitor-exit v1
+    move-exception v2
+    sget-object v6, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_LOCK:Ljava/lang/Object;
+    monitor-enter v6
+    sget-object v7, Lcom/shabakaty/cinemana/features/MkvExporter;->ACTIVE_JOB_KEYS:Ljava/util/Set;
+    invoke-interface {v7, v3}, Ljava/util/Set;->remove(Ljava/lang/Object;)Z
+    monitor-exit v6
     const/4 v2, 0x0
-    const-string v3, "FAILED"
-    invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    const-string v6, "FAILED"
+    invoke-static {v0, v1, v2, v6}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
     :recovered_reject
     const/4 v0, 0x0
