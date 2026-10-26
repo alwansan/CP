@@ -1,5 +1,7 @@
 # Cinemana Liquid Glass — implementation phase 1
 
+Detailed route-by-route coverage: see [LIQUID_GLASS_SCREEN_MATRIX.md](LIQUID_GLASS_SCREEN_MATRIX.md).
+
 ## Scope of this change
 
 This phase lays down an isolated, reviewable base for the Liquid Glass rollout:
