@@ -1253,7 +1253,13 @@
     if-lez v0, :disk_manifest_not_ready
     invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->expectedSubtitleCount(Ljava/lang/String;)I
     move-result v5
+    if-ltz v5, :disk_manifest_recover_plan
+    goto :disk_manifest_plan_ready
+    :disk_manifest_recover_plan
+    invoke-static {p0, v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->recoverExpectedFromDependencyPlan(Landroid/content/Context;Ljava/lang/String;)I
+    move-result v5
     if-ltz v5, :disk_manifest_not_ready
+    :disk_manifest_plan_ready
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Inputs114;->verified(Ljava/lang/Object;Ljava/io/File;)Ljava/util/List;
     move-result-object v6
     if-eqz v6, :disk_manifest_not_ready
@@ -1317,6 +1323,70 @@
     return v0
     :disk_manifest_not_ready
     const/4 v0, 0x0
+    return v0
+.end method
+
+
+.method private static recoverExpectedFromDependencyPlan(Landroid/content/Context;Ljava/lang/String;)I
+    .locals 7
+
+    const/4 v0, -0x1
+
+    if-eqz p0, :recover_plan_done
+
+    if-eqz p1, :recover_plan_done
+
+    :try_start_recover_plan
+    # Inputs114.model reconstructs the exact subtitle dependency plan from persisted queue plan records.
+    invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Inputs114;->model(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v1
+
+    instance-of v2, v1, Ljava/util/List;
+    if-eqz v2, :recover_plan_done
+
+    check-cast v1, Ljava/util/List;
+    invoke-interface {v1}, Ljava/util/List;->size()I
+    move-result v2
+
+    if-lez v2, :recover_plan_empty
+
+    goto :recover_plan_store
+
+    :recover_plan_empty
+    # Zero subtitles is accepted only for an explicitly marked No-Sub token, never by guessing.
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->isNoSubToken(Ljava/lang/String;)Z
+    move-result v3
+    if-eqz v3, :recover_plan_done
+
+    const/4 v2, 0x0
+
+    :recover_plan_store
+    const-string v3, "cnm_mkv_plan_v54"
+    const/4 v4, 0x0
+    invoke-virtual {p0, v3, v4}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+    move-result-object v3
+
+    invoke-interface {v3}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+    move-result-object v4
+
+    invoke-interface {v4, p1, v2}, Landroid/content/SharedPreferences$Editor;->putInt(Ljava/lang/String;I)Landroid/content/SharedPreferences$Editor;
+
+    invoke-interface {v4}, Landroid/content/SharedPreferences$Editor;->commit()Z
+    move-result v5
+    if-eqz v5, :recover_plan_done
+
+    move v0, v2
+    :try_end_recover_plan
+    .catch Ljava/lang/Throwable; {:try_start_recover_plan .. :try_end_recover_plan} :recover_plan_failed
+
+    goto :recover_plan_done
+
+    :recover_plan_failed
+    move-exception v1
+
+    const/4 v0, -0x1
+
+    :recover_plan_done
     return v0
 .end method
 
