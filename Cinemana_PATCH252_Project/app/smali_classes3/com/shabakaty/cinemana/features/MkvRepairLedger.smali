@@ -60,6 +60,17 @@
     .locals 3
 
     :try_start_save
+    invoke-virtual {p0}, Ljava/util/Properties;->isEmpty()Z
+    move-result v0
+    if-eqz v0, :save_nonempty
+
+    # Zero outstanding repair problems means zero-byte state file; the parent data folder may remain.
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->ledgerFile()Ljava/io/File;
+    move-result-object v0
+    invoke-virtual {v0}, Ljava/io/File;->delete()Z
+    goto :try_end_save
+
+    :save_nonempty
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->ledgerFile()Ljava/io/File;
     move-result-object v0
     new-instance v1, Ljava/io/FileOutputStream;
