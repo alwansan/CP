@@ -107,6 +107,17 @@
     invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     :inventory_done
 
+    :try_start_logs
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->inspectLogs(Landroid/content/Context;)V
+    :try_end_logs
+    .catch Ljava/lang/Throwable; {:try_start_logs .. :try_end_logs} :logs_failed
+    goto :logs_done
+    :logs_failed
+    move-exception v2
+    const-string v1, "HISTORICAL_LOG_SCAN_FAILED"
+    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
+    :logs_done
+
     :try_start_1
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
     :try_end_1
@@ -120,6 +131,20 @@
     const-string v1, "QUEUE110_SCAN_FAILED"
     invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     :queue_done
+
+    :try_start_dependencies
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Dependencies112;->scan()V
+    :try_end_dependencies
+    .catch Ljava/lang/Throwable; {:try_start_dependencies .. :try_end_dependencies} :dependencies_failed
+    const-string v0, "download_repair_actions.log"
+    const-string v1, "SUBTITLE_DEPENDENCY_SCAN_DISPATCHED; existing dependency recovery checked eligible MP4/subtitle pairs"
+    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+    goto :dependencies_done
+    :dependencies_failed
+    move-exception v2
+    const-string v1, "DEPENDENCY_SCAN_FAILED"
+    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
+    :dependencies_done
 
     :try_start_2
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->start(Landroid/content/Context;)V
@@ -336,6 +361,259 @@
     aget v0, p0, p1
     add-int/lit8 v0, v0, 0x1
     aput v0, p0, p1
+    return-void
+.end method
+
+.method private static inspectLogs(Landroid/content/Context;)V
+    .locals 9
+
+    const/4 v0, 0x7
+    new-array v0, v0, [I
+
+    new-instance v1, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v2
+    const-string v3, "Cinemana/work/log"
+    invoke-direct {v1, v2, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+
+    const/4 v2, 0x3
+    new-array v2, v2, [Ljava/lang/String;
+    const-string v3, "downloads.log"
+    const/4 v4, 0x0
+    aput-object v3, v2, v4
+    const-string v3, "diagnostics.log"
+    const/4 v4, 0x1
+    aput-object v3, v2, v4
+    const-string v3, "restart108.log"
+    const/4 v4, 0x2
+    aput-object v3, v2, v4
+
+    const/4 v3, 0x0
+    const/4 v4, 0x3
+    :log_file_loop
+    if-ge v3, v4, :logs_count_report
+    aget-object v5, v2, v3
+    new-instance v6, Ljava/io/File;
+    invoke-direct {v6, v1, v5}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-static {v6, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->inspectOneLog(Ljava/io/File;[I)V
+    add-int/lit8 v3, v3, 0x1
+    goto :log_file_loop
+
+    :logs_count_report
+    new-instance v7, Ljava/lang/StringBuilder;
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v8, "RECENT_LOG_SIGNATURES db_commit_incomplete="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x0
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, " dns_failures="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x1
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, " mkv_requeues="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x2
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, " manifest_wait="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x3
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, " db_promote_fail="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x4
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, " download_errors="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x5
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, " lines_read="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x6
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, " source_tail_limit=1MiB_per_log"
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v7
+    const-string v8, "download_repair_findings.log"
+    invoke-static {p0, v8, v7}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+
+    const/4 v7, 0x0
+    aget v7, v0, v7
+    if-lez v7, :log_check_dns
+    new-instance v7, Ljava/lang/StringBuilder;
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v8, "HISTORICAL_DATABASE_COMMIT_SIGNATURES count="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x0
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, "; zero-task recovery requires matching canonical paths and exact file size"
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v7
+    const-string v8, "download_repair_findings.log"
+    invoke-static {p0, v8, v7}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+
+    :log_check_dns
+    const/4 v7, 0x1
+    aget v7, v0, v7
+    if-lez v7, :log_check_promote
+    new-instance v7, Ljava/lang/StringBuilder;
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v8, "HISTORICAL_DNS_FAILURES count="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x1
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, "; unresolved until the episode source supplies a fresh valid URL; no blind duplicate request was made"
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v7
+    const-string v8, "download_repair_unresolved.log"
+    invoke-static {p0, v8, v7}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+
+    :log_check_promote
+    const/4 v7, 0x4
+    aget v7, v0, v7
+    if-lez v7, :logs_done
+    new-instance v7, Ljava/lang/StringBuilder;
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v8, "HISTORICAL_DB_PROMOTION_FAILURES count="
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const/4 v8, 0x4
+    aget v8, v0, v8
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v7
+    const-string v8, "; check unresolved log for new exception details after the safe recovery pass"
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v7
+    const-string v8, "download_repair_unresolved.log"
+    invoke-static {p0, v8, v7}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+
+    :logs_done
+    return-void
+.end method
+
+.method private static inspectOneLog(Ljava/io/File;[I)V
+    .locals 8
+
+    :try_start_0
+    if-eqz p0, :inspect_done
+    invoke-virtual {p0}, Ljava/io/File;->isFile()Z
+    move-result v0
+    if-eqz v0, :inspect_done
+
+    new-instance v0, Ljava/io/RandomAccessFile;
+    const-string v1, "r"
+    invoke-direct {v0, p0, v1}, Ljava/io/RandomAccessFile;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {p0}, Ljava/io/File;->length()J
+    move-result-wide v1
+    const-wide/32 v3, 0x100000
+    cmp-long v5, v1, v3
+    if-lez v5, :inspect_read
+    sub-long/2addr v1, v3
+    invoke-virtual {v0, v1, v2}, Ljava/io/RandomAccessFile;->seek(J)V
+
+    :inspect_read
+    invoke-virtual {v0}, Ljava/io/RandomAccessFile;->readLine()Ljava/lang/String;
+    move-result-object v2
+    if-eqz v2, :inspect_eof
+    const/4 v3, 0x6
+    invoke-static {p1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    const-string v3, "database commit incomplete"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4
+    if-eqz v4, :inspect_dns
+    const/4 v3, 0x0
+    invoke-static {p1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    :inspect_dns
+    const-string v3, "UnknownHostException"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4
+    if-nez v4, :inspect_dns_hit
+    const-string v3, "Unable to resolve host"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4
+    if-eqz v4, :inspect_requeue
+    :inspect_dns_hit
+    const/4 v3, 0x1
+    invoke-static {p1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    :inspect_requeue
+    const-string v3, "MP4_COMPLETE_REQUEUE_MKV"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4
+    if-eqz v4, :inspect_manifest
+    const/4 v3, 0x2
+    invoke-static {p1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    :inspect_manifest
+    const-string v3, "MKV_MANIFEST_WAIT"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4
+    if-eqz v4, :inspect_promote
+    const/4 v3, 0x3
+    invoke-static {p1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    :inspect_promote
+    const-string v3, "DB_PROMOTE_FAIL"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4
+    if-eqz v4, :inspect_download_error
+    const/4 v3, 0x4
+    invoke-static {p1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+
+    :inspect_download_error
+    const-string v3, "DOWNLOAD_ERROR"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v4
+    if-eqz v4, :inspect_read
+    const/4 v3, 0x5
+    invoke-static {p1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
+    goto :inspect_read
+
+    :inspect_eof
+    invoke-virtual {v0}, Ljava/io/RandomAccessFile;->close()V
+    :inspect_done
+    return-void
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :inspect_failed
+
+    :inspect_failed
+    move-exception v0
     return-void
 .end method
 
