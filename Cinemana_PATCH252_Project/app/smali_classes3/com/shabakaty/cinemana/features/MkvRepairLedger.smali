@@ -543,7 +543,7 @@
     :disk_alias_no
     const/4 v0, 0x0
     return v0
-.end methodd
+.end method
 
 .method public static completeAliasFromSource(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)V
     .locals 2
