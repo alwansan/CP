@@ -408,16 +408,78 @@
     :try_start_discovery
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
     move-result-object v0
-    invoke-virtual {v0, p1}, Ljava/util/Properties;->containsKey(Ljava/lang/Object;)Z
-    move-result v1
-    if-nez v1, :discovery_done
+    invoke-virtual {v0, p1}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
 
+    # Repair stale entries created by subtitle FileObserver events. A token may first be
+    # recorded against an SRT/ASS path; replace only that discovery with the real MP4.
+    if-eqz v1, :discovery_validate_mp4
+    const-string v2, "\\|"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
+    move-result-object v2
+    array-length v3, v2
+    const/4 v4, 0x3
+    if-lt v3, v4, :discovery_existing_source_unknown
+
+    const/4 v3, 0x1
+    aget-object v3, v2, v3
+    const-string v4, "MKV_QUEUED"
+    invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-nez v4, :discovery_done
+    const-string v4, "FINAL_MKV_AWAITING_PROMOTION"
+    invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-nez v4, :discovery_done
+
+    const/4 v3, 0x2
+    aget-object v3, v2, v3
+    if-eqz v3, :discovery_validate_mp4
+    sget-object v4, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v3, v4}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v3
+    const-string v4, ".srt"
+    invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v4
+    if-nez v4, :discovery_validate_mp4
+    const-string v4, ".ass"
+    invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v4
+    if-nez v4, :discovery_validate_mp4
+    const-string v4, ".ssa"
+    invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v4
+    if-nez v4, :discovery_validate_mp4
+    const-string v4, ".vtt"
+    invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v4
+    if-nez v4, :discovery_validate_mp4
+    const-string v4, ".sub"
+    invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v4
+    if-nez v4, :discovery_validate_mp4
+    const-string v4, "WAITING_MP4_SOURCE"
+    const-string v5, "WAIT_ITEM_MAPPING"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    # Existing non-subtitle source/diagnostics remain untouched.
+    if-eqz v4, :discovery_done
+    goto :discovery_validate_mp4
+
+    :discovery_existing_source_unknown
+    # A previous empty-source wait is safe to replace with a confirmed MP4.
+    const-string v3, "WAITING_MP4_SOURCE"
+    invoke-virtual {v1, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+    move-result v3
+    if-nez v3, :discovery_validate_mp4
+    goto :discovery_done
+
+    :discovery_validate_mp4
     new-instance v1, Ljava/io/File;
     invoke-direct {v1, p2}, Ljava/io/File;-><init>(Ljava/lang/String;)V
     invoke-virtual {v1}, Ljava/io/File;->isFile()Z
     move-result v2
     if-eqz v2, :discovery_done
-
     invoke-virtual {v1}, Ljava/io/File;->getName()Ljava/lang/String;
     move-result-object v2
     sget-object v3, Ljava/util/Locale;->US:Ljava/util/Locale;
@@ -444,12 +506,11 @@
     invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v5
 
-    # Persist only the first discovery; later reconciliation stages update this same key.
     move-object v1, p0
     move-object v2, p1
     const-string v3, "DISCOVERED_MP4"
     move-object v4, p2
-    const-string v6, "filesystem_mp4_found;checking_item_mapping_subtitle_plan_and_final_mkv"
+    const-string v6, "filesystem_mp4_found;replacing_stale_subtitle_source_if_needed;checking_item_mapping_subtitle_plan_and_final_mkv"
     invoke-static/range {v1 .. v6}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->record(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     :try_end_discovery
     .catch Ljava/lang/Throwable; {:try_start_discovery .. :try_end_discovery} :discovery_failed
@@ -461,7 +522,7 @@
 
     :discovery_done
     return-void
-.end method
+.end methodd
 
 
 
