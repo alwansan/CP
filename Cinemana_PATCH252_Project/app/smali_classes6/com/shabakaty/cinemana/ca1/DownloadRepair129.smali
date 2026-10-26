@@ -191,6 +191,18 @@
     invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     :recovery_done
 
+    :try_start_ledger_sweep
+    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
+    :try_end_ledger_sweep
+    .catch Ljava/lang/Throwable; {:try_start_ledger_sweep .. :try_end_ledger_sweep} :ledger_sweep_failed
+    goto :ledger_sweep_done
+
+    :ledger_sweep_failed
+    move-exception v2
+    const-string v1, "MKV_LEDGER_SWEEP_FAILED"
+    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
+
+    :ledger_sweep_done
     const-string v0, "download_repair_actions.log"
     const-string v1, "REPAIR_END; asynchronous recovery/conversion may continue in the original pipeline; consult unresolved log for failures"
     invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
