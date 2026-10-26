@@ -149,6 +149,18 @@
     if-eqz p1, :reconcile_done
 
     :try_start_reconcile
+    # Existing sibling MKV means conversion already produced output; do not queue another export.
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->hasSiblingMkv(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
+    move-result v1
+    if-eqz v1, :reconcile_check_manifest
+
+    const-string v1, "FINAL_MKV_AWAITING_PROMOTION"
+    const-string v2, "valid_sibling_mkv_exists_skip_duplicate_export;wake_database_finalization"
+    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Restart108;->wake()V
+    goto :reconcile_try_done
+
+    :reconcile_check_manifest
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->init(Landroid/content/Context;)V
     invoke-static {p1}, Lcom/shabakaty/cinemana/features/DownloadIdentity;->contentToken(Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Ljava/lang/String;
     move-result-object v0
@@ -560,6 +572,75 @@
 
     :cond_1
     return-void
+.end method
+
+.method private static hasSiblingMkv(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
+    .locals 6
+
+    if-eqz p0, :sibling_no
+    if-eqz p1, :sibling_no
+
+    :try_start_sibling
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
+    move-result-object v0
+    if-eqz v0, :sibling_no
+
+    invoke-virtual {v0}, Ljava/io/File;->isFile()Z
+    move-result v1
+    if-eqz v1, :sibling_no
+
+    invoke-virtual {v0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    sget-object v2, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v1, v2}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v2
+    const-string v3, ".mp4"
+    invoke-virtual {v2, v3}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :sibling_no
+
+    invoke-virtual {v0}, Ljava/io/File;->length()J
+    move-result-wide v2
+    const-wide/16 v4, 0x400
+    cmp-long v2, v2, v4
+    if-lez v2, :sibling_no
+
+    invoke-virtual {v1}, Ljava/lang/String;->length()I
+    move-result v2
+    add-int/lit8 v2, v2, -0x4
+    const/4 v3, 0x0
+    invoke-virtual {v1, v3, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    move-result-object v1
+    const-string v2, ".mkv"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->concat(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+
+    new-instance v2, Ljava/io/File;
+    invoke-virtual {v0}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v3
+    invoke-direct {v2, v3, v1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+
+    invoke-virtual {v2}, Ljava/io/File;->isFile()Z
+    move-result v3
+    if-eqz v3, :sibling_no
+
+    invoke-virtual {v2}, Ljava/io/File;->length()J
+    move-result-wide v2
+    const-wide/16 v4, 0x400
+    cmp-long v2, v2, v4
+    if-lez v2, :sibling_no
+
+    const/4 v0, 0x1
+    :try_end_sibling
+    .catch Ljava/lang/Throwable; {:try_start_sibling .. :try_end_sibling} :sibling_error
+    return v0
+
+    :sibling_error
+    move-exception v0
+
+    :sibling_no
+    const/4 v0, 0x0
+    return v0
 .end method
 
 .method private static filesystemInputsReady(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
