@@ -1289,7 +1289,7 @@
 
 
 .method public static declared-synchronized reconcileDiskReady(Landroid/content/Context;Ljava/io/File;)Z
-    .locals 13
+    .locals 14
     if-eqz p0, :disk_manifest_not_ready
     if-eqz p1, :disk_manifest_not_ready
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->init(Landroid/content/Context;)V
