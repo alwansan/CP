@@ -13084,3 +13084,121 @@
     :goto_2
     return-void
 .end method
+
+
+.method public static onRecoveredVideo(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
+    .locals 16
+
+    if-eqz p0, :recovered_reject
+    if-eqz p1, :recovered_reject
+    if-eqz p2, :recovered_reject
+
+    invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
+    move-result-object v0
+    if-eqz v0, :recovered_context_ready
+    move-object p0, v0
+
+    :recovered_context_ready
+    invoke-virtual {p2}, Ljava/io/File;->isFile()Z
+    move-result v0
+    if-eqz v0, :recovered_reject
+
+    invoke-virtual {p2}, Ljava/io/File;->length()J
+    move-result-wide v0
+    const-wide/16 v2, 0x400
+    cmp-long v0, v0, v2
+    if-lez v0, :recovered_reject
+
+    invoke-virtual {p2}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->extension(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    const-string v1, "mp4"
+    invoke-virtual {v1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :recovered_reject
+
+    invoke-static {p0, p2}, Lcom/shabakaty/cinemana/ca1/Inputs114;->verified(Ljava/lang/Object;Ljava/io/File;)Ljava/util/List;
+    move-result-object v0
+    if-eqz v0, :recovered_reject
+
+    const-string v0, "title"
+    const-string v1, "getTitle"
+    filled-new-array {v0, v1}, [Ljava/lang/String;
+    move-result-object v0
+    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->stringProperty(Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
+
+    const-string v0, "season"
+    const-string v1, "getSeason"
+    filled-new-array {v0, v1}, [Ljava/lang/String;
+    move-result-object v0
+    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->stringProperty(Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+
+    const-string v0, "episodeNumber"
+    const-string v1, "getEpisodeNumber"
+    filled-new-array {v0, v1}, [Ljava/lang/String;
+    move-result-object v0
+    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->stringProperty(Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v6
+
+    invoke-virtual {p2}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v7
+
+    invoke-static {p1, v4, v5, v6, v7}, Lcom/shabakaty/cinemana/features/MkvExporter;->buildJobKey(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+
+    sget-object v8, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_LOCK:Ljava/lang/Object;
+    monitor-enter v8
+    sget-object v9, Lcom/shabakaty/cinemana/features/MkvExporter;->ACTIVE_JOB_KEYS:Ljava/util/Set;
+    invoke-interface {v9, v3}, Ljava/util/Set;->contains(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :recovered_queue_add
+    monitor-exit v8
+    const/4 v0, 0x1
+    return v0
+
+    :recovered_queue_add
+    invoke-interface {v9, v3}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
+    monitor-exit v8
+
+    :try_start_recovered_queue
+    const/4 v0, 0x1
+    const-string v1, "QUEUED"
+    invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
+    new-instance v1, Lcom/shabakaty/cinemana/features/MkvExporter$2;
+    move-object v2, p0
+    move-object v8, v1
+    move-object v9, p0
+    move-object v10, v3
+    move-object v11, v7
+    move-object v12, v4
+    move-object v13, v5
+    move-object v14, v6
+    move-object v15, p1
+    invoke-direct/range {v8 .. v15}, Lcom/shabakaty/cinemana/features/MkvExporter$2;-><init>(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
+    invoke-interface {v0, v1}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
+    :try_end_recovered_queue
+    .catch Ljava/lang/Throwable; {:try_start_recovered_queue .. :try_end_recovered_queue} :recovered_queue_failed
+
+    const/4 v0, 0x1
+    return v0
+
+    :recovered_queue_failed
+    move-exception v0
+    sget-object v1, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_LOCK:Ljava/lang/Object;
+    monitor-enter v1
+    sget-object v2, Lcom/shabakaty/cinemana/features/MkvExporter;->ACTIVE_JOB_KEYS:Ljava/util/Set;
+    invoke-interface {v2, v3}, Ljava/util/Set;->remove(Ljava/lang/Object;)Z
+    monitor-exit v1
+    const/4 v1, 0x0
+    const-string v2, "FAILED"
+    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+
+    :recovered_reject
+    const/4 v0, 0x0
+    return v0
+.end method
