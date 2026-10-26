@@ -719,7 +719,7 @@
 
 .method private static repairDiskMp4(Landroid/content/Context;)V
     .locals 8
-    const/4 v0, 0x4
+    const/4 v0, 0x5
     new-array v0, v0, [I
     invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
     move-result-object v1
