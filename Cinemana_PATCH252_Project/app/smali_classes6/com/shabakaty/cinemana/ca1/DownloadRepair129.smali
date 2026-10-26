@@ -233,12 +233,12 @@
 .method private static scanTree(Ljava/io/File;I[I)V
     .locals 7
     if-eqz p0, :scan_done
-    aget v0, p2, 0
-    const/16 v1, 0x9c4
-    if-lt v0, v1, :scan_continue
+    const/4 v1, 0x0
+    aget v0, p2, v1
+    const/16 v2, 0x9c4
+    if-lt v0, v2, :scan_continue
     return-void
     :scan_continue
-    const/4 v1, 0x0
     invoke-static {p2, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
     invoke-virtual {p0}, Ljava/io/File;->isDirectory()Z
     move-result v0
