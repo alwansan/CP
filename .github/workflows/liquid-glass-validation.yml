@@ -43,7 +43,7 @@ jobs:
           test -f Cinemana_PATCH252_Project/app/apktool.yml
           test -f Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar
           test -f Cinemana_PATCH252_Project/tools/framework/1.apk
-          test -x Cinemana_PATCH252_Project/build.sh
+          test -f Cinemana_PATCH252_Project/build.sh
           java -version
 
       - name: Parse Liquid Glass XML and verify navigation wiring
@@ -126,7 +126,9 @@ jobs:
 
       - name: Build unsigned APK with bundled APKTool
         shell: bash
-        run: ./Cinemana_PATCH252_Project/build.sh
+        run: |
+          chmod +x Cinemana_PATCH252_Project/build.sh
+          ./Cinemana_PATCH252_Project/build.sh
 
       - name: Upload unsigned APK for review
         uses: actions/upload-artifact@v4
