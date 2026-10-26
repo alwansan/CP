@@ -81,10 +81,23 @@ jobs:
               parsed[name] = ET.parse(path).getroot()
               print(f"XML parse PASS: {path}")
 
-          layout_path = root / "layout" / "activity_home.xml"
-          layout = ET.parse(layout_path).getroot()
-          print(f"XML parse PASS: {layout_path}")
+          layout_paths = [
+              "activity_home.xml",
+              "fragment_home.xml",
+              "fragment_categories.xml",
+              "fragment_search.xml",
+              "fragment_search_all_tab.xml",
+              "fragment_profile.xml",
+          ]
+          layouts = {}
+          for name in layout_paths:
+              path = root / "layout" / name
+              assert path.is_file(), f"Missing layout: {path}"
+              layouts[name] = ET.parse(path).getroot()
+              print(f"XML parse PASS: {path}")
 
+          ns_app = "{http://schemas.android.com/apk/res-auto}"
+          layout = layouts["activity_home.xml"]
           views = list(layout.iter())
           containers = [
               e for e in views
@@ -112,18 +125,57 @@ jobs:
           ]
           assert len(navs) == 1, "Original home_bottom_nav ID must be preserved"
           nav = navs[0]
-          assert nav.get("{http://schemas.android.com/apk/res-auto}menu") == "@menu/menu_navigation"
-          assert nav.get("{http://schemas.android.com/apk/res-auto}itemIconTint") == "@color/bottom_navigation_selector"
-          assert nav.get("{http://schemas.android.com/apk/res-auto}itemTextColor") == "@color/bottom_navigation_selector"
+          assert nav.get(ns_app + "menu") == "@menu/menu_navigation"
+          assert nav.get(ns_app + "itemIconTint") == "@color/bottom_navigation_selector"
+          assert nav.get(ns_app + "itemTextColor") == "@color/bottom_navigation_selector"
 
-          for view_id in ("@id/fragment_container", "@id/cast_fab"):
-              view = next((e for e in views if e.get(ns + "id") == view_id), None)
-              assert view is not None, f"Missing preserved view: {view_id}"
-              assert "@id/home_bottom_nav_glass_container" in (
-                  view.get("{http://schemas.android.com/apk/res-auto}layout_constraintBottom_toTopOf")
-                  or view.get("{http://schemas.android.com/apk/res-auto}layout_constraintBottom_toBottomOf")
-                  or ""
-              ), f"{view_id} no longer anchors to glass navigation container"
+          fragment_host = next((e for e in views if e.get(ns + "id") == "@id/fragment_container"), None)
+          assert fragment_host is not None, "Missing fragment_container"
+          assert fragment_host.get(ns_app + "layout_constraintBottom_toBottomOf") == "parent", (
+              "Content host must extend behind the floating glass navigation"
+          )
+          assert fragment_host.get(ns_app + "layout_constraintBottom_toTopOf") is None, (
+              "Content host is still clipped above the floating glass navigation"
+          )
+
+          cast_fab = next((e for e in views if e.get(ns + "id") == "@id/cast_fab"), None)
+          assert cast_fab is not None, "Missing cast_fab"
+          assert cast_fab.get(ns_app + "layout_constraintBottom_toTopOf") == "@id/home_bottom_nav_glass_container", (
+              "Cast button must remain anchored above the glass navigation"
+          )
+
+          home_recycler = next(
+              (e for e in layouts["fragment_home.xml"].iter()
+               if e.get(ns + "id") == "@id/home_page_main_recycler"),
+              None,
+          )
+          assert home_recycler is not None and home_recycler.get(ns + "paddingBottom") == "88dp"
+          assert home_recycler.get(ns + "clipToPadding") == "false"
+
+          categories_recycler = next(
+              (e for e in layouts["fragment_categories.xml"].iter()
+               if e.get(ns + "id") == "@id/categories_recycler"),
+              None,
+          )
+          assert categories_recycler is not None
+          assert categories_recycler.get(ns + "paddingBottom") == "88dp"
+          assert categories_recycler.get(ns + "clipToPadding") == "false"
+
+          for layout_name, view_id in [
+              ("fragment_search.xml", None),
+              ("fragment_search_all_tab.xml", None),
+              ("fragment_profile.xml", "@id/profile_scroll_view"),
+          ]:
+              scrolls = [
+                  e for e in layouts[layout_name].iter()
+                  if e.tag.endswith("NestedScrollView")
+                  and (view_id is None or e.get(ns + "id") == view_id)
+              ]
+              assert scrolls, f"Expected scroll view in {layout_name}"
+              assert any(
+                  e.get(ns + "paddingBottom") == "88dp" and e.get(ns + "clipToPadding") == "false"
+                  for e in scrolls
+              ), f"{layout_name} must scroll clear of floating nav"
 
           smali = Path(
               "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/ThemeEngine142.smali"
