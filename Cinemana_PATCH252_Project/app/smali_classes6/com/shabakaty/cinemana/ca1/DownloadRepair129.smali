@@ -895,6 +895,10 @@
     move-result v6
     if-eqz v6, :disk_mp4_unresolved
 
+    # reconcileDiskReady may have reconstructed a missing expected count from persisted dependency records.
+    invoke-static {v3}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->expectedSubtitleCount(Ljava/lang/String;)I
+    move-result v4
+
     const/4 v6, 0x1
     invoke-static {p2, v6}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
 
