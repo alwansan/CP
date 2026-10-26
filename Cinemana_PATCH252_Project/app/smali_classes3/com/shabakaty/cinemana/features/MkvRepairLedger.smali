@@ -469,7 +469,7 @@
 
 
 .method private static completeDiskAliasIfFinal(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)Z
-    .locals 10
+    .locals 8
 
     if-eqz p0, :disk_alias_no
     if-eqz p1, :disk_alias_no
@@ -489,10 +489,10 @@
     invoke-virtual {v1, v2}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
     move-result-object v2
     array-length v3, v2
-    const/4 v4, 0x4
+    const/4 v4, 0x3
     if-lt v3, v4, :disk_alias_no
 
-    # Only a queued entry has an exact destination path supplied by the guarded pipeline.
+    # Only a queued conversion can be retired by this alias path.
     const/4 v3, 0x1
     aget-object v3, v2, v3
     const-string v4, "MKV_QUEUED"
@@ -507,50 +507,27 @@
     move-result v4
     if-nez v4, :disk_alias_no
 
-    const/4 v4, 0x3
-    aget-object v4, v2, v4
-    if-eqz v4, :disk_alias_no
-    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
-    move-result v5
-    if-nez v5, :disk_alias_no
-
     check-cast p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-    iget-object v5, p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
-    if-eqz v5, :disk_alias_no
-    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v6
-    if-nez v6, :disk_alias_target_matches
+    iget-object v4, p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    if-eqz v4, :disk_alias_no
 
-    # Canonicalize paths for devices that normalize storage prefixes differently.
-    new-instance v6, Ljava/io/File;
-    invoke-direct {v6, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-virtual {v6}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
-    move-result-object v6
-    new-instance v7, Ljava/io/File;
-    invoke-direct {v7, v5}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-virtual {v7}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
-    move-result-object v7
-    invoke-virtual {v6, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    # The current DB item must now point to an actual final MKV with the exact source basename.
+    new-instance v5, Ljava/io/File;
+    invoke-direct {v5, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v5}, Ljava/io/File;->isFile()Z
     move-result v6
     if-eqz v6, :disk_alias_no
+    invoke-virtual {v5}, Ljava/io/File;->length()J
+    move-result-wide v6
+    const-wide/16 v0, 0x400
+    cmp-long v6, v6, v0
+    if-lez v6, :disk_alias_no
 
-    :disk_alias_target_matches
-    new-instance v6, Ljava/io/File;
-    invoke-direct {v6, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-virtual {v6}, Ljava/io/File;->isFile()Z
-    move-result v7
-    if-eqz v7, :disk_alias_no
-    invoke-virtual {v6}, Ljava/io/File;->length()J
-    move-result-wide v7
-    const-wide/16 v8, 0x400
-    cmp-long v7, v7, v8
-    if-lez v7, :disk_alias_no
-
-    new-instance v7, Ljava/io/File;
-    invoke-direct {v7, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-static {v7, v4}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
-    move-result v7
-    if-eqz v7, :disk_alias_no
+    new-instance v5, Ljava/io/File;
+    invoke-direct {v5, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-static {v5, v4}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :disk_alias_no
 
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
     invoke-static {p0, p2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
@@ -566,4 +543,24 @@
     :disk_alias_no
     const/4 v0, 0x0
     return v0
+.end methodd
+
+.method public static completeAliasFromSource(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)V
+    .locals 2
+
+    if-eqz p0, :disk_alias_source_done
+    if-eqz p1, :disk_alias_source_done
+    if-eqz p2, :disk_alias_source_done
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    if-eqz v0, :disk_alias_source_done
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
+    move-result v1
+    if-nez v1, :disk_alias_source_done
+
+    invoke-static {p0, v0, p2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeDiskAliasIfFinal(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)Z
+
+    :disk_alias_source_done
+    return-void
 .end method
