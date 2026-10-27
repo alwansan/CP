@@ -1603,6 +1603,9 @@ d
     return v0
 
     :ensure_mp4_rebuild
+    # Preserve the marker before v6 is reused for the FFmpeg executable.
+    move-object v9, v6
+
     # Persist the claim before building; if any later stage fails the claim is reverted to false.
     const-string v5, "mp4MetadataEmbedded"
     const-string v7, "true"
@@ -1648,10 +1651,8 @@ d
     move-object v6, v5
     move-object v7, v11
     move-object v8, v2
-    move-object v9, v6
+    # v9 was preserved as the marker before FFmpeg lookup.
     move-object v10, v1
-    # v9 must remain the marker, not the ffmpeg file.
-    move-object v9, v6
     invoke-static/range {v6 .. v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v5
     if-eqz v5, :ensure_mp4_reset
