@@ -1305,6 +1305,16 @@ d
     move-result v7
     if-eqz v7, :complete_download_return
 
+    # Mark the pending capsule before embedding so the MP4 and sidecar carry the same status.
+    const-string v6, "mp4MetadataEmbedded"
+    const-string v7, "true"
+    invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    invoke-virtual {v5}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
+    move-result-object v6
+    invoke-static {v3, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v6
+    if-eqz v6, :complete_download_return
+
     new-instance v7, Ljava/lang/StringBuilder;
     invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
@@ -1329,15 +1339,19 @@ d
     invoke-static/range {v7 .. v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v6
     if-eqz v6, :complete_download_embedding_failed
-    const-string v6, "mp4MetadataEmbedded"
-    const-string v7, "true"
-    invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-    goto :complete_download_save_embed_state
+
+    # Metadata remux changes the on-disk size; update the durable done receipt to that final container size.
+    invoke-virtual {v1}, Ljava/io/File;->length()J
+    move-result-wide v6
+    move/from16 v8, p1
+    move-wide v9, v6
+    invoke-static/range {v8 .. v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->updateDoneSize(IJ)V
+    goto :complete_download_return
+
     :complete_download_embedding_failed
     const-string v6, "mp4MetadataEmbedded"
     const-string v7, "false"
     invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-    :complete_download_save_embed_state
     invoke-virtual {v5}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
     move-result-object v6
     invoke-static {v3, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
