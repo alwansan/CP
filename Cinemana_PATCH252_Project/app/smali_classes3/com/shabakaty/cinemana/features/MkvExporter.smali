@@ -1657,22 +1657,7 @@
 
     .line 383
     :cond_4
-    # A downloader success callback can race the queue repair hook. Never invoke the MKV muxer on an unreadable MP4.
-    move-object/from16 v15, p1
-    invoke-static {v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
-    move-result v15
-    if-ltz v15, :mkv_source_validated
-    move-object/from16 v15, p1
-    invoke-static {v15}, Lcom/shabakaty/cinemana/ca1/Queue110;->retryCompletedPath(Ljava/io/File;)Z
-    const-string v15, "MKV_SOURCE_INVALID_BLOCKED; waiting for verified download retry"
-    invoke-static {v3, v15}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendLog(Ljava/io/File;Ljava/lang/String;)V
-    const/4 v14, 0x0
-    const-string v13, "INVALID_SOURCE_MP4"
-    invoke-static {v1, v4, v14, v13}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
-    return-void
-
-    :mkv_source_validated
-    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Lease115;->stage(Ljava/io/File;)Ljava/io/File;
+        invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Lease115;->stage(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v14
 
@@ -2086,68 +2071,7 @@
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
     .line 435
-    # Embed the same recovery capsule as a real Matroska attachment as well as global metadata.
-    if-eqz v16, :recovery_attachment_done
-
-    const-string v8, "-attach"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    move-object/from16 v15, v16
-    invoke-virtual {v15}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v8
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    const-string v8, "-metadata:s:t:0"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v8, "mimetype=application/json"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    const-string v8, "-metadata:s:t:0"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v8, "filename=cnm_recovery.json"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    const-string v8, "-metadata"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v8, "cnm_recovery_format=com.cinemana.recovery"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    const-string v8, "-metadata"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "cnm_recovery_token="
-    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v11
-    invoke-static {v11}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v11
-    new-instance v12, Ljava/lang/StringBuilder;
-    invoke-direct {v12}, Ljava/lang/StringBuilder;-><init>()V
-    invoke-virtual {v12, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v12
-    invoke-virtual {v12, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v12
-    invoke-virtual {v12}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v12
-    invoke-interface {v10, v12}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    const-string v8, "-metadata"
-    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    move-object/from16 v15, v16
-    invoke-static {v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestBase64(Ljava/io/File;)Ljava/lang/String;
-    move-result-object v15
-    new-instance v12, Ljava/lang/StringBuilder;
-    invoke-direct {v12}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v9, "cnm_recovery_manifest_b64="
-    invoke-virtual {v12, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v12
-    invoke-virtual {v12, v15}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v12
-    invoke-virtual {v12}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v12
-    invoke-interface {v10, v12}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    :recovery_attachment_done
-    # v9 is reused by the capsule argument setup above; restore the String expected by later logging code on both branches.
-    const-string v9, "cnm_recovery_manifest_b64="
-    const-string v8, "-map_chapters"
+        const-string v8, "-map_chapters"
 
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
@@ -3186,31 +3110,24 @@
     # Verify that the downloads DB row now points to this exact final file and accepts its stored byte count.
     invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z
     move-result v16
+    if-eqz v16, :capsule_not_promoted
 
-    # Refresh the capsule with the actual organized path before releasing the source MP4/subtitles.
+    # Mark the sidecar finalized only after the exact final MKV path/size passed DB verification.
     move-object v12, v7
     move-object/from16 v13, p1
     invoke-static {v12, v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
     move-result v15
-    if-eqz v15, :capsule_refresh_db_done
-
-    # The remux changes file length/mtime. Re-promote the final path and exact final byte count.
-    invoke-static {v1, v4, v7, v3}, Lcom/shabakaty/cinemana/features/MkvExporter;->promoteDatabaseWithRetry(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Z
-    move-result v15
-    if-eqz v15, :capsule_refresh_db_done
-
-    # Refresh the durable completion receipt/ready notification against the now-final container size.
-    invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->completed(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)V
-    invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z
-    move-result v15
-
-    :capsule_refresh_db_done
-    # Retire the compact pending-work ledger only after the capsule and final byte-count promotion both verify.
+    and-int/2addr v15, v16
     if-eqz v15, :capsule_refresh_keep_ledger
+
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v0
     invoke-static {v1, v0, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeAliasFromSource(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)V
     invoke-static {v1, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+    goto :capsule_refresh_keep_ledger
+
+    :capsule_not_promoted
+    const/4 v15, 0x0
     :capsule_refresh_keep_ledger
 
     .line 564
@@ -3435,6 +3352,12 @@
 
     .line 576
     :cond_26
+    # Remove this episode's recovery JSON only after final DB promotion, MP4 removal, and subtitle cleanup.
+    if-eqz v15, :sidecar_cleanup_done
+    move-object v10, v7
+    move-object/from16 v11, p1
+    invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
+    :sidecar_cleanup_done
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
