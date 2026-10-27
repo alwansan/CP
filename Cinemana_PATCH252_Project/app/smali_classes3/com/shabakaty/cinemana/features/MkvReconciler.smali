@@ -951,53 +951,11 @@
     invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v6
     if-nez v6, :scan_root_next
+    # Automatic filesystem audit only dispatches finalized MP4 sources.
+    # Subtitle completion remains handled by the dependency pipeline; no recursive DB scan per subtitle.
     const-string v5, ".mp4"
-
-
     invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
     move-result v6
-
-    if-nez v6, :scan_root_trigger
-
-    const-string v5, ".srt"
-
-    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v6
-
-    if-nez v6, :scan_root_trigger
-
-    const-string v5, ".ass"
-
-    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v6
-
-    if-nez v6, :scan_root_trigger
-
-    const-string v5, ".ssa"
-
-    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v6
-
-    if-nez v6, :scan_root_trigger
-
-    const-string v5, ".vtt"
-
-    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v6
-
-    if-nez v6, :scan_root_trigger
-
-    const-string v5, ".sub"
-
-    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v6
-
     if-eqz v6, :scan_root_next
 
     :scan_root_trigger
