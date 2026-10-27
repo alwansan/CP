@@ -1232,6 +1232,10 @@ d
     invoke-static {v6, v7}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v6
     invoke-virtual {v8, v9, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v9, "sha256"
+    invoke-static {v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->sha256(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v6
+    invoke-virtual {v8, v9, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     invoke-virtual {v0, v8}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray
 
     :local_token_sub_next
