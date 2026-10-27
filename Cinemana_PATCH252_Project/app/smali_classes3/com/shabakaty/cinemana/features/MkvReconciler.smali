@@ -1734,16 +1734,6 @@
     const/4 v3, 0x0
     invoke-static {v2, p0, v3, v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanDiskTreeForToken(Ljava/io/File;Ljava/lang/String;I[I)Ljava/io/File;
     move-result-object v2
-    if-eqz v2, :find_disk_mp4_second_root
-    return-object v2
-
-    :find_disk_mp4_second_root
-    new-instance v2, Ljava/io/File;
-    const-string v3, "Download/Cinemana/work"
-    invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    const/4 v3, 0x0
-    invoke-static {v2, p0, v3, v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanDiskTreeForToken(Ljava/io/File;Ljava/lang/String;I[I)Ljava/io/File;
-    move-result-object v2
     return-object v2
 
     :find_disk_mp4_done
