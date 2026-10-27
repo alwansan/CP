@@ -4215,12 +4215,13 @@
 
 .method public static retryCompletedPath(Ljava/io/File;)Z
     .locals 16
+    move-object/from16 v14, p0
     const/4 v0, 0x0
-    if-eqz p0, :retry_completed_return
-    invoke-virtual {p0}, Ljava/io/File;->isFile()Z
+    if-eqz v14, :retry_completed_return
+    invoke-virtual {v14}, Ljava/io/File;->isFile()Z
     move-result v1
     if-eqz v1, :retry_completed_return
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
+    invoke-static {v14}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
     move-result v1
     if-ltz v1, :retry_completed_search
 
@@ -4271,7 +4272,7 @@
     const-string v7, "path"
     invoke-virtual {v6, v7}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v7
-    invoke-virtual {p0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    invoke-virtual {v14}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v8
     invoke-virtual {v8, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v8
@@ -4289,7 +4290,7 @@
 
     :retry_completed_valid_id
     # The filesystem probe above is definitive before the file is moved aside.
-    invoke-static {p0, v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->quarantineInvalidMp4(Ljava/io/File;I)Z
+    invoke-static {v14, v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->quarantineInvalidMp4(Ljava/io/File;I)Z
     move-result v10
     if-eqz v10, :retry_completed_return
 
