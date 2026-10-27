@@ -627,8 +627,8 @@
     # Only after the completion receipt verifies path, URL, existence and byte count, seed media recovery.
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->scheduleDownloadComplete(Ljava/lang/Object;I)V
 
-    # The task is still available here, after the file/URL/size receipt is verified.
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->scheduleDownloadComplete(Ljava/lang/Object;I)V
+    # Keep the task object after the verified source length has been consumed.
+    move-object v5, p0
 
     const-string p0, "size"
 
@@ -693,6 +693,9 @@
     const-string p0, "DB_COMMIT_ACKNOWLEDGED"
 
     invoke-static {p1, p0}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
+
+    # The durable completion receipt now exists; embedding may safely update its final container size.
+    invoke-static {v5, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->scheduleDownloadComplete(Ljava/lang/Object;I)V
 
     return-void
 
