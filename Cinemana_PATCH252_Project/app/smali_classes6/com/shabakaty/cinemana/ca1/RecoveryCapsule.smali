@@ -195,7 +195,7 @@
     :write_text_failed
     const/4 v0, 0x0
     return v0
-d
+.end method
 
 .method private static putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     .locals 2
@@ -614,7 +614,7 @@ d
     move-exception v1
     :is_current_done
     return v0
-d
+.end method
 
 .method public static prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
     .locals 20
@@ -1124,7 +1124,8 @@ d
 
     :embed_mp4_no
     const/4 v0, 0x0
-    return v0d
+    return v0
+.end method
 
 
 .method public static updateDoneSize(IJ)V
@@ -1523,7 +1524,6 @@ d
     move-exception v0
     return-void
 .end method
-d
 
 .method public static ensureEmbeddedMp4(Landroid/content/Context;Ljava/io/File;)Z
     .locals 12
@@ -2056,7 +2056,6 @@ d
     return v0
 .end method
 
-d
 
 .method private static capsuleToken(Ljava/lang/String;)Ljava/lang/String;
     .locals 5
