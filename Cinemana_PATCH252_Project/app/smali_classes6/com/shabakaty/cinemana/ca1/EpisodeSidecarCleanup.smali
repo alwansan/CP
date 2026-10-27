@@ -181,9 +181,12 @@
     move-result v11
     if-eqz v11, :sidecar_delete_loop
 
-    invoke-static {v6, ".mp4state"}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
-    invoke-static {v6, ".tmp"}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
-    invoke-static {v6, ".bak"}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
+    const-string v7, ".mp4state"
+    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
+    const-string v7, ".tmp"
+    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
+    const-string v7, ".bak"
+    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
     invoke-static {v14, v10}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
     invoke-static {v14, v10}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->clearToken(Landroid/content/Context;Ljava/lang/String;)V
 
