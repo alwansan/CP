@@ -1678,10 +1678,13 @@
     move-object/from16 v9, p1
     move-object/from16 v10, p2
     move-object/from16 v11, p4
+    move-object v15, v12
     move-object v12, v13
-    move-object v15, v6
-    invoke-static {v8, v9, v10, v11, v12, v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
+    move-object v13, v6
+    invoke-static/range {v8 .. v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
     move-result-object v16
+    move-object v13, v12
+    move-object v12, v15
 
     new-instance v10, Ljava/util/ArrayList;
 
