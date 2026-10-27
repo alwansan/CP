@@ -838,7 +838,8 @@
     move-result v8
     if-eqz v8, :prepare_done
     # Force a metadata refresh after the sidecar body advances to MKV_EXPORT_PREPARING.
-    invoke-virtual {v17}, Ljava/io/File;->delete()Z
+    move-object/from16 v15, v17
+    invoke-virtual {v15}, Ljava/io/File;->delete()Z
     move-object/from16 v12, p4
     move-object/from16 v13, p1
     move-object v14, v2
