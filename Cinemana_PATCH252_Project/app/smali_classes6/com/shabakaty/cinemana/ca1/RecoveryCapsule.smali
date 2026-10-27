@@ -644,6 +644,7 @@
     const-string v8, "special"
     const-string v9, "special"
     invoke-static {v10, v8, v1, v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    const-string v8, "identity"
     invoke-virtual {v7, v8, v10}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     # Keep generic task IDs available to repair tools independently of nested identity.
     const-string v8, "downloadTaskId"
