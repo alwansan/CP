@@ -3165,6 +3165,7 @@
     move-object v12, v7
     move-object/from16 v13, p1
     invoke-static {v12, v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
+    move-result v15
 
     # Retire the compact pending-work ledger only after the canonical MKV promotion/DB commit.
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
@@ -3208,6 +3209,8 @@
     invoke-direct {v0, v2, v4}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
     .line 565
+    # Keep both source copies if the final MKV does not carry the refreshed capsule.
+    if-eqz v15, :cond_23
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->exists()Z
 
     move-result v2
@@ -3266,6 +3269,7 @@
 
     .line 568
     :cond_23
+    if-eqz v15, :cond_24
     invoke-virtual {v0}, Ljava/io/File;->exists()Z
 
     move-result v2
