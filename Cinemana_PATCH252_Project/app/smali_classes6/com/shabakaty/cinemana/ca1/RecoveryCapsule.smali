@@ -2070,12 +2070,23 @@
     invoke-virtual {v13, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
 
     :finalize_mkv_false
-    # If the sidecar was advanced but the container remux failed, restore its previous JSON.
+    # If the sidecar was advanced but the container remux failed, reconstruct its path before rollback.
     if-eqz v14, :finalize_mkv_return_false
     invoke-virtual {v14}, Ljava/lang/String;->isEmpty()Z
     move-result v0
     if-nez v0, :finalize_mkv_return_false
-    if-eqz v1, :finalize_mkv_return_false
+
+    # v1 is reused by FFmpeg/process/rollback checks; never assume it still holds the manifest File.
+    invoke-virtual {v11}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    if-eqz v2, :finalize_mkv_return_false
+    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :finalize_mkv_return_false
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
+    move-result-object v1
     invoke-static {v1, v14}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
 
     :finalize_mkv_return_false
