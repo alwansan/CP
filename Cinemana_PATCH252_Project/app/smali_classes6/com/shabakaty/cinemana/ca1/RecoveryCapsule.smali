@@ -276,6 +276,63 @@ d
     return-object v0
 .end method
 
+.method private static sha256(Ljava/io/File;)Ljava/lang/String;
+    .locals 8
+    const-string v0, ""
+    if-eqz p0, :sha256_done
+    :try_start_sha256
+    invoke-virtual {p0}, Ljava/io/File;->isFile()Z
+    move-result v1
+    if-eqz v1, :sha256_done
+    const-string v1, "SHA-256"
+    invoke-static {v1}, Ljava/security/MessageDigest;->getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;
+    move-result-object v1
+    new-instance v2, Ljava/io/FileInputStream;
+    invoke-direct {v2, p0}, Ljava/io/FileInputStream;-><init>(Ljava/io/File;)V
+    const/16 v3, 0x2000
+    new-array v3, v3, [B
+    :sha256_read
+    invoke-virtual {v2, v3}, Ljava/io/FileInputStream;->read([B)I
+    move-result v4
+    if-lez v4, :sha256_read_done
+    const/4 v5, 0x0
+    invoke-virtual {v1, v3, v5, v4}, Ljava/security/MessageDigest;->update([BII)V
+    goto :sha256_read
+    :sha256_read_done
+    invoke-virtual {v2}, Ljava/io/FileInputStream;->close()V
+    invoke-virtual {v1}, Ljava/security/MessageDigest;->digest()[B
+    move-result-object v1
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const/4 v3, 0x0
+    array-length v4, v1
+    :sha256_hex_loop
+    if-ge v3, v4, :sha256_hex_done
+    aget-byte v5, v1, v3
+    and-int/lit16 v5, v5, 0xff
+    const/16 v6, 0x10
+    if-ge v5, v6, :sha256_append_digit
+    const-string v6, "0"
+    invoke-virtual {v2, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    :sha256_append_digit
+    invoke-static {v5}, Ljava/lang/Integer;->toHexString(I)Ljava/lang/String;
+    move-result-object v6
+    invoke-virtual {v2, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    add-int/lit8 v3, v3, 0x1
+    goto :sha256_hex_loop
+    :sha256_hex_done
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v0
+    :try_end_sha256
+    .catch Ljava/lang/Throwable; {:try_start_sha256 .. :try_end_sha256} :sha256_failed
+    goto :sha256_done
+    :sha256_failed
+    move-exception v1
+    const-string v0, ""
+    :sha256_done
+    return-object v0
+.end method
+
 .method private static localSubtitleFiles(Ljava/util/List;)Lorg/json/JSONArray;
     .locals 10
     new-instance v0, Lorg/json/JSONArray;
@@ -313,6 +370,10 @@ d
     invoke-virtual {v2}, Ljava/io/File;->lastModified()J
     move-result-wide v5
     invoke-static {v5, v6}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v5
+    invoke-virtual {v3, v4, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v4, "sha256"
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->sha256(Ljava/io/File;)Ljava/lang/String;
     move-result-object v5
     invoke-virtual {v3, v4, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     invoke-virtual {v0, v3}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
