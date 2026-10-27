@@ -449,10 +449,10 @@
     if-eqz p1, :prepare_done
     if-eqz p0, :prepare_done
     :try_start_prepare
-    invoke-virtual {p1}, Ljava/io/File;->isFile()Z
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->isFile()Z
     move-result v0
     if-eqz v0, :prepare_done
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v0
     invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v1
@@ -475,7 +475,9 @@
     move-result-object v3
     new-instance v4, Ljava/io/File;
     invoke-direct {v4, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-static {p1, v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->isCurrent(Ljava/io/File;Ljava/io/File;)Z
+    move-object/from16 v12, p1
+    move-object v13, v4
+    invoke-static {v12, v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->isCurrent(Ljava/io/File;Ljava/io/File;)Z
     move-result v5
     if-eqz v5, :prepare_build
     invoke-virtual {v2}, Ljava/io/File;->isFile()Z
@@ -509,23 +511,23 @@
     const-string v7, "sourcePath"
     invoke-virtual {v6, v7, v0}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "sourceFileName"
-    invoke-virtual {p1}, Ljava/io/File;->getName()Ljava/lang/String;
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getName()Ljava/lang/String;
     move-result-object v8
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "sourceSizeBytesBeforeEmbedding"
-    invoke-virtual {p1}, Ljava/io/File;->length()J
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->length()J
     move-result-wide v8
     invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v8
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "sourceLastModifiedMsBeforeEmbedding"
-    invoke-virtual {p1}, Ljava/io/File;->lastModified()J
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->lastModified()J
     move-result-wide v8
     invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v8
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "videoUrl"
-    invoke-static {p3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->videoUrl(Ljava/lang/Object;)Ljava/lang/String;
+    invoke-static/range {p3 .. p3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->videoUrl(Ljava/lang/Object;)Ljava/lang/String;
     move-result-object v8
     invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
     move-result v9
@@ -551,42 +553,78 @@
     invoke-direct {v8}, Lorg/json/JSONObject;-><init>()V
     const-string v9, "id"
     const-string v10, "id"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     const-string v9, "title"
     const-string v10, "title"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     const-string v9, "season"
     const-string v10, "season"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     const-string v9, "episodeNumber"
     const-string v10, "episodeNumber"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     const-string v9, "rootEpisode"
     const-string v10, "rootEpisode"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     const-string v9, "kind"
     const-string v10, "kind"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     const-string v9, "qualityName"
     const-string v10, "qualityName"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     const-string v9, "special"
     const-string v10, "special"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     const-string v9, "downloadTaskId"
     const-string v10, "downloadTaskId"
-    invoke-static {v8, v9, p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+    move-object v12, v8
+    move-object v13, v9
+    move-object/from16 v14, p3
+    move-object v15, v10
+    invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "subtitleSources"
     invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->remoteSubtitleSources(Ljava/lang/String;)Lorg/json/JSONArray;
     move-result-object v8
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "localSubtitleFiles"
-    invoke-static {p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->localSubtitleFiles(Ljava/util/List;)Lorg/json/JSONArray;
+    invoke-static/range {p2 .. p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->localSubtitleFiles(Ljava/util/List;)Lorg/json/JSONArray;
     move-result-object v8
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "intendedMkvPath"
-    invoke-virtual {p5}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    invoke-virtual/range {p5 .. p5}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v8
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "finalPathPolicy"
@@ -609,17 +647,22 @@
     invoke-static {v2, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
     move-result v8
     if-eqz v8, :prepare_done
-    invoke-static {p4, p1, v2, v4, v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
+    move-object/from16 v12, p4
+    move-object/from16 v13, p1
+    move-object v14, v2
+    move-object v15, v4
+    move-object v16, v1
+    invoke-static/range {v12 .. v16}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v8
     if-eqz v8, :prepare_return_manifest
-    invoke-virtual {p1}, Ljava/io/File;->length()J
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->length()J
     move-result-wide v8
     const-string v10, "embeddedSourceContainerSizeBytes"
     invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v11
     invoke-virtual {v6, v10, v11}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v10, "embeddedSourceContainerLastModifiedMs"
-    invoke-virtual {p1}, Ljava/io/File;->lastModified()J
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->lastModified()J
     move-result-wide v8
     invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v11
@@ -662,7 +705,7 @@
 .end method
 
 .method private static embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
-    .locals 17
+    .locals 9
     if-eqz p0, :embed_mp4_no
     if-eqz p1, :embed_mp4_no
     if-eqz p2, :embed_mp4_no
@@ -860,7 +903,7 @@
 
 
 .method public static importFromMedia(Landroid/content/Context;Ljava/io/File;)Ljava/io/File;
-    .locals 20
+    .locals 13
     if-eqz p0, :import_media_done
     if-eqz p1, :import_media_done
     :try_start_import_media
