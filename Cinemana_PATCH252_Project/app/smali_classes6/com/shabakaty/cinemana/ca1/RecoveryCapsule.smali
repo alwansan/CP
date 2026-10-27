@@ -2148,6 +2148,8 @@ d
     invoke-static {v2, v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->validCapsuleFile(Ljava/io/File;Ljava/lang/String;)Z
     move-result v0
     if-eqz v0, :import_prepare_ffmpeg
+    # The sidecar remains the rich record of truth; retry injection on subsequent MP4 scans.
+    invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->ensureEmbeddedMp4(Landroid/content/Context;Ljava/io/File;)Z
     return-object v2
 
     :import_prepare_ffmpeg
@@ -2391,5 +2393,7 @@ d
     const/4 v0, 0x0
     return-object v0
     :import_media_success
+    invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->ensureEmbeddedMp4(Landroid/content/Context;Ljava/io/File;)Z
     return-object v2
-d
+.end method
+
