@@ -1011,12 +1011,15 @@
 .method private static embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     .locals 11
 
-    # v0-v3 are primitive-only (lengths/status); v5 and v6 are File references for rollback.
-    const/4 v5, 0x0
-    move-object v6, v5
+    # Keep v5/v6 as reference-typed nullable File slots for all control-flow paths.
+    const/4 v0, 0x0
+    move-object v5, v0
+    move-object v6, v0
+
     if-eqz p0, :embed_mp4_return_false
     if-eqz p1, :embed_mp4_return_false
     if-eqz p2, :embed_mp4_return_false
+    if-eqz p3, :embed_mp4_return_false
 
     invoke-virtual {p1}, Ljava/io/File;->length()J
     move-result-wide v0
@@ -1028,222 +1031,212 @@
     move-result v0
     if-nez v0, :embed_mp4_return_true
 
-    # These File locals remain references on every exceptional edge.
-    const/4 v5, 0x0
-    const/4 v6, 0x0
-
     :try_start_embed_mp4
     invoke-virtual {p1}, Ljava/io/File;->getParentFile()Ljava/io/File;
     move-result-object v4
 
-    # Temporary output path.
-    new-instance v7, Ljava/lang/StringBuilder;
-    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+    # Build a unique-near-source temporary output name.
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {p1}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v9
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v8
-    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    const-string v8, ".cnm-recovery.tmp.mp4"
-    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    const-string v9, ".cnm-recovery.tmp.mp4"
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v9
     new-instance v5, Ljava/io/File;
-    invoke-direct {v5, v4, v8}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-direct {v5, v4, v9}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
     invoke-virtual {v5}, Ljava/io/File;->exists()Z
     move-result v0
-    if-eqz v0, :embed_mp4_make_backup
+    if-eqz v0, :embed_mp4_backup_name
     invoke-virtual {v5}, Ljava/io/File;->delete()Z
 
-    :embed_mp4_make_backup
-    # Backup path.
-    new-instance v7, Ljava/lang/StringBuilder;
-    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+    :embed_mp4_backup_name
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {p1}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v9
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v8
-    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    const-string v8, ".cnm-recovery.bak"
-    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    const-string v9, ".cnm-recovery.bak"
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v9
     new-instance v6, Ljava/io/File;
-    invoke-direct {v6, v4, v8}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-direct {v6, v4, v9}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
     invoke-virtual {v6}, Ljava/io/File;->exists()Z
     move-result v0
-    if-eqz v0, :embed_mp4_make_args
+    if-eqz v0, :embed_mp4_manifest
     invoke-virtual {v6}, Ljava/io/File;->delete()Z
 
-    :embed_mp4_make_args
+    :embed_mp4_manifest
     invoke-static {p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestBase64(Ljava/io/File;)Ljava/lang/String;
-    move-result-object v7
-    if-eqz v7, :embed_mp4_cleanup
+    move-result-object v9
+    if-eqz v9, :embed_mp4_abort
 
-    new-instance v8, Ljava/util/ArrayList;
-    invoke-direct {v8}, Ljava/util/ArrayList;-><init>()V
+    new-instance v7, Ljava/util/ArrayList;
+    invoke-direct {v7}, Ljava/util/ArrayList;-><init>()V
     invoke-virtual {p0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v9
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-hide_banner"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-loglevel"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "error"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-nostdin"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-y"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-i"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v9
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-map"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "0"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-map_metadata"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "0"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-c"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "copy"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "-movflags"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "+faststart+use_metadata_tags"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    const-string v9, "-metadata"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "cnm_recovery_format=com.cinemana.recovery"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    const-string v9, "-metadata"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    new-instance v7, Ljava/lang/StringBuilder;
-    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v9, "cnm_recovery_token="
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    invoke-virtual {v7, p4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v9
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    const-string v9, "-metadata"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    new-instance v7, Ljava/lang/StringBuilder;
-    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v9, "cnm_recovery_manifest_b64="
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    # v0 is a primitive comparison result here, not the Base64 String. Reload the typed payload.
-    invoke-static {p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestBase64(Ljava/io/File;)Ljava/lang/String;
     move-result-object v10
-    invoke-virtual {v7, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v9
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-hide_banner"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-loglevel"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "error"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-nostdin"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-y"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-i"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v10
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-map"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "0"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-map_metadata"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "0"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-c"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "copy"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-movflags"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "+faststart+use_metadata_tags"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
-    const-string v9, "-f"
-    # FFmpeg infers MP4 from the final extension; force the same container explicitly.
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    const-string v9, "mp4"
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    invoke-virtual {v5}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v9
-    invoke-interface {v8, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "-metadata"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "cnm_recovery_format=com.cinemana.recovery"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
-    new-instance v7, Ljava/lang/ProcessBuilder;
-    invoke-direct {v7, v8}, Ljava/lang/ProcessBuilder;-><init>(Ljava/util/List;)V
-    const/4 v0, 0x1
-    invoke-virtual {v7, v0}, Ljava/lang/ProcessBuilder;->redirectErrorStream(Z)Ljava/lang/ProcessBuilder;
-    move-result-object v7
-    invoke-virtual {v7}, Ljava/lang/ProcessBuilder;->start()Ljava/lang/Process;
-    move-result-object v7
-    invoke-virtual {v7}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
+    const-string v10, "-metadata"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v10, "cnm_recovery_token="
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v8
-    const/16 v9, 0x1000
-    new-array v9, v9, [B
+    invoke-virtual {v8, p4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v10
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    const-string v10, "-metadata"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v10, "cnm_recovery_manifest_b64="
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v10
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    const-string v10, "-f"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v10, "mp4"
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    invoke-virtual {v5}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v10
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    new-instance v8, Ljava/lang/ProcessBuilder;
+    invoke-direct {v8, v7}, Ljava/lang/ProcessBuilder;-><init>(Ljava/util/List;)V
+    const/4 v0, 0x1
+    invoke-virtual {v8, v0}, Ljava/lang/ProcessBuilder;->redirectErrorStream(Z)Ljava/lang/ProcessBuilder;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/ProcessBuilder;->start()Ljava/lang/Process;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
+    move-result-object v9
+    const/16 v0, 0x1000
+    new-array v10, v0, [B
 
     :embed_mp4_drain
-    invoke-virtual {v8, v9}, Ljava/io/InputStream;->read([B)I
+    invoke-virtual {v9, v10}, Ljava/io/InputStream;->read([B)I
     move-result v0
     if-lez v0, :embed_mp4_wait
     goto :embed_mp4_drain
 
     :embed_mp4_wait
-    invoke-virtual {v8}, Ljava/io/InputStream;->close()V
-    invoke-virtual {v7}, Ljava/lang/Process;->waitFor()I
+    invoke-virtual {v9}, Ljava/io/InputStream;->close()V
+    invoke-virtual {v8}, Ljava/lang/Process;->waitFor()I
     move-result v0
-    if-nez v0, :embed_mp4_cleanup
-
+    if-nez v0, :embed_mp4_abort
     invoke-virtual {v5}, Ljava/io/File;->isFile()Z
     move-result v0
-    if-eqz v0, :embed_mp4_cleanup
+    if-eqz v0, :embed_mp4_abort
     invoke-virtual {v5}, Ljava/io/File;->length()J
     move-result-wide v0
     const-wide/16 v2, 0x400
     cmp-long v0, v0, v2
-    if-lez v0, :embed_mp4_cleanup
+    if-lez v0, :embed_mp4_abort
 
-    # Move original to backup first; the original remains recoverable if promotion fails.
+    # Keep the backup until both the container replacement and marker update succeed.
     invoke-virtual {p1, v6}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
     move-result v0
-    if-eqz v0, :embed_mp4_cleanup
+    if-eqz v0, :embed_mp4_abort
     invoke-virtual {v5, p1}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
     move-result v0
-    if-eqz v0, :embed_mp4_cleanup
+    if-eqz v0, :embed_mp4_abort
 
-    # Stamp the exact source and sidecar fingerprints after remux.
-    new-instance v7, Ljava/lang/StringBuilder;
-    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+    # Record fingerprints of the actual embedded file and canonical sidecar.
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {p1}, Ljava/io/File;->length()J
     move-result-wide v0
     invoke-static {v0, v1}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
-    move-result-object v9
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    const-string v9, "|"
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
+    move-result-object v10
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    const-string v10, "|"
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
     invoke-virtual {p1}, Ljava/io/File;->lastModified()J
     move-result-wide v0
     invoke-static {v0, v1}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
-    move-result-object v9
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    const-string v9, "|"
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
+    move-result-object v10
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    const-string v10, "|"
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
     invoke-virtual {p2}, Ljava/io/File;->length()J
     move-result-wide v0
     invoke-static {v0, v1}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
-    move-result-object v9
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    const-string v9, "|"
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
+    move-result-object v10
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    const-string v10, "|"
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
     invoke-virtual {p2}, Ljava/io/File;->lastModified()J
     move-result-wide v0
     invoke-static {v0, v1}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
-    move-result-object v9
-    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v7
-    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v9
-    invoke-static {p3, v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    move-result-object v10
+    invoke-virtual {v8, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v10
+    invoke-static {p3, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
     move-result v0
-    if-eqz v0, :embed_mp4_cleanup
+    if-eqz v0, :embed_mp4_rollback_output
 
     invoke-virtual {v6}, Ljava/io/File;->delete()Z
     const/4 v0, 0x1
@@ -1255,13 +1248,23 @@
 
     :embed_mp4_exception
     move-exception v10
-    # Do not flow through cleanup registers that are uninitialized on some exceptional edges.
-    invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->rollbackMp4Remux(Ljava/io/File;)V
-    const/4 v0, 0x0
-    return v0
+    goto :embed_mp4_cleanup
+
+    :embed_mp4_rollback_output
+    # If marker promotion fails after the media remux, restore the original MP4 atomically.
+    invoke-virtual {p1}, Ljava/io/File;->exists()Z
+    move-result v0
+    if-eqz v0, :embed_mp4_cleanup
+    invoke-virtual {p1}, Ljava/io/File;->delete()Z
+    invoke-virtual {v6, p1}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+    goto :embed_mp4_cleanup_temp
+
+    :embed_mp4_abort
+    # Failure before promoting the temporary container: preserve the original source.
+    goto :embed_mp4_cleanup
 
     :embed_mp4_cleanup
-    # Restore the original if it was moved aside and replacement was never promoted.
+    # Restore the original if it was moved aside and the replacement was not promoted.
     if-eqz v6, :embed_mp4_cleanup_temp
     invoke-virtual {v6}, Ljava/io/File;->exists()Z
     move-result v0
@@ -1285,7 +1288,7 @@
     :embed_mp4_return_true
     const/4 v0, 0x1
     return v0
-.end method
+d
 
 .method public static updateDoneSize(IJ)V
     .locals 8
