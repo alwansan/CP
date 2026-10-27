@@ -101,6 +101,7 @@ jobs:
           ./Cinemana_PATCH252_Project/build.sh
 
       - name: Align and sign APK
+        id: sign
         shell: bash
         env:
           # If the keystore uses non-default credentials, define these in
