@@ -1643,7 +1643,7 @@
 .end method
 
 .method public static cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
-    .locals 14
+    .locals 16
     move-object/from16 v0, p0
     move-object/from16 v1, p1
     const/4 v10, 0x0
@@ -1730,10 +1730,10 @@
     move-result v8
     if-nez v8, :cleanup_return
     invoke-static {v9}, Ljava/lang/Long;->parseLong(Ljava/lang/String;)J
-    move-result-wide v10
-    invoke-virtual {v0}, Ljava/io/File;->length()J
     move-result-wide v12
-    cmp-long v8, v10, v12
+    invoke-virtual {v0}, Ljava/io/File;->length()J
+    move-result-wide v14
+    cmp-long v8, v12, v14
     if-eqz v8, :cleanup_size_verified
     goto :cleanup_return
 
