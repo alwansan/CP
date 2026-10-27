@@ -2,13 +2,38 @@
 .super Ljava/lang/Object;
 
 .field static final RUNNING:Ljava/util/concurrent/atomic/AtomicBoolean;
+.field private static final LAST_START_MS:Ljava/util/concurrent/atomic/AtomicLong;
 
 .method static constructor <clinit>()V
-    .locals 1
+    .locals 2
     new-instance v0, Ljava/util/concurrent/atomic/AtomicBoolean;
     invoke-direct {v0}, Ljava/util/concurrent/atomic/AtomicBoolean;-><init>()V
     sput-object v0, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->RUNNING:Ljava/util/concurrent/atomic/AtomicBoolean;
+    new-instance v1, Ljava/util/concurrent/atomic/AtomicLong;
+    invoke-direct {v1}, Ljava/util/concurrent/atomic/AtomicLong;-><init>()V
+    sput-object v1, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->LAST_START_MS:Ljava/util/concurrent/atomic/AtomicLong;
     return-void
+.end method
+
+.method private static allowRepairStart()Z
+    .locals 7
+    sget-object v0, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->LAST_START_MS:Ljava/util/concurrent/atomic/AtomicLong;
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v1
+    invoke-virtual {v0}, Ljava/util/concurrent/atomic/AtomicLong;->get()J
+    move-result-wide v3
+    const-wide/16 v5, 0x1f40
+    sub-long/2addr v1, v3
+    cmp-long v1, v1, v5
+    if-ltz v1, :repair_start_recent
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v1
+    invoke-virtual {v0, v1, v2}, Ljava/util/concurrent/atomic/AtomicLong;->set(J)V
+    const/4 v6, 0x1
+    return v6
+    :repair_start_recent
+    const/4 v6, 0x0
+    return v6
 .end method
 
 .method private constructor <init>()V
@@ -67,6 +92,14 @@
     invoke-virtual {v0, v1, v2}, Ljava/util/concurrent/atomic/AtomicBoolean;->compareAndSet(ZZ)Z
     move-result v1
     if-eqz v1, :already_running
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->allowRepairStart()Z
+    move-result v1
+    if-nez v1, :repair_start_allowed
+    sget-object v3, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->RUNNING:Ljava/util/concurrent/atomic/AtomicBoolean;
+    const/4 v4, 0x0
+    invoke-virtual {v3, v4}, Ljava/util/concurrent/atomic/AtomicBoolean;->set(Z)V
+    goto :already_running
+    :repair_start_allowed
     :try_start_0
     if-eqz p1, :title_done
     const-string v2, "جارٍ فحص التحميلات وإصلاحها..."
@@ -95,7 +128,7 @@
     invoke-static {p0, v3, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     goto :done
     :already_running
-    const-string v2, "الإصلاح يعمل بالفعل"
+    const-string v2, "الإصلاح يعمل بالفعل أو بدأ للتو"
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/I18n161;->t(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v2
     const/4 v3, 0x0
@@ -109,31 +142,11 @@
 .method public static execute(Landroid/content/Context;)Ljava/lang/String;
     .locals 4
     const-string v0, "download_repair_findings.log"
-    const-string v1, "REPAIR_BEGIN; scan is read-only until the original guarded queues accept eligible work"
+    const-string v1, "REPAIR_BEGIN; fast path skips historical log parsing and diagnostic inventory before replaying durable queues"
     invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
 
-    :try_start_0
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanInventory(Landroid/content/Context;)V
-    :try_end_0
-    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :inventory_failed
-    goto :inventory_done
-    :inventory_failed
-    move-exception v2
-    const-string v1, "FILE_INVENTORY_FAILED"
-    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
-    :inventory_done
-
-    :try_start_logs
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->inspectLogs(Landroid/content/Context;)V
-    :try_end_logs
-    .catch Ljava/lang/Throwable; {:try_start_logs .. :try_end_logs} :logs_failed
-    goto :logs_done
-    :logs_failed
-    move-exception v2
-    const-string v1, "HISTORICAL_LOG_SCAN_FAILED"
-    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
-    :logs_done
-
+    # Skip the diagnostic-only recursive inventory and historical log parsing on button presses.
+    # Queue replay, subtitle dependency recovery, disk MP4 matching, and the guarded MKV reconciler below do the actual repair.
     :try_start_1
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
     :try_end_1
