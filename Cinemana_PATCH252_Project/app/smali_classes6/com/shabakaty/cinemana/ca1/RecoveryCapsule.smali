@@ -1484,7 +1484,22 @@
     invoke-virtual {v6}, Ljava/io/File;->isFile()Z
     move-result v7
     if-eqz v7, :recover_one_token_only
+    invoke-virtual {v6}, Ljava/io/File;->length()J
+    move-result-wide v7
+    const-wide/16 v9, 0x400
+    cmp-long v7, v7, v9
+    if-lez v7, :recover_one_partial_source
 
+    # For a zero/short partial file, only restore the original RUN request if both native receipts are absent.
+    :recover_one_partial_source
+    if-lez v7, :recover_one_partial_check
+    invoke-static {v12, v2, v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->restoreRequestFromSidecar(Landroid/content/Context;Lorg/json/JSONObject;Ljava/lang/String;)Z
+    move-result v7
+    if-eqz v7, :recover_one_token_only
+    const/4 v0, 0x1
+    goto :try_end_recover_one
+
+    :recover_one_partial_check
     # Use the existing exact-path/identity/subtitle guards; never directly start a new FFmpeg process.
     invoke-static {v12, v6}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
     move-result v0
