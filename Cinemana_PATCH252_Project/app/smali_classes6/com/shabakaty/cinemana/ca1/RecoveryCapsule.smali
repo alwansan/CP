@@ -2041,11 +2041,7 @@
     invoke-virtual {p0}, Ljava/io/File;->isFile()Z
     move-result v1
     if-eqz v1, :probe_mp4_return
-    invoke-virtual {p0}, Ljava/io/File;->length()J
-    move-result-wide v2
-    const-wide/16 v4, 0x400
-    cmp-long v1, v2, v4
-    if-lez v1, :probe_mp4_invalid
+    # Ignore non-MP4 inputs before applying video-size rules; tiny subtitle files must not be rejected.
     invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
     move-result-object v1
     sget-object v2, Ljava/util/Locale;->US:Ljava/util/Locale;
@@ -2055,6 +2051,11 @@
     invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v1
     if-eqz v1, :probe_mp4_return
+    invoke-virtual {p0}, Ljava/io/File;->length()J
+    move-result-wide v2
+    const-wide/16 v4, 0x400
+    cmp-long v1, v2, v4
+    if-lez v1, :probe_mp4_invalid
 
     :try_start_probe_mp4
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Continue106;->app()Ljava/lang/Object;
