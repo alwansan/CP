@@ -2083,8 +2083,18 @@
     invoke-static {v2, v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->validCapsuleFile(Ljava/io/File;Ljava/lang/String;)Z
     move-result v0
     if-eqz v0, :import_prepare_ffmpeg
-    # The sidecar remains the rich record of truth; retry injection on subsequent MP4 scans.
+    # A valid sidecar can accompany either MP4 or MKV. Only MP4 uses the MP4 remux helper.
+    invoke-virtual {v11}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v3
+    sget-object v4, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v3, v4}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v3
+    const-string v4, ".mp4"
+    invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v0
+    if-eqz v0, :import_return_valid_sidecar
     invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->ensureEmbeddedMp4(Landroid/content/Context;Ljava/io/File;)Z
+    :import_return_valid_sidecar
     return-object v2
 
     :import_prepare_ffmpeg
