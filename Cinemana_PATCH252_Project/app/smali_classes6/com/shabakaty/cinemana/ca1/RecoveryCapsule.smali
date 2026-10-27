@@ -1615,10 +1615,17 @@
     move-result v5
     if-eqz v5, :matches_item_identity_done
 
+    # Prefer the nested identity object; older sidecars store these same fields at the root.
+    move-object v10, v4
     const-string v5, "identity"
     invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optJSONObject(Ljava/lang/String;)Lorg/json/JSONObject;
-    move-result-object v4
-    if-eqz v4, :matches_item_identity_done
+    move-result-object v9
+    if-eqz v9, :matches_item_use_root_identity
+    move-object v4, v9
+    goto :matches_item_identity_ready
+    :matches_item_use_root_identity
+    move-object v4, v10
+    :matches_item_identity_ready
 
     # Item ID is the primary match. Any additional fields present on both sides must also agree.
     const-string v5, "id"
