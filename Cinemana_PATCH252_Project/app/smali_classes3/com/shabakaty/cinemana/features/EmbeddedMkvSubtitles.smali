@@ -4820,7 +4820,7 @@
 
     .line 392
     :try_start_0
-    const-string v0, "file://"
+    const-string v0, "file:"
 
     invoke-virtual {p0, v0}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
 
