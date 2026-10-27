@@ -829,6 +829,16 @@
     invoke-virtual {v4, v5}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
     move-result-object v4
     const-string v5, ".mp4"
+    # Never treat our own remux/extraction staging files as completed MP4 downloads.
+    const-string v5, ".tmp.mp4"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v5
+    if-nez v5, :work_scan_next
+    const-string v5, ".cnm-recovery.tmp.mp4"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v5
+    if-nez v5, :work_scan_next
+    const-string v5, ".mp4"
     invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v4
     if-eqz v4, :work_scan_next
