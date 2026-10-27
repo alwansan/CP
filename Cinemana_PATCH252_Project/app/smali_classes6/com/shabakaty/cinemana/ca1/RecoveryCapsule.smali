@@ -1105,6 +1105,15 @@
     const-string v4, "sourcePath"
     invoke-virtual {v2, v4}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v4
+    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
+    move-result v6
+    if-nez v6, :recover_one_return
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v6
+    if-eqz v6, :recover_one_return
+    invoke-virtual {v3, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :recover_one_return
     const-string v5, "phase"
     invoke-virtual {v2, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v5
@@ -1145,6 +1154,8 @@
     invoke-static {v12, v6}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
     move-result v0
     if-nez v0, :try_end_recover_one
+    const/4 v0, 0x1
+    goto :try_end_recover_one
 
     :recover_one_token_only
     # If the source disappeared or the first mapping pass declined it, ask the existing token reconciler.
