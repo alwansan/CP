@@ -1513,6 +1513,185 @@ d
 .end method
 d
 
+.method public static ensureEmbeddedMp4(Landroid/content/Context;Ljava/io/File;)Z
+    .locals 12
+    move-object/from16 v10, p0
+    move-object/from16 v11, p1
+    const/4 v0, 0x0
+    if-eqz v10, :ensure_mp4_done
+    if-eqz v11, :ensure_mp4_done
+    :try_start_ensure_mp4
+    invoke-virtual {v11}, Ljava/io/File;->isFile()Z
+    move-result v1
+    if-eqz v1, :ensure_mp4_done
+    invoke-virtual {v11}, Ljava/io/File;->length()J
+    move-result-wide v1
+    const-wide/16 v3, 0x400
+    cmp-long v1, v1, v3
+    if-lez v1, :ensure_mp4_done
+
+    invoke-virtual {v11}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    sget-object v2, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v1, v2}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v1
+    const-string v2, ".mp4"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :ensure_mp4_done
+
+    invoke-virtual {v11}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :ensure_mp4_done
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :ensure_mp4_done
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/io/File;->isFile()Z
+    move-result v3
+    if-eqz v3, :ensure_mp4_done
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v4
+    if-nez v4, :ensure_mp4_done
+    new-instance v4, Lorg/json/JSONObject;
+    invoke-direct {v4, v3}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+
+    # Retry only after the download has been verified or an MKV export has been staged.
+    const-string v5, "phase"
+    invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    const-string v6, "DOWNLOAD_COMPLETE"
+    invoke-virtual {v6, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-nez v6, :ensure_mp4_phase_ready
+    const-string v6, "MKV_EXPORT_PREPARING"
+    invoke-virtual {v6, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :ensure_mp4_done
+
+    :ensure_mp4_phase_ready
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v2}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v6
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    const-string v6, ".mp4state"
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v5
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+    new-instance v6, Ljava/io/File;
+    invoke-direct {v6, v5}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    const-string v5, "mp4MetadataEmbedded"
+    invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    const-string v7, "true"
+    invoke-virtual {v7, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v5
+    if-eqz v5, :ensure_mp4_rebuild
+    invoke-static {v11, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->isCurrent(Ljava/io/File;Ljava/io/File;)Z
+    move-result v5
+    if-eqz v5, :ensure_mp4_rebuild
+    const/4 v0, 0x1
+    return v0
+
+    :ensure_mp4_rebuild
+    # Persist the claim before building; if any later stage fails the claim is reverted to false.
+    const-string v5, "mp4MetadataEmbedded"
+    const-string v7, "true"
+    invoke-virtual {v4, v5, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v5, "metadataRetryAtEpochMs"
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v7
+    invoke-static {v7, v8}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v4, v5, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    invoke-virtual {v4}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {v2, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :ensure_mp4_done
+
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Continue106;->app()Ljava/lang/Object;
+    move-result-object v10
+    if-eqz v10, :ensure_mp4_reset
+    check-cast v10, Landroid/content/Context;
+    new-instance v5, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v7
+    const-string v8, "Cinemana/work/log"
+    invoke-direct {v5, v7, v8}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v5}, Ljava/io/File;->mkdirs()Z
+    new-instance v7, Ljava/io/File;
+    const-string v8, "cnm_recovery_capsule.log"
+    invoke-direct {v7, v5, v8}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const-string v5, "ensureFfmpeg"
+    filled-new-array {v10, v7}, [Ljava/lang/Object;
+    move-result-object v7
+    invoke-static {v5, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v5
+    instance-of v7, v5, Ljava/io/File;
+    if-eqz v7, :ensure_mp4_reset
+    check-cast v5, Ljava/io/File;
+    invoke-virtual {v5}, Ljava/io/File;->isFile()Z
+    move-result v7
+    if-eqz v7, :ensure_mp4_reset
+
+    # Five adjacent registers form ffmpeg, source, manifest, marker, token.
+    move-object v6, v5
+    move-object v7, v11
+    move-object v8, v2
+    move-object v9, v6
+    move-object v10, v1
+    # v9 must remain the marker, not the ffmpeg file.
+    move-object v9, v6
+    invoke-static/range {v6 .. v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :ensure_mp4_reset
+
+    # If the task ID survived the capsule, keep the queue receipt's expected length in sync.
+    const-string v5, "downloadTaskId"
+    invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    invoke-virtual {v5}, Ljava/lang/String;->isEmpty()Z
+    move-result v6
+    if-nez v6, :ensure_mp4_success
+    invoke-static {v5}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
+    move-result v5
+    invoke-virtual {v11}, Ljava/io/File;->length()J
+    move-result-wide v6
+    move-wide v8, v6
+    move v7, v5
+    invoke-static/range {v7 .. v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->updateDoneSize(IJ)V
+
+    :ensure_mp4_success
+    const/4 v0, 0x1
+    return v0
+
+    :ensure_mp4_reset
+    const-string v5, "mp4MetadataEmbedded"
+    const-string v6, "false"
+    invoke-virtual {v4, v5, v6}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    invoke-virtual {v4}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {v2, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    :try_end_ensure_mp4
+    .catch Ljava/lang/Throwable; {:try_start_ensure_mp4 .. :try_end_ensure_mp4} :ensure_mp4_failed
+    goto :ensure_mp4_done
+    :ensure_mp4_failed
+    move-exception v1
+    :ensure_mp4_done
+    const/4 v0, 0x0
+    return v0
+.end method
+
 .method public static finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
     .locals 14
     move-object/from16 v10, p0
