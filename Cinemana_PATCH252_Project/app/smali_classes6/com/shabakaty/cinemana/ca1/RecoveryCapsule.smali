@@ -1595,6 +1595,10 @@
     const-string v6, "MKV_EXPORT_PREPARING"
     invoke-virtual {v6, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v6
+    if-nez v6, :ensure_mp4_phase_ready
+    const-string v6, "MKV_FINALIZED"
+    invoke-virtual {v6, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
     if-eqz v6, :ensure_mp4_done
 
     :ensure_mp4_phase_ready
