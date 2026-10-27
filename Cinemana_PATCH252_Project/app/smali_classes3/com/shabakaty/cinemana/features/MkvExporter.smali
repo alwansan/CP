@@ -2073,7 +2073,8 @@
 
     const-string v8, "-attach"
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    invoke-virtual {v16}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-object/from16 v15, v16
+    invoke-virtual {v15}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v8
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
@@ -2111,7 +2112,8 @@
 
     const-string v8, "-metadata"
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    invoke-static {v16}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestBase64(Ljava/io/File;)Ljava/lang/String;
+    move-object/from16 v15, v16
+    invoke-static {v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestBase64(Ljava/io/File;)Ljava/lang/String;
     move-result-object v15
     new-instance v12, Ljava/lang/StringBuilder;
     invoke-direct {v12}, Ljava/lang/StringBuilder;-><init>()V
