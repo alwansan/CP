@@ -843,8 +843,8 @@
     move-object/from16 v12, p4
     move-object/from16 v13, p1
     move-object v14, v2
-    move-object v15, v17
-    move-object v16, v1
+    move-object/from16 v15, v17
+    move-object/from16 v16, v1
     invoke-static/range {v12 .. v16}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v8
     if-nez v8, :prepare_embedding_succeeded
