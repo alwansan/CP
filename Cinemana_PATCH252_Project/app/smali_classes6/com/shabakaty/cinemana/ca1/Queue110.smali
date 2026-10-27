@@ -627,6 +627,9 @@
     # Only after the completion receipt verifies path, URL, existence and byte count, seed media recovery.
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->scheduleDownloadComplete(Ljava/lang/Object;I)V
 
+    # The task is still available here, after the file/URL/size receipt is verified.
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->scheduleDownloadComplete(Ljava/lang/Object;I)V
+
     const-string p0, "size"
 
     invoke-static {v6, v7}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
