@@ -100,9 +100,17 @@ jobs:
           grep -q 'isQueued(Landroid/content/Context;Ljava/lang/String;)Z' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvRepairLedger.smali
           grep -q 'completeAliasFromSource' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter\$2.smali
           grep -q 'MP4_DISK_REPAIR_ACCEPTED_BY_GUARDED_MKV_PIPELINE' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          grep -q 'RecoveryCapsule;->prepare' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'RecoveryCapsule;->manifestBase64' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'RecoveryCapsule;->seed(Ljava/lang/Object;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
+          grep -q 'RecoveryCapsule;->importFromMedia' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'dump_attachment:t:0' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'DownloadRepair129;->startup(Landroid/content/Context;)V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/CinemanaApplication.smali
           echo "Stable playback, subtitle sync, and UI fix wiring: PASS"
           echo "Disk MP4 recovery, queued-ledger protection, and startup second-pass wiring: PASS"
+          echo "Embedded MP4/MKV recovery capsule and media-side import wiring: PASS"
 
       - name: Build unsigned APK
         shell: bash
