@@ -1494,8 +1494,9 @@
     if-eqz v7, :recover_one_not_conversion
     invoke-static {v12, v6}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
     move-result v0
-    if-nez v0, :try_end_recover_one
-    const/4 v0, 0x1
+    # This path schedules conversion directly; it does not restore a native queue request.
+    # Return zero here so execute() does not perform a redundant second Queue110 scan.
+    const/4 v0, 0x0
     goto :try_end_recover_one
 
     :recover_one_not_conversion
