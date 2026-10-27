@@ -1044,6 +1044,122 @@
     return v10
 .end method
 
+.method private static queueRecord(I)Ljava/util/Properties;
+    .locals 8
+    :try_start_queue_record
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->pref()Ljava/lang/Object;
+    move-result-object v0
+    check-cast v0, Landroid/content/SharedPreferences;
+    const-string v1, ""
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v3, "request:"
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    move/from16 v7, p0
+    invoke-virtual {v2, v7}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    invoke-interface {v0, v2, v1}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v4
+    if-nez v4, :queue_record_done
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v3, "done:"
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2, v7}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    invoke-interface {v0, v2, v1}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    :queue_record_done
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v4
+    if-eqz v4, :queue_record_decode
+    new-instance v4, Ljava/util/Properties;
+    invoke-direct {v4}, Ljava/util/Properties;-><init>()V
+    return-object v4
+    :queue_record_decode
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/Queue110;->decode(Ljava/lang/String;)Ljava/util/Properties;
+    move-result-object v4
+    return-object v4
+    :try_end_queue_record
+    .catch Ljava/lang/Throwable; {:try_start_queue_record .. :try_end_queue_record} :queue_record_failed
+    :queue_record_failed
+    move-exception v5
+    new-instance v4, Ljava/util/Properties;
+    invoke-direct {v4}, Ljava/util/Properties;-><init>()V
+    return-object v4
+.end method
+
+.method private static copyQueueProperty(Lorg/json/JSONObject;Ljava/util/Properties;Ljava/lang/String;Ljava/lang/String;)V
+    .locals 4
+    move-object/from16 v0, p0
+    move-object/from16 v1, p1
+    move-object/from16 v2, p2
+    move-object/from16 v3, p3
+    if-eqz v0, :copy_queue_property_done
+    if-eqz v1, :copy_queue_property_done
+    :try_start_copy_queue_property
+    const-string v4, ""
+    invoke-virtual {v1, v3, v4}, Ljava/util/Properties;->getProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
+    move-result v3
+    if-nez v3, :copy_queue_property_done
+    invoke-virtual {v0, v2, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    :try_end_copy_queue_property
+    .catch Ljava/lang/Throwable; {:try_start_copy_queue_property .. :try_end_copy_queue_property} :copy_queue_property_failed
+    goto :copy_queue_property_done
+    :copy_queue_property_failed
+    move-exception v3
+    :copy_queue_property_done
+    return-void
+.end method
+
+.method private static copyQueueFields(Lorg/json/JSONObject;I)V
+    .locals 8
+    move-object/from16 v6, p0
+    move/from16 v7, p1
+    if-eqz v6, :copy_queue_fields_done
+    :try_start_copy_queue_fields
+    invoke-static {v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->queueRecord(I)Ljava/util/Properties;
+    move-result-object v0
+    const-string v1, "external"
+    const-string v2, "external"
+    invoke-static {v6, v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueProperty(Lorg/json/JSONObject;Ljava/util/Properties;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "queueTitle"
+    const-string v2, "title"
+    invoke-static {v6, v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueProperty(Lorg/json/JSONObject;Ljava/util/Properties;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "name"
+    const-string v2, "name"
+    invoke-static {v6, v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueProperty(Lorg/json/JSONObject;Ljava/util/Properties;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "queueIntent"
+    const-string v2, "intent"
+    invoke-static {v6, v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueProperty(Lorg/json/JSONObject;Ljava/util/Properties;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "queueCreated"
+    const-string v2, "created"
+    invoke-static {v6, v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueProperty(Lorg/json/JSONObject;Ljava/util/Properties;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "expectedBytes"
+    const-string v2, "size"
+    invoke-static {v6, v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueProperty(Lorg/json/JSONObject;Ljava/util/Properties;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "downloadUrl"
+    const-string v2, "url"
+    invoke-static {v6, v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueProperty(Lorg/json/JSONObject;Ljava/util/Properties;Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_copy_queue_fields
+    .catch Ljava/lang/Throwable; {:try_start_copy_queue_fields .. :try_end_copy_queue_fields} :copy_queue_fields_failed
+    goto :copy_queue_fields_done
+    :copy_queue_fields_failed
+    move-exception v0
+    :copy_queue_fields_done
+    return-void
+.end method
+
 .method private static recoverSidecarOne(Landroid/content/Context;Ljava/io/File;)I
     .locals 14
     move-object/from16 v12, p0
