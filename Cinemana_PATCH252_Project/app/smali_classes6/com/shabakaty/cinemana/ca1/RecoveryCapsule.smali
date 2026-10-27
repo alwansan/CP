@@ -1201,12 +1201,13 @@
     move-result-object v7
     new-instance v8, Ljava/io/File;
     invoke-direct {v8, v7}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    move-object v10, v8
 
     # Arrange five consecutive low-numbered registers for the metadata embed call.
     move-object v7, v6
     move-object v8, v1
     move-object v9, v3
-    move-object v10, v8
+    # v10 deliberately retains the marker file constructed above.
     move-object v11, v2
     invoke-static/range {v7 .. v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v6
