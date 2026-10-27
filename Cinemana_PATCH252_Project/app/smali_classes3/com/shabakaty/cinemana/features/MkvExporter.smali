@@ -1674,7 +1674,13 @@
     :cond_5
 
     # Build the persistent recovery capsule and embed it into the MP4 before conversion.
-    invoke-static {p0, p1, p2, p4, v13, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
+    move-object/from16 v8, p0
+    move-object/from16 v9, p1
+    move-object/from16 v10, p2
+    move-object/from16 v11, p4
+    move-object v12, v13
+    move-object v15, v6
+    invoke-static {v8, v9, v10, v11, v12, v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
     move-result-object v16
 
     new-instance v10, Ljava/util/ArrayList;
@@ -2086,7 +2092,7 @@
     const-string v8, "-metadata"
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
     const-string v9, "cnm_recovery_token="
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v11
     invoke-static {v11}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v11
