@@ -72,6 +72,7 @@
 
 .method private static writeText(Ljava/io/File;Ljava/lang/String;)Z
     .locals 7
+    const/4 v3, 0x0
     if-eqz p0, :write_text_failed
     if-eqz p1, :write_text_failed
     :try_start_write_text
@@ -80,6 +81,7 @@
     if-eqz v0, :write_text_parent_ready
     invoke-virtual {v0}, Ljava/io/File;->mkdirs()Z
     :write_text_parent_ready
+
     new-instance v0, Ljava/lang/StringBuilder;
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
@@ -99,6 +101,7 @@
     move-result v0
     if-eqz v0, :write_text_open
     invoke-virtual {v1}, Ljava/io/File;->delete()Z
+
     :write_text_open
     new-instance v0, Ljava/io/FileOutputStream;
     invoke-direct {v0, v1}, Ljava/io/FileOutputStream;-><init>(Ljava/io/File;)V
@@ -108,24 +111,91 @@
     invoke-virtual {v0, v2}, Ljava/io/FileOutputStream;->write([B)V
     invoke-virtual {v0}, Ljava/io/FileOutputStream;->flush()V
     invoke-virtual {v0}, Ljava/io/FileOutputStream;->close()V
+
+    # Stage the previous valid manifest rather than deleting it before promotion.
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    const-string v4, ".bak"
+    invoke-virtual {v2, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    new-instance v3, Ljava/io/File;
+    invoke-virtual {p0}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v4
+    invoke-direct {v3, v4, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+
     invoke-virtual {p0}, Ljava/io/File;->exists()Z
     move-result v0
-    if-eqz v0, :write_text_rename
-    invoke-virtual {p0}, Ljava/io/File;->delete()Z
-    :write_text_rename
+    if-eqz v0, :write_text_promote
+    invoke-virtual {v3}, Ljava/io/File;->exists()Z
+    move-result v0
+    if-eqz v0, :write_text_backup_ready
+    invoke-virtual {v3}, Ljava/io/File;->delete()Z
+    :write_text_backup_ready
+    invoke-virtual {p0, v3}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+    move-result v0
+    if-eqz v0, :write_text_restore
+
+    :write_text_promote
     invoke-virtual {v1, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
     move-result v0
-    if-eqz v0, :write_text_failed
+    if-nez v0, :write_text_promoted
+    goto :write_text_restore
+
+    :write_text_promoted
+    invoke-virtual {v3}, Ljava/io/File;->exists()Z
+    move-result v0
+    if-eqz v0, :write_text_success
+    invoke-virtual {v3}, Ljava/io/File;->delete()Z
+    :write_text_success
     const/4 v0, 0x1
     return v0
+
+    :write_text_restore
+    # Restore the previous capsule if promotion fails at any stage.
+    if-eqz v3, :write_text_cleanup
+    invoke-virtual {v3}, Ljava/io/File;->exists()Z
+    move-result v0
+    if-eqz v0, :write_text_cleanup
+    invoke-virtual {p0}, Ljava/io/File;->exists()Z
+    move-result v0
+    if-eqz v0, :write_text_restore_backup
+    invoke-virtual {p0}, Ljava/io/File;->delete()Z
+    :write_text_restore_backup
+    invoke-virtual {v3, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+
+    :write_text_cleanup
+    invoke-virtual {v1}, Ljava/io/File;->exists()Z
+    move-result v0
+    if-eqz v0, :write_text_failed
+    invoke-virtual {v1}, Ljava/io/File;->delete()Z
+    goto :write_text_failed
+
     :try_end_write_text
     .catch Ljava/lang/Throwable; {:try_start_write_text .. :try_end_write_text} :write_text_exception
     :write_text_exception
     move-exception v0
+    # Exception path: preserve the old manifest whenever the replacement has not been installed.
+    if-eqz v3, :write_text_failed
+    invoke-virtual {v3}, Ljava/io/File;->exists()Z
+    move-result v2
+    if-eqz v2, :write_text_failed
+    invoke-virtual {p0}, Ljava/io/File;->exists()Z
+    move-result v2
+    if-eqz v2, :write_text_exception_restore
+    goto :write_text_failed
+    :write_text_exception_restore
+    invoke-virtual {v3, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+
     :write_text_failed
     const/4 v0, 0x0
     return v0
-.end method
+d
 
 .method private static putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     .locals 2
