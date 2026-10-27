@@ -72,7 +72,7 @@ jobs:
           grep -q 'RecoveryCapsule\$DownloadCompleteTask' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'RecoveryCapsule;->importFromMedia' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
           grep -q 'RecoveryCapsule;->tokenFromCapsuleFile' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
-          grep -q 'RecoveryCapsule;->ensureEmbeddedMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q '^\.method private static embedMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'RecoveryCapsule;->finalizeMkv' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
           grep -q 'Commit105;->isPromoted' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
           grep -q 'RecoveryCapsule;->updateDoneSize' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
