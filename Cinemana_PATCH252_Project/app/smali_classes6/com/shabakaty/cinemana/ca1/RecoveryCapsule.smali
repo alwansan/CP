@@ -910,10 +910,11 @@
 
 
 .method public static finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
-    .locals 12
+    .locals 14
     move-object/from16 v10, p0
     move-object/from16 v11, p1
-    const/4 v7, 0x0
+    const/4 v12, 0x0
+    const/4 v13, 0x0
     if-eqz v10, :finalize_mkv_false
     if-eqz v11, :finalize_mkv_false
 
@@ -943,7 +944,6 @@
     invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
     move-result v3
     if-eqz v3, :finalize_mkv_parse
-    # Sidecar loss is handled by importFromMedia during the next recovery scan.
     goto :finalize_mkv_false
 
     :finalize_mkv_parse
@@ -1004,7 +1004,7 @@
     move-result v3
     if-eqz v3, :finalize_mkv_false
 
-    # Re-mux streams without older attachments, then attach the updated canonical capsule.
+    # Get the app's bundled ffmpeg. If it is unavailable, the sidecar still records the final path.
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Continue106;->app()Ljava/lang/Object;
     move-result-object v3
     if-eqz v3, :finalize_mkv_false
@@ -1032,6 +1032,7 @@
     move-result v5
     if-eqz v5, :finalize_mkv_false
 
+    # Stage the new container alongside the final MKV; keep the old file until the replacement is valid.
     invoke-virtual {v10}, Ljava/io/File;->getParentFile()Ljava/io/File;
     move-result-object v5
     new-instance v6, Ljava/lang/StringBuilder;
@@ -1045,12 +1046,12 @@
     move-result-object v6
     invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v6
-    new-instance v7, Ljava/io/File;
-    invoke-direct {v7, v5, v6}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    invoke-virtual {v7}, Ljava/io/File;->exists()Z
+    new-instance v12, Ljava/io/File;
+    invoke-direct {v12, v5, v6}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v12}, Ljava/io/File;->exists()Z
     move-result v5
     if-eqz v5, :finalize_mkv_backup
-    invoke-virtual {v7}, Ljava/io/File;->delete()Z
+    invoke-virtual {v12}, Ljava/io/File;->delete()Z
 
     :finalize_mkv_backup
     invoke-virtual {v10}, Ljava/io/File;->getParentFile()Ljava/io/File;
@@ -1058,23 +1059,24 @@
     new-instance v6, Ljava/lang/StringBuilder;
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {v10}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v8
-    invoke-virtual {v6, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v6
-    const-string v8, ".cnm-recovery.bak."
-    invoke-virtual {v6, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v7, ".cnm-recovery.bak."
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v6
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-    move-result-wide v8
-    invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
-    move-result-object v8
-    invoke-virtual {v6, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-wide v7
+    invoke-static {v7, v8}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v6
     invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v6
-    new-instance v8, Ljava/io/File;
-    invoke-direct {v8, v5, v6}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    new-instance v13, Ljava/io/File;
+    invoke-direct {v13, v5, v6}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
+    # Construct a stream-copy remux, excluding old attachments so recovery JSON stays unique.
     new-instance v5, Ljava/util/ArrayList;
     invoke-direct {v5}, Ljava/util/ArrayList;-><init>()V
     invoke-virtual {v4}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
@@ -1168,7 +1170,7 @@
     invoke-interface {v5, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
     const-string v6, "matroska"
     invoke-interface {v5, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-    invoke-virtual {v7}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    invoke-virtual {v12}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v6
     invoke-interface {v5, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
@@ -1181,12 +1183,12 @@
     move-result-object v6
     invoke-virtual {v6}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
     move-result-object v5
-    const/16 v7, 0x1000
-    new-array v7, v7, [B
+    const/16 v9, 0x1000
+    new-array v9, v9, [B
     :finalize_mkv_drain
-    invoke-virtual {v5, v7}, Ljava/io/InputStream;->read([B)I
-    move-result v9
-    if-lez v9, :finalize_mkv_wait
+    invoke-virtual {v5, v9}, Ljava/io/InputStream;->read([B)I
+    move-result v3
+    if-lez v3, :finalize_mkv_wait
     goto :finalize_mkv_drain
     :finalize_mkv_wait
     invoke-virtual {v5}, Ljava/io/InputStream;->close()V
@@ -1194,33 +1196,33 @@
     move-result v5
     if-nez v5, :finalize_mkv_failed_output
 
-    invoke-virtual {v7}, Ljava/io/File;->isFile()Z
+    invoke-virtual {v12}, Ljava/io/File;->isFile()Z
     move-result v5
     if-eqz v5, :finalize_mkv_failed_output
-    invoke-virtual {v7}, Ljava/io/File;->length()J
-    move-result-wide v5
-    const-wide/16 v8, 0x400
-    cmp-long v5, v5, v8
-    if-lez v5, :finalize_mkv_failed_output
+    invoke-virtual {v12}, Ljava/io/File;->length()J
+    move-result-wide v0
+    const-wide/16 v2, 0x400
+    cmp-long v0, v0, v2
+    if-lez v0, :finalize_mkv_failed_output
 
-    invoke-virtual {v10, v8}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+    invoke-virtual {v10, v13}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
     move-result v5
     if-eqz v5, :finalize_mkv_failed_output
-    invoke-virtual {v7, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+    invoke-virtual {v12, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
     move-result v5
     if-eqz v5, :finalize_mkv_restore
 
-    invoke-virtual {v8}, Ljava/io/File;->delete()Z
+    invoke-virtual {v13}, Ljava/io/File;->delete()Z
     const/4 v0, 0x1
     return v0
 
     :finalize_mkv_restore
-    invoke-virtual {v8, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
-    invoke-virtual {v7}, Ljava/io/File;->delete()Z
+    invoke-virtual {v13, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+    invoke-virtual {v12}, Ljava/io/File;->delete()Z
     goto :finalize_mkv_false
 
     :finalize_mkv_failed_output
-    invoke-virtual {v7}, Ljava/io/File;->delete()Z
+    invoke-virtual {v12}, Ljava/io/File;->delete()Z
     goto :finalize_mkv_false
 
     :try_end_finalize_mkv
@@ -1228,9 +1230,9 @@
 
     :finalize_mkv_exception
     move-exception v0
-    # If the move reached the backup stage but not the new-file stage, restore the original MKV.
-    if-eqz v7, :finalize_mkv_false
-    invoke-virtual {v7}, Ljava/io/File;->exists()Z
+    # Restore only if the prior final file was moved aside and the replacement never appeared.
+    if-eqz v13, :finalize_mkv_false
+    invoke-virtual {v13}, Ljava/io/File;->exists()Z
     move-result v1
     if-eqz v1, :finalize_mkv_false
     invoke-virtual {v10}, Ljava/io/File;->exists()Z
@@ -1238,12 +1240,14 @@
     if-eqz v1, :finalize_mkv_restore_exception
     goto :finalize_mkv_false
     :finalize_mkv_restore_exception
-    invoke-virtual {v7, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+    invoke-virtual {v13, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
 
     :finalize_mkv_false
     const/4 v0, 0x0
     return v0
 .end method
+
+d
 
 .method public static importFromMedia(Landroid/content/Context;Ljava/io/File;)Ljava/io/File;
     .locals 13
