@@ -450,16 +450,16 @@
     new-array v3, v3, [Ljava/lang/Object;
     invoke-static {v0, v2, v3}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v2
-    instance-of v3, v2, Ljava/lang/String;
-    if-eqz v3, :seed_try_done
+    instance-of v8, v2, Ljava/lang/String;
+    if-eqz v8, :seed_return
     check-cast v2, Ljava/lang/String;
     invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v3
-    if-eqz v3, :seed_try_done
+    if-eqz v3, :seed_return
     invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
     move-result v8
     if-eqz v8, :seed_find_manifest
-    goto :seed_try_done
+    goto :seed_return
 
     :seed_find_manifest
     invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
@@ -472,7 +472,7 @@
     invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
     move-result v9
     if-nez v9, :seed_create
-    goto :seed_try_done
+    goto :seed_return
 
     :seed_create
     new-instance v5, Lorg/json/JSONObject;
@@ -535,7 +535,6 @@
     move-result-object v7
     invoke-static {v4, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
 
-    :seed_try_done
     :try_end_seed
     .catch Ljava/lang/Throwable; {:try_start_seed .. :try_end_seed} :seed_exception
     goto :seed_return
@@ -556,16 +555,16 @@
     :try_start_prepare
     invoke-virtual {v1}, Ljava/io/File;->isFile()Z
     move-result v2
-    if-eqz v2, :prepare_try_done
+    if-eqz v2, :prepare_return
     invoke-virtual {v1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v2
     invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v3
-    if-eqz v3, :prepare_try_done
+    if-eqz v3, :prepare_return
     invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
     move-result v4
     if-eqz v4, :prepare_manifest
-    goto :prepare_try_done
+    goto :prepare_return
 
     :prepare_manifest
     invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
@@ -627,7 +626,6 @@
     move-result-object v7
     invoke-static {v4, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
 
-    :prepare_try_done
     :try_end_prepare
     .catch Ljava/lang/Throwable; {:try_start_prepare .. :try_end_prepare} :prepare_exception
     goto :prepare_return
@@ -879,22 +877,22 @@
     :try_start_finalize
     invoke-virtual {v0}, Ljava/io/File;->isFile()Z
     move-result v2
-    if-eqz v2, :finalize_try_done
+    if-eqz v2, :finalize_false
     invoke-virtual {v0}, Ljava/io/File;->length()J
     move-result-wide v2
     const-wide/16 v12, 0x400
     cmp-long v2, v2, v12
-    if-lez v2, :finalize_try_done
+    if-lez v2, :finalize_false
 
     invoke-virtual {v1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v2
     invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v3
-    if-eqz v3, :finalize_try_done
+    if-eqz v3, :finalize_false
     invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
     move-result v8
     if-eqz v8, :finalize_find_manifest
-    goto :finalize_try_done
+    goto :finalize_false
 
     :finalize_find_manifest
     invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
@@ -904,7 +902,7 @@
     invoke-virtual {v5}, Ljava/lang/String;->isEmpty()Z
     move-result v8
     if-eqz v8, :finalize_parse
-    goto :finalize_try_done
+    goto :finalize_false
 
     :finalize_parse
     new-instance v6, Lorg/json/JSONObject;
@@ -915,13 +913,13 @@
     const-string v8, "com.cinemana.recovery"
     invoke-virtual {v8, v9}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v8
-    if-eqz v8, :finalize_try_done
+    if-eqz v8, :finalize_false
     const-string v8, "token"
     invoke-virtual {v6, v8}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v9
     invoke-virtual {v3, v9}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v8
-    if-eqz v8, :finalize_try_done
+    if-eqz v8, :finalize_false
 
     const-string v8, "phase"
     const-string v9, "MKV_FINALIZED"
@@ -967,7 +965,6 @@
     invoke-static {v4, v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
     move-result v10
 
-    :finalize_try_done
     :try_end_finalize
     .catch Ljava/lang/Throwable; {:try_start_finalize .. :try_end_finalize} :finalize_exception
     goto :finalize_return
