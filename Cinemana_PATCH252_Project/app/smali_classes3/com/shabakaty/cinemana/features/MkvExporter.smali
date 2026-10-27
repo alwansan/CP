@@ -1657,6 +1657,21 @@
 
     .line 383
     :cond_4
+    # A downloader success callback can race the queue repair hook. Never invoke the MKV muxer on an unreadable MP4.
+    move-object/from16 v15, p1
+    invoke-static {v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
+    move-result v15
+    if-ltz v15, :mkv_source_validated
+    move-object/from16 v15, p1
+    invoke-static {v15}, Lcom/shabakaty/cinemana/ca1/Queue110;->retryCompletedPath(Ljava/io/File;)Z
+    const-string v15, "MKV_SOURCE_INVALID_BLOCKED; waiting for verified download retry"
+    invoke-static {v3, v15}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendLog(Ljava/io/File;Ljava/lang/String;)V
+    const/4 v14, 0x0
+    const-string v13, "INVALID_SOURCE_MP4"
+    invoke-static {v1, v4, v14, v13}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    return-void
+
+    :mkv_source_validated
     invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Lease115;->stage(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v14
@@ -13234,6 +13249,17 @@
     move-result v0
     if-eqz v0, :recovered_reject
 
+    invoke-static {p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
+    move-result v0
+    if-ltz v0, :recovered_bad_mp4
+    goto :recovered_valid_mp4
+
+    :recovered_bad_mp4
+    invoke-static {p2}, Lcom/shabakaty/cinemana/ca1/Queue110;->retryCompletedPath(Ljava/io/File;)Z
+    const/4 v0, 0x0
+    return v0
+
+    :recovered_valid_mp4
     invoke-static {p0, p2}, Lcom/shabakaty/cinemana/ca1/Inputs114;->verified(Ljava/lang/Object;Ljava/io/File;)Ljava/util/List;
     move-result-object v0
     if-eqz v0, :recovered_reject
