@@ -1327,6 +1327,7 @@
     invoke-virtual {v10, v5, v8}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
 
     const-string v5, "intent"
+    const-string v6, "RUN"
     invoke-virtual {v10, v5, v6}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
 
     const-string v5, "queueCreated"
