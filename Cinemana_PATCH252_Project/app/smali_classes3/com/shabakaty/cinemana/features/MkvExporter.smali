@@ -3112,6 +3112,12 @@
     invoke-static/range {v10 .. v13}, Lcom/shabakaty/cinemana/features/MkvExporter;->promoteDatabaseWithRetry(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Z
     move-result v16
     if-eqz v16, :cond_26
+
+    # Confirm the persisted download row now points to this exact final MKV and current byte count.
+    invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z
+    move-result v16
+    if-eqz v16, :cond_26
+
     move-object/from16 v10, p1
     invoke-static {v7, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
     move-result v16
