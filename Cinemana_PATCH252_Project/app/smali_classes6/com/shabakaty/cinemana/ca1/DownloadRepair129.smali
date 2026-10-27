@@ -319,6 +319,12 @@
     sget-object v1, Ljava/util/Locale;->ROOT:Ljava/util/Locale;
     invoke-virtual {v0, v1}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
     move-result-object v0
+    const-string v1, ".cnm-recovery.tmp.mp4"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :scan_check_real_media
+    goto :scan_done
+    :scan_check_real_media
     const-string v1, ".mp4"
     invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v1
@@ -880,32 +886,7 @@
     invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
     return-void
     :disk_mp4_try_reconcile
-    # Reject bad containers before looking for subtitles or queuing MKV conversion.
-    invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
-    move-result v2
-    if-ltz v2, :disk_mp4_corrupt
-    goto :disk_mp4_source_valid
-
-    :disk_mp4_corrupt
-    # Rehydrate the native download request from its persisted completion receipt and fetch a fresh MP4.
-    invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Queue110;->retryCompletedPath(Ljava/io/File;)Z
-    move-result v2
-    if-eqz v2, :disk_mp4_corrupt_no_receipt
-    const/4 v2, 0x1
-    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
-    const-string v2, "download_repair_actions.log"
-    const-string v3, "MP4_DISK_CORRUPT_REQUEUED_FROM_RECEIPT"
-    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
-    return-void
-
-    :disk_mp4_corrupt_no_receipt
-    const/4 v2, 0x3
-    invoke-static {p2, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->increment([II)V
-    const-string v2, "download_repair_unresolved.log"
-    const-string v3, "MP4_DISK_CORRUPT_NO_VALID_COMPLETION_RECEIPT"
-    invoke-static {p0, v2, v3, v1, p1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->logDiskMp4(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)V
-    return-void
-
+    # Keep the original stable download path; the guarded exporter performs container validation.
     :disk_mp4_source_valid
     # Write the real MP4 path before attempting mapping; replace any stale SRT/ASS discovery record.
     invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
