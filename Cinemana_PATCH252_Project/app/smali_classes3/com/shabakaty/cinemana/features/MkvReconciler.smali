@@ -953,6 +953,32 @@
     if-eqz v5, :scan_root_next
     invoke-static {v5, v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->importFromMedia(Landroid/content/Context;Ljava/io/File;)Ljava/io/File;
     move-result-object v6
+    if-eqz v6, :scan_root_next
+
+    # The filename can be normalized; recover the token from the validated capsule attachment itself.
+    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->tokenFromCapsuleFile(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v7
+    if-eqz v7, :scan_root_next
+    invoke-virtual {v7}, Ljava/lang/String;->isEmpty()Z
+    move-result v8
+    if-nez v8, :scan_root_next
+    invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v4
+    invoke-static {v5, v7, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordDiscovery(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v9, "[cnm-"
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    const-string v9, "]"
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v8
+    invoke-static {v8}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
     goto :scan_root_next
 
     :scan_root_check_mp4
