@@ -941,48 +941,14 @@
 
     move-result-object v4
 
-    # A completed MKV can outlive both app data and its sidecar. Restore its capsule before continuing.
-    const-string v5, ".mkv"
+        :scan_root_check_mp4
+    # Do not treat interrupted muxer temporary outputs as valid source MP4s.
+    const-string v5, ".cnm-recovery.tmp.mp4"
     invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v6
-    if-eqz v6, :scan_root_check_mp4
-    sget-object v5, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
-    invoke-virtual {v5}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
-    move-result-object v5
-    check-cast v5, Landroid/content/Context;
-    if-eqz v5, :scan_root_next
-    invoke-static {v5, v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->importFromMedia(Landroid/content/Context;Ljava/io/File;)Ljava/io/File;
-    move-result-object v6
-    if-eqz v6, :scan_root_next
-
-    # The filename can be normalized; recover the token from the validated capsule attachment itself.
-    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->tokenFromCapsuleFile(Ljava/io/File;)Ljava/lang/String;
-    move-result-object v7
-    if-eqz v7, :scan_root_next
-    invoke-virtual {v7}, Ljava/lang/String;->isEmpty()Z
-    move-result v8
-    if-nez v8, :scan_root_next
-    invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v4
-    invoke-static {v5, v7, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordDiscovery(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-
-    new-instance v8, Ljava/lang/StringBuilder;
-    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v9, "[cnm-"
-    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v8
-    invoke-virtual {v8, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v8
-    const-string v9, "]"
-    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v8
-    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v8
-    invoke-static {v8}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
-    goto :scan_root_next
-
-    :scan_root_check_mp4
+    if-nez v6, :scan_root_next
     const-string v5, ".mp4"
+
 
     invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
 
@@ -1058,10 +1024,6 @@
     invoke-virtual {v6}, Ljava/lang/String;->isEmpty()Z
     move-result v7
     if-nez v7, :scan_root_reconcile
-
-    # Import the capsule from MP4 metadata if the sidecar was lost or cleared.
-    invoke-static {v5, v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->importFromMedia(Landroid/content/Context;Ljava/io/File;)Ljava/io/File;
-    move-result-object v7
 
     invoke-static {v5, v6, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordDiscovery(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
 
