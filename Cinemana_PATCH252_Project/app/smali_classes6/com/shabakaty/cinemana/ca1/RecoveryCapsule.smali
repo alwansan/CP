@@ -515,6 +515,7 @@
     const-string v7, "rootEpisode"
     invoke-static {v5, v6, v0, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
 
+    invoke-static {v5, v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueFields(Lorg/json/JSONObject;I)V
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->videoUrl(Ljava/lang/Object;)Ljava/lang/String;
     move-result-object v7
     const-string v6, "downloadUrl"
@@ -801,6 +802,7 @@
     invoke-static {v1}, Ljava/lang/Integer;->toString(I)Ljava/lang/String;
     move-result-object v9
     invoke-virtual {v7, v8, v9}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    invoke-static {v7, v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->copyQueueFields(Lorg/json/JSONObject;I)V
     const-string v8, "downloadUrl"
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->videoUrl(Ljava/lang/Object;)Ljava/lang/String;
     move-result-object v9
