@@ -3321,6 +3321,8 @@
 
     .line 571
     :cond_24
+    # Preserve subtitle inputs as well when refreshing the capsule failed.
+    if-eqz v15, :cond_26
     invoke-interface/range {p2 .. p2}, Ljava/util/List;->iterator()Ljava/util/Iterator;
 
     move-result-object v0
