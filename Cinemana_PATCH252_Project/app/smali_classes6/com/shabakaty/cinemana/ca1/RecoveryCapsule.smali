@@ -1750,6 +1750,8 @@
     move-result-object v1
     invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
     move-result-object v0
+    # Keep the last valid capsule in an otherwise-free parameter register for rollback.
+    move-object v14, v0
     invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
     move-result v3
     if-eqz v3, :finalize_mkv_parse
@@ -2052,6 +2054,15 @@
     invoke-virtual {v13, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
 
     :finalize_mkv_false
+    # If the sidecar was advanced but the container remux failed, restore its previous JSON.
+    if-eqz v14, :finalize_mkv_return_false
+    invoke-virtual {v14}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :finalize_mkv_return_false
+    if-eqz v1, :finalize_mkv_return_false
+    invoke-static {v1, v14}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+
+    :finalize_mkv_return_false
     const/4 v0, 0x0
     return v0
 .end method
