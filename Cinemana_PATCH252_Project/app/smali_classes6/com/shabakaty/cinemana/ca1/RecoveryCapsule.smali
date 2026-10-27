@@ -918,6 +918,10 @@
     const/4 v0, 0x1
     return v0
     :embed_mp4_run
+    # Initialize rollback references inside the protected region after the numeric size comparison.
+    const/4 v0, 0x0
+    move-object v2, v0
+    move-object v3, v0
     :try_start_embed_mp4
     invoke-virtual {p1}, Ljava/io/File;->getParentFile()Ljava/io/File;
     move-result-object v0
