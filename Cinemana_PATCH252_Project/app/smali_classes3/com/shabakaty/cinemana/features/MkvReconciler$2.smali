@@ -27,6 +27,15 @@
 
     move-result-object p2
 
+    # Observe the temporary download suffix as well as the final MP4 name.
+    const-string v0, ".mp4.temp"
+    invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :watch_final_mp4
+    invoke-static {p2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
+    goto :cond_1
+
+    :watch_final_mp4
     const-string v0, ".mp4"
 
     invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
