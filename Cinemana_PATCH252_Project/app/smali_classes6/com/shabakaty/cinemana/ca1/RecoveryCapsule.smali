@@ -1879,89 +1879,344 @@
 .end method
 
 .method public static finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
-    .locals 8
+    .locals 14
+    move-object/from16 v10, p0
+    move-object/from16 v11, p1
     const/4 v0, 0x0
-    if-eqz p0, :finalize_mkv_return
-    if-eqz p1, :finalize_mkv_return
+    move-object v9, v0
+    move-object v12, v0
+    move-object v13, v0
+    if-eqz v10, :finalize_mkv_false
+    if-eqz v11, :finalize_mkv_false
 
     :try_start_finalize_mkv
-    invoke-virtual {p0}, Ljava/io/File;->isFile()Z
+    invoke-virtual {v10}, Ljava/io/File;->isFile()Z
     move-result v1
-    if-eqz v1, :finalize_mkv_return
-    invoke-virtual {p0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v1
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v2
-    if-eqz v2, :finalize_mkv_try_source
-    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
-    move-result v3
-    if-eqz v3, :finalize_mkv_token_ready
+    if-eqz v1, :finalize_mkv_false
+    invoke-virtual {v10}, Ljava/io/File;->length()J
+    move-result-wide v1
+    const-wide/16 v3, 0x400
+    cmp-long v1, v1, v3
+    if-lez v1, :finalize_mkv_false
 
-    :finalize_mkv_try_source
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    # Prefer the organized MKV's token; fall back to the stable source MP4 identity.
+    invoke-virtual {v10}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v1
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v2
-    if-eqz v2, :finalize_mkv_return
+    if-eqz v2, :finalize_mkv_source_token
     invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
-    move-result v3
-    if-nez v3, :finalize_mkv_return
+    move-result v1
+    if-eqz v1, :finalize_mkv_token_ready
+
+    :finalize_mkv_source_token
+    invoke-virtual {v11}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    if-eqz v2, :finalize_mkv_false
+    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
+    move-result v1
+    if-nez v1, :finalize_mkv_false
 
     :finalize_mkv_token_ready
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
+    move-result-object v3
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
     move-result-object v4
-    move-object v7, v4
-    invoke-static {v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
-    move-result-object v5
-    invoke-virtual {v5}, Ljava/lang/String;->isEmpty()Z
-    move-result v3
-    if-nez v3, :finalize_mkv_return
-    new-instance v6, Lorg/json/JSONObject;
-    invoke-direct {v6, v5}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
+    move-result v1
+    if-nez v1, :finalize_mkv_false
+    move-object v9, v4
 
-    const-string v3, "phase"
-    const-string v5, "MKV_FINALIZED_PENDING_EMBED_REFRESH"
-    invoke-virtual {v6, v3, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    new-instance v5, Lorg/json/JSONObject;
+    invoke-direct {v5, v4}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
 
-    const-string v3, "sourcePath"
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v5
-    invoke-virtual {v6, v3, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "format"
+    const-string v4, "com.cinemana.recovery"
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "schemaVersion"
+    const-string v4, "1"
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "token"
+    invoke-virtual {v5, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    const-string v3, "finalPath"
-    invoke-virtual {p0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v5
-    invoke-virtual {v6, v3, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    const-string v3, "finalFileName"
-    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v5
-    invoke-virtual {v6, v3, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-
-    const-string v3, "finalMetadataUpdatedAtEpochMs"
+    const-string v1, "phase"
+    const-string v4, "MKV_FINALIZED"
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "sourcePath"
+    invoke-virtual {v11}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "finalPath"
+    invoke-virtual {v10}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "finalFileName"
+    invoke-virtual {v10}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "finalFileSizeBytesBeforeCapsuleRefresh"
+    invoke-virtual {v10}, Ljava/io/File;->length()J
+    move-result-wide v6
+    invoke-static {v6, v7}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "finalSizeVerificationPolicy"
+    const-string v4, "Capsule metadata may change container size; verify the actual post-remux byte count in the download database before releasing any source files."
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v1, "finalMetadataUpdatedAtEpochMs"
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-    move-result-wide v4
-    invoke-static {v4, v5}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
-    move-result-object v5
-    invoke-virtual {v6, v3, v5}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    move-result-wide v6
+    invoke-static {v6, v7}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v5, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    invoke-virtual {v6}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
-    move-result-object v5
-    invoke-static {v7, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    # Persist the exact JSON first; the old sidecar stays in v9 for rollback on every failure.
+    invoke-virtual {v5}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
+    move-result-object v4
+    invoke-static {v3, v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_false
+
+    # Locate FFmpeg without blocking app startup if it is unavailable.
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Continue106;->app()Ljava/lang/Object;
+    move-result-object v4
+    if-eqz v4, :finalize_mkv_false
+    check-cast v4, Landroid/content/Context;
+    new-instance v1, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v6
+    const-string v7, "Cinemana/work/log"
+    invoke-direct {v1, v6, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v1}, Ljava/io/File;->mkdirs()Z
+    new-instance v6, Ljava/io/File;
+    const-string v7, "cnm_recovery_capsule.log"
+    invoke-direct {v6, v1, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const-string v1, "ensureFfmpeg"
+    filled-new-array {v4, v6}, [Ljava/lang/Object;
+    move-result-object v6
+    invoke-static {v1, v6}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v4
+    instance-of v1, v4, Ljava/io/File;
+    if-eqz v1, :finalize_mkv_false
+    check-cast v4, Ljava/io/File;
+    invoke-virtual {v4}, Ljava/io/File;->isFile()Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_false
+
+    # Stage beside the destination so the atomic replacement stays on the same filesystem.
+    invoke-virtual {v10}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v1
+    new-instance v6, Ljava/lang/StringBuilder;
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v10}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    const-string v7, ".cnm-recovery.tmp.mkv"
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v6
+    new-instance v12, Ljava/io/File;
+    invoke-direct {v12, v1, v6}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v12}, Ljava/io/File;->exists()Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_temp_ready
+    invoke-virtual {v12}, Ljava/io/File;->delete()Z
+    :finalize_mkv_temp_ready
+
+    new-instance v6, Ljava/lang/StringBuilder;
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v10}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    const-string v7, ".cnm-recovery.bak."
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v7
+    invoke-static {v7, v8}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v6
+    new-instance v13, Ljava/io/File;
+    invoke-virtual {v10}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v1
+    invoke-direct {v13, v1, v6}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+
+    # Build a stream-copy remux. Preserve existing attachments (including ASS subtitle fonts) and place the capsule in global metadata.
+    new-instance v7, Ljava/util/ArrayList;
+    invoke-direct {v7}, Ljava/util/ArrayList;-><init>()V
+    invoke-virtual {v4}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v6
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-hide_banner"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-loglevel"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "error"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-nostdin"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-y"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-i"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    invoke-virtual {v10}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v6
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-map"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "0"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-map_metadata"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "0"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-map_chapters"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "0"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-c"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "copy"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-metadata"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "cnm_recovery_format=com.cinemana.recovery"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-metadata"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    new-instance v6, Ljava/lang/StringBuilder;
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v1, "cnm_recovery_token="
+    invoke-virtual {v6, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v6
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-metadata"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestBase64(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v6
+    if-eqz v6, :finalize_mkv_false
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v4, "cnm_recovery_manifest_b64="
+    invoke-virtual {v1, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v1, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    invoke-interface {v7, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "-f"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v6, "matroska"
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    invoke-virtual {v12}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v6
+    invoke-interface {v7, v6}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    new-instance v6, Ljava/lang/ProcessBuilder;
+    invoke-direct {v6, v7}, Ljava/lang/ProcessBuilder;-><init>(Ljava/util/List;)V
+    const/4 v1, 0x1
+    invoke-virtual {v6, v1}, Ljava/lang/ProcessBuilder;->redirectErrorStream(Z)Ljava/lang/ProcessBuilder;
+    move-result-object v6
+    invoke-virtual {v6}, Ljava/lang/ProcessBuilder;->start()Ljava/lang/Process;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
+    move-result-object v7
+    const/16 v1, 0x1000
+    new-array v1, v1, [B
+
+    :finalize_mkv_drain
+    invoke-virtual {v7, v1}, Ljava/io/InputStream;->read([B)I
+    move-result v6
+    if-lez v6, :finalize_mkv_wait
+    goto :finalize_mkv_drain
+
+    :finalize_mkv_wait
+    invoke-virtual {v7}, Ljava/io/InputStream;->close()V
+    invoke-virtual {v8}, Ljava/lang/Process;->waitFor()I
+    move-result v1
+    if-nez v1, :finalize_mkv_failure
+
+    invoke-virtual {v12}, Ljava/io/File;->isFile()Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_failure
+    invoke-virtual {v12}, Ljava/io/File;->length()J
+    move-result-wide v6
+    const-wide/16 v4, 0x400
+    cmp-long v1, v6, v4
+    if-lez v1, :finalize_mkv_failure
+
+    # Swap only after FFmpeg exits cleanly and the replacement is non-empty.
+    invoke-virtual {v10, v13}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_failure
+    invoke-virtual {v12, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_failure
+
+    invoke-virtual {v13}, Ljava/io/File;->delete()Z
 
     :try_end_finalize_mkv
     .catch Ljava/lang/Throwable; {:try_start_finalize_mkv .. :try_end_finalize_mkv} :finalize_mkv_exception
-    goto :finalize_mkv_return
+    goto :finalize_mkv_success
 
     :finalize_mkv_exception
-    move-exception v6
+    move-exception v0
+    goto :finalize_mkv_failure
 
-    :finalize_mkv_return
-    # Return false deliberately: the current MKV attachment has not been rewritten with the final path yet.
-    # The exporter therefore retains source MP4/subtitles and keeps the repair ledger intact.
+    :finalize_mkv_failure
+    # Restore original MKV if it was moved aside and promotion failed.
+    if-eqz v13, :finalize_mkv_restore_json
+    invoke-virtual {v13}, Ljava/io/File;->exists()Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_restore_json
+    invoke-virtual {v10}, Ljava/io/File;->exists()Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_restore_old
+    goto :finalize_mkv_restore_json
+    :finalize_mkv_restore_old
+    invoke-virtual {v13, v10}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+
+    :finalize_mkv_restore_json
+    if-eqz v12, :finalize_mkv_cleanup_temp
+    invoke-virtual {v12}, Ljava/io/File;->exists()Z
+    move-result v1
+    if-eqz v1, :finalize_mkv_restore_manifest
+    invoke-virtual {v12}, Ljava/io/File;->delete()Z
+
+    :finalize_mkv_restore_manifest
+    if-eqz v9, :finalize_mkv_false
+    invoke-virtual {v9}, Ljava/lang/String;->isEmpty()Z
+    move-result v1
+    if-nez v1, :finalize_mkv_false
+    invoke-static {v3, v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    goto :finalize_mkv_false
+
+    :finalize_mkv_cleanup_temp
+    goto :finalize_mkv_restore_manifest
+
+    :finalize_mkv_success
+    const/4 v0, 0x1
+    return v0
+
+    :finalize_mkv_false
     const/4 v0, 0x0
     return v0
 .end method
+
+d
 
 
 .method private static capsuleToken(Ljava/lang/String;)Ljava/lang/String;
