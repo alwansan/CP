@@ -795,6 +795,13 @@
     move-object v15, v10
     invoke-static/range {v12 .. v15}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    # Keep the task ID at the root for generic repair tools that do not inspect nested identity.
+    const-string v7, "downloadTaskId"
+    const-string v8, "downloadTaskId"
+    move-object/from16 v12, p3
+    invoke-static {v6, v7, v12, v8}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->putObjectString(Lorg/json/JSONObject;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V
+
     const-string v7, "subtitleSources"
     invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->remoteSubtitleSources(Ljava/lang/String;)Lorg/json/JSONArray;
     move-result-object v8
