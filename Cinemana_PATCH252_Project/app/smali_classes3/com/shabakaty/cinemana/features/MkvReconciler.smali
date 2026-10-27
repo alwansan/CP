@@ -95,6 +95,8 @@
 
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
 
+    # One shallow MP4 audit per interval; full recursive recovery is done once by the guarded repair pass.
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
 
     sget-object v1, Lcom/shabakaty/cinemana/features/MkvReconciler;->ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
 
@@ -659,8 +661,6 @@
     if-eqz v0, :cond_1
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchRoot(Ljava/io/File;)V
-
-    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
 
     invoke-virtual {p0}, Ljava/io/File;->listFiles()[Ljava/io/File;
 
