@@ -1,4 +1,4 @@
-name: Build and Sign Cinemana PATCH252 APK
+name: Build and Sign Cinemana PATCH265 Resume Toolbar and Spacing APK
 
 on:
   workflow_dispatch:
@@ -11,10 +11,15 @@ on:
       - feature/subtitle-sync-live-refresh
       - fix/external-subtitle-sync-ui
       - fix/sequential-sync-dialog-zero
+      - fix/download-mkv-self-repair
     paths:
       - "Cinemana_PATCH252_Project/**"
       - "signing/checkpoint145-debug.keystore"
       - ".github/workflows/build-apk.yml"
+      - "scripts/validate_recovery.py"
+      - "scripts/test_recovery_flow.py"
+      - "scripts/test_reference_guards.py"
+      - "patches/patch262/**"
 
 permissions:
   contents: write
@@ -58,38 +63,85 @@ jobs:
           du -sh Cinemana_PATCH252_Project
           ls -lh signing/checkpoint145-debug.keystore
 
-      - name: Verify stable playback, subtitle sync, and UI fix wiring
+      - name: Verify sidecar recovery and legacy media metadata
         shell: bash
         run: |
           set -euo pipefail
-          grep -q 'H26410SoftwareRenderer;->markSubtitleRefresh()V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/y10.smali
-          grep -q 'H26410SoftwareRenderer;->shouldUseSoftware(Lcom/shabakaty/downloader/wh1;)Z' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/so2.smali
-          grep -q 'H26410SoftwareRenderer;->resolveRefreshFormat(Lcom/shabakaty/downloader/wh1;)Lcom/shabakaty/downloader/wh1;' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
-          grep -q 'renderer_surface_snapshot' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
-          grep -q 'diagnosticLogRendererStates()V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/s64.smali
-          grep -q 'media_refresh_item_uri' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/s64.smali
-          grep -q 'player_error_exception' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/wc3.smali
-          grep -q 'render_skip_surface_null_persisting' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
-          grep -q 'renderer_surface_retained_by_B_cleanup' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
-          ! grep -q 'renderer_surface_cleared_by_B_cleanup' Cinemana_PATCH252_Project/app/smali_classes10/com/shabakaty/cinemana/player/H26410SoftwareRenderer.smali
-          grep -q 'subtitle_sync_force_refresh_done' Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/bm4.smali
-          grep -q 'addHalfSecondButtons' Cinemana_PATCH252_Project/app/smali_classes2/com/shabakaty/cinemana/mod/SubtitleSyncHelper.smali
-          grep -q 'addZeroButton' Cinemana_PATCH252_Project/app/smali_classes2/com/shabakaty/cinemana/mod/SubtitleSyncHelper.smali
-          grep -q 'const v0, 0x7fffffff' Cinemana_PATCH252_Project/app/smali_classes2/com/shabakaty/cinemana/mod/SubtitleSyncHelper.smali
-          grep -q '0.5s' Cinemana_PATCH252_Project/app/smali_classes2/com/shabakaty/cinemana/mod/SubtitleSyncHelper.smali
-          grep -q 'addHalfSecondButtons' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
-          grep -q 'addZeroButton' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
-          grep -q 'invoke-static {v9, v13, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
-          ! grep -q 'invoke-static {v9, v3, v4}, Lcom/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper;->addHalfSecondButtons' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
-          grep -q 'const v0, 0x7fffffff' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper\$2.smali
-          grep -q '0.5s' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/mod/SequentialSubtitleSyncHelper.smali
-          grep -q 'check-cast p0, Landroid/widget/Button;' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
-          grep -q 'showSequentialDialog(Ljava/lang/Object;)V' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
-          grep -q 'styleDialogButtons(Ljava/lang/Object;Ljava/lang/Object;)V' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
-          grep -q 'const/4 v0, -0x1' Cinemana_PATCH252_Project/app/smali_classes9/com/shabakaty/cinemana/features/SequentialSubtitleManager.smali
-          grep -q 'device_build_fingerprint' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/player/PlayerDiagnosticLog.smali
-          grep -q '.method public toString()Ljava/lang/String;' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/domain/models/local/VideoModel.smali
-          echo "Stable playback, subtitle sync, and UI fix wiring: PASS"
+          grep -q 'RecoveryCapsule;->prepare' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          python3 scripts/validate_recovery.py
+          python3 scripts/test_recovery_flow.py
+          python3 scripts/test_reference_guards.py
+          grep -q 'RecoveryCapsule;->recoverPending(Landroid/content/Context;)I' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvRepairStartup.smali
+          grep -q 'RecoveryCapsule;->copyQueueFields(Lorg/json/JSONObject;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'RecoveryCapsule;->restoreRequestFromSidecar(Landroid/content/Context;Lorg/json/JSONObject;Ljava/lang/String;)Z' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'findDatabaseItemForPath(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'finalFileSizeBytes' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'Queue110;->save(Ljava/util/Properties;)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'recoverSidecarOne(Landroid/content/Context;Ljava/io/File;)I' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'RecoveryCapsule;->finalizeMkv' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'RecoveryCapsule;->cleanupCompleted' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'RecoveryCapsule;->seed(Ljava/lang/Object;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
+          grep -q 'RecoveryCapsule;->scheduleDownloadComplete(Ljava/lang/Object;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
+          grep -q 'RecoveryCapsule;->completeDownload(Ljava/lang/Object;I)V' 'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule$DownloadCompleteTask.smali'
+          grep -q 'cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'legacy_simple_metadata_only_no_json_in_media' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q '"-metadata"' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q '"-map_chapters"' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'language=' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'sourceComplete' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'downloadResumePolicy' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'sha256(Ljava/io/File;)Ljava/lang/String;' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          ! grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          ! grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          ! grep -q -- '->embedMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          ! grep -q 'RecoveryCapsule;->probeMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
+          ! grep -q 'RecoveryCapsule;->probeMp4' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          ! grep -q 'RecoveryCapsule;->probeMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          ! grep -q 'RecoveryCapsule;->importFromMedia' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+
+          # Automatic recovery is work-root scoped, oldest-first, and only responds to MP4/temp transitions.
+          grep -q 'findDatabaseItemForToken' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'MkvReconciler\$Audit' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'MkvRepairAgeComparator' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'MkvRepairAgeComparator' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          grep -q '".mp4.temp"' 'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler$2.smali'
+          grep -q 'Cinemana/work' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          ! grep -q 'Download/Cinemana/work' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          ! grep -q 'Download/Cinemana/work' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+
+          # Episode-specific recovery records are retired only from confirmed delete paths.
+          grep -q 'EpisodeSidecarCleanup;->deleted(Landroid/content/Context;Ljava/lang/String;)V' 'Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/kw0$l.smali'
+          grep -q 'EpisodeSidecarCleanup;->deleted(Landroid/content/Context;Ljava/lang/String;)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Delete94.smali
+          grep -q 'MkvManifestStore;->clearToken' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/EpisodeSidecarCleanup.smali
+          grep -q 'MkvRepairLedger;->clear' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/EpisodeSidecarCleanup.smali
+
+          for smali in \
+            Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali \
+            'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule$DownloadCompleteTask.smali' \
+            Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali \
+            Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali \
+            Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali \
+            Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvManifestStore.smali \
+            'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler$Audit.smali' \
+            Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvRepairAgeComparator.smali \
+            'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler$2.smali' \
+            Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/EpisodeSidecarCleanup.smali \
+            Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Delete94.smali \
+            'Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/kw0$l.smali' \
+            Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali; do
+            method_count="$(grep -c '^\.method ' "$smali")"
+            end_count="$(grep -c '^\.end method$' "$smali")"
+            test "$method_count" -eq "$end_count"
+          done
+          echo "Sidecar-only recovery and legacy media metadata checks: PASS"
+
+      - name: Test typed watch and cancellation helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/com/google/android/android/4.1.1.4/android-4.1.1.4.jar -o "$RUNNER_TEMP/patch262-android.jar"
+          python3 patches/patch262/build_helpers.py --android-jar "$RUNNER_TEMP/patch262-android.jar" --test
 
       - name: Build unsigned APK
         shell: bash
@@ -99,6 +151,7 @@ jobs:
           ./Cinemana_PATCH252_Project/build.sh
 
       - name: Align and sign APK
+        id: sign
         shell: bash
         env:
           # If the keystore uses non-default credentials, define these in
@@ -112,7 +165,23 @@ jobs:
           KEYSTORE="signing/checkpoint145-debug.keystore"
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
-          SIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk"
+          if [[ "$GITHUB_REF_NAME" == "fix/download-mkv-self-repair" ]]; then
+            SIGNED_NAME="Cinemana_PATCH265_ResumeToolbar_signed.apk"
+            TAG_SUFFIX="resume-toolbar"
+            DISPLAY_NAME="Continue Watching and Safe Delete"
+            PATCH_VERSION="265"
+          elif [[ "$GITHUB_REF_NAME" == "fix/sequential-sync-dialog-zero" ]]; then
+            SIGNED_NAME="Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk"
+            TAG_SUFFIX="sequential-sync-zero"
+            DISPLAY_NAME="Subtitle Sync Dialog & Zero"
+            PATCH_VERSION="257"
+          else
+            SIGNED_NAME="Cinemana_PATCH252_signed.apk"
+            TAG_SUFFIX="build"
+            DISPLAY_NAME="signed build"
+            PATCH_VERSION="252"
+          fi
+          SIGNED="Cinemana_PATCH252_Project/output/$SIGNED_NAME"
 
           keytool -list -keystore "$KEYSTORE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
           "$TOOL_DIR/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
@@ -128,26 +197,25 @@ jobs:
           unzip -t "$SIGNED"
           sha256sum "$SIGNED" | tee Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           ls -lh "$SIGNED"
+          echo "signed_name=$SIGNED_NAME" >> "$GITHUB_OUTPUT"
+          echo "tag_suffix=$TAG_SUFFIX" >> "$GITHUB_OUTPUT"
+          echo "display_name=$DISPLAY_NAME" >> "$GITHUB_OUTPUT"
+          echo "patch_version=$PATCH_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Publish signed APK as a direct GitHub Release download
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: PATCH257-sequential-sync-zero-${{ github.run_number }}
+          tag_name: PATCH${{ steps.sign.outputs.patch_version }}-${{ steps.sign.outputs.tag_suffix }}-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana PATCH257 Subtitle Sync Dialog & Zero #${{ github.run_number }}"
+          name: "Cinemana PATCH${{ steps.sign.outputs.patch_version }} ${{ steps.sign.outputs.display_name }} #${{ github.run_number }}"
           body: |
-            PATCH257 is based on the user-tested subtitle sync and UI behavior.
-            Fixes the SequentialSubtitleSyncHelper dialog construction: the active sync-row reference was overwritten by the setPadding method name before being passed to the button builder, so the dialog failed before it could be displayed.
-            Adds a centered 0 reset button to both general player subtitle sync and Sequential Subtitle Manager sync dialogs. It resets only the relevant saved offset and displayed value.
-            Existing +/-0.1s and +/-0.5s step values and normal offset calculations are unchanged. Existing UI contrast and player renderer behavior are preserved.
-            Device testing is still required to confirm the previously missing dialog now opens and both reset buttons behave correctly.
-            Automated assembly, alignment, signing, and signature verification completed.
+            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'PATCH265 formats Continue Watching subtitles with three spaces at each edge and a compact episode/time separator. The More-page trash control is now owned by the page toolbar and follows fragment visibility instead of relying on the shared options menu. Existing history selection and download deletion behavior is preserved. Host checks and APK assembly/signature verification passed; Android device interaction remains to be tested.' || 'Automated build and APK signature verification completed.' }}
+            Automated build and APK signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk
+            Cinemana_PATCH252_Project/output/${{ steps.sign.outputs.signed_name }}
             Cinemana_PATCH252_Project/output/SHA256SUMS.txt
           fail_on_unmatched_files: true
           overwrite_files: true
-          prerelease: ${{ github.ref != 'refs/heads/main' }}
-          make_latest: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
+          make_latest: "true"

@@ -59,6 +59,7 @@
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     return-void
 .end method
 
@@ -183,6 +184,7 @@
 
     iget-object v12, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$downloadItem:Ljava/lang/Object;
 
+    invoke-static {v7, v12}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->check(Ljava/lang/Object;Ljava/lang/Object;)V
     invoke-static/range {v7 .. v12}, Lcom/shabakaty/cinemana/features/MkvExporter;->access$100(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
@@ -273,6 +275,15 @@
     :goto_2
     if-nez v6, :cond_1
 
+    # Only clear a ledger entry after Restart108 resolves an existing final MKV path and size.
+    iget-object v11, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$app:Landroid/content/Context;
+    iget-object v12, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$downloadItem:Ljava/lang/Object;
+    invoke-static {v11, v12}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+
+    # The database item may have started with an MP4 path. Resolve and clear its raw filename-token alias too.
+    iget-object v7, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$initialRawPath:Ljava/lang/String;
+    invoke-static {v11, v7, v12}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeAliasFromSource(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)V
+
     .line 130
     nop
 
@@ -307,6 +318,12 @@
 
     .line 132
     :cond_1
+    iget-object v11, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$app:Landroid/content/Context;
+    iget-object v12, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$downloadItem:Ljava/lang/Object;
+    const-string v10, "EXPORT_STILL_MP4"
+    const-string v9, "source_mp4_remained_after_export_attempt"
+    invoke-static {v11, v12, v10, v9}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+
     if-ge v2, v4, :cond_2
 
     .line 133
@@ -433,10 +450,14 @@
 
     invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
+    # Resweep compact pending records after the exporter/promotion attempt. Failed MP4s remain pending.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
+
     .line 145
     nop
 
     .line 146
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     return-void
 
     .line 143
@@ -448,6 +469,7 @@
     :try_end_6
     .catchall {:try_start_6 .. :try_end_6} :catchall_1
 
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     throw v1
 
     .line 141
@@ -510,7 +532,11 @@
 
     invoke-static {v1, v2, v3, v4}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
+    # A late successful promotion is cleared; an actual failure remains in the compact ledger.
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
+
     .line 145
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     throw v0
 
     .line 143
@@ -522,5 +548,6 @@
     :try_end_8
     .catchall {:try_start_8 .. :try_end_8} :catchall_3
 
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     throw v0
 .end method

@@ -3651,6 +3651,8 @@
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/AppUpdater133;->profile(Ljava/lang/Object;)V
 
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->profile(Landroid/view/View;)V
+
     .line 91
     const-string v0, "profile_share"
 

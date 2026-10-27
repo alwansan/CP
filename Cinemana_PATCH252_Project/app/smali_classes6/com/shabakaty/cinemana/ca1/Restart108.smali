@@ -1187,10 +1187,13 @@
 .end method
 
 .method public static exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
-    .locals 13
+    .locals 14
 
     .line 36
     const/4 v0, 0x0
+
+    # Retain app context for the unique same-item fallback when task id changed after recovery.
+    move-object v13, p0
 
     :try_start_0
     const-string v1, "id"
@@ -1325,6 +1328,14 @@
     :cond_3
     if-nez v2, :cond_4
 
+    # Strict task-id match found no completed MP4. Retry by stable item id only,
+    # requiring exactly one independently verified completed MP4 row.
+    invoke-static {v13, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideoByItemId(Ljava/lang/Object;Ljava/lang/String;)Ljava/io/File;
+    move-result-object v3
+    if-eqz v3, :exact_video_none
+    return-object v3
+
+    :exact_video_none
     return-object v0
 
     :cond_4
@@ -1357,7 +1368,7 @@
     return-object v0
 .end method
 
-.method static varargs exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+.method public static varargs exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     .locals 1
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -1379,7 +1390,7 @@
     return-object p0
 .end method
 
-.method static get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+.method public static get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
     .locals 0
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -2225,7 +2236,7 @@
     throw p1
 .end method
 
-.method static mp4Complete(Ljava/lang/Object;Ljava/io/File;)Z
+.method public static mp4Complete(Ljava/lang/Object;Ljava/io/File;)Z
     .locals 12
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -5503,7 +5514,19 @@
 
     cmp-long v19, v7, v17
 
+    if-eqz v19, :cond_task_verified129
+
+    const-wide/16 v17, 0x0
+
+    cmp-long v19, v7, v17
+
     if-nez v19, :cond_e
+
+    const-string v7, "RECOVERY_ACCEPT_ZERO_TASK_AFTER_PATH_SIZE_CHECK"
+
+    invoke-static {v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->trace(Ljava/lang/String;)V
+
+    :cond_task_verified129
 
     .line 112
     new-array v0, v12, [Ljava/lang/Object;
@@ -6087,7 +6110,7 @@
     return-object p0
 .end method
 
-.method static str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+.method public static str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
     .locals 0
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -7009,7 +7032,7 @@
     return p0
 .end method
 
-.method static declared-synchronized wake()V
+.method public static declared-synchronized wake()V
     .locals 8
 
     const-class v0, Lcom/shabakaty/cinemana/ca1/Restart108;
@@ -7245,4 +7268,88 @@
     move-result p0
 
     return p0
+.end method
+
+
+.method private static exactVideoByItemId(Ljava/lang/Object;Ljava/lang/String;)Ljava/io/File;
+    .locals 12
+
+    const/4 v0, 0x0
+    if-eqz p0, :exact_id_done
+    if-eqz p1, :exact_id_done
+
+    :try_start_exact_id
+    const-string v1, "getDownloadsDao"
+    filled-new-array {p0, p0}, [Ljava/lang/Object;
+    move-result-object v2
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v1
+
+    const-string v2, "readAllDownloads"
+    filled-new-array {v1}, [Ljava/lang/Object;
+    move-result-object v3
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Ljava/util/List;
+    if-eqz v1, :exact_id_done
+
+    invoke-interface {v1}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+    move-result-object v1
+
+    const/4 v4, 0x0
+
+    :exact_id_loop
+    invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
+    move-result v2
+    if-eqz v2, :exact_id_end
+
+    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v2
+    if-eqz v2, :exact_id_loop
+
+    const-string v3, "s"
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {p1, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v3
+    if-eqz v3, :exact_id_loop
+
+    const-string v3, "x"
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    if-eqz v3, :exact_id_loop
+
+    const-string v5, "resolvePath"
+    filled-new-array {v3}, [Ljava/lang/Object;
+    move-result-object v6
+    invoke-static {v5, v6}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v5
+    check-cast v5, Ljava/io/File;
+    if-eqz v5, :exact_id_loop
+
+    invoke-static {v2, v5}, Lcom/shabakaty/cinemana/ca1/Restart108;->mp4Complete(Ljava/lang/Object;Ljava/io/File;)Z
+    move-result v6
+    if-eqz v6, :exact_id_loop
+
+    # Ambiguity is not repairable safely: refuse to select between multiple completed MP4s.
+    if-eqz v4, :exact_id_first_candidate
+    return-object v0
+
+    :exact_id_first_candidate
+    move-object v4, v5
+    goto :exact_id_loop
+
+    :exact_id_end
+    move-object v0, v4
+    :try_end_exact_id
+    .catch Ljava/lang/Throwable; {:try_start_exact_id .. :try_end_exact_id} :exact_id_failed
+
+    return-object v0
+
+    :exact_id_failed
+    move-exception v1
+    return-object v0
+
+    :exact_id_done
+    return-object v0
 .end method

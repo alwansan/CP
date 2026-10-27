@@ -221,6 +221,7 @@
 
 .method public onDestroyView()V
     .locals 1
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->detachMore(Ljava/lang/Object;)V
 
     .line 1
     iget-object v0, p0, Lcom/shabakaty/downloader/hj;->t:Landroidx/databinding/ViewDataBinding;
@@ -473,6 +474,7 @@
 
     invoke-virtual {p1, p0}, Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;->setItemsListener(Lcom/shabakaty/downloader/pk;)V
 
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->attachMore(Ljava/lang/Object;)V
     return-void
 .end method
 
@@ -511,5 +513,22 @@
     .line 2
     invoke-static {p0, p1}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
 
+    return-void
+.end method
+
+# The shared toolbar action belongs only to the visible Continue Watching page.
+.method public onResume()V
+    .locals 1
+    invoke-super {p0}, Lcom/shabakaty/downloader/hj;->onResume()V
+    const/4 v0, 0x1
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->visibility(Ljava/lang/Object;Z)V
+    return-void
+.end method
+
+.method public onPause()V
+    .locals 1
+    const/4 v0, 0x0
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->visibility(Ljava/lang/Object;Z)V
+    invoke-super {p0}, Lcom/shabakaty/downloader/hj;->onPause()V
     return-void
 .end method
