@@ -1734,7 +1734,7 @@
 .end method
 
 .method public static finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
-    .locals 7
+    .locals 8
     const/4 v0, 0x0
     if-eqz p0, :finalize_mkv_return
     if-eqz p1, :finalize_mkv_return
@@ -1765,7 +1765,8 @@
     :finalize_mkv_token_ready
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
     move-result-object v4
-    invoke-static {v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
+    move-object v7, v4
+    invoke-static {v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
     move-result-object v5
     invoke-virtual {v5}, Ljava/lang/String;->isEmpty()Z
     move-result v3
@@ -1801,7 +1802,7 @@
 
     invoke-virtual {v6}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
     move-result-object v5
-    invoke-static {v4, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {v7, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
 
     :try_end_finalize_mkv
     .catch Ljava/lang/Throwable; {:try_start_finalize_mkv .. :try_end_finalize_mkv} :finalize_mkv_exception
