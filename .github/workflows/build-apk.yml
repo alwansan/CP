@@ -166,7 +166,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: "Cinemana PATCH${{ steps.sign.outputs.patch_version }} ${{ steps.sign.outputs.display_name }} #${{ github.run_number }}"
           body: |
-            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'PATCH260 embeds recovery metadata in MP4 and a JSON attachment/global metadata in MKV. It records download identity, source URLs, subtitle source locators and fingerprints, resumption/conversion instructions, stage/final paths and byte counts. Media scans can restore a lost sidecar from the container; MP4 and subtitle files remain until capsule refresh and final database path/size verification succeed.' || 'Automated build and APK signature verification completed.' }}
+            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'PATCH260 keeps the recovery JSON outside the media in Cinemana/work/data/cnm_recovery. MP4/MKV media are not remuxed to carry JSON; the exporter retains only its legacy simple FFmpeg metadata (title, chapter mapping and subtitle language tags). Startup/button recovery replays unfinished sidecar states through Queue110 and the guarded MKV reconciler. A token JSON and legacy marker are removed only after MKV final-path/size promotion is verified and the source MP4 has been removed.' || 'Automated build and APK signature verification completed.' }}
             Automated build and APK signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
