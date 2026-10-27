@@ -3332,7 +3332,8 @@
     .line 576
     :cond_26
     # Sidecar is deleted only when final MKV identity/path is committed and the MP4 source is gone.
-    invoke-static {v7, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
+    move-object/from16 v10, p1
+    invoke-static {v7, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
 
     new-instance v0, Ljava/lang/StringBuilder;
 
