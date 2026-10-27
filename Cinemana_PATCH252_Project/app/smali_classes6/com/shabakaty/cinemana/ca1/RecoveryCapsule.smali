@@ -1469,12 +1469,7 @@
     new-instance v8, Ljava/io/File;
     invoke-direct {v8, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    # If the app stopped after DB promotion but before deleting the source MP4, resume cleanup only
-    # after re-verifying the exact final DB path and the current file size.
-    invoke-virtual {v8}, Ljava/io/File;->isFile()Z
-    move-result v9
-    if-eqz v9, :recover_final_cleanup_json
-
+    # Revalidate the output and its current database row even when the source MP4 is already absent.
     invoke-virtual {v7}, Ljava/io/File;->isFile()Z
     move-result v9
     if-eqz v9, :recover_final_cleanup_defer
@@ -1512,7 +1507,10 @@
     move-result v9
     if-eqz v9, :recover_final_cleanup_defer
 
-    # The DB still points to this exact final MKV, so the obsolete MP4 may now be removed.
+    # The DB still points to this exact MKV at its recorded byte count; now delete a leftover MP4 if present.
+    invoke-virtual {v8}, Ljava/io/File;->exists()Z
+    move-result v9
+    if-eqz v9, :recover_final_cleanup_json
     invoke-virtual {v8}, Ljava/io/File;->delete()Z
     move-result v9
     if-nez v9, :recover_final_cleanup_verify_absent
@@ -1645,7 +1643,7 @@
 .end method
 
 .method public static cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
-    .locals 12
+    .locals 14
     move-object/from16 v0, p0
     move-object/from16 v1, p1
     const/4 v10, 0x0
@@ -1717,7 +1715,30 @@
     move-result v8
     if-eqz v8, :cleanup_return
 
-    # Delete only this token's sidecar after the final MKV is validated and the MP4 is gone.
+    const-string v8, "finalDatabasePathVerified"
+    invoke-virtual {v6, v8}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v9
+    const-string v8, "true"
+    invoke-virtual {v8, v9}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v8
+    if-eqz v8, :cleanup_return
+
+    const-string v8, "finalFileSizeBytes"
+    invoke-virtual {v6, v8}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v9
+    invoke-virtual {v9}, Ljava/lang/String;->isEmpty()Z
+    move-result v8
+    if-nez v8, :cleanup_return
+    invoke-static {v9}, Ljava/lang/Long;->parseLong(Ljava/lang/String;)J
+    move-result-wide v10
+    invoke-virtual {v0}, Ljava/io/File;->length()J
+    move-result-wide v12
+    cmp-long v8, v10, v12
+    if-eqz v8, :cleanup_size_verified
+    goto :cleanup_return
+
+    :cleanup_size_verified
+    # Delete only this token's sidecar after final path, size and database promotion are verified and MP4 is gone.
     invoke-virtual {v4}, Ljava/io/File;->delete()Z
     move-result v10
     if-eqz v10, :cleanup_return
