@@ -1624,12 +1624,19 @@
     if-ge v5, v7, :recover_pending_end
     aget-object v6, v2, v4
     if-eqz v6, :recover_pending_next
+    # Count only JSON manifests against the cap. Ignore .tmp/.bak/.mp4state siblings.
+    invoke-virtual {v6}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v8
+    const-string v9, ".json"
+    invoke-virtual {v8, v9}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v8
+    if-eqz v8, :recover_pending_next
     invoke-static {v11, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverSidecarOne(Landroid/content/Context;Ljava/io/File;)I
     move-result v8
     add-int/2addr v0, v8
+    add-int/lit8 v5, v5, 0x1
     :recover_pending_next
     add-int/lit8 v4, v4, 0x1
-    add-int/lit8 v5, v5, 0x1
     goto :recover_pending_loop
 
     :recover_pending_end
