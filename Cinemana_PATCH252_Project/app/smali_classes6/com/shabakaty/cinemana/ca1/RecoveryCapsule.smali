@@ -1380,7 +1380,7 @@
 .end method
 
 .method private static recoverSidecarOne(Landroid/content/Context;Ljava/io/File;)I
-    .locals 14
+    .locals 16
     move-object/from16 v12, p0
     move-object/from16 v13, p1
     const/4 v0, 0x0
@@ -1468,8 +1468,70 @@
     invoke-direct {v7, v6}, Ljava/io/File;-><init>(Ljava/lang/String;)V
     new-instance v8, Ljava/io/File;
     invoke-direct {v8, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    # If the app stopped after DB promotion but before deleting the source MP4, resume cleanup only
+    # after re-verifying the exact final DB path and the current file size.
+    invoke-virtual {v8}, Ljava/io/File;->isFile()Z
+    move-result v9
+    if-eqz v9, :recover_final_cleanup_json
+
+    invoke-virtual {v7}, Ljava/io/File;->isFile()Z
+    move-result v9
+    if-eqz v9, :recover_final_cleanup_defer
+    invoke-virtual {v7}, Ljava/io/File;->length()J
+    move-result-wide v14
+    const-wide/16 v10, 0x400
+    cmp-long v9, v14, v10
+    if-lez v9, :recover_final_cleanup_defer
+
+    const-string v9, "finalFileSizeBytes"
+    invoke-virtual {v2, v9}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v10
+    invoke-virtual {v10}, Ljava/lang/String;->isEmpty()Z
+    move-result v9
+    if-nez v9, :recover_final_cleanup_defer
+    invoke-static {v10}, Ljava/lang/Long;->parseLong(Ljava/lang/String;)J
+    move-result-wide v10
+    cmp-long v9, v14, v10
+    if-eqz v9, :recover_final_cleanup_db
+    goto :recover_final_cleanup_defer
+
+    :recover_final_cleanup_db
+    const-string v9, "finalDatabasePathVerified"
+    invoke-virtual {v2, v9}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v10
+    const-string v9, "true"
+    invoke-virtual {v9, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v9
+    if-eqz v9, :recover_final_cleanup_defer
+
+    invoke-static {v12, v7}, Lcom/shabakaty/cinemana/features/MkvReconciler;->findDatabaseItemForPath(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    move-result-object v9
+    if-eqz v9, :recover_final_cleanup_defer
+    invoke-static {v12, v9, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z
+    move-result v9
+    if-eqz v9, :recover_final_cleanup_defer
+
+    # The DB still points to this exact final MKV, so the obsolete MP4 may now be removed.
+    invoke-virtual {v8}, Ljava/io/File;->delete()Z
+    move-result v9
+    if-nez v9, :recover_final_cleanup_verify_absent
+    invoke-virtual {v8}, Ljava/io/File;->exists()Z
+    move-result v9
+    if-nez v9, :recover_final_cleanup_defer
+
+    :recover_final_cleanup_verify_absent
+    invoke-virtual {v8}, Ljava/io/File;->exists()Z
+    move-result v9
+    if-nez v9, :recover_final_cleanup_defer
+
+    :recover_final_cleanup_json
     invoke-static {v7, v8}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
     move-result v0
+    goto :try_end_recover_one
+
+    :recover_final_cleanup_defer
+    const/4 v0, 0x0
     goto :try_end_recover_one
 
     :recover_one_unfinished
