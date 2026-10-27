@@ -1162,6 +1162,222 @@
     return-void
 .end method
 
+.method private static restoreRequestFromSidecar(Landroid/content/Context;Lorg/json/JSONObject;Ljava/lang/String;)Z
+    .locals 15
+    move-object/from16 v12, p0
+    move-object/from16 v13, p1
+    move-object/from16 v14, p2
+    const/4 v0, 0x0
+    if-eqz v12, :restore_request_return
+    if-eqz v13, :restore_request_return
+    if-eqz v14, :restore_request_return
+
+    :try_start_restore_request
+    const-string v5, "downloadTaskId"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v1}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
+    move-result v2
+    if-lez v2, :restore_request_false
+
+    const-string v5, "downloadUrl"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v6
+    if-eqz v6, :restore_request_check_url
+    const-string v5, "videoUrl"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    :restore_request_check_url
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v6
+    if-nez v6, :restore_request_false
+    const-string v5, "https://"
+    invoke-virtual {v3, v5}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+    move-result v6
+    if-nez v6, :restore_request_url_valid
+    const-string v5, "http://"
+    invoke-virtual {v3, v5}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+    move-result v6
+    if-eqz v6, :restore_request_false
+
+    :restore_request_url_valid
+    const-string v5, "external"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
+    move-result v6
+    if-nez v6, :restore_request_false
+
+    # Respect user pause/delete intent; only a request explicitly saved as RUN may be rebuilt.
+    const-string v5, "queueIntent"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    const-string v6, "RUN"
+    invoke-virtual {v6, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :restore_request_false
+
+    new-instance v6, Ljava/io/File;
+    invoke-direct {v6, v14}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Restart108;->safe(Ljava/io/File;)Z
+    move-result v7
+    if-eqz v7, :restore_request_false
+
+    # Do not recreate a network request if the intended MKV already exists and is substantial.
+    const-string v5, "finalPath"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v7}, Ljava/lang/String;->isEmpty()Z
+    move-result v8
+    if-eqz v8, :restore_request_check_target
+    const-string v5, "intendedMkvPath"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v7
+    :restore_request_check_target
+    invoke-virtual {v7}, Ljava/lang/String;->isEmpty()Z
+    move-result v8
+    if-nez v8, :restore_request_no_target
+    new-instance v8, Ljava/io/File;
+    invoke-direct {v8, v7}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v8}, Ljava/io/File;->isFile()Z
+    move-result v9
+    if-eqz v9, :restore_request_no_target
+    invoke-virtual {v8}, Ljava/io/File;->length()J
+    move-result-wide v8
+    const-wide/16 v10, 0x400
+    cmp-long v8, v8, v10
+    if-lez v8, :restore_request_no_target
+    goto :restore_request_false
+
+    :restore_request_no_target
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->pref()Ljava/lang/Object;
+    move-result-object v7
+    check-cast v7, Landroid/content/SharedPreferences;
+
+    # If either native request or completion receipt remains, let the normal queue own it.
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v9, "request:"
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v8
+    const-string v9, ""
+    invoke-interface {v7, v8, v9}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
+    move-result v9
+    if-eqz v9, :restore_request_false
+
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v9, "done:"
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v8
+    const-string v9, ""
+    invoke-interface {v7, v8, v9}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
+    move-result v9
+    if-eqz v9, :restore_request_false
+
+    new-instance v10, Ljava/util/Properties;
+    invoke-direct {v10}, Ljava/util/Properties;-><init>()V
+    const-string v5, "task"
+    invoke-static {v2}, Ljava/lang/Integer;->toString(I)Ljava/lang/String;
+    move-result-object v8
+    invoke-virtual {v10, v5, v8}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+    const-string v5, "url"
+    invoke-virtual {v10, v5, v3}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+    const-string v5, "path"
+    invoke-virtual {v10, v5, v14}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+    const-string v5, "external"
+    invoke-virtual {v10, v5, v4}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+
+    const-string v5, "queueTitle"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v11
+    invoke-virtual {v11}, Ljava/lang/String;->isEmpty()Z
+    move-result v8
+    if-eqz v8, :restore_request_title_ready
+    const-string v5, "title"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v11
+    :restore_request_title_ready
+    const-string v5, "title"
+    invoke-virtual {v10, v5, v11}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+
+    const-string v5, "name"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
+    move-result v9
+    if-eqz v9, :restore_request_name_ready
+    move-object v8, v11
+    :restore_request_name_ready
+    const-string v5, "name"
+    invoke-virtual {v10, v5, v8}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+
+    const-string v5, "intent"
+    invoke-virtual {v10, v5, v6}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+
+    const-string v5, "queueCreated"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
+    move-result v9
+    if-eqz v9, :restore_request_created_ready
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v8
+    invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v8
+    :restore_request_created_ready
+    const-string v5, "created"
+    invoke-virtual {v10, v5, v8}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+
+    const-string v5, "expectedBytes"
+    invoke-virtual {v13, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
+    move-result v9
+    if-eqz v9, :restore_request_size_ready
+    const-string v8, "0"
+    :restore_request_size_ready
+    const-string v5, "size"
+    invoke-virtual {v10, v5, v8}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+
+    invoke-static {v10}, Lcom/shabakaty/cinemana/ca1/Queue110;->valid(Ljava/util/Properties;)Z
+    move-result v8
+    if-eqz v8, :restore_request_false
+    invoke-static {v10}, Lcom/shabakaty/cinemana/ca1/Queue110;->allowed(Ljava/util/Properties;)Z
+    move-result v8
+    if-eqz v8, :restore_request_false
+
+    invoke-static {v10}, Lcom/shabakaty/cinemana/ca1/Queue110;->save(Ljava/util/Properties;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
+    const/4 v0, 0x1
+    goto :try_end_restore_request
+
+    :restore_request_false
+    const/4 v0, 0x0
+    :try_end_restore_request
+    .catch Ljava/lang/Throwable; {:try_start_restore_request .. :try_end_restore_request} :restore_request_exception
+    goto :restore_request_return
+    :restore_request_exception
+    move-exception v1
+    const/4 v0, 0x0
+    :restore_request_return
+    return v0
+.end method
+
 .method private static recoverSidecarOne(Landroid/content/Context;Ljava/io/File;)I
     .locals 14
     move-object/from16 v12, p0
@@ -1276,7 +1492,15 @@
     goto :try_end_recover_one
 
     :recover_one_token_only
-    # If the source disappeared or the first mapping pass declined it, ask the existing token reconciler.
+    # If the source is missing and the original native receipt was lost, rebuild only a validated RUN request.
+    invoke-static {v12, v2, v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->restoreRequestFromSidecar(Landroid/content/Context;Lorg/json/JSONObject;Ljava/lang/String;)Z
+    move-result v6
+    if-eqz v6, :recover_one_reconcile_token
+    const/4 v0, 0x1
+    goto :try_end_recover_one
+
+    :recover_one_reconcile_token
+    # Otherwise, ask the existing token reconciler to search disk and persistent DB identity.
     invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
     const/4 v0, 0x1
 
