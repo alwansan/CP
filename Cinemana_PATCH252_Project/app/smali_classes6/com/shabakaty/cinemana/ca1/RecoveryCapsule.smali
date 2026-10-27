@@ -1225,8 +1225,7 @@
     :embed_mp4_return_true
     const/4 v0, 0x1
     return v0
-
-
+.end method
 
 .method public static updateDoneSize(IJ)V
     .locals 8
@@ -1963,92 +1962,6 @@
     move-result-object v0
     :token_from_file_done
     return-object v0
-.end method
-
-.method public static ensureEmbeddedMp4(Landroid/content/Context;Ljava/io/File;)Z
-    .locals 10
-    if-eqz p0, :ensure_mp4_false
-    if-eqz p1, :ensure_mp4_false
-    :try_start_ensure_mp4
-    invoke-virtual {p1}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v0
-    sget-object v1, Ljava/util/Locale;->US:Ljava/util/Locale;
-    invoke-virtual {v0, v1}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
-    move-result-object v0
-    const-string v1, ".mp4"
-    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-    move-result v1
-    if-eqz v1, :ensure_mp4_false
-
-    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v0
-    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v2
-    if-eqz v2, :ensure_mp4_false
-    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
-    move-result v1
-    if-nez v1, :ensure_mp4_false
-
-    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
-    move-result-object v3
-    invoke-static {v3, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->validCapsuleFile(Ljava/io/File;Ljava/lang/String;)Z
-    move-result v1
-    if-eqz v1, :ensure_mp4_false
-
-    # Marker is derived from the stable sidecar path; never overwrite a current marker needlessly.
-    new-instance v4, Ljava/lang/StringBuilder;
-    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
-    invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v5
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v4
-    const-string v5, ".mp4state"
-    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    move-result-object v4
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v4
-    new-instance v5, Ljava/io/File;
-    invoke-direct {v5, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-static {p1, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->isCurrent(Ljava/io/File;Ljava/io/File;)Z
-    move-result v1
-    if-eqz v1, :ensure_mp4_ffmpeg
-    const/4 v0, 0x1
-    return v0
-
-    :ensure_mp4_ffmpeg
-    # Keep v5 as the .mp4state marker; use v4/v6 for FFmpeg support files.
-    new-instance v4, Ljava/io/File;
-    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
-    move-result-object v6
-    const-string v7, "Cinemana/work/log"
-    invoke-direct {v4, v6, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    invoke-virtual {v4}, Ljava/io/File;->mkdirs()Z
-    new-instance v6, Ljava/io/File;
-    const-string v7, "cnm_recovery_capsule.log"
-    invoke-direct {v6, v4, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    const-string v9, "ensureFfmpeg"
-    filled-new-array {p0, v6}, [Ljava/lang/Object;
-    move-result-object v7
-    invoke-static {v9, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-    move-result-object v8
-    instance-of v1, v8, Ljava/io/File;
-    if-eqz v1, :ensure_mp4_false
-    check-cast v8, Ljava/io/File;
-    invoke-virtual {v8}, Ljava/io/File;->isFile()Z
-    move-result v1
-    if-eqz v1, :ensure_mp4_false
-
-    invoke-static {v8, p1, v3, v5, v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
-    move-result v0
-    :try_end_ensure_mp4
-    .catch Ljava/lang/Throwable; {:try_start_ensure_mp4 .. :try_end_ensure_mp4} :ensure_mp4_exception
-    return v0
-
-    :ensure_mp4_exception
-    move-exception v0
-    :ensure_mp4_false
-    const/4 v0, 0x0
-    return v0
 .end method
 
 .method public static importFromMedia(Landroid/content/Context;Ljava/io/File;)Ljava/io/File;
