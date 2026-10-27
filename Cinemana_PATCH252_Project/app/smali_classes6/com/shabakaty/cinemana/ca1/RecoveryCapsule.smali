@@ -2364,6 +2364,11 @@
     invoke-interface {v3, v4}, Ljava/util/List;->add(Ljava/lang/Object;)Z
     const-string v4, "copy"
     invoke-interface {v3, v4}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    # Only inspect the MP4 header/stream table; do not read or remux the entire large video on every queue scan.
+    const-string v4, "-t"
+    invoke-interface {v3, v4}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v4, "0"
+    invoke-interface {v3, v4}, Ljava/util/List;->add(Ljava/lang/Object;)Z
     const-string v4, "-f"
     invoke-interface {v3, v4}, Ljava/util/List;->add(Ljava/lang/Object;)Z
     const-string v4, "null"
