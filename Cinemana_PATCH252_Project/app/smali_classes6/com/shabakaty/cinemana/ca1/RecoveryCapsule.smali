@@ -62,7 +62,7 @@
     invoke-virtual {v1}, Ljava/io/ByteArrayOutputStream;->close()V
     return-object v4
     :try_end_read_text
-    .catch Ljava/lang/Throwable; {:try_start_read_text .. :read_text_done} :read_text_failed
+    .catch Ljava/lang/Throwable; {:try_start_read_text .. :try_end_read_text} :read_text_failed
     :read_text_failed
     move-exception v0
     :read_text_empty
@@ -119,7 +119,7 @@
     const/4 v0, 0x1
     return v0
     :try_end_write_text
-    .catch Ljava/lang/Throwable; {:try_start_write_text .. :write_text_failed} :write_text_exception
+    .catch Ljava/lang/Throwable; {:try_start_write_text .. :try_end_write_text} :write_text_exception
     :write_text_exception
     move-exception v0
     :write_text_failed
@@ -197,7 +197,7 @@
     invoke-virtual {v6, v7}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v0
     :try_end_video_url
-    .catch Ljava/lang/Throwable; {:try_start_video_url .. :video_url_done} :video_url_failed
+    .catch Ljava/lang/Throwable; {:try_start_video_url .. :try_end_video_url} :video_url_failed
     goto :video_url_done
     :video_url_failed
     move-exception v1
@@ -248,7 +248,7 @@
     invoke-virtual {v0, v3}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
     goto :local_sub_loop
     :try_end_local_sub
-    .catch Ljava/lang/Throwable; {:try_start_local_sub .. :local_sub_done} :local_sub_failed
+    .catch Ljava/lang/Throwable; {:try_start_local_sub .. :try_end_local_sub} :local_sub_failed
     :local_sub_failed
     move-exception v1
     :local_sub_done
@@ -301,7 +301,7 @@
     invoke-virtual {v0, v5}, Lorg/json/JSONArray;->put(Ljava/lang/Object;)Lorg/json/JSONArray;
     goto :remote_sources_loop
     :try_end_remote_sources
-    .catch Ljava/lang/Throwable; {:try_start_remote_sources .. :remote_sources_done} :remote_sources_failed
+    .catch Ljava/lang/Throwable; {:try_start_remote_sources .. :try_end_remote_sources} :remote_sources_failed
     :remote_sources_failed
     move-exception v1
     :remote_sources_done
@@ -396,7 +396,7 @@
     move-result-object v4
     invoke-static {v2, v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
     :try_end_seed
-    .catch Ljava/lang/Throwable; {:try_start_seed .. :seed_done} :seed_failed
+    .catch Ljava/lang/Throwable; {:try_start_seed .. :try_end_seed} :seed_failed
     :seed_failed
     move-exception v0
     :seed_done
@@ -436,7 +436,7 @@
     invoke-virtual {v1, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
     move-result v0
     :try_end_is_current
-    .catch Ljava/lang/Throwable; {:try_start_is_current .. :is_current_done} :is_current_failed
+    .catch Ljava/lang/Throwable; {:try_start_is_current .. :try_end_is_current} :is_current_failed
     goto :is_current_done
     :is_current_failed
     move-exception v1
@@ -683,7 +683,7 @@
     :prepare_return_manifest
     return-object v2
     :try_end_prepare
-    .catch Ljava/lang/Throwable; {:try_start_prepare .. :prepare_done} :prepare_failed
+    .catch Ljava/lang/Throwable; {:try_start_prepare .. :try_end_prepare} :prepare_failed
     :prepare_failed
     move-exception v0
     :prepare_done
@@ -900,7 +900,7 @@
     invoke-virtual {v3, p1}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
     invoke-virtual {v2}, Ljava/io/File;->delete()Z
     :try_end_embed_mp4
-    .catch Ljava/lang/Throwable; {:try_start_embed_mp4 .. :embed_mp4_no} :embed_mp4_failed
+    .catch Ljava/lang/Throwable; {:try_start_embed_mp4 .. :try_end_embed_mp4} :embed_mp4_failed
     :embed_mp4_failed
     move-exception v0
     :embed_mp4_no
@@ -1484,7 +1484,7 @@ d
     if-eqz v11, :import_media_done
     return-object v2
     :try_end_import_media
-    .catch Ljava/lang/Throwable; {:try_start_import_media .. :import_media_done} :import_media_failed
+    .catch Ljava/lang/Throwable; {:try_start_import_media .. :try_end_import_media} :import_media_failed
     :import_media_failed
     move-exception v0
     :import_media_done
