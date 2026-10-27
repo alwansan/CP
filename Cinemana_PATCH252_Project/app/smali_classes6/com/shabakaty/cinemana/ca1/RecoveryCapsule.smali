@@ -2016,15 +2016,16 @@
     return v0
 
     :ensure_mp4_ffmpeg
-    new-instance v5, Ljava/io/File;
+    # Keep v5 as the .mp4state marker; use v4/v6 for FFmpeg support files.
+    new-instance v4, Ljava/io/File;
     invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
     move-result-object v6
     const-string v7, "Cinemana/work/log"
-    invoke-direct {v5, v6, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    invoke-virtual {v5}, Ljava/io/File;->mkdirs()Z
+    invoke-direct {v4, v6, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v4}, Ljava/io/File;->mkdirs()Z
     new-instance v6, Ljava/io/File;
     const-string v7, "cnm_recovery_capsule.log"
-    invoke-direct {v6, v5, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-direct {v6, v4, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
     const-string v9, "ensureFfmpeg"
     filled-new-array {p0, v6}, [Ljava/lang/Object;
     move-result-object v7
