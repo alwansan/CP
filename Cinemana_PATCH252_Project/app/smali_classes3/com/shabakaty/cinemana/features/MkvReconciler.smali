@@ -1418,13 +1418,7 @@
     move-result-object v7
     if-eqz v7, :disk_item_dao_loop
 
-    const-string v8, "x"
-    invoke-static {v7, v8}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v8
-    invoke-static {p1, v8}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskVideoPath(Ljava/io/File;Ljava/lang/String;)Z
-    move-result v9
-    if-eqz v9, :disk_item_dao_loop
-
+    # The recovered sidecar may carry the stable item identity while the stored path is stale.
     const-string v9, "s"
     invoke-static {v7, v9}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
     move-result-object v9
@@ -1714,33 +1708,41 @@
 .end method
 
 .method private static matchesDiskItem(Landroid/content/Context;Ljava/io/File;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
-    .locals 3
+    .locals 4
+    const/4 v0, 0x0
+    if-eqz p0, :matches_disk_item_done
+    if-eqz p1, :matches_disk_item_done
+    if-eqz p2, :matches_disk_item_done
 
-    if-eqz p0, :matches_disk_item_no
-    if-eqz p1, :matches_disk_item_no
-    if-eqz p2, :matches_disk_item_no
-
-    iget-object v0, p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
-    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskVideoPath(Ljava/io/File;Ljava/lang/String;)Z
+    iget-object v1, p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskVideoPath(Ljava/io/File;Ljava/lang/String;)Z
     move-result v0
-    if-eqz v0, :matches_disk_item_exact_video
-    const/4 v0, 0x1
-    return v0
+    if-nez v0, :matches_disk_item_done
 
-    :matches_disk_item_exact_video
+    # Accept the exact completed file returned by the native downloader when task ID changed.
     invoke-static {p0, p2}, Lcom/shabakaty/cinemana/ca1/Restart108;->exactVideo(Ljava/lang/Object;Ljava/lang/Object;)Ljava/io/File;
     move-result-object v1
-    if-eqz v1, :matches_disk_item_no
+    if-eqz v1, :matches_disk_sidecar_identity
     invoke-virtual {v1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v2
     invoke-static {p1, v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskVideoPath(Ljava/io/File;Ljava/lang/String;)Z
     move-result v0
-    return v0
+    if-nez v0, :matches_disk_item_done
 
-    :matches_disk_item_no
-    const/4 v0, 0x0
+    :matches_disk_sidecar_identity
+    # If the stored path is stale, require an exact sidecar identity match before repairing the in-memory path.
+    invoke-static {p1, p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->matchesItemIdentity(Ljava/io/File;Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :matches_disk_item_done
+    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v1
+    iput-object v1, p2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
+    const/4 v0, 0x1
+
+    :matches_disk_item_done
     return v0
 .end method
+d
 
 .method private static findDiskMp4ForToken(Ljava/lang/String;)Ljava/io/File;
     .locals 4
