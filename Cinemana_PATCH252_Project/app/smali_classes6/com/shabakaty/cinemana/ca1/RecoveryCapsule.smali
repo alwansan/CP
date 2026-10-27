@@ -982,6 +982,53 @@ d
 .end method
 
 
+.method public static updateDoneSize(IJ)V
+    .locals 8
+    :try_start_update_done_size
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->pref()Ljava/lang/Object;
+    move-result-object v0
+
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "done:"
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+
+    const-string v2, ""
+    filled-new-array {v1, v2}, [Ljava/lang/Object;
+    move-result-object v2
+    const-string v3, "getString"
+    invoke-static {v0, v3, v2}, Lcom/shabakaty/cinemana/ca1/Queue110;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v2
+    check-cast v2, Ljava/lang/String;
+    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
+    move-result v3
+    if-nez v3, :update_done_size_done
+
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/Queue110;->decode(Ljava/lang/String;)Ljava/util/Properties;
+    move-result-object v2
+    const-string v3, "size"
+    invoke-static {p1, p2}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v2, v3, v4}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/Queue110;->encode(Ljava/util/Properties;)Ljava/lang/String;
+    move-result-object v4
+    invoke-static {v0, v1, v4}, Lcom/shabakaty/cinemana/ca1/Restart108;->put(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+
+    :try_end_update_done_size
+    .catch Ljava/lang/Throwable; {:try_start_update_done_size .. :try_end_update_done_size} :update_done_size_failed
+    goto :update_done_size_done
+    :update_done_size_failed
+    move-exception v0
+    :update_done_size_done
+    return-void
+.end method
+
 .method public static scheduleDownloadComplete(Ljava/lang/Object;I)V
     .locals 3
     if-eqz p0, :schedule_download_done
