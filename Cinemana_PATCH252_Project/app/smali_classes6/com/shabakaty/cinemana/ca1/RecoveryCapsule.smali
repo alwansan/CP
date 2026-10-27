@@ -1325,6 +1325,9 @@ d
     invoke-static {v7, v8}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v7
     invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v6, "mp4MetadataEmbedded"
+    const-string v7, "false"
+    invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     invoke-virtual {v5}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
     move-result-object v4
     invoke-static {v3, v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
