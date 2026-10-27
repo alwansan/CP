@@ -666,6 +666,8 @@
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/Queue110;->save(Ljava/util/Properties;)V
     const-string v1, "MEDIA_CORRUPT_REQUEUED"
     invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
+    # Wake the admission replay immediately; the native completion callback swallows this IOException.
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Restart108;->wake()V
     new-instance p0, Ljava/io/IOException;
     const-string p1, "MP4 validation failed; source quarantined and download queued for retry"
     invoke-direct {p0, p1}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
