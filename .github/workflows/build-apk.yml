@@ -67,6 +67,9 @@ jobs:
           grep -q 'RecoveryCapsule;->recoverPending(Landroid/content/Context;)I' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
           grep -q 'RecoveryCapsule;->copyQueueFields(Lorg/json/JSONObject;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'RecoveryCapsule;->restoreRequestFromSidecar(Landroid/content/Context;Lorg/json/JSONObject;Ljava/lang/String;)Z' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'findDatabaseItemForPath(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'finalFileSizeBytes' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'Queue110;->save(Ljava/util/Properties;)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'recoverSidecarOne(Landroid/content/Context;Ljava/io/File;)I' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'RecoveryCapsule;->finalizeMkv' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
