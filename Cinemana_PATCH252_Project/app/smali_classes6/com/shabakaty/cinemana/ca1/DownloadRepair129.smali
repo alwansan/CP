@@ -176,6 +176,9 @@
     :dependencies_done
 
     :try_start_2
+    # Replay unfinished sidecar JSON first; recovery still flows through the guarded reconciler/exporter.
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverPending(Landroid/content/Context;)I
+    move-result v2
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->start(Landroid/content/Context;)V
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->repairDiskMp4(Landroid/content/Context;)V
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileAll()V
