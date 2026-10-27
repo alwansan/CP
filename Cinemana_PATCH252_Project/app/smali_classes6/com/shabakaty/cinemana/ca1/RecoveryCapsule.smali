@@ -70,6 +70,64 @@
     return-object v0
 .end method
 
+.method private static restoreBackup(Ljava/io/File;)V
+    .locals 5
+    if-eqz p0, :restore_backup_return
+    :try_start_restore_backup
+    invoke-virtual {p0}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v0
+    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    const-string v1, ".bak"
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    new-instance v3, Ljava/io/File;
+    invoke-direct {v3, v0, v1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+
+    invoke-virtual {v3}, Ljava/io/File;->exists()Z
+    move-result v4
+    if-eqz v4, :restore_backup_temp
+    invoke-virtual {p0}, Ljava/io/File;->exists()Z
+    move-result v4
+    if-eqz v4, :restore_backup_move
+    invoke-virtual {p0}, Ljava/io/File;->delete()Z
+    :restore_backup_move
+    invoke-virtual {v3, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+
+    :restore_backup_temp
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    const-string v1, ".tmp"
+    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    new-instance v3, Ljava/io/File;
+    invoke-direct {v3, v0, v1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v3}, Ljava/io/File;->exists()Z
+    move-result v4
+    if-eqz v4, :restore_backup_try_end
+    invoke-virtual {v3}, Ljava/io/File;->delete()Z
+
+    :restore_backup_try_end
+    .catch Ljava/lang/Throwable; {:try_start_restore_backup .. :restore_backup_try_end} :restore_backup_failed
+    goto :restore_backup_return
+    :restore_backup_failed
+    move-exception v4
+    :restore_backup_return
+    return-void
+.end method
+
 .method private static writeText(Ljava/io/File;Ljava/lang/String;)Z
     .locals 7
     const/4 v5, 0x0
@@ -183,24 +241,9 @@
 
     :write_text_exception
     move-exception v6
-    # On an exception, restore the previous file only if it is currently in the backup path.
-    if-eqz v2, :write_text_exception_cleanup
-    invoke-virtual {v2}, Ljava/io/File;->exists()Z
-    move-result v5
-    if-eqz v5, :write_text_exception_cleanup
-    invoke-virtual {p0}, Ljava/io/File;->exists()Z
-    move-result v5
-    if-eqz v5, :write_text_exception_restore
-    invoke-virtual {p0}, Ljava/io/File;->delete()Z
-    :write_text_exception_restore
-    invoke-virtual {v2, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
-
-    :write_text_exception_cleanup
-    if-eqz v1, :write_text_failed
-    invoke-virtual {v1}, Ljava/io/File;->exists()Z
-    move-result v5
-    if-eqz v5, :write_text_failed
-    invoke-virtual {v1}, Ljava/io/File;->delete()Z
+    # Do not inspect locals with mixed types on an exceptional edge; reconstruct paths from p0.
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->restoreBackup(Ljava/io/File;)V
+    goto :write_text_failed
 
     :write_text_failed
     const/4 v0, 0x0
