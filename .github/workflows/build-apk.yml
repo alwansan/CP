@@ -101,6 +101,7 @@ jobs:
           grep -q '".mp4.temp"' 'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler$2.smali'
           grep -q 'Cinemana/work' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
           ! grep -q 'Download/Cinemana/work' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          ! grep -q 'Download/Cinemana/work' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
 
           # Episode-specific recovery records are retired only from confirmed delete paths.
           grep -q 'EpisodeSidecarCleanup;->deleted(Landroid/content/Context;Ljava/lang/String;)V' 'Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/kw0$l.smali'
