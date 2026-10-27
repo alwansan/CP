@@ -2127,6 +2127,8 @@
     invoke-interface {v10, v12}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
     :recovery_attachment_done
+    # v9 is reused by the capsule argument setup above; restore the String expected by later logging code on both branches.
+    const-string v9, "cnm_recovery_manifest_b64="
     const-string v8, "-map_chapters"
 
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
