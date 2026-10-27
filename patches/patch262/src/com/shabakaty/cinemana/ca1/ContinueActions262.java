@@ -187,6 +187,14 @@ public final class ContinueActions262 {
         try{View root=(View)call(fragment,"getView");More p=pages.get(root);if(p!=null){p.active=active;if(p.fallback!=null)p.fallback.setVisibility(active?View.VISIBLE:View.GONE);}}
         catch(Exception e){error("continue_more_visibility264",e);}
     }
+    static View visibleToolbar(View root){
+        if(root==null || !root.isShown())return null;
+        if(root.getClass().getName().endsWith("Toolbar")){
+            try{if(tr("أكمل المشاهدة").equals(String.valueOf(call(root,"getTitle"))))return root;}catch(Exception ignored){}
+        }
+        if(root instanceof ViewGroup)for(int i=0;i<((ViewGroup)root).getChildCount();i++){View found=visibleToolbar(((ViewGroup)root).getChildAt(i));if(found!=null)return found;}
+        return null;
+    }
     static final class More {
         final WeakReference<View> root;
         final LinkedHashSet<String> selected=new LinkedHashSet<String>();
@@ -202,8 +210,7 @@ public final class ContinueActions262 {
                 View r=root.get();if(r==null)return;
                 recycler=find(r,"RecyclerView");if(recycler==null)throw new IllegalStateException("Missing continue list");
                 adapter=contentAdapter(call(recycler,"getAdapter"));oldPadding=recycler.getPaddingTop();
-                View toolbar=r.getRootView().findViewById(0x7f0a0280);
-                if(toolbar==null)toolbar=find(r.getRootView(),"Toolbar");
+                View toolbar=visibleToolbar(r.getRootView());
                 fallback=new ImageButton(r.getContext());fallback.setImageResource(android.R.drawable.ic_menu_delete);fallback.setColorFilter(Color.WHITE);
                 fallback.setContentDescription(tr("حذف من أكمل المشاهدة"));fallback.setBackgroundColor(Color.TRANSPARENT);
                 fallback.setOnClickListener(new View.OnClickListener(){public void onClick(View v){begin();}});

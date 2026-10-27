@@ -1574,6 +1574,110 @@
     return-void
 .end method
 
+.method static visibleToolbar(Landroid/view/View;)Landroid/view/View;
+    .locals 5
+
+    const/4 v0, 0x0
+
+    if-eqz p0, :cond_50
+
+    invoke-virtual {p0}, Landroid/view/View;->isShown()Z
+
+    move-result v1
+
+    if-nez v1, :cond_a
+
+    goto :goto_50
+
+    :cond_a
+    invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+
+    move-result-object v1
+
+    invoke-virtual {v1}, Ljava/lang/Class;->getName()Ljava/lang/String;
+
+    move-result-object v1
+
+    const-string v2, "Toolbar"
+
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+
+    move-result v1
+
+    const/4 v2, 0x0
+
+    if-eqz v1, :cond_35
+
+    :try_start_1b
+    const-string v1, "\u0623\u0643\u0645\u0644 \u0627\u0644\u0645\u0634\u0627\u0647\u062f\u0629"
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->tr(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    const-string v3, "getTitle"
+
+    new-array v4, v2, [Ljava/lang/Object;
+
+    invoke-static {p0, v3, v4}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v3
+
+    invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v3
+
+    invoke-virtual {v1, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v1
+    :try_end_31
+    .catch Ljava/lang/Exception; {:try_start_1b .. :try_end_31} :catch_34
+
+    if-eqz v1, :cond_35
+
+    return-object p0
+
+    :catch_34
+    nop
+
+    :cond_35
+    instance-of v1, p0, Landroid/view/ViewGroup;
+
+    if-eqz v1, :cond_50
+
+    :goto_39
+    move-object v1, p0
+
+    check-cast v1, Landroid/view/ViewGroup;
+
+    invoke-virtual {v1}, Landroid/view/ViewGroup;->getChildCount()I
+
+    move-result v3
+
+    if-ge v2, v3, :cond_50
+
+    invoke-virtual {v1, v2}, Landroid/view/ViewGroup;->getChildAt(I)Landroid/view/View;
+
+    move-result-object v1
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->visibleToolbar(Landroid/view/View;)Landroid/view/View;
+
+    move-result-object v1
+
+    if-eqz v1, :cond_4d
+
+    return-object v1
+
+    :cond_4d
+    add-int/lit8 v2, v2, 0x1
+
+    goto :goto_39
+
+    :cond_50
+    :goto_50
+    return-object v0
+.end method
+
 .method private static work(Ljava/lang/Object;)Ljava/lang/String;
     .locals 2
 

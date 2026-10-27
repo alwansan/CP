@@ -108,7 +108,7 @@
 
     iput-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->recycler:Landroid/view/View;
 
-    if-eqz v1, :cond_13a
+    if-eqz v1, :cond_12b
 
     const-string v2, "getAdapter"
 
@@ -138,25 +138,10 @@
 
     move-result-object v1
 
-    const v2, 0x7f0a0280
-
-    invoke-virtual {v1, v2}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->visibleToolbar(Landroid/view/View;)Landroid/view/View;
 
     move-result-object v1
 
-    if-nez v1, :cond_43
-
-    invoke-virtual {v0}, Landroid/view/View;->getRootView()Landroid/view/View;
-
-    move-result-object v1
-
-    const-string v2, "Toolbar"
-
-    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->find(Landroid/view/View;Ljava/lang/String;)Landroid/view/View;
-
-    move-result-object v1
-
-    :cond_43
     new-instance v2, Landroid/widget/ImageButton;
 
     invoke-virtual {v0}, Landroid/view/View;->getContext()Landroid/content/Context;
@@ -205,7 +190,7 @@
 
     const/16 v5, 0x30
 
-    if-eqz v2, :cond_d9
+    if-eqz v2, :cond_ca
 
     const-string v2, "getMenu"
 
@@ -297,9 +282,9 @@
 
     invoke-virtual {v1, v2, v0}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    goto :goto_123
+    goto :goto_114
 
-    :cond_d9
+    :cond_ca
     iput-boolean v4, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->inlineAction:Z
 
     iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->fallback:Landroid/widget/ImageButton;
@@ -372,21 +357,21 @@
 
     invoke-virtual {v1, v2, v4, v0, v5}, Landroid/view/View;->setPadding(IIII)V
 
-    :goto_123
+    :goto_114
     iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->fallback:Landroid/widget/ImageButton;
 
     iget-boolean v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->active:Z
 
-    if-eqz v1, :cond_12b
+    if-eqz v1, :cond_11c
 
     const/4 v1, 0x0
 
-    goto :goto_12d
+    goto :goto_11e
 
-    :cond_12b
+    :cond_11c
     const/16 v1, 0x8
 
-    :goto_12d
+    :goto_11e
     invoke-virtual {v0, v1}, Landroid/widget/ImageButton;->setVisibility(I)V
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->adapter:Ljava/lang/Object;
@@ -397,9 +382,9 @@
 
     invoke-static {v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    goto :goto_148
+    goto :goto_139
 
-    :cond_13a
+    :cond_12b
     new-instance v0, Ljava/lang/IllegalStateException;
 
     const-string v1, "Missing continue list"
@@ -407,17 +392,17 @@
     invoke-direct {v0, v1}, Ljava/lang/IllegalStateException;-><init>(Ljava/lang/String;)V
 
     throw v0
-    :try_end_142
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_142} :catch_142
+    :try_end_133
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_133} :catch_133
 
-    :catch_142
+    :catch_133
     move-exception v0
 
     const-string v1, "continue_more_toolbar262"
 
     invoke-static {v1, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->error(Ljava/lang/String;Ljava/lang/Exception;)V
 
-    :goto_148
+    :goto_139
     return-void
 .end method
 
