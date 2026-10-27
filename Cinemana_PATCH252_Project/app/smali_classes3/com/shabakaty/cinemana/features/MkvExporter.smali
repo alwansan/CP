@@ -1674,7 +1674,7 @@
     :cond_5
 
     # Preserve v9's original String type across the capsule call; the helper temporarily needs the MP4 File.
-    move-object v16, v9
+    move-object/16 v16, v9
     move-object/from16 v8, p0
     move-object/from16 v9, p1
     move-object/from16 v10, p2
@@ -1684,7 +1684,7 @@
     move-object v13, v6
     invoke-static/range {v8 .. v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
     move-result-object v11
-    move-object v9, v16
+    move-object/from16 v9, v16
     move-object/from16 v16, v11
     move-object v13, v12
     move-object v12, v15
