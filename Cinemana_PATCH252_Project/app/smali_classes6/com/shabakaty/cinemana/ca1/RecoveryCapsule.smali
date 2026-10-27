@@ -1721,11 +1721,12 @@
 .end method
 
 .method public static finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
-    .locals 14
+    .locals 15
     move-object/from16 v10, p0
     move-object/from16 v11, p1
     const/4 v12, 0x0
     const/4 v13, 0x0
+    const/4 v14, 0x0
     if-eqz v10, :finalize_mkv_false
     if-eqz v11, :finalize_mkv_false
 
