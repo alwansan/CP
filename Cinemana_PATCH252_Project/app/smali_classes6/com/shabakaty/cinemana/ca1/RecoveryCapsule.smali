@@ -839,7 +839,7 @@ d
     move-object v16, v1
     invoke-static/range {v12 .. v16}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v8
-    if-nez v8, :prepare_return_manifest
+    if-nez v8, :prepare_embedding_succeeded
 
     # The sidecar explicitly reports failure if the MP4 container could not be updated.
     const-string v7, "mp4MetadataEmbedded"
@@ -848,6 +848,18 @@ d
     invoke-virtual {v6}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
     move-result-object v7
     invoke-static {v2, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    goto :prepare_return_manifest
+
+    :prepare_embedding_succeeded
+    # The MP4 container grew when its recovery metadata was embedded; keep the durable done receipt in sync.
+    move-object/from16 v12, p3
+    const-string v13, "downloadTaskId"
+    invoke-static {v12, v13}, Lcom/shabakaty/cinemana/ca1/Restart108;->number(Ljava/lang/Object;Ljava/lang/String;)J
+    move-result-wide v14
+    long-to-int v14, v14
+    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->length()J
+    move-result-wide v15
+    invoke-static/range {v14 .. v16}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->updateDoneSize(IJ)V
 
     :prepare_return_manifest
     return-object v2
