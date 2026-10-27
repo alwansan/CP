@@ -1036,6 +1036,18 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_1
 
+    # The database row and associated MKV/source/subtitle paths have now been removed.
+    :try_start_episode_sidecar_cleanup
+    move-object/from16 v15, p0
+    move-object/from16 v16, v5
+    invoke-static/range {v15 .. v16}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleted(Landroid/content/Context;Ljava/lang/String;)V
+    :try_end_episode_sidecar_cleanup
+    .catch Ljava/lang/Throwable; {:try_start_episode_sidecar_cleanup .. :try_end_episode_sidecar_cleanup} :episode_sidecar_cleanup_exception
+    goto :episode_sidecar_cleanup_done
+    :episode_sidecar_cleanup_exception
+    move-exception v15
+    :episode_sidecar_cleanup_done
+
     .line 27
     return-void
 
