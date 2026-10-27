@@ -627,6 +627,51 @@
 
     if-nez p0, :cond_1
 
+    # File-size equality is not enough: reject an MP4 that lacks a readable video stream/moov atom.
+    invoke-static {v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
+    move-result p0
+    if-ltz p0, :committed_media_valid
+    invoke-static {v5, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->quarantineInvalidMp4(Ljava/io/File;I)Z
+
+    const-string v1, "invalidMediaRetries"
+    const-string v3, "0"
+    invoke-virtual {v0, v1, v3}, Ljava/util/Properties;->getProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    invoke-static {v3}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
+    move-result v3
+    add-int/lit8 v3, v3, 0x1
+    invoke-static {v3}, Ljava/lang/Integer;->toString(I)Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v0, v1, v4}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+    const/4 v4, 0x3
+    if-lt v3, v4, :committed_media_retry
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->pref()Ljava/lang/Object;
+    move-result-object v1
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v4, "request:"
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    invoke-virtual {v3, p1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v3
+    const/4 v4, 0x0
+    invoke-static {v1, v3, v4}, Lcom/shabakaty/cinemana/ca1/Restart108;->put(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "MEDIA_CORRUPT_RETRY_LIMIT"
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
+    return-void
+
+    :committed_media_retry
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/Queue110;->save(Ljava/util/Properties;)V
+    const-string v1, "MEDIA_CORRUPT_REQUEUED"
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
+    new-instance p0, Ljava/io/IOException;
+    const-string p1, "MP4 validation failed; source quarantined and download queued for retry"
+    invoke-direct {p0, p1}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
+    throw p0
+
+    :committed_media_valid
     # Preserve the task on the verified branch; the source File in v5 is no longer required.
     move-object v5, v2
 
@@ -871,6 +916,10 @@
     cmp-long v4, v6, v8
 
     if-lez v4, :cond_1
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
+    move-result v4
+    if-ltz v4, :cond_1
 
     invoke-virtual {v1}, Ljava/io/File;->length()J
 
@@ -3688,6 +3737,32 @@
 
     .line 63
     :cond_9
+    # A completed DB row is stale when its tokenized MP4 is absent or FFmpeg cannot demux it.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/Queue110;->videoIdentity(Ljava/util/Properties;)Z
+    move-result v11
+    if-eqz v11, :cond_9_query_db
+    const-string v11, "path"
+    invoke-virtual {v0, v11}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v11
+    if-eqz v11, :cond_9_query_db
+    new-instance v13, Ljava/io/File;
+    invoke-direct {v13, v11}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v13}, Ljava/io/File;->isFile()Z
+    move-result v14
+    if-eqz v14, :cond_9_media_retry
+    invoke-static {v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
+    move-result v14
+    if-ltz v14, :cond_9_media_corrupt
+    goto :cond_9_query_db
+
+    :cond_9_media_corrupt
+    invoke-static {v13, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->quarantineInvalidMp4(Ljava/io/File;I)Z
+    :cond_9_media_retry
+    const-string v14, "MEDIA_CORRUPT_REPLAY"
+    invoke-static {v10, v14}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
+    goto :cond_c
+
+    :cond_9_query_db
     const-string v11, "readDownloadsByTaskId"
 
     const/4 v13, 0x2
@@ -4136,6 +4211,152 @@
     invoke-static {v1, p0}, Lcom/shabakaty/cinemana/ca1/Restart108;->log(Ljava/lang/String;Ljava/lang/Exception;)V
 
     return v0
+.end method
+
+.method public static retryCompletedPath(Ljava/io/File;)Z
+    .locals 16
+    const/4 v0, 0x0
+    if-eqz p0, :retry_completed_return
+    invoke-virtual {p0}, Ljava/io/File;->isFile()Z
+    move-result v1
+    if-eqz v1, :retry_completed_return
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->probeMp4(Ljava/io/File;)I
+    move-result v1
+    if-ltz v1, :retry_completed_search
+
+    :retry_completed_return
+    return v0
+
+    :retry_completed_search
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->pref()Ljava/lang/Object;
+    move-result-object v1
+    const-string v2, "getAll"
+    const/4 v3, 0x0
+    new-array v3, v3, [Ljava/lang/Object;
+    invoke-static {v1, v2, v3}, Lcom/shabakaty/cinemana/ca1/Queue110;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v2
+    check-cast v2, Ljava/util/Map;
+    invoke-interface {v2}, Ljava/util/Map;->entrySet()Ljava/util/Set;
+    move-result-object v2
+    invoke-interface {v2}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+    move-result-object v2
+
+    :retry_completed_loop
+    invoke-interface {v2}, Ljava/util/Iterator;->hasNext()Z
+    move-result v3
+    if-eqz v3, :retry_completed_return
+    invoke-interface {v2}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v3
+    check-cast v3, Ljava/util/Map$Entry;
+    invoke-interface {v3}, Ljava/util/Map$Entry;->getKey()Ljava/lang/Object;
+    move-result-object v4
+    invoke-virtual {v4}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    move-result-object v4
+    const-string v5, "done:"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+    move-result v5
+    if-nez v5, :retry_completed_match_key
+    const-string v5, "request:"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :retry_completed_next
+
+    :retry_completed_match_key
+    invoke-interface {v3}, Ljava/util/Map$Entry;->getValue()Ljava/lang/Object;
+    move-result-object v5
+    invoke-virtual {v5}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    move-result-object v5
+    invoke-static {v5}, Lcom/shabakaty/cinemana/ca1/Queue110;->decode(Ljava/lang/String;)Ljava/util/Properties;
+    move-result-object v6
+    const-string v7, "path"
+    invoke-virtual {v6, v7}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {p0}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v8
+    invoke-virtual {v8, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v8
+    if-eqz v8, :retry_completed_next
+    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Queue110;->videoIdentity(Ljava/util/Properties;)Z
+    move-result v8
+    if-eqz v8, :retry_completed_next
+    const-string v7, "task"
+    invoke-virtual {v6, v7}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v7
+    invoke-static {v7}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
+    move-result v9
+    if-nez v9, :retry_completed_valid_id
+    goto :retry_completed_next
+
+    :retry_completed_valid_id
+    # The filesystem probe above is definitive before the file is moved aside.
+    invoke-static {p0, v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->quarantineInvalidMp4(Ljava/io/File;I)Z
+    move-result v10
+    if-eqz v10, :retry_completed_return
+
+    const-string v10, "invalidMediaRetries"
+    const-string v11, "0"
+    invoke-virtual {v6, v10, v11}, Ljava/util/Properties;->getProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v11
+    invoke-static {v11}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
+    move-result v11
+    add-int/lit8 v11, v11, 0x1
+    const/4 v12, 0x3
+    if-lt v11, v12, :retry_completed_queue
+    # Retry limit: preserve the corrupt backup but remove both stale scheduler keys.
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->pref()Ljava/lang/Object;
+    move-result-object v13
+    new-instance v14, Ljava/lang/StringBuilder;
+    invoke-direct {v14}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v15, "request:"
+    invoke-virtual {v14, v15}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v14
+    invoke-virtual {v14, v9}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v14
+    invoke-virtual {v14}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v14
+    const/4 v15, 0x0
+    invoke-static {v13, v14, v15}, Lcom/shabakaty/cinemana/ca1/Restart108;->put(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    new-instance v14, Ljava/lang/StringBuilder;
+    invoke-direct {v14}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v15, "done:"
+    invoke-virtual {v14, v15}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v14
+    invoke-virtual {v14, v9}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v14
+    invoke-virtual {v14}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v14
+    const/4 v15, 0x0
+    invoke-static {v13, v14, v15}, Lcom/shabakaty/cinemana/ca1/Restart108;->put(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v14, "MEDIA_CORRUPT_RETRY_LIMIT"
+    invoke-static {v9, v14}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
+    return v0
+
+    :retry_completed_queue
+    invoke-static {v11}, Ljava/lang/Integer;->toString(I)Ljava/lang/String;
+    move-result-object v11
+    invoke-virtual {v6, v10, v11}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Queue110;->save(Ljava/util/Properties;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->pref()Ljava/lang/Object;
+    move-result-object v13
+    new-instance v14, Ljava/lang/StringBuilder;
+    invoke-direct {v14}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v15, "done:"
+    invoke-virtual {v14, v15}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v14
+    invoke-virtual {v14, v9}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v14
+    invoke-virtual {v14}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v14
+    const/4 v15, 0x0
+    invoke-static {v13, v14, v15}, Lcom/shabakaty/cinemana/ca1/Restart108;->put(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+    const-string v14, "MEDIA_CORRUPT_REQUEUED"
+    invoke-static {v9, v14}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Restart108;->wake()V
+    const/4 v0, 0x1
+    return v0
+
+    :retry_completed_next
+    goto :retry_completed_loop
 .end method
 
 .method public static terminal(Ljava/lang/Object;Ljava/lang/String;)V
