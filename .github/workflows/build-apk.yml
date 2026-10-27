@@ -111,6 +111,9 @@ jobs:
           grep -q 'RecoveryCapsule\$DownloadCompleteTask' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'sourceComplete' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'downloadResumePolicy' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'RecoveryCapsule;->updateDoneSize' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'sha256(Ljava/io/File;)Ljava/lang/String;' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q '"sha256"' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'dump_attachment:t:0' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'DownloadRepair129;->startup(Landroid/content/Context;)V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/CinemanaApplication.smali
