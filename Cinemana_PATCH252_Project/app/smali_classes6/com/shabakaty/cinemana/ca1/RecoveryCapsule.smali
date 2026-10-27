@@ -474,7 +474,7 @@ d
 .end method
 
 .method private static isCurrent(Ljava/io/File;Ljava/io/File;)Z
-    .locals 6
+    .locals 10
     const/4 v0, 0x0
     if-eqz p0, :is_current_done
     if-eqz p1, :is_current_done
@@ -482,6 +482,29 @@ d
     move-result v1
     if-eqz v1, :is_current_done
     :try_start_is_current
+    # The marker is valid only for both the media file and the exact sidecar payload.
+    invoke-virtual {p1}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    const-string v2, ".mp4state"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v3
+    if-eqz v3, :is_current_done
+    invoke-virtual {v1}, Ljava/lang/String;->length()I
+    move-result v3
+    invoke-virtual {v2}, Ljava/lang/String;->length()I
+    move-result v4
+    sub-int/2addr v3, v4
+    const/4 v4, 0x0
+    invoke-virtual {v1, v4, v3}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {p1}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v4
+    new-instance v5, Ljava/io/File;
+    invoke-direct {v5, v4, v1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v5}, Ljava/io/File;->isFile()Z
+    move-result v3
+    if-eqz v3, :is_current_done
+
     new-instance v1, Ljava/lang/StringBuilder;
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {p0}, Ljava/io/File;->length()J
@@ -494,6 +517,24 @@ d
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v1
     invoke-virtual {p0}, Ljava/io/File;->lastModified()J
+    move-result-wide v2
+    invoke-static {v2, v3}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    const-string v2, "|"
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v5}, Ljava/io/File;->length()J
+    move-result-wide v2
+    invoke-static {v2, v3}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    const-string v2, "|"
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v1
+    invoke-virtual {v5}, Ljava/io/File;->lastModified()J
     move-result-wide v2
     invoke-static {v2, v3}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v2
@@ -512,7 +553,7 @@ d
     move-exception v1
     :is_current_done
     return v0
-.end method
+d
 
 .method public static prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
     .locals 20
@@ -964,6 +1005,24 @@ d
     move-result-object v7
     invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v6
+    const-string v7, "|"
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {p2}, Ljava/io/File;->length()J
+    move-result-wide v7
+    invoke-static {v7, v8}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    const-string v7, "|"
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {p2}, Ljava/io/File;->lastModified()J
+    move-result-wide v7
+    invoke-static {v7, v8}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
     invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v6
     invoke-static {p3, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
@@ -978,8 +1037,7 @@ d
     move-exception v0
     :embed_mp4_no
     const/4 v0, 0x0
-    return v0
-.end method
+    return v0d
 
 
 .method public static updateDoneSize(IJ)V
