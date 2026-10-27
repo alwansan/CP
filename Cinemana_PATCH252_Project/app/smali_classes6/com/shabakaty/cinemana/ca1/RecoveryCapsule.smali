@@ -954,6 +954,66 @@
     return-object v0
 .end method
 
+.method private static rollbackMp4Remux(Ljava/io/File;)V
+    .locals 8
+    if-eqz p0, :rollback_mp4_return
+    :try_start_rollback_mp4
+    invoke-virtual {p0}, Ljava/io/File;->getParentFile()Ljava/io/File;
+    move-result-object v0
+    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    const-string v3, ".cnm-recovery.bak"
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    new-instance v3, Ljava/io/File;
+    invoke-direct {v3, v0, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+
+    # Always roll back from the backup if one exists: an exception can occur after replacing the input.
+    invoke-virtual {v3}, Ljava/io/File;->isFile()Z
+    move-result v4
+    if-eqz v4, :rollback_mp4_temp
+    invoke-virtual {p0}, Ljava/io/File;->exists()Z
+    move-result v4
+    if-eqz v4, :rollback_mp4_restore
+    invoke-virtual {p0}, Ljava/io/File;->delete()Z
+    :rollback_mp4_restore
+    invoke-virtual {v3, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+
+    :rollback_mp4_temp
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    const-string v1, ".cnm-recovery.tmp.mp4"
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    new-instance v2, Ljava/io/File;
+    invoke-direct {v2, v0, v1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v2}, Ljava/io/File;->exists()Z
+    move-result v4
+    if-eqz v4, :rollback_mp4_try_end
+    invoke-virtual {v2}, Ljava/io/File;->delete()Z
+
+    :rollback_mp4_try_end
+    .catch Ljava/lang/Throwable; {:try_start_rollback_mp4 .. :rollback_mp4_try_end} :rollback_mp4_exception
+    goto :rollback_mp4_return
+    :rollback_mp4_exception
+    move-exception v4
+    :rollback_mp4_return
+    return-void
+.end method
+
 .method private static embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     .locals 11
 
@@ -1201,7 +1261,10 @@
 
     :embed_mp4_exception
     move-exception v10
-    goto :embed_mp4_cleanup
+    # Do not flow through cleanup registers that are uninitialized on some exceptional edges.
+    invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->rollbackMp4Remux(Ljava/io/File;)V
+    const/4 v0, 0x0
+    return v0
 
     :embed_mp4_cleanup
     # Restore the original if it was moved aside and replacement was never promoted.
