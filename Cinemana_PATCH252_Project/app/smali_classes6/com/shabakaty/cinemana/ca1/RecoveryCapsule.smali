@@ -1288,7 +1288,7 @@
     :embed_mp4_return_true
     const/4 v0, 0x1
     return v0
-d
+.end method
 
 .method public static updateDoneSize(IJ)V
     .locals 8
