@@ -1553,6 +1553,64 @@
     return v2
 .end method
 
+.method public static isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z
+    .locals 9
+    move-object/from16 v6, p0
+    move-object/from16 v7, p1
+    move-object/from16 v8, p2
+    if-eqz v6, :promoted_no
+    if-eqz v7, :promoted_no
+    if-eqz v8, :promoted_no
+
+    :try_start_promoted
+    # Resolve the row for this exact task/item identity, then verify canonical final path.
+    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->row(Landroid/content/Context;Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v0
+    if-eqz v0, :promoted_no
+
+    const-string v1, "x"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Commit105;->text(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :promoted_no
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :promoted_no
+
+    new-instance v2, Ljava/io/File;
+    invoke-direct {v2, v1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v2}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v8}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v3, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v2
+    if-eqz v2, :promoted_no
+
+    # The file must also satisfy the byte-count/validity invariant saved in the DB row.
+    const-string v1, "y"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/R94;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v1
+    instance-of v2, v1, Ljava/lang/Number;
+    if-eqz v2, :promoted_no
+    check-cast v1, Ljava/lang/Number;
+    invoke-virtual {v1}, Ljava/lang/Number;->longValue()J
+    move-result-wide v2
+    invoke-static {v8, v2, v3}, Lcom/shabakaty/cinemana/ca1/Final100;->valid(Ljava/io/File;J)Z
+    move-result v0
+    if-eqz v0, :promoted_no
+
+    const/4 v0, 0x1
+    return v0
+
+    :try_end_promoted
+    .catch Ljava/lang/Throwable; {:try_start_promoted .. :try_end_promoted} :promoted_exception
+    :promoted_exception
+    move-exception v0
+    :promoted_no
+    const/4 v0, 0x0
+    return v0
+.end method
+
 .method private static row(Landroid/content/Context;Ljava/lang/Object;)Ljava/lang/Object;
     .locals 2
     .annotation system Ldalvik/annotation/Throws;
