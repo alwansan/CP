@@ -882,6 +882,9 @@ d
 
 .method private static embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     .locals 9
+    const/4 v0, 0x0
+    move-object v2, v0
+    move-object v3, v0
     if-eqz p0, :embed_mp4_no
     if-eqz p1, :embed_mp4_no
     if-eqz p2, :embed_mp4_no
@@ -1090,6 +1093,23 @@ d
     .catch Ljava/lang/Throwable; {:try_start_embed_mp4 .. :try_end_embed_mp4} :embed_mp4_failed
     :embed_mp4_failed
     move-exception v0
+    # If the old MP4 was moved aside but the replacement was not promoted, restore the original.
+    if-eqz v3, :embed_mp4_cleanup_temp
+    invoke-virtual {v3}, Ljava/io/File;->exists()Z
+    move-result v1
+    if-eqz v1, :embed_mp4_cleanup_temp
+    invoke-virtual {p1}, Ljava/io/File;->exists()Z
+    move-result v1
+    if-nez v1, :embed_mp4_cleanup_temp
+    invoke-virtual {v3, p1}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
+
+    :embed_mp4_cleanup_temp
+    if-eqz v2, :embed_mp4_no
+    invoke-virtual {v2}, Ljava/io/File;->exists()Z
+    move-result v1
+    if-eqz v1, :embed_mp4_no
+    invoke-virtual {v2}, Ljava/io/File;->delete()Z
+
     :embed_mp4_no
     const/4 v0, 0x0
     return v0d
