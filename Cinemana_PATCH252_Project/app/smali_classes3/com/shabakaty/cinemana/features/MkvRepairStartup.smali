@@ -16,7 +16,7 @@
     .locals 4
 
     :try_start_delay
-    const-wide/16 v0, 0x61a8
+    const-wide/16 v0, 0x1f40
     invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
     :try_end_delay
     .catch Ljava/lang/InterruptedException; {:try_start_delay .. :try_end_delay} :interrupted
