@@ -3230,6 +3230,9 @@
 
     if-nez v9, :cond_23
 
+    # Do not delete the completed MP4 if refreshing its final MKV capsule failed.
+    if-eqz v15, :cond_23
+
     .line 566
     new-instance v9, Ljava/lang/StringBuilder;
 
