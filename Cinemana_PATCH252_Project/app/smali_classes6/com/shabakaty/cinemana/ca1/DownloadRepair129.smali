@@ -179,6 +179,20 @@
     # Replay unfinished sidecar JSON first; recovery still flows through the guarded reconciler/exporter.
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverPending(Landroid/content/Context;)I
     move-result v2
+
+    # Multiple sidecars may restore requests; replay the queue once, not once per JSON file.
+    if-lez v2, :sidecar_request_scan_done
+    :try_start_sidecar_request_scan
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
+    :try_end_sidecar_request_scan
+    .catch Ljava/lang/Throwable; {:try_start_sidecar_request_scan .. :try_end_sidecar_request_scan} :sidecar_request_scan_failed
+    goto :sidecar_request_scan_done
+    :sidecar_request_scan_failed
+    move-exception v3
+    const-string v1, "SIDECAR_QUEUE_RESCAN_FAILED"
+    invoke-static {p0, v1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
+    :sidecar_request_scan_done
+
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->start(Landroid/content/Context;)V
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->repairDiskMp4(Landroid/content/Context;)V
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileAll()V
