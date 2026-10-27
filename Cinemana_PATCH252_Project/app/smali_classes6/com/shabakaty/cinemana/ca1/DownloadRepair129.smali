@@ -140,106 +140,21 @@
 .end method
 
 .method public static execute(Landroid/content/Context;)Ljava/lang/String;
-    .locals 4
-    const-string v0, "download_repair_findings.log"
-    const-string v1, "REPAIR_BEGIN; fast path skips historical log parsing and diagnostic inventory before replaying durable queues"
-    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-
-    # Skip the diagnostic-only recursive inventory and historical log parsing on button presses.
-    # Queue replay, subtitle dependency recovery, disk MP4 matching, and the guarded MKV reconciler below do the actual repair.
-    :try_start_1
-    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
-    :try_end_1
-    .catch Ljava/lang/Throwable; {:try_start_1 .. :try_end_1} :queue_failed
-    const-string v0, "download_repair_actions.log"
-    const-string v1, "QUEUE_SCAN_DISPATCHED; existing persisted requests rechecked using Queue110 ownership and synchronization guards"
-    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-    goto :queue_done
-    :queue_failed
-    move-exception v2
-    const-string v1, "QUEUE110_SCAN_FAILED"
-    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
-    :queue_done
-
-    :try_start_dependencies
-    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Dependencies112;->scan()V
-    :try_end_dependencies
-    .catch Ljava/lang/Throwable; {:try_start_dependencies .. :try_end_dependencies} :dependencies_failed
-    const-string v0, "download_repair_actions.log"
-    const-string v1, "SUBTITLE_DEPENDENCY_SCAN_DISPATCHED; existing dependency recovery checked eligible MP4/subtitle pairs"
-    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-    goto :dependencies_done
-    :dependencies_failed
-    move-exception v2
-    const-string v1, "DEPENDENCY_SCAN_FAILED"
-    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
-    :dependencies_done
-
-    :try_start_2
-    # Replay unfinished sidecar JSON first; recovery still flows through the guarded reconciler/exporter.
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverPending(Landroid/content/Context;)I
-    move-result v2
-
-    # Multiple sidecars may restore requests; replay the queue once, not once per JSON file.
-    if-lez v2, :sidecar_request_scan_done
-    :try_start_sidecar_request_scan
-    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
-    :try_end_sidecar_request_scan
-    .catch Ljava/lang/Throwable; {:try_start_sidecar_request_scan .. :try_end_sidecar_request_scan} :sidecar_request_scan_failed
-    goto :sidecar_request_scan_done
-    :sidecar_request_scan_failed
-    move-exception v3
-    const-string v1, "SIDECAR_QUEUE_RESCAN_FAILED"
-    invoke-static {p0, v1, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
-    :sidecar_request_scan_done
-
+    .locals 3
+    :try_start_ordered_repair
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->start(Landroid/content/Context;)V
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->repairDiskMp4(Landroid/content/Context;)V
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileAll()V
-    :try_end_2
-    .catch Ljava/lang/Throwable; {:try_start_2 .. :try_end_2} :mkv_failed
-    const-string v0, "download_repair_actions.log"
-    const-string v1, "MKV_RECONCILIATION_DISPATCHED; manifest-ready registered items passed to the existing guarded exporter"
-    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-    goto :mkv_done
-    :mkv_failed
-    move-exception v2
-    const-string v1, "MKV_RECONCILIATION_FAILED"
-    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
-    :mkv_done
-
-    :try_start_3
-    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Restart108;->wake()V
-    :try_end_3
-    .catch Ljava/lang/Throwable; {:try_start_3 .. :try_end_3} :recovery_failed
-    const-string v0, "download_repair_actions.log"
-    const-string v1, "RECOVERY_WAKE_REQUESTED; Restart108 recovery scanner nudged; repair button did not delete any source media or subtitles"
-    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-    goto :recovery_done
-    :recovery_failed
-    move-exception v2
-    const-string v1, "RECOVERY_WAKE_FAILED"
-    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
-    :recovery_done
-
-    :try_start_ledger_sweep
-    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
-    :try_end_ledger_sweep
-    .catch Ljava/lang/Throwable; {:try_start_ledger_sweep .. :try_end_ledger_sweep} :ledger_sweep_failed
-    goto :ledger_sweep_done
-
-    :ledger_sweep_failed
-    move-exception v2
-    const-string v1, "MKV_LEDGER_SWEEP_FAILED"
-    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
-
-    :ledger_sweep_done
-    const-string v0, "download_repair_actions.log"
-    const-string v1, "REPAIR_END; asynchronous recovery/conversion may continue in the original pipeline; consult unresolved log for failures"
-    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-    const-string v0, "انتهى الفحص وأعيد تحفيز طابور التحميل وMKV والاستعادة. راجع السجلات إذا بقيت مشكلة."
+    :try_end_ordered_repair
+    .catch Ljava/lang/Throwable; {:try_start_ordered_repair .. :try_end_ordered_repair} :ordered_repair_failed
+    const-string v0, "تم فحص ملفات work من الأقدم للأحدث وإرسال الملفات الجاهزة إلى طابور MKV."
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/I18n161;->t(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v0
+    return-object v0
+    :ordered_repair_failed
+    move-exception v0
+    const-string v1, "ORDERED_WORK_REPAIR_FAILED"
+    invoke-static {p0, v1, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
+    const-string v0, "تعذر إكمال فحص ملفات work؛ حُفظ سبب الخطأ."
     return-object v0
 .end method
 

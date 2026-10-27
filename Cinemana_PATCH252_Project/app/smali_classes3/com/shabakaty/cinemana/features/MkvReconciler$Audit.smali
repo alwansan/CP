@@ -23,9 +23,11 @@
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileAll()V
     :try_end_audit
     .catch Ljava/lang/Throwable; {:try_start_audit .. :try_end_audit} :audit_exception
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->auditFinished()V
     return-void
 
     :audit_exception
     move-exception v0
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->auditFinished()V
     return-void
 .end method

@@ -49,8 +49,12 @@
 
 # virtual methods
 .method public call()Ljava/lang/Object;
-    .locals 4
+    .locals 5
 
+    sget-object v2, Lcom/shabakaty/cinemana/ca1/Ui7;->app:Landroid/content/Context;
+    iget-object v3, p0, Lcom/shabakaty/downloader/kw0$l;->r:Ljava/lang/String;
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->capturePath(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
     .line 1
     iget-object v0, p0, Lcom/shabakaty/downloader/kw0$l;->s:Lcom/shabakaty/downloader/kw0;
 
@@ -114,6 +118,7 @@
     if-eqz v2, :try_end_episode_sidecar_cleanup
     iget-object v3, p0, Lcom/shabakaty/downloader/kw0$l;->r:Ljava/lang/String;
     invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleted(Landroid/content/Context;Ljava/lang/String;)V
+    invoke-static {v2, v4}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deletedPath(Landroid/content/Context;Ljava/lang/String;)V
     :try_end_episode_sidecar_cleanup
     .catch Ljava/lang/Throwable; {:try_start_episode_sidecar_cleanup .. :try_end_episode_sidecar_cleanup} :episode_sidecar_cleanup_exception
     goto :episode_sidecar_cleanup_done

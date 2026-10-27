@@ -4,6 +4,8 @@
 
 
 # static fields
+.field private static AUDIT_PENDING:Z
+
 .field private static final CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
 
 .field private static final ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
@@ -71,61 +73,18 @@
 .end method
 
 .method public static declared-synchronized reconcileAll()V
-    .locals 5
-
+    .locals 3
     sget-object v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
-
     invoke-virtual {v0}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
-
     move-result-object v0
-
-    check-cast v0, Landroid/content/Context;
-
-    if-eqz v0, :cond_0
-
-    new-instance v1, Ljava/io/File;
-
+    if-eqz v0, :all_done
+    new-instance v0, Ljava/io/File;
     invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
-
-    move-result-object v2
-
-    const-string v3, "Cinemana/work"
-
-    invoke-direct {v1, v2, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
-
-    # One shallow MP4 audit per interval; full recursive recovery is done once by the guarded repair pass.
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
-
-    sget-object v1, Lcom/shabakaty/cinemana/features/MkvReconciler;->ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
-
-    invoke-virtual {v1}, Ljava/util/concurrent/ConcurrentHashMap;->values()Ljava/util/Collection;
-
     move-result-object v1
-
-    invoke-interface {v1}, Ljava/util/Collection;->iterator()Ljava/util/Iterator;
-
-    move-result-object v1
-
-    :goto_0
-    invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
-
-    move-result v2
-
-    if-eqz v2, :cond_0
-
-    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
-
-    move-result-object v2
-
-    check-cast v2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
-
-    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)V
-
-    goto :goto_0
-
-    :cond_0
+    const-string v2, "Cinemana/work"
+    invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
+    :all_done
     return-void
 .end method
 
@@ -531,7 +490,7 @@
     invoke-virtual {v1, v0, p1}, Ljava/util/concurrent/ConcurrentHashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
     :cond_0
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
 
     :cond_1
     return-object p1
@@ -581,19 +540,12 @@
 
     invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
-    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
+    invoke-virtual {v0}, Ljava/io/File;->mkdirs()Z
 
-    new-instance v5, Lcom/shabakaty/cinemana/features/MkvReconciler$Audit;
-    invoke-direct {v5}, Lcom/shabakaty/cinemana/features/MkvReconciler$Audit;-><init>()V
-    sget-object v4, Lcom/shabakaty/cinemana/features/MkvReconciler;->SCHEDULER:Ljava/util/concurrent/ScheduledExecutorService;
-    const-wide/16 v6, 0x5
-    const-wide/16 v8, 0x1e
-    sget-object v10, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
-    invoke-interface/range {v4 .. v10}, Ljava/util/concurrent/ScheduledExecutorService;->scheduleWithFixedDelay(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
-    move-result-object v5
-
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchRoot(Ljava/io/File;)V
 
     :cond_1
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
     return-void
 .end method
 
@@ -900,71 +852,28 @@
 .end method
 
 .method private static scanExistingRoot(Ljava/io/File;)V
-    .locals 15
-
-    if-eqz p0, :scan_root_done
-
-    invoke-virtual {p0}, Ljava/io/File;->isDirectory()Z
-
-    move-result v0
-
-    if-eqz v0, :scan_root_done
-
+    .locals 7
     invoke-virtual {p0}, Ljava/io/File;->listFiles()[Ljava/io/File;
-
     move-result-object v0
-
-    if-eqz v0, :scan_root_done
-
-    new-instance v14, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;
-    invoke-direct {v14}, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;-><init>()V
-    invoke-static {v0, v14}, Ljava/util/Arrays;->sort([Ljava/lang/Object;Ljava/util/Comparator;)V
-
-    array-length v1, v0
-
-    const/4 v2, 0x0
-
-    :scan_root_loop
-    if-ge v2, v1, :scan_root_done
-
-    aget-object v3, v0, v2
-
-    invoke-virtual {v3}, Ljava/io/File;->isFile()Z
-
-    move-result v4
-
-    if-eqz v4, :scan_root_next
-
-    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
-
-    move-result-object v4
-
-    sget-object v5, Ljava/util/Locale;->US:Ljava/util/Locale;
-
-    invoke-virtual {v4, v5}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
-
-    move-result-object v4
-
-        :scan_root_check_mp4
-    # Do not treat interrupted muxer temporary outputs as valid source MP4s.
-    const-string v5, ".cnm-recovery.tmp.mp4"
-    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-    move-result v6
-    if-nez v6, :scan_root_next
-    # Automatic filesystem audit only dispatches finalized MP4 sources.
-    # Subtitle completion remains handled by the dependency pipeline; no recursive DB scan per subtitle.
-    const-string v5, ".mp4"
-    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-    move-result v6
-    if-eqz v6, :scan_root_next
-
-    :scan_root_trigger
-    invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-
-    move-result-object v4
-
-    # Record MP4s even when no matching download-row identity can be recovered.
-    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    if-eqz v0, :ordered_done
+    new-instance v1, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;
+    invoke-direct {v1}, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;-><init>()V
+    invoke-static {v0, v1}, Ljava/util/Arrays;->sort([Ljava/lang/Object;Ljava/util/Comparator;)V
+    const/4 v1, 0x0
+    array-length v2, v0
+    sget-object v3, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
+    invoke-virtual {v3}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
+    move-result-object v3
+    check-cast v3, Landroid/content/Context;
+    if-eqz v3, :ordered_done
+    :ordered_next
+    if-ge v1, v2, :ordered_done
+    aget-object v4, v0, v1
+    add-int/lit8 v1, v1, 0x1
+    invoke-virtual {v4}, Ljava/io/File;->isFile()Z
+    move-result v5
+    if-eqz v5, :ordered_next
+    invoke-virtual {v4}, Ljava/io/File;->getName()Ljava/lang/String;
     move-result-object v5
     sget-object v6, Ljava/util/Locale;->US:Ljava/util/Locale;
     invoke-virtual {v5, v6}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
@@ -972,32 +881,15 @@
     const-string v6, ".mp4"
     invoke-virtual {v5, v6}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v6
-    if-eqz v6, :scan_root_reconcile
-
-    sget-object v5, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
-    invoke-virtual {v5}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
-    move-result-object v5
-    check-cast v5, Landroid/content/Context;
-    if-eqz v5, :scan_root_reconcile
-
-    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v6
-    if-eqz v6, :scan_root_reconcile
-    invoke-virtual {v6}, Ljava/lang/String;->isEmpty()Z
-    move-result v7
-    if-nez v7, :scan_root_reconcile
-
-    invoke-static {v5, v6, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordDiscovery(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
-
-    :scan_root_reconcile
-    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
-
-    :scan_root_next
-    add-int/lit8 v2, v2, 0x1
-
-    goto :scan_root_loop
-
-    :scan_root_done
+    if-eqz v6, :ordered_next
+    const-string v6, ".cnm-recovery.tmp.mp4"
+    invoke-virtual {v5, v6}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v6
+    if-nez v6, :ordered_next
+    # Resolve and dispatch this concrete source now; do not rediscover it with a recursive token scan.
+    invoke-static {v3, v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
+    goto :ordered_next
+    :ordered_done
     return-void
 .end method
 
@@ -1075,7 +967,7 @@
     if-nez v9, :find_path_loop
 
     const-string v9, "readCombinedById"
-    filled-new-array {v4, v8}, [Ljava/lang/Object;
+    filled-new-array {v2, v8}, [Ljava/lang/Object;
     move-result-object v12
     invoke-static {v9, v12}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v9
@@ -1085,6 +977,7 @@
     move-result-object v12
     if-eqz v12, :find_path_loop
 
+    check-cast v12, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
     move-object v0, v12
     goto :try_end_find_path
 
@@ -1115,8 +1008,8 @@
     if-eqz v1, :find_db_item_done
 
     const-string v1, "getDownloadsDao"
-    const/4 v2, 0x0
-    new-array v2, v2, [Ljava/lang/Object;
+    filled-new-array {p0, p0}, [Ljava/lang/Object;
+    move-result-object v2
     invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v1
     if-eqz v1, :find_db_item_done
@@ -1174,7 +1067,7 @@
     if-nez v9, :find_db_row_loop
 
     const-string v9, "readCombinedById"
-    filled-new-array {v3, v8}, [Ljava/lang/Object;
+    filled-new-array {v1, v8}, [Ljava/lang/Object;
     move-result-object v10
     invoke-static {v9, v10}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v9
@@ -1198,6 +1091,7 @@
     move-result v11
     if-eqz v11, :find_db_row_loop
 
+    check-cast v10, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
     move-object v0, v10
     goto :try_end_find_db_item
 
@@ -1214,7 +1108,7 @@
 .end method
 
 .method public static reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
-    .locals 8
+    .locals 10
 
     if-eqz p0, :disk_video_rejected
     if-eqz p1, :disk_video_rejected
@@ -1241,6 +1135,15 @@
     move-result v2
     if-nez v2, :disk_video_rejected
 
+    sget-object v2, Lcom/shabakaty/cinemana/features/MkvReconciler;->ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
+    invoke-virtual {v2, v1}, Ljava/util/concurrent/ConcurrentHashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v2
+    check-cast v2, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    if-eqz v2, :disk_video_resolve_mapping
+    invoke-static {p0, p1, v2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->matchesDiskItem(Landroid/content/Context;Ljava/io/File;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;)Z
+    move-result v3
+    if-nez v3, :disk_video_have_mapping
+    :disk_video_resolve_mapping
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->findItemForDiskSource(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
     move-result-object v2
     if-eqz v2, :disk_video_try_token_mapping
@@ -1252,6 +1155,8 @@
     if-eqz v2, :disk_video_mapping_wait
 
     :disk_video_have_mapping
+    sget-object v3, Lcom/shabakaty/cinemana/features/MkvReconciler;->ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
+    invoke-virtual {v3, v1, v2}, Ljava/util/concurrent/ConcurrentHashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
     invoke-static {p0, v2, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
     move-result v3
     if-eqz v3, :disk_video_rejected
@@ -1275,6 +1180,8 @@
 
     :disk_video_exception
     move-exception v0
+    const-string v1, "DISK_VIDEO_RECONCILE_FAILED"
+    invoke-static {p0, v1, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     const/4 v0, 0x0
     return v0
 .end method
@@ -1452,6 +1359,12 @@
     if-eqz p2, :disk_one_no
 
     :try_start_disk_one
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->isItemActive(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :disk_one_check_source
+    const/4 v0, 0x1
+    return v0
+    :disk_one_check_source
     iget-object v0, p1, Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;->path:Ljava/lang/String;
     invoke-static {p2, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
     move-result v0
@@ -1485,9 +1398,9 @@
     cmp-long v5, v5, v7
     if-lez v5, :disk_one_check_manifest
 
-    invoke-static {p0, v2}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
-    const/4 v0, 0x1
+    # A file's presence/size alone is insufficient: the database must confirm this exact output.
+    invoke-static {p0, p1, p2, v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->finishPromotedSource(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Z
+    move-result v0
     return v0
 
     :disk_one_check_manifest
@@ -1823,4 +1736,100 @@
     :scan_disk_tree_done
     const/4 v0, 0x0
     return-object v0
+.end method
+
+# One coalesced timer. When work is empty no polling task remains scheduled.
+.method public static requestAudit()V
+    .locals 2
+    const-wide/16 v0, 0xfa
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scheduleAudit(J)V
+    return-void
+.end method
+
+.method private static declared-synchronized scheduleAudit(J)V
+    .locals 5
+    sget-boolean v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->AUDIT_PENDING:Z
+    if-nez v0, :schedule_done
+    const/4 v0, 0x1
+    sput-boolean v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->AUDIT_PENDING:Z
+    :try_start_schedule
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->SCHEDULER:Ljava/util/concurrent/ScheduledExecutorService;
+    new-instance v1, Lcom/shabakaty/cinemana/features/MkvReconciler$Audit;
+    invoke-direct {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler$Audit;-><init>()V
+    move-wide v2, p0
+    sget-object v4, Ljava/util/concurrent/TimeUnit;->MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+    invoke-interface {v0, v1, v2, v3, v4}, Ljava/util/concurrent/ScheduledExecutorService;->schedule(Ljava/lang/Runnable;JLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+    :try_end_schedule
+    .catch Ljava/lang/Throwable; {:try_start_schedule .. :try_end_schedule} :schedule_failed
+    goto :schedule_done
+    :schedule_failed
+    move-exception v0
+    const/4 v0, 0x0
+    sput-boolean v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->AUDIT_PENDING:Z
+    :schedule_done
+    return-void
+.end method
+
+.method public static declared-synchronized auditFinished()V
+    .locals 2
+    const/4 v0, 0x0
+    sput-boolean v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->AUDIT_PENDING:Z
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->hasWork()Z
+    move-result v0
+    if-eqz v0, :audit_idle
+    const-wide/16 v0, 0x1388
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scheduleAudit(J)V
+    :audit_idle
+    return-void
+.end method
+
+.method private static hasWork()Z
+    .locals 7
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvExporter;->hasActiveJobs()Z
+    move-result v0
+    if-nez v0, :has_work_yes
+    new-instance v0, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v1
+    const-string v2, "Cinemana/work"
+    invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v0}, Ljava/io/File;->listFiles()[Ljava/io/File;
+    move-result-object v0
+    if-eqz v0, :has_work_no
+    const/4 v1, 0x0
+    array-length v2, v0
+    :has_work_next
+    if-ge v1, v2, :has_work_no
+    aget-object v3, v0, v1
+    add-int/lit8 v1, v1, 0x1
+    invoke-virtual {v3}, Ljava/io/File;->isFile()Z
+    move-result v4
+    if-eqz v4, :has_work_next
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v3
+    sget-object v4, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v3, v4}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v3
+    const-string v4, ".mp4"
+    invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v4
+    if-nez v4, :has_work_yes
+    const-string v4, ".mp4.temp"
+    invoke-virtual {v3, v4}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v4
+    if-nez v4, :has_work_yes
+    goto :has_work_next
+    :has_work_yes
+    const/4 v0, 0x1
+    return v0
+    :has_work_no
+    const/4 v0, 0x0
+    return v0
+.end method
+
+.method public static forgetToken(Ljava/lang/String;)V
+    .locals 1
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
+    invoke-virtual {v0, p0}, Ljava/util/concurrent/ConcurrentHashMap;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+    return-void
 .end method

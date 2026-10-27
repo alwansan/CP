@@ -642,7 +642,7 @@
     return-object p0
 .end method
 
-.method static model(Ljava/lang/String;)Ljava/lang/Object;
+.method public static model(Ljava/lang/String;)Ljava/lang/Object;
     .locals 8
     .annotation system Ldalvik/annotation/Throws;
         value = {

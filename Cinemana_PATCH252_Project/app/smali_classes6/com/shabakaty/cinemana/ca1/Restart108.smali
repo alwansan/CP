@@ -1368,7 +1368,7 @@
     return-object v0
 .end method
 
-.method static varargs exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+.method public static varargs exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     .locals 1
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -1390,7 +1390,7 @@
     return-object p0
 .end method
 
-.method static get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+.method public static get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
     .locals 0
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -2236,7 +2236,7 @@
     throw p1
 .end method
 
-.method static mp4Complete(Ljava/lang/Object;Ljava/io/File;)Z
+.method public static mp4Complete(Ljava/lang/Object;Ljava/io/File;)Z
     .locals 12
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -6110,7 +6110,7 @@
     return-object p0
 .end method
 
-.method static str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+.method public static str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
     .locals 0
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -7032,7 +7032,7 @@
     return p0
 .end method
 
-.method static declared-synchronized wake()V
+.method public static declared-synchronized wake()V
     .locals 8
 
     const-class v0, Lcom/shabakaty/cinemana/ca1/Restart108;

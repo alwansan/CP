@@ -24,6 +24,11 @@
     :try_start_second_pass
     iget-object v0, p0, Lcom/shabakaty/cinemana/features/MkvRepairStartup;->context:Landroid/content/Context;
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverPending(Landroid/content/Context;)I
+    move-result v1
+    if-lez v1, :startup_sidecars_done
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
+    :startup_sidecars_done
     :try_end_second_pass
     .catch Ljava/lang/Throwable; {:try_start_second_pass .. :try_end_second_pass} :second_pass_failed
 

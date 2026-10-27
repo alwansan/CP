@@ -3319,7 +3319,7 @@
     return-object p0
 .end method
 
-.method static subtitles(Ljava/lang/Object;)Ljava/util/List;
+.method public static subtitles(Ljava/lang/Object;)Ljava/util/List;
     .locals 6
     .annotation system Ldalvik/annotation/Signature;
         value = {

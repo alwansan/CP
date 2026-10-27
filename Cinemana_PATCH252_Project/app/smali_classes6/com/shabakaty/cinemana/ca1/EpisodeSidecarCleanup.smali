@@ -75,160 +75,235 @@
     return-void
 .end method
 
-.method public static deleted(Landroid/content/Context;Ljava/lang/String;)V
-    .locals 16
-    move-object/from16 v14, p0
-    move-object/from16 v15, p1
-    if-eqz v14, :sidecar_delete_return
-    if-eqz v15, :sidecar_delete_return
-    invoke-virtual {v15}, Ljava/lang/String;->isEmpty()Z
-    move-result v0
-    if-nez v0, :sidecar_delete_return
 
-    :try_start_sidecar_delete
+# Used only after a confirmed user deletion. No recovery scan calls this method.
+.method public static deleted(Landroid/content/Context;Ljava/lang/String;)V
+    .locals 6
+    if-eqz p0, :deleted_done
+    if-eqz p1, :deleted_done
+    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :deleted_done
+    :try_start_deleted
     new-instance v0, Ljava/io/File;
     invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
     move-result-object v1
     const-string v2, "Cinemana/work/data/cnm_recovery"
     invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    invoke-virtual {v0}, Ljava/io/File;->isDirectory()Z
-    move-result v1
-    if-eqz v1, :sidecar_delete_done
     invoke-virtual {v0}, Ljava/io/File;->listFiles()[Ljava/io/File;
-    move-result-object v1
-    if-eqz v1, :sidecar_delete_done
-    array-length v2, v1
-    const/4 v3, 0x0
-    const/4 v4, 0x0
-    const/16 v5, 0x3e8
-
-    :sidecar_delete_loop
-    if-ge v3, v2, :sidecar_delete_done
-    if-ge v4, v5, :sidecar_delete_done
-    aget-object v6, v1, v3
-    add-int/lit8 v3, v3, 0x1
-    if-eqz v6, :sidecar_delete_loop
-    invoke-virtual {v6}, Ljava/io/File;->isFile()Z
-    move-result v7
-    if-eqz v7, :sidecar_delete_loop
-    invoke-virtual {v6}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v7
-    const-string v8, ".json"
-    invoke-virtual {v7, v8}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-    move-result v8
-    if-eqz v8, :sidecar_delete_loop
-    add-int/lit8 v4, v4, 0x1
-    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->readText(Ljava/io/File;)Ljava/lang/String;
-    move-result-object v8
-    invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
-    move-result v9
-    if-nez v9, :sidecar_delete_loop
-    new-instance v9, Lorg/json/JSONObject;
-    invoke-direct {v9, v8}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
-    const-string v10, "format"
-    invoke-virtual {v9, v10}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v10
-    const-string v11, "com.cinemana.recovery"
-    invoke-virtual {v11, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v10
-    if-eqz v10, :sidecar_delete_loop
-
-    # Match only this episode: the downloaded-item id, stable token, or download task id must agree.
-    const-string v10, "id"
-    invoke-virtual {v9, v10}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v10
-    invoke-virtual {v15, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v11
-    if-nez v11, :sidecar_delete_match
-    const-string v10, "token"
-    invoke-virtual {v9, v10}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v10
-    invoke-virtual {v15, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v11
-    if-nez v11, :sidecar_delete_match
-    const-string v10, "downloadTaskId"
-    invoke-virtual {v9, v10}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v10
-    invoke-virtual {v15, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v11
-    if-eqz v11, :sidecar_delete_loop
-
-    :sidecar_delete_match
-    const-string v10, "token"
-    invoke-virtual {v9, v10}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v10
-    invoke-virtual {v10}, Ljava/lang/String;->isEmpty()Z
-    move-result v11
-    if-eqz v11, :sidecar_token_ready
-    invoke-virtual {v6}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v10
-    invoke-virtual {v10}, Ljava/lang/String;->length()I
-    move-result v11
-    const/4 v12, 0x5
-    sub-int/2addr v11, v12
-    if-lez v11, :sidecar_delete_loop
-    const/4 v12, 0x0
-    invoke-virtual {v10, v12, v11}, Ljava/lang/String;->substring(II)Ljava/lang/String;
-    move-result-object v10
-
-    :sidecar_token_ready
-    invoke-virtual {v10}, Ljava/lang/String;->isEmpty()Z
-    move-result v11
-    if-nez v11, :sidecar_delete_loop
-
-    # Do not retire anything unless the sidecar itself was deleted successfully.
-    invoke-virtual {v6}, Ljava/io/File;->delete()Z
-    move-result v11
-    if-eqz v11, :sidecar_delete_loop
-
-    const-string v7, ".mp4state"
-    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
-    const-string v7, ".tmp"
-    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
-    const-string v7, ".bak"
-    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
-    invoke-static {v14, v10}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
-    invoke-static {v14, v10}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->clearToken(Landroid/content/Context;Ljava/lang/String;)V
-
-    # Per-episode logs are token-specific; leave the shared repair/audit logs intact.
-    new-instance v11, Ljava/io/File;
-    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
-    move-result-object v12
-    const-string v13, "Cinemana/work/log"
-    invoke-direct {v11, v12, v13}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    invoke-virtual {v11}, Ljava/io/File;->listFiles()[Ljava/io/File;
-    move-result-object v12
-    if-eqz v12, :sidecar_delete_done
-    const/4 v13, 0x0
-    array-length v0, v12
-    :episode_log_loop
-    if-ge v13, v0, :sidecar_delete_done
-    aget-object v8, v12, v13
-    add-int/lit8 v13, v13, 0x1
-    if-eqz v8, :episode_log_loop
-    invoke-virtual {v8}, Ljava/io/File;->isFile()Z
-    move-result v1
-    if-eqz v1, :episode_log_loop
-    invoke-virtual {v8}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v1
-    invoke-virtual {v1, v10}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v2
-    if-eqz v2, :episode_log_loop
-    const-string v2, ".mkv.log"
-    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-    move-result v2
-    if-eqz v2, :episode_log_loop
-    invoke-virtual {v8}, Ljava/io/File;->delete()Z
-    goto :episode_log_loop
-
-    goto :sidecar_delete_loop
-
-    :sidecar_delete_done
-    :try_end_sidecar_delete
-    .catch Ljava/lang/Throwable; {:try_start_sidecar_delete .. :try_end_sidecar_delete} :sidecar_delete_exception
-    goto :sidecar_delete_return
-    :sidecar_delete_exception
+    move-result-object v0
+    if-eqz v0, :deleted_done
+    const/4 v1, 0x0
+    array-length v2, v0
+    :deleted_next
+    if-ge v1, v2, :deleted_done
+    aget-object v3, v0, v1
+    add-int/lit8 v1, v1, 0x1
+    invoke-static {v3, p1}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->matchingToken(Ljava/io/File;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
+    if-eqz v4, :deleted_next
+    invoke-static {p0, v4}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->retireToken(Landroid/content/Context;Ljava/lang/String;)V
+    goto :deleted_next
+    :try_end_deleted
+    .catch Ljava/lang/Throwable; {:try_start_deleted .. :try_end_deleted} :deleted_failed
+    :deleted_failed
     move-exception v0
-    :sidecar_delete_return
+    :deleted_done
     return-void
+.end method
+
+.method private static matchingToken(Ljava/io/File;Ljava/lang/String;)Ljava/lang/String;
+    .locals 6
+    :try_start_matching
+    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v0
+    const-string v1, ".json"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :matching_none
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->readText(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v1
+    new-instance v2, Lorg/json/JSONObject;
+    invoke-direct {v2, v1}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+    const-string v1, "format"
+    invoke-virtual {v2, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    const-string v3, "com.cinemana.recovery"
+    invoke-virtual {v3, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v1
+    if-eqz v1, :matching_none
+    const-string v1, "token"
+    invoke-virtual {v2, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v5, ".json"
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v0, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-eqz v4, :matching_none
+    invoke-virtual {p1, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-nez v4, :matching_found
+    const-string v1, "id"
+    invoke-virtual {v2, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {p1, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-nez v4, :matching_found
+    const-string v1, "downloadTaskId"
+    invoke-virtual {v2, v1}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {p1, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-eqz v4, :matching_none
+    :matching_found
+    return-object v3
+    :try_end_matching
+    .catch Ljava/lang/Throwable; {:try_start_matching .. :try_end_matching} :matching_failed
+    :matching_failed
+    move-exception v0
+    :matching_none
+    const/4 v0, 0x0
+    return-object v0
+.end method
+
+.method public static deletedPath(Landroid/content/Context;Ljava/lang/String;)V
+    .locals 8
+    if-eqz p0, :path_done
+    if-eqz p1, :path_done
+    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :path_done
+    :try_start_deleted_path
+    new-instance v0, Ljava/io/File;
+    invoke-direct {v0, p1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v0}, Ljava/io/File;->exists()Z
+    move-result v1
+    if-nez v1, :path_done
+    invoke-virtual {v0}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
+    move-result-object v7
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :path_proofs
+    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->retireToken(Landroid/content/Context;Ljava/lang/String;)V
+    :path_proofs
+    new-instance v0, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v1
+    const-string v2, "Cinemana/work/data/mkv-proofs"
+    invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v0}, Ljava/io/File;->listFiles()[Ljava/io/File;
+    move-result-object v0
+    if-eqz v0, :path_done
+    const/4 v1, 0x0
+    array-length v2, v0
+    :proof_next
+    if-ge v1, v2, :path_done
+    aget-object v3, v0, v1
+    add-int/lit8 v1, v1, 0x1
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    const-string v5, ".path"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :proof_next
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->readText(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v5
+    const-string v6, "\n"
+    invoke-virtual {v5, v6}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
+    move-result-object v5
+    array-length v6, v5
+    if-lez v6, :proof_next
+    const/4 v6, 0x0
+    aget-object v5, v5, v6
+    invoke-virtual {v7, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v5
+    if-eqz v5, :proof_next
+    invoke-virtual {v4}, Ljava/lang/String;->length()I
+    move-result v5
+    add-int/lit8 v5, v5, -0x5
+    invoke-virtual {v4, v6, v5}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    move-result-object v4
+    invoke-static {p0, v4}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->retireToken(Landroid/content/Context;Ljava/lang/String;)V
+    goto :proof_next
+    :try_end_deleted_path
+    .catch Ljava/lang/Throwable; {:try_start_deleted_path .. :try_end_deleted_path} :path_failed
+    :path_failed
+    move-exception v0
+    :path_done
+    return-void
+.end method
+
+.method private static retireToken(Landroid/content/Context;Ljava/lang/String;)V
+    .locals 5
+    const-string v0, "[A-Za-z0-9]+"
+    invoke-virtual {p1, v0}, Ljava/lang/String;->matches(Ljava/lang/String;)Z
+    move-result v0
+    if-eqz v0, :retire_done
+    new-instance v0, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v1
+    const-string v2, "Cinemana/work/data/cnm_recovery"
+    invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    new-instance v1, Ljava/io/File;
+    invoke-direct {v1, v0, p1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const-string v2, ".json.tmp"
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
+    const-string v2, ".json.bak"
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
+    const-string v2, ".json.mp4state"
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
+    const-string v2, ".json"
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
+    new-instance v0, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v1
+    const-string v2, "Cinemana/work/data/mkv-proofs"
+    invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    new-instance v1, Ljava/io/File;
+    invoke-direct {v1, v0, p1}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const-string v2, ".path"
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleteSibling(Ljava/io/File;Ljava/lang/String;)V
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->clear(Landroid/content/Context;Ljava/lang/String;)V
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->clearToken(Landroid/content/Context;Ljava/lang/String;)V
+    invoke-static {p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->forgetToken(Ljava/lang/String;)V
+    :retire_done
+    return-void
+.end method
+
+.method public static capturePath(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
+    .locals 5
+    if-eqz p0, :capture_none
+    if-eqz p1, :capture_none
+    :try_start_capture
+    const-string v0, "getDownloadsDao"
+    filled-new-array {p0, p0}, [Ljava/lang/Object;
+    move-result-object v1
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v0
+    const-string v1, "readCombinedById"
+    filled-new-array {v0, p1}, [Ljava/lang/Object;
+    move-result-object v2
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v0
+    const-string v1, "cinemanaDownloadItem"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v0
+    const-string v1, "path"
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    :try_end_capture
+    .catch Ljava/lang/Throwable; {:try_start_capture .. :try_end_capture} :capture_failed
+    return-object v0
+    :capture_failed
+    move-exception v0
+    :capture_none
+    const/4 v0, 0x0
+    return-object v0
 .end method

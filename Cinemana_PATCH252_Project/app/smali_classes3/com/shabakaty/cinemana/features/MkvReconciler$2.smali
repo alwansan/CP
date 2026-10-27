@@ -7,7 +7,7 @@
 .method constructor <init>(Ljava/lang/String;)V
     .locals 1
 
-    const/16 v0, 0x88
+    const/16 v0, 0x388
 
     invoke-direct {p0, p1, v0}, Landroid/os/FileObserver;-><init>(Ljava/lang/String;I)V
 
@@ -32,7 +32,7 @@
     invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v1
     if-eqz v1, :watch_final_mp4
-    invoke-static {p2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
     goto :cond_1
 
     :watch_final_mp4
@@ -40,8 +40,17 @@
     const-string v0, ".mp4"
     invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v1
+    if-nez v1, :wake_ordered_audit
+    const-string v0, ".srt"
+    invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
+    if-nez v1, :wake_ordered_audit
+    const-string v0, ".ass"
+    invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
     if-eqz v1, :cond_1
-    invoke-static {p2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
+    :wake_ordered_audit
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
 
     :cond_1
     return-void

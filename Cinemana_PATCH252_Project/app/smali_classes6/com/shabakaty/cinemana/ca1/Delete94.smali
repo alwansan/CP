@@ -1041,6 +1041,12 @@
     move-object/from16 v15, p0
     move-object/from16 v16, v5
     invoke-static/range {v15 .. v16}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deleted(Landroid/content/Context;Ljava/lang/String;)V
+    move-object/from16 v15, p1
+    const-string v16, "path"
+    invoke-static/range {v15 .. v16}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v16
+    move-object/from16 v15, p0
+    invoke-static/range {v15 .. v16}, Lcom/shabakaty/cinemana/ca1/EpisodeSidecarCleanup;->deletedPath(Landroid/content/Context;Ljava/lang/String;)V
     :try_end_episode_sidecar_cleanup
     .catch Ljava/lang/Throwable; {:try_start_episode_sidecar_cleanup .. :try_end_episode_sidecar_cleanup} :episode_sidecar_cleanup_exception
     goto :episode_sidecar_cleanup_done

@@ -453,6 +453,9 @@
     instance-of v8, v2, Ljava/lang/String;
     if-eqz v8, :seed_return
     check-cast v2, Ljava/lang/String;
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->isVideoPath(Ljava/lang/String;)Z
+    move-result v8
+    if-eqz v8, :seed_return
     invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v3
     if-eqz v3, :seed_return
@@ -638,6 +641,7 @@
 
 .method public static scheduleDownloadComplete(Ljava/lang/Object;I)V
     .locals 3
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
     if-eqz p0, :schedule_download_done
     :try_start_schedule_download
     new-instance v0, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule$DownloadCompleteTask;
@@ -669,6 +673,9 @@
     instance-of v3, v2, Ljava/lang/String;
     if-eqz v3, :complete_return
     check-cast v2, Ljava/lang/String;
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->isVideoPath(Ljava/lang/String;)Z
+    move-result v3
+    if-eqz v3, :complete_return
     new-instance v4, Ljava/io/File;
     invoke-direct {v4, v2}, Ljava/io/File;-><init>(Ljava/lang/String;)V
     invoke-virtual {v4}, Ljava/io/File;->isFile()Z
@@ -1889,3 +1896,54 @@
     return v10
 .end method
 
+
+.method private static isVideoPath(Ljava/lang/String;)Z
+    .locals 2
+    if-eqz p0, :not_video
+    sget-object v0, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {p0, v0}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v0
+    const-string v1, ".mp4"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
+    if-nez v1, :is_video
+    const-string v1, ".mp4.temp"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v1
+    if-nez v1, :is_video
+    :not_video
+    const/4 v0, 0x0
+    return v0
+    :is_video
+    const/4 v0, 0x1
+    return v0
+.end method
+
+.method public static finishPromotedSource(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Z
+    .locals 3
+    :try_start_finish_promoted
+    invoke-static {p0, p1, p3}, Lcom/shabakaty/cinemana/ca1/Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z
+    move-result v0
+    if-eqz v0, :finish_promoted_no
+    invoke-static {p0, p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->prepare(Landroid/content/Context;Ljava/io/File;)V
+    invoke-static {p3, p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
+    move-result v0
+    if-eqz v0, :finish_promoted_no
+    invoke-virtual {p2}, Ljava/io/File;->delete()Z
+    invoke-virtual {p2}, Ljava/io/File;->exists()Z
+    move-result v0
+    if-nez v0, :finish_promoted_no
+    invoke-static {p3, p2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
+    move-result v0
+    if-eqz v0, :finish_promoted_no
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+    const/4 v0, 0x1
+    return v0
+    :try_end_finish_promoted
+    .catch Ljava/lang/Throwable; {:try_start_finish_promoted .. :try_end_finish_promoted} :finish_promoted_failed
+    :finish_promoted_failed
+    move-exception v0
+    :finish_promoted_no
+    const/4 v0, 0x0
+    return v0
+.end method

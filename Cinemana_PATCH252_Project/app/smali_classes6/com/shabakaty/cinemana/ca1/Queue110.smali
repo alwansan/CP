@@ -3299,7 +3299,7 @@
     throw p0
 .end method
 
-.method static scan()V
+.method public static scan()V
     .locals 2
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -4386,4 +4386,38 @@
 
     :goto_0
     return v1
+.end method
+
+# Do not revive deleted/paused tasks or read a source still owned by a running native download.
+.method public static mayRepairCompleted(Ljava/lang/Object;)Z
+    .locals 5
+    if-eqz p0, :repair_not_allowed
+    :try_start_may_repair
+    const-string v0, "id"
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/Restart108;->deleted(Ljava/lang/String;)Z
+    move-result v1
+    if-nez v1, :repair_not_allowed
+    const-string v0, "downloadTaskId"
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/Restart108;->number(Ljava/lang/Object;Ljava/lang/String;)J
+    move-result-wide v1
+    long-to-int v0, v1
+    if-eqz v0, :repair_allowed
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/Queue110;->isPaused(I)Z
+    move-result v1
+    if-nez v1, :repair_not_allowed
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/Restart108;->active(I)Z
+    move-result v1
+    if-nez v1, :repair_not_allowed
+    :repair_allowed
+    const/4 v0, 0x1
+    return v0
+    :try_end_may_repair
+    .catch Ljava/lang/Throwable; {:try_start_may_repair .. :try_end_may_repair} :may_repair_failed
+    :may_repair_failed
+    move-exception v0
+    :repair_not_allowed
+    const/4 v0, 0x0
+    return v0
 .end method
