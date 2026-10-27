@@ -1596,6 +1596,144 @@
     return v0
 .end method
 
+.method private static identityFieldMatches(Lorg/json/JSONObject;Ljava/lang/Object;Ljava/lang/String;)Z
+    .locals 5
+    if-eqz p0, :identity_field_match
+    if-eqz p1, :identity_field_match
+    if-eqz p2, :identity_field_match
+
+    invoke-virtual {p0, p2}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    if-eqz v0, :identity_field_match
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
+    move-result v1
+    if-eqz v1, :identity_field_actual
+
+    :identity_field_match
+    const/4 v0, 0x1
+    return v0
+
+    :identity_field_actual
+    invoke-static {p1, p2}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    if-eqz v1, :identity_field_match
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :identity_field_match
+    invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    return v0
+.end method
+
+.method public static matchesItemIdentity(Ljava/io/File;Ljava/lang/Object;)Z
+    .locals 14
+    move-object/from16 v12, p0
+    move-object/from16 v13, p1
+    const/4 v0, 0x0
+    if-eqz v12, :matches_item_identity_done
+    if-eqz v13, :matches_item_identity_done
+
+    :try_start_matches_item_identity
+    invoke-virtual {v12}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v1
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    if-eqz v2, :matches_item_identity_done
+    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
+    move-result v3
+    if-nez v3, :matches_item_identity_done
+
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
+    move-result-object v3
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v4
+    if-nez v4, :matches_item_identity_done
+    new-instance v4, Lorg/json/JSONObject;
+    invoke-direct {v4, v3}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+
+    const-string v5, "format"
+    invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    const-string v6, "com.cinemana.recovery"
+    invoke-virtual {v6, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+
+    const-string v5, "token"
+    invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    invoke-virtual {v2, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+
+    const-string v5, "sourcePath"
+    invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    invoke-static {v5}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    invoke-virtual {v2, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+
+    const-string v5, "identity"
+    invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optJSONObject(Ljava/lang/String;)Lorg/json/JSONObject;
+    move-result-object v4
+    if-eqz v4, :matches_item_identity_done
+
+    # Item ID is the primary match. Any additional fields present on both sides must also agree.
+    const-string v5, "id"
+    invoke-virtual {v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v6
+    if-eqz v6, :matches_item_identity_done
+    invoke-virtual {v6}, Ljava/lang/String;->isEmpty()Z
+    move-result v7
+    if-nez v7, :matches_item_identity_done
+    const-string v5, "id"
+    invoke-static {v13, v5}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v7
+    if-eqz v7, :matches_item_identity_done
+    invoke-virtual {v6, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v7
+    if-eqz v7, :matches_item_identity_done
+
+    const-string v5, "title"
+    invoke-static {v4, v13, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->identityFieldMatches(Lorg/json/JSONObject;Ljava/lang/Object;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+    const-string v5, "rootEpisode"
+    invoke-static {v4, v13, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->identityFieldMatches(Lorg/json/JSONObject;Ljava/lang/Object;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+    const-string v5, "season"
+    invoke-static {v4, v13, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->identityFieldMatches(Lorg/json/JSONObject;Ljava/lang/Object;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+    const-string v5, "episodeNumber"
+    invoke-static {v4, v13, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->identityFieldMatches(Lorg/json/JSONObject;Ljava/lang/Object;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+    const-string v5, "kind"
+    invoke-static {v4, v13, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->identityFieldMatches(Lorg/json/JSONObject;Ljava/lang/Object;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+    const-string v5, "qualityName"
+    invoke-static {v4, v13, v5}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->identityFieldMatches(Lorg/json/JSONObject;Ljava/lang/Object;Ljava/lang/String;)Z
+    move-result v5
+    if-eqz v5, :matches_item_identity_done
+
+    const/4 v0, 0x1
+    :try_end_matches_item_identity
+    .catch Ljava/lang/Throwable; {:try_start_matches_item_identity .. :try_end_matches_item_identity} :matches_item_identity_exception
+    goto :matches_item_identity_done
+    :matches_item_identity_exception
+    move-exception v1
+    const/4 v0, 0x0
+    :matches_item_identity_done
+    return v0
+.end method
+
 .method public static recoverPending(Landroid/content/Context;)I
     .locals 12
     move-object/from16 v11, p0
