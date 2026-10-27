@@ -1044,6 +1044,169 @@
     return v10
 .end method
 
+.method private static recoverSidecarOne(Landroid/content/Context;Ljava/io/File;)I
+    .locals 14
+    move-object/from16 v12, p0
+    move-object/from16 v13, p1
+    const/4 v0, 0x0
+    if-eqz v12, :recover_one_return
+    if-eqz v13, :recover_one_return
+
+    :try_start_recover_one
+    invoke-virtual {v13}, Ljava/io/File;->isFile()Z
+    move-result v1
+    if-eqz v1, :recover_one_return
+    invoke-virtual {v13}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v1
+    const-string v2, ".json"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :recover_one_return
+
+    invoke-static {v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/String;->isEmpty()Z
+    move-result v2
+    if-nez v2, :recover_one_return
+    new-instance v2, Lorg/json/JSONObject;
+    invoke-direct {v2, v1}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+
+    const-string v3, "format"
+    invoke-virtual {v2, v3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    const-string v4, "com.cinemana.recovery"
+    invoke-virtual {v4, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v3
+    if-eqz v3, :recover_one_return
+
+    const-string v3, "token"
+    invoke-virtual {v2, v3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/String;->isEmpty()Z
+    move-result v4
+    if-nez v4, :recover_one_return
+
+    # Reject files whose name does not match the embedded token; this avoids cross-episode cleanup.
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v4
+    const-string v5, ".json"
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v4
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v13}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v5
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v4
+    if-eqz v4, :recover_one_return
+
+    const-string v4, "sourcePath"
+    invoke-virtual {v2, v4}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
+    const-string v5, "phase"
+    invoke-virtual {v2, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v5
+    const-string v6, "MKV_FINALIZED"
+    invoke-virtual {v6, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :recover_one_unfinished
+
+    # Only the finalized state can trigger cleanup; cleanupCompleted validates output and source again.
+    const-string v6, "finalPath"
+    invoke-virtual {v2, v6}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v6
+    invoke-virtual {v6}, Ljava/lang/String;->isEmpty()Z
+    move-result v7
+    if-nez v7, :recover_one_return
+    new-instance v7, Ljava/io/File;
+    invoke-direct {v7, v6}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    new-instance v8, Ljava/io/File;
+    invoke-direct {v8, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-static {v7, v8}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
+    move-result v0
+    goto :try_end_recover_one
+
+    :recover_one_unfinished
+    invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
+    move-result v6
+    if-eqz v6, :recover_one_source
+    goto :recover_one_return
+
+    :recover_one_source
+    new-instance v6, Ljava/io/File;
+    invoke-direct {v6, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v6}, Ljava/io/File;->isFile()Z
+    move-result v7
+    if-eqz v7, :recover_one_token_only
+
+    # Use the existing exact-path/identity/subtitle guards; never directly start a new FFmpeg process.
+    invoke-static {v12, v6}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
+    move-result v0
+    if-nez v0, :try_end_recover_one
+
+    :recover_one_token_only
+    # If the source disappeared or the first mapping pass declined it, ask the existing token reconciler.
+    invoke-static {v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
+    const/4 v0, 0x1
+
+    :try_end_recover_one
+    .catch Ljava/lang/Throwable; {:try_start_recover_one .. :try_end_recover_one} :recover_one_exception
+    goto :recover_one_return
+    :recover_one_exception
+    move-exception v1
+    const/4 v0, 0x0
+    :recover_one_return
+    return v0
+.end method
+
+.method public static recoverPending(Landroid/content/Context;)I
+    .locals 12
+    move-object/from16 v11, p0
+    const/4 v0, 0x0
+    if-eqz v11, :recover_pending_return
+
+    :try_start_recover_pending
+    new-instance v1, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v2
+    const-string v3, "Cinemana/work/data/cnm_recovery"
+    invoke-direct {v1, v2, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v1}, Ljava/io/File;->isDirectory()Z
+    move-result v2
+    if-eqz v2, :recover_pending_return
+    invoke-virtual {v1}, Ljava/io/File;->listFiles()[Ljava/io/File;
+    move-result-object v2
+    if-eqz v2, :recover_pending_return
+    array-length v3, v2
+    const/4 v4, 0x0
+    const/4 v5, 0x0
+    const/16 v7, 0x1f4
+
+    :recover_pending_loop
+    if-ge v4, v3, :recover_pending_end
+    if-ge v5, v7, :recover_pending_end
+    aget-object v6, v2, v4
+    if-eqz v6, :recover_pending_next
+    invoke-static {v11, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverSidecarOne(Landroid/content/Context;Ljava/io/File;)I
+    move-result v8
+    add-int/2addr v0, v8
+    :recover_pending_next
+    add-int/lit8 v4, v4, 0x1
+    add-int/lit8 v5, v5, 0x1
+    goto :recover_pending_loop
+
+    :recover_pending_end
+    :try_end_recover_pending
+    .catch Ljava/lang/Throwable; {:try_start_recover_pending .. :try_end_recover_pending} :recover_pending_exception
+    goto :recover_pending_return
+    :recover_pending_exception
+    move-exception v9
+    :recover_pending_return
+    return v0
+.end method
+
 .method public static cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
     .locals 12
     move-object/from16 v0, p0
