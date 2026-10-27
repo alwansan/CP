@@ -105,12 +105,18 @@ jobs:
           grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
           grep -q 'RecoveryCapsule;->seed(Ljava/lang/Object;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
           grep -q 'RecoveryCapsule;->importFromMedia' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'RecoveryCapsule;->finalizeMkv' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'RecoveryCapsule;->scheduleDownloadComplete' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
+          grep -q 'RecoveryCapsule;->completeDownload' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule\$DownloadCompleteTask.smali
+          grep -q 'RecoveryCapsule\$DownloadCompleteTask' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'sourceComplete' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'downloadResumePolicy' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'dump_attachment:t:0' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'DownloadRepair129;->startup(Landroid/content/Context;)V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/CinemanaApplication.smali
           echo "Stable playback, subtitle sync, and UI fix wiring: PASS"
           echo "Disk MP4 recovery, queued-ledger protection, and startup second-pass wiring: PASS"
-          echo "Embedded MP4/MKV recovery capsule and media-side import wiring: PASS"
+          echo "Embedded MP4/MKV recovery capsule, verified-download completion, final-path refresh, and media-side import wiring: PASS"
 
       - name: Build unsigned APK
         shell: bash
