@@ -1716,10 +1716,23 @@ d
     move-result-object v0
     invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v2
+    if-eqz v2, :finalize_mkv_token_from_source
+    invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-eqz v0, :finalize_mkv_token_ready
+
+    :finalize_mkv_token_from_source
+    # Organized output names may omit [cnm-token]; the source MP4 still carries the stable identity.
+    invoke-virtual {v11}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
     if-eqz v2, :finalize_mkv_false
     invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
     move-result v0
     if-nez v0, :finalize_mkv_false
+
+    :finalize_mkv_token_ready
 
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
     move-result-object v1
