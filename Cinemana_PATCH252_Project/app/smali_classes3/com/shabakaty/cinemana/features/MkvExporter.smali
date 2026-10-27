@@ -1689,7 +1689,7 @@
     :cond_5
 
     # Preserve v9's original String type across the capsule call; the helper temporarily needs the MP4 File.
-    move-object/16 v16, v9
+    move-object/from16 v16, v9
     move-object/from16 v8, p0
     move-object/from16 v9, p1
     move-object/from16 v10, p2
