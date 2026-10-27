@@ -2254,7 +2254,7 @@
 .end method
 
 .method private static validCapsuleFile(Ljava/io/File;Ljava/lang/String;)Z
-    .locals 6
+    .locals 5
     const/4 v0, 0x0
     if-eqz p0, :valid_capsule_file_done
     if-eqz p1, :valid_capsule_file_done
@@ -2262,10 +2262,10 @@
     move-result v1
     if-eqz v1, :valid_capsule_file_done
     invoke-virtual {p0}, Ljava/io/File;->length()J
-    move-result-wide v2
-    const-wide/16 v4, 0x40
-    cmp-long v2, v2, v4
-    if-lez v2, :valid_capsule_file_done
+    move-result-wide v1
+    const-wide/16 v3, 0x40
+    cmp-long v1, v1, v3
+    if-lez v1, :valid_capsule_file_done
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
     move-result-object v1
     invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->capsuleToken(Ljava/lang/String;)Ljava/lang/String;
@@ -2274,7 +2274,7 @@
     move-result v0
     :valid_capsule_file_done
     return v0
-.end method
+
 
 .method public static tokenFromCapsuleFile(Ljava/io/File;)Ljava/lang/String;
     .locals 1
