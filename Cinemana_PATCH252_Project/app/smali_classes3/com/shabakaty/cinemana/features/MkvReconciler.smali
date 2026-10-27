@@ -70,7 +70,7 @@
     return-void
 .end method
 
-.method public static reconcileAll()V
+.method public static declared-synchronized reconcileAll()V
     .locals 5
 
     sget-object v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
@@ -97,19 +97,6 @@
 
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
 
-    new-instance v1, Ljava/io/File;
-
-    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
-
-    move-result-object v2
-
-    const-string v3, "Download/Cinemana/work"
-
-    invoke-direct {v1, v2, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
-
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
 
     sget-object v1, Lcom/shabakaty/cinemana/features/MkvReconciler;->ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
 
@@ -551,7 +538,7 @@
 .end method
 
 .method public static start(Landroid/content/Context;)V
-    .locals 8
+    .locals 12
 
     if-eqz p0, :cond_1
 
@@ -596,17 +583,15 @@
 
     invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
 
-    new-instance v0, Ljava/io/File;
+    new-instance v5, Lcom/shabakaty/cinemana/features/MkvReconciler$Audit;
+    invoke-direct {v5}, Lcom/shabakaty/cinemana/features/MkvReconciler$Audit;-><init>()V
+    sget-object v4, Lcom/shabakaty/cinemana/features/MkvReconciler;->SCHEDULER:Ljava/util/concurrent/ScheduledExecutorService;
+    const-wide/16 v6, 0x5
+    const-wide/16 v8, 0x1e
+    sget-object v10, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
+    invoke-interface/range {v4 .. v10}, Ljava/util/concurrent/ScheduledExecutorService;->scheduleWithFixedDelay(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+    move-result-object v5
 
-    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
-
-    move-result-object v1
-
-    const-string v2, "Download/Cinemana/work"
-
-    invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-
-    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
 
     :cond_1
     return-void
@@ -665,7 +650,7 @@
 .end method
 
 .method private static watchTree(Ljava/io/File;)V
-    .locals 4
+    .locals 7
 
     if-eqz p0, :cond_1
 
@@ -698,6 +683,21 @@
 
     if-eqz p0, :cond_0
 
+    invoke-virtual {v3}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    sget-object v5, Ljava/util/Locale;->US:Ljava/util/Locale;
+    invoke-virtual {v4, v5}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v4
+    const-string v5, "data"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-nez v6, :cond_0
+    const-string v5, "log"
+    invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :watch_recurse
+    goto :cond_0
+    :watch_recurse
     invoke-static {v3}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
 
     :cond_0
@@ -1281,8 +1281,15 @@
 
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->findItemForDiskSource(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
     move-result-object v2
+    if-eqz v2, :disk_video_try_token_mapping
+    goto :disk_video_have_mapping
+
+    :disk_video_try_token_mapping
+    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->findDatabaseItemForToken(Landroid/content/Context;Ljava/lang/String;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    move-result-object v2
     if-eqz v2, :disk_video_mapping_wait
 
+    :disk_video_have_mapping
     invoke-static {p0, v2, p1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskOne(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
     move-result v3
     if-eqz v3, :disk_video_rejected
