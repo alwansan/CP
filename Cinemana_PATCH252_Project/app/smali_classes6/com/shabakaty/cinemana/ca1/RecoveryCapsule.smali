@@ -2274,7 +2274,7 @@
     move-result v0
     :valid_capsule_file_done
     return v0
-
+.end method
 
 .method public static tokenFromCapsuleFile(Ljava/io/File;)Ljava/lang/String;
     .locals 1
