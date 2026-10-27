@@ -534,6 +534,9 @@
 
     move-result-object v0
 
+    # Retain the original task before later reflection results overwrite p0.
+    move-object v2, p0
+
     const-string v1, "getPath"
 
     const/4 v3, 0x0
@@ -624,11 +627,8 @@
 
     if-nez p0, :cond_1
 
-    # Only after the completion receipt verifies path, URL, existence and byte count, seed media recovery.
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->scheduleDownloadComplete(Ljava/lang/Object;I)V
-
-    # Keep the task object after the verified source length has been consumed.
-    move-object v5, p0
+    # Preserve the task on the verified branch; the source File in v5 is no longer required.
+    move-object v5, v2
 
     const-string p0, "size"
 
@@ -689,6 +689,8 @@
     const/4 v1, 0x0
 
     invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->put(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
+
+    const-string v2, "request:"
 
     const-string p0, "DB_COMMIT_ACKNOWLEDGED"
 
