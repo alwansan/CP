@@ -1879,7 +1879,7 @@
 .end method
 
 .method public static finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
-    .locals 14
+    .locals 15
     move-object/from16 v10, p0
     move-object/from16 v11, p1
     const/4 v0, 0x0
@@ -1927,7 +1927,7 @@
     invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
     move-result v1
     if-nez v1, :finalize_mkv_false
-    move-object v9, v4
+    move-object/from16 v14, v4
 
     new-instance v5, Lorg/json/JSONObject;
     invoke-direct {v5, v4}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
@@ -2197,11 +2197,11 @@
     invoke-virtual {v12}, Ljava/io/File;->delete()Z
 
     :finalize_mkv_restore_manifest
-    if-eqz v9, :finalize_mkv_false
-    invoke-virtual {v9}, Ljava/lang/String;->isEmpty()Z
+    if-eqz v14, :finalize_mkv_false
+    invoke-virtual {v14}, Ljava/lang/String;->isEmpty()Z
     move-result v1
     if-nez v1, :finalize_mkv_false
-    invoke-static {v3, v9}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    invoke-static {v3, v14}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
     goto :finalize_mkv_false
 
     :finalize_mkv_cleanup_temp
