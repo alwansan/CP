@@ -1227,6 +1227,75 @@
     return-object p0
 .end method
 
+.method public static declared-synchronized clearToken(Landroid/content/Context;Ljava/lang/String;)V
+    .locals 12
+    if-eqz p0, :clear_token_done
+    if-eqz p1, :clear_token_done
+    invoke-virtual {p1}, Ljava/lang/String;->isEmpty()Z
+    move-result v0
+    if-nez v0, :clear_token_done
+
+    :try_start_clear_token
+    const/4 v1, 0x0
+    const-string v0, "cnm_mkv_plan_v54"
+    invoke-virtual {p0, v0, v1}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+    move-result-object v2
+    invoke-interface {v2}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+    move-result-object v2
+    invoke-interface {v2, p1}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+    move-result-object v2
+    invoke-interface {v2}, Landroid/content/SharedPreferences$Editor;->commit()Z
+
+    const-string v0, "cnm_mkv_manifest_v66"
+    invoke-virtual {p0, v0, v1}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+    move-result-object v3
+    invoke-interface {v3}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+    move-result-object v2
+    invoke-interface {v3}, Landroid/content/SharedPreferences;->getAll()Ljava/util/Map;
+    move-result-object v4
+    invoke-interface {v4}, Ljava/util/Map;->keySet()Ljava/util/Set;
+    move-result-object v4
+    invoke-interface {v4}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+    move-result-object v5
+
+    new-instance v6, Ljava/lang/StringBuilder;
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v6, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    const-string v7, "|"
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v6
+
+    :clear_token_loop
+    invoke-interface {v5}, Ljava/util/Iterator;->hasNext()Z
+    move-result v7
+    if-eqz v7, :clear_token_commit
+    invoke-interface {v5}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v7
+    instance-of v8, v7, Ljava/lang/String;
+    if-eqz v8, :clear_token_loop
+    check-cast v7, Ljava/lang/String;
+    invoke-virtual {v7, v6}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+    move-result v8
+    if-eqz v8, :clear_token_loop
+    invoke-interface {v2, v7}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+    move-result-object v2
+    goto :clear_token_loop
+
+    :clear_token_commit
+    invoke-interface {v2}, Landroid/content/SharedPreferences$Editor;->commit()Z
+    :try_end_clear_token
+    .catch Ljava/lang/Throwable; {:try_start_clear_token .. :try_end_clear_token} :clear_token_exception
+    goto :clear_token_done
+
+    :clear_token_exception
+    move-exception v0
+    :clear_token_done
+    return-void
+.end method
+
 .method public static recoverReadyFromVerifiedFiles(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;II)Z
     .locals 4
 
