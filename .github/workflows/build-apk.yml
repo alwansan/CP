@@ -1,4 +1,4 @@
-name: Build and Sign Cinemana PATCH252 APK
+name: Build and Sign Cinemana PATCH260 Recovery Capsule APK
 
 on:
   workflow_dispatch:
@@ -106,6 +106,9 @@ jobs:
           grep -q 'RecoveryCapsule;->seed(Ljava/lang/Object;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
           grep -q 'RecoveryCapsule;->importFromMedia' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
           grep -q 'RecoveryCapsule;->finalizeMkv' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'Commit105;->isPromoted' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Commit105.smali
+          grep -q 'RecoveryCapsule;->ensureEmbeddedMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'RecoveryCapsule;->scheduleDownloadComplete' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
           grep -q 'RecoveryCapsule;->completeDownload' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule\$DownloadCompleteTask.smali
           grep -q 'RecoveryCapsule\$DownloadCompleteTask' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
@@ -144,10 +147,10 @@ jobs:
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
           if [[ "$GITHUB_REF_NAME" == "fix/download-mkv-self-repair" ]]; then
-            SIGNED_NAME="Cinemana_PATCH259_MkvDiskRecovery_signed.apk"
-            TAG_SUFFIX="mkv-disk-recovery"
-            DISPLAY_NAME="MKV Disk Recovery"
-            PATCH_VERSION="259"
+            SIGNED_NAME="Cinemana_PATCH260_RecoveryCapsule_signed.apk"
+            TAG_SUFFIX="recovery-capsule"
+            DISPLAY_NAME="MP4/MKV Recovery Capsule"
+            PATCH_VERSION="260"
           else
             SIGNED_NAME="Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk"
             TAG_SUFFIX="sequential-sync-zero"
@@ -183,7 +186,7 @@ jobs:
           name: "Cinemana PATCH${{ steps.sign.outputs.patch_version }} ${{ steps.sign.outputs.display_name }} #${{ github.run_number }}"
           body: |
             Build for branch ${{ github.ref_name }}.
-            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'Scans existing MP4 files in the work folders, matches each source to a unique database item by exact source path or exact MKV destination basename, verifies the saved subtitle plan before using the guarded exporter, and protects queued repair state from stale observer events. A delayed second pass runs after app startup. The compact repair ledger is independent of optional diagnostic logs and clears entries only after a verified final MKV is promoted. No source files are deleted.' || 'Fixes the sequential subtitle sync dialog and adds zero-offset reset buttons while preserving existing playback and subtitle behavior.' }}
+            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'Scans existing MP4/MKV files and can restore the JSON recovery capsule from media metadata or a Matroska attachment. Captures download identity, video/subtitle source locators, local subtitle SHA-256 fingerprints, stage and final paths, and byte counts. Retries MP4 embedding during later scans, updates the completion receipt after metadata growth, and refreshes the final MKV capsule. Source MP4s and subtitles are retained unless both the final capsule remux and exact database path/size verification succeed.' || 'Fixes the sequential subtitle sync dialog and adds zero-offset reset buttons while preserving existing playback and subtitle behavior.' }}
             Automated assembly, alignment, signing, and signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.
