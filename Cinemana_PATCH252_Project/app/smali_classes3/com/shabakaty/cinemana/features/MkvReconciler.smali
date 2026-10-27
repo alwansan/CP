@@ -1332,7 +1332,8 @@
     if-nez v10, :disk_item_dao_loop
 
     const-string v10, "readCombinedById"
-    filled-new-array {v1, v9}, [Ljava/lang/Object;
+    # Pass the persistent Downloads DAO (v2), not the live downloader manager (v1).
+    filled-new-array {v2, v9}, [Ljava/lang/Object;
     move-result-object v11
     invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v10
