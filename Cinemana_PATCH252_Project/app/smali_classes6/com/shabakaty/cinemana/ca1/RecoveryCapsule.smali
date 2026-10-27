@@ -475,15 +475,16 @@
     move-result-object v3
     new-instance v4, Ljava/io/File;
     invoke-direct {v4, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    move-object/from16 v17, v4
     move-object/from16 v12, p1
-    move-object v13, v4
+    move-object/from16 v13, v17
     invoke-static {v12, v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->isCurrent(Ljava/io/File;Ljava/io/File;)Z
     move-result v5
     if-eqz v5, :prepare_build
     invoke-virtual {v2}, Ljava/io/File;->isFile()Z
     move-result v5
     if-eqz v5, :prepare_build
-    return-object v2
+    # The current file marker does not prove the manifest body is current; refresh it for this export.
     :prepare_build
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
     move-result-object v5
@@ -654,10 +655,12 @@
     invoke-static {v2, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
     move-result v8
     if-eqz v8, :prepare_done
+    # Force a metadata refresh after the sidecar body advances to MKV_EXPORT_PREPARING.
+    invoke-virtual {v17}, Ljava/io/File;->delete()Z
     move-object/from16 v12, p4
     move-object/from16 v13, p1
     move-object v14, v2
-    move-object v15, v4
+    move-object v15, v17
     move-object v16, v1
     invoke-static/range {v12 .. v16}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v8
