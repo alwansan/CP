@@ -95,8 +95,6 @@
 
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchTree(Ljava/io/File;)V
 
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
-
 
     sget-object v1, Lcom/shabakaty/cinemana/features/MkvReconciler;->ITEMS:Ljava/util/concurrent/ConcurrentHashMap;
 
@@ -662,6 +660,8 @@
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->watchRoot(Ljava/io/File;)V
 
+    invoke-static {p0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scanExistingRoot(Ljava/io/File;)V
+
     invoke-virtual {p0}, Ljava/io/File;->listFiles()[Ljava/io/File;
 
     move-result-object v0
@@ -1157,8 +1157,8 @@
     if-eqz v1, :find_db_item_done
 
     const-string v1, "getDownloadsDao"
-    filled-new-array {p0, p0}, [Ljava/lang/Object;
-    move-result-object v2
+    const/4 v2, 0x0
+    new-array v2, v2, [Ljava/lang/Object;
     invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v1
     if-eqz v1, :find_db_item_done
