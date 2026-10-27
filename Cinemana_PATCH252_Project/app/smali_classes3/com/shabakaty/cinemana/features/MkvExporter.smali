@@ -3183,11 +3183,13 @@
     move-result v15
 
     :capsule_refresh_db_done
-    # Retire the compact pending-work ledger only after the canonical MKV promotion/DB commit.
+    # Retire the compact pending-work ledger only after the capsule and final byte-count promotion both verify.
+    if-eqz v15, :capsule_refresh_keep_ledger
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v0
     invoke-static {v1, v0, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeAliasFromSource(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)V
     invoke-static {v1, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
+    :capsule_refresh_keep_ledger
 
     .line 564
     new-instance v0, Ljava/io/File;
