@@ -1490,11 +1490,19 @@
     cmp-long v7, v7, v9
     if-lez v7, :recover_one_partial_source
 
-    # A valid-sized MP4 follows the ordinary guarded identity/subtitle pipeline.
+    # The normal disk scan already handles completed downloads; only the failed MKV stage needs a sidecar-triggered retry.
+    const-string v7, "MKV_EXPORT_PREPARING"
+    invoke-virtual {v7, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v7
+    if-eqz v7, :recover_one_not_conversion
     invoke-static {v12, v6}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
     move-result v0
     if-nez v0, :try_end_recover_one
     const/4 v0, 0x1
+    goto :try_end_recover_one
+
+    :recover_one_not_conversion
+    const/4 v0, 0x0
     goto :try_end_recover_one
 
     # For a zero/short partial file, restore RUN only if both native receipts are absent.
