@@ -2104,6 +2104,18 @@ d
     return v0
 .end method
 
+.method public static tokenFromCapsuleFile(Ljava/io/File;)Ljava/lang/String;
+    .locals 1
+    const-string v0, ""
+    if-eqz p0, :token_from_file_done
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->capsuleToken(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    :token_from_file_done
+    return-object v0
+.end method
+
 .method public static importFromMedia(Landroid/content/Context;Ljava/io/File;)Ljava/io/File;
     .locals 12
     move-object/from16 v10, p0
