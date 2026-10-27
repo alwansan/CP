@@ -254,7 +254,7 @@
     invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
     invoke-virtual {v2}, Ljava/io/File;->exists()Z
     move-result v3
-    if-eqz v3, :second_root
+    if-eqz v3, :report
     const/4 v3, 0x4
     invoke-static {v2, v3, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanTree(Ljava/io/File;I[I)V
     :report
