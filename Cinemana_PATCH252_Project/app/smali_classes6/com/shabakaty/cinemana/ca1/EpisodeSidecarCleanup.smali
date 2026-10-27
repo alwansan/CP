@@ -93,18 +93,18 @@
     invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
     invoke-virtual {v0}, Ljava/io/File;->isDirectory()Z
     move-result v1
-    if-eqz v1, :sidecar_delete_try_end
+    if-eqz v1, :sidecar_delete_done
     invoke-virtual {v0}, Ljava/io/File;->listFiles()[Ljava/io/File;
     move-result-object v1
-    if-eqz v1, :sidecar_delete_try_end
+    if-eqz v1, :sidecar_delete_done
     array-length v2, v1
     const/4 v3, 0x0
     const/4 v4, 0x0
     const/16 v5, 0x3e8
 
     :sidecar_delete_loop
-    if-ge v3, v2, :sidecar_delete_try_end
-    if-ge v4, v5, :sidecar_delete_try_end
+    if-ge v3, v2, :sidecar_delete_done
+    if-ge v4, v5, :sidecar_delete_done
     aget-object v6, v1, v3
     add-int/lit8 v3, v3, 0x1
     if-eqz v6, :sidecar_delete_loop
