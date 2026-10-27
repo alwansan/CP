@@ -2756,6 +2756,9 @@
     :try_start_2
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/Queue110;->save(Ljava/util/Properties;)V
 
+    # Persist a media-side recovery seed as soon as the download request is admitted.
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->seed(Ljava/lang/Object;I)V
+
     sget-object p1, Lcom/shabakaty/cinemana/ca1/Queue110;->live:Ljava/util/Map;
 
     invoke-static {v1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
