@@ -1672,6 +1672,11 @@
 
     .line 386
     :cond_5
+
+    # Build the persistent recovery capsule and embed it into the MP4 before conversion.
+    invoke-static {p0, p1, p2, p4, v13, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
+    move-result-object v16
+
     new-instance v10, Ljava/util/ArrayList;
 
     invoke-direct {v10}, Ljava/util/ArrayList;-><init>()V
@@ -2054,6 +2059,63 @@
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
     .line 435
+    # Embed the same recovery capsule as a real Matroska attachment as well as global metadata.
+    if-eqz v16, :recovery_attachment_done
+
+    const-string v8, "-attach"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    invoke-virtual {v16}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v8
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    const-string v8, "-metadata:s:t:0"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v8, "mimetype=application/json"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    const-string v8, "-metadata:s:t:0"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v8, "filename=cnm_recovery.json"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    const-string v8, "-metadata"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v8, "cnm_recovery_format=com.cinemana.recovery"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    const-string v8, "-metadata"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    const-string v9, "cnm_recovery_token="
+    invoke-virtual {p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
+    move-result-object v11
+    invoke-static {v11}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v11
+    new-instance v12, Ljava/lang/StringBuilder;
+    invoke-direct {v12}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {v12, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v12
+    invoke-virtual {v12, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v12
+    invoke-virtual {v12}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v12
+    invoke-interface {v10, v12}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    const-string v8, "-metadata"
+    invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    invoke-static {v16}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestBase64(Ljava/io/File;)Ljava/lang/String;
+    move-result-object v15
+    new-instance v12, Ljava/lang/StringBuilder;
+    invoke-direct {v12}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v9, "cnm_recovery_manifest_b64="
+    invoke-virtual {v12, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v12
+    invoke-virtual {v12, v15}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v12
+    invoke-virtual {v12}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v12
+    invoke-interface {v10, v12}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    :recovery_attachment_done
     const-string v8, "-map_chapters"
 
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
