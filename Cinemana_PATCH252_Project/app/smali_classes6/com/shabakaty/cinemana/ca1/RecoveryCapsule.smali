@@ -1255,36 +1255,37 @@ d
     move-object/from16 v10, p0
     move/from16 v11, p1
     if-eqz v10, :complete_download_return
+
     :try_start_complete_download
-    const-string v0, "getPath"
-    const/4 v1, 0x0
-    new-array v1, v1, [Ljava/lang/Object;
-    invoke-static {v10, v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    const-string v6, "getPath"
+    const/4 v7, 0x0
+    new-array v7, v7, [Ljava/lang/Object;
+    invoke-static {v10, v6, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v0
-    instance-of v1, v0, Ljava/lang/String;
-    if-eqz v1, :complete_download_return
+    instance-of v6, v0, Ljava/lang/String;
+    if-eqz v6, :complete_download_return
     check-cast v0, Ljava/lang/String;
     invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
-    move-result v1
-    if-nez v1, :complete_download_return
+    move-result v6
+    if-nez v6, :complete_download_return
 
     new-instance v1, Ljava/io/File;
     invoke-direct {v1, v0}, Ljava/io/File;-><init>(Ljava/lang/String;)V
     invoke-virtual {v1}, Ljava/io/File;->isFile()Z
-    move-result v3
-    if-eqz v3, :complete_download_return
+    move-result v6
+    if-eqz v6, :complete_download_return
     invoke-virtual {v1}, Ljava/io/File;->length()J
-    move-result-wide v4
-    const-wide/16 v6, 0x400
-    cmp-long v3, v4, v6
-    if-lez v3, :complete_download_return
+    move-result-wide v6
+    const-wide/16 v8, 0x400
+    cmp-long v6, v6, v8
+    if-lez v6, :complete_download_return
 
     invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvManifestStore;->tokenFromPath(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v2
     if-eqz v2, :complete_download_return
     invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
-    move-result v3
-    if-nez v3, :complete_download_return
+    move-result v6
+    if-nez v6, :complete_download_return
 
     invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->seed(Ljava/lang/Object;I)V
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->manifestFile(Ljava/lang/String;)Ljava/io/File;
@@ -1292,8 +1293,9 @@ d
     invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->readText(Ljava/io/File;)Ljava/lang/String;
     move-result-object v4
     invoke-virtual {v4}, Ljava/lang/String;->isEmpty()Z
-    move-result v5
-    if-nez v5, :complete_download_return
+    move-result v6
+    if-nez v6, :complete_download_return
+
     new-instance v5, Lorg/json/JSONObject;
     invoke-direct {v5, v4}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
 
@@ -1342,6 +1344,7 @@ d
     move-result-object v7
     invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
+    # Snapshot the video URL when available; retain the prior value when the task no longer exposes it.
     const-string v6, "videoUrl"
     const-string v7, "getUrl"
     const/4 v8, 0x0
@@ -1390,51 +1393,54 @@ d
     invoke-static {v7, v8}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v7
     invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    # Start with false; the sidecar only reports true after the container remux succeeds.
     const-string v6, "mp4MetadataEmbedded"
     const-string v7, "false"
     invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     invoke-virtual {v5}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
     move-result-object v4
     invoke-static {v3, v4}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
-    move-result v5
-    if-eqz v5, :complete_download_return
+    move-result v6
+    if-eqz v6, :complete_download_return
 
-    # If ffmpeg is unavailable, the durable sidecar remains useful for repair.
+    # Keep the sidecar useful even when ffmpeg is unavailable; no media file is changed in that case.
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Continue106;->app()Ljava/lang/Object;
-    move-result-object v5
-    if-eqz v5, :complete_download_return
-    check-cast v5, Landroid/content/Context;
-    new-instance v6, Ljava/io/File;
-    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
-    move-result-object v7
-    const-string v8, "Cinemana/work/log"
-    invoke-direct {v6, v7, v8}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    invoke-virtual {v6}, Ljava/io/File;->mkdirs()Z
+    move-result-object v9
+    if-eqz v9, :complete_download_return
+    check-cast v9, Landroid/content/Context;
     new-instance v7, Ljava/io/File;
-    const-string v8, "cnm_recovery_capsule.log"
-    invoke-direct {v7, v6, v8}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    const-string v6, "ensureFfmpeg"
-    filled-new-array {v5, v7}, [Ljava/lang/Object;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
     move-result-object v8
-    invoke-static {v6, v8}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    const-string v6, "Cinemana/work/log"
+    invoke-direct {v7, v8, v6}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v7}, Ljava/io/File;->mkdirs()Z
+    new-instance v8, Ljava/io/File;
+    const-string v6, "cnm_recovery_capsule.log"
+    invoke-direct {v8, v7, v6}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    const-string v6, "ensureFfmpeg"
+    filled-new-array {v9, v8}, [Ljava/lang/Object;
+    move-result-object v7
+    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v6
     instance-of v7, v6, Ljava/io/File;
     if-eqz v7, :complete_download_return
     check-cast v6, Ljava/io/File;
-    invoke-virtual {v6}, Ljava/io/File;->exists()Z
+    invoke-virtual {v6}, Ljava/io/File;->isFile()Z
     move-result v7
     if-eqz v7, :complete_download_return
 
-    # Mark the pending capsule before embedding so the MP4 and sidecar carry the same status.
-    const-string v6, "mp4MetadataEmbedded"
-    const-string v7, "true"
-    invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    # Mark true before the atomic embed so the MP4 and sidecar contain identical JSON on success.
+    const-string v7, "mp4MetadataEmbedded"
+    const-string v8, "true"
+    invoke-virtual {v5, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     invoke-virtual {v5}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
-    move-result-object v6
-    invoke-static {v3, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
-    move-result v6
-    if-eqz v6, :complete_download_return
+    move-result-object v7
+    invoke-static {v3, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    move-result v7
+    if-eqz v7, :complete_download_return
 
+    # Create a marker name and retain it separately from the manifest/ffmpeg inputs.
     new-instance v7, Ljava/lang/StringBuilder;
     invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {v3}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
@@ -1448,42 +1454,44 @@ d
     move-result-object v7
     new-instance v8, Ljava/io/File;
     invoke-direct {v8, v7}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    move-object v10, v8
+    move-object v4, v8
 
-    # Arrange five consecutive low-numbered registers for the metadata embed call.
+    # Save the task ID before the five adjacent registers are used for FFmpeg parameters.
+    move v0, v11
     move-object v7, v6
     move-object v8, v1
     move-object v9, v3
-    # v10 deliberately retains the marker file constructed above.
+    move-object v10, v4
     move-object v11, v2
     invoke-static/range {v7 .. v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v6
     if-eqz v6, :complete_download_embedding_failed
 
-    # Metadata remux changes the on-disk size; update the durable done receipt to that final container size.
+    # The MP4 remux changes the actual file length; update the durable completion receipt accordingly.
     invoke-virtual {v1}, Ljava/io/File;->length()J
-    move-result-wide v6
-    move/from16 v8, p1
-    move-wide v9, v6
+    move-result-wide v7
+    move-wide v9, v7
+    move v8, v0
     invoke-static/range {v8 .. v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->updateDoneSize(IJ)V
     goto :complete_download_return
 
     :complete_download_embedding_failed
-    const-string v6, "mp4MetadataEmbedded"
-    const-string v7, "false"
-    invoke-virtual {v5, v6, v7}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v7, "mp4MetadataEmbedded"
+    const-string v8, "false"
+    invoke-virtual {v5, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     invoke-virtual {v5}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
-    move-result-object v6
-    invoke-static {v3, v6}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    move-result-object v7
+    invoke-static {v3, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
 
-    :complete_download_return
     :try_end_complete_download
-    .catch Ljava/lang/Throwable; {:try_start_complete_download .. :try_end_complete_download} :complete_download_failed
+    .catch Ljava/lang/Throwable; {:try_start_complete_download .. :complete_download_return} :complete_download_failed
+    :complete_download_return
     return-void
     :complete_download_failed
     move-exception v0
     return-void
 .end method
+d
 
 .method public static finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
     .locals 14
