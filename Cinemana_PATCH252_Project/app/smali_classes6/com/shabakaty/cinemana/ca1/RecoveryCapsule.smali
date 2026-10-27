@@ -1746,10 +1746,7 @@
 
     :cleanup_size_verified
     # Delete only this token's sidecar after final path, size and database promotion are verified and MP4 is gone.
-    invoke-virtual {v4}, Ljava/io/File;->delete()Z
-    move-result v10
-    if-eqz v10, :cleanup_return
-
+    # Keep the authoritative JSON until its temporary markers/backups have been retired.
     new-instance v7, Ljava/lang/StringBuilder;
     invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
     invoke-virtual {v4}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
@@ -1794,6 +1791,11 @@
     new-instance v7, Ljava/io/File;
     invoke-direct {v7, v8}, Ljava/io/File;-><init>(Ljava/lang/String;)V
     invoke-virtual {v7}, Ljava/io/File;->delete()Z
+
+    # Delete the JSON last so an interrupted cleanup can safely retry from the manifest.
+    invoke-virtual {v4}, Ljava/io/File;->delete()Z
+    move-result v10
+    if-eqz v10, :cleanup_return
 
     const/4 v10, 0x1
     :try_end_cleanup
