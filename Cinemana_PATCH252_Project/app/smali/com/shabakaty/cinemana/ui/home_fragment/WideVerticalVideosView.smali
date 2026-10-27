@@ -365,6 +365,11 @@
 # virtual methods
 .method public a(Lcom/shabakaty/cinemana/domain/models/local/VideoModel;Landroid/view/View;)V
     .locals 1
+    invoke-static {p0, p1, p2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->interceptClick(Ljava/lang/Object;Ljava/lang/Object;Landroid/view/View;)Z
+    move-result v0
+    if-eqz v0, :continue_native_click262
+    return-void
+    :continue_native_click262
 
     const-string v0, "videoModel"
 

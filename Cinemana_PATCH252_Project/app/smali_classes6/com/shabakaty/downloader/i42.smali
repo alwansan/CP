@@ -535,6 +535,7 @@
     invoke-static {v0, v2, v3}, Lcom/shabakaty/downloader/st2;->c(Landroid/view/View;Lcom/shabakaty/downloader/mm0;Ljava/lang/Boolean;)V
 
     :cond_7
+    invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->bindWide(Ljava/lang/Object;)V
     return-void
 
     :catchall_0

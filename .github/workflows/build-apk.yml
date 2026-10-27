@@ -1,4 +1,4 @@
-name: Build and Sign Cinemana PATCH261 Ordered Recovery APK
+name: Build and Sign Cinemana PATCH262 Watch and Delete APK
 
 on:
   workflow_dispatch:
@@ -18,6 +18,8 @@ on:
       - ".github/workflows/build-apk.yml"
       - "scripts/validate_recovery.py"
       - "scripts/test_recovery_flow.py"
+      - "scripts/test_reference_guards.py"
+      - "patches/patch262/**"
 
 permissions:
   contents: write
@@ -68,6 +70,7 @@ jobs:
           grep -q 'RecoveryCapsule;->prepare' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
           python3 scripts/validate_recovery.py
           python3 scripts/test_recovery_flow.py
+          python3 scripts/test_reference_guards.py
           grep -q 'RecoveryCapsule;->recoverPending(Landroid/content/Context;)I' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvRepairStartup.smali
           grep -q 'RecoveryCapsule;->copyQueueFields(Lorg/json/JSONObject;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'RecoveryCapsule;->restoreRequestFromSidecar(Landroid/content/Context;Lorg/json/JSONObject;Ljava/lang/String;)Z' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
@@ -133,6 +136,13 @@ jobs:
           done
           echo "Sidecar-only recovery and legacy media metadata checks: PASS"
 
+      - name: Test typed watch and cancellation helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/com/google/android/android/4.1.1.4/android-4.1.1.4.jar -o "$RUNNER_TEMP/patch262-android.jar"
+          python3 patches/patch262/build_helpers.py --android-jar "$RUNNER_TEMP/patch262-android.jar" --test
+
       - name: Build unsigned APK
         shell: bash
         run: |
@@ -156,10 +166,10 @@ jobs:
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
           if [[ "$GITHUB_REF_NAME" == "fix/download-mkv-self-repair" ]]; then
-            SIGNED_NAME="Cinemana_PATCH261_OrderedRecovery_signed.apk"
-            TAG_SUFFIX="ordered-recovery"
-            DISPLAY_NAME="Ordered MP4/MKV Recovery"
-            PATCH_VERSION="261"
+            SIGNED_NAME="Cinemana_PATCH262_WatchAndDelete_signed.apk"
+            TAG_SUFFIX="watch-delete"
+            DISPLAY_NAME="Continue Watching and Safe Delete"
+            PATCH_VERSION="262"
           elif [[ "$GITHUB_REF_NAME" == "fix/sequential-sync-dialog-zero" ]]; then
             SIGNED_NAME="Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk"
             TAG_SUFFIX="sequential-sync-zero"
@@ -199,7 +209,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: "Cinemana PATCH${{ steps.sign.outputs.patch_version }} ${{ steps.sign.outputs.display_name }} #${{ github.run_number }}"
           body: |
-            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'PATCH261 restores the missing recovered-video exporter methods and legal recovery access. Button and automatic file events share an oldest-first work-only audit, with idle polling disabled. Recovery JSON stays outside the media in Cinemana/work/data/cnm_recovery. MP4/MKV media are not remuxed to carry JSON; the exporter retains only its legacy simple FFmpeg metadata (title, chapter mapping and subtitle language tags). Startup replays unfinished sidecars; the button and file events use the same guarded work audit. A token JSON and legacy marker are removed only after MKV final-path/size promotion is verified and the source MP4 has been removed.' || 'Automated build and APK signature verification completed.' }}
+            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'PATCH262 fixes the deletion context field access, adds anchored Continue Watching details/remove menus on home and More, cleans season suffixes from displayed titles, and adds history-only multi-selection by work/season/range. Download deletion now fences retries, cancels queued or running mux work, waits for ownership release, and includes matching temporary files in the existing delete journal. No recovery JSON is injected into media. Build/signature and host behavioral checks passed; Android gesture and device testing remains required.' || 'Automated build and APK signature verification completed.' }}
             Automated build and APK signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.

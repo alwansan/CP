@@ -59,53 +59,40 @@
 
 .method public static candidate(Ljava/lang/Object;)Z
     .locals 3
-
-    .line 10
-    const/4 v0, 0x0
-
-    :try_start_0
-    const-string v1, "path"
-
-    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/ca1/R94;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v1
-
-    sget-object v2, Ljava/util/Locale;->ROOT:Ljava/util/Locale;
-
-    invoke-virtual {v1, v2}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
-
-    move-result-object v1
-
-    const-string v2, ".mkv"
-
-    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
+    :try_start_candidate262
+    const-string v0, "id"
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/R94;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
     move-result v1
-
-    if-eqz v1, :cond_0
-
-    const-string v1, "id"
-
-    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/ca1/R94;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object p0
-
-    invoke-virtual {p0}, Ljava/lang/String;->isEmpty()Z
-
-    move-result p0
-    :try_end_0
-    .catchall {:try_start_0 .. :try_end_0} :catchall_0
-
-    if-nez p0, :cond_0
-
+    if-nez v1, :candidate_no262
+    const-string v0, "path"
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/R94;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    sget-object v1, Ljava/util/Locale;->ROOT:Ljava/util/Locale;
+    invoke-virtual {v0, v1}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v0
+    const-string v1, ".mkv"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v2
+    if-nez v2, :candidate_yes262
+    const-string v1, ".mp4"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v2
+    if-nez v2, :candidate_yes262
+    const-string v1, ".mp4.temp"
+    invoke-virtual {v0, v1}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :candidate_no262
+    :candidate_yes262
     const/4 v0, 0x1
-
-    :cond_0
     return v0
-
-    :catchall_0
-    move-exception p0
-
+    :try_end_candidate262
+    .catch Ljava/lang/Exception; {:try_start_candidate262 .. :try_end_candidate262} :candidate_failed262
+    :candidate_failed262
+    move-exception v0
+    :candidate_no262
+    const/4 v0, 0x0
     return v0
 .end method
 
@@ -226,8 +213,12 @@
 
     move-result v1
 
+    if-nez v1, :delete_path_checked262
+    move-object/from16 v15, p1
+    invoke-static {v0, v15}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->blocked(Ljava/lang/Object;Ljava/lang/Object;)Z
+    move-result v1
     if-eqz v1, :cond_19
-
+    :delete_path_checked262
     invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/Delete94;->candidate(Ljava/lang/Object;)Z
 
     move-result v1
@@ -277,8 +268,11 @@
 
     move-result v12
 
+    if-nez v12, :goto_0
+    move-object/from16 v15, p1
+    invoke-static {v0, v15}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->blocked(Ljava/lang/Object;Ljava/lang/Object;)Z
+    move-result v12
     if-eqz v12, :cond_0
-
     goto :goto_0
 
     :cond_0
@@ -368,6 +362,7 @@
 
     .line 18
     :cond_4
+    invoke-static {v12}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->augmentPaths(Ljava/util/Collection;)V
     const-string v13, "j"
 
     new-array v14, v9, [Ljava/lang/Object;
@@ -1707,9 +1702,9 @@
 
     move-result-object v5
 
-    if-nez v2, :cond_0
-
     :try_start_0
+    invoke-static {p1, v5}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->prepareDelete(Landroid/content/Context;Ljava/lang/Object;)V
+    if-nez v2, :cond_0
     const-string v6, "h"
 
     new-array v7, v1, [Ljava/lang/Object;

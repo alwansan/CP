@@ -1887,6 +1887,12 @@
 .method public static declared-synchronized open(Ljava/lang/Object;Ljava/lang/Object;)Z
     .locals 10
 
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->isDetails()Z
+    move-result v0
+    if-eqz v0, :continue_normal_open262
+    const/4 v0, 0x0
+    return v0
+    :continue_normal_open262
     const-class v0, Lcom/shabakaty/cinemana/ca1/Continue106;
 
     monitor-enter v0

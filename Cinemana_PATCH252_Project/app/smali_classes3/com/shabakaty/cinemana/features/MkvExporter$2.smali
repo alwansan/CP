@@ -59,6 +59,7 @@
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     return-void
 .end method
 
@@ -183,6 +184,7 @@
 
     iget-object v12, p0, Lcom/shabakaty/cinemana/features/MkvExporter$2;->val$downloadItem:Ljava/lang/Object;
 
+    invoke-static {v7, v12}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->check(Ljava/lang/Object;Ljava/lang/Object;)V
     invoke-static/range {v7 .. v12}, Lcom/shabakaty/cinemana/features/MkvExporter;->access$100(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
@@ -455,6 +457,7 @@
     nop
 
     .line 146
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     return-void
 
     .line 143
@@ -466,6 +469,7 @@
     :try_end_6
     .catchall {:try_start_6 .. :try_end_6} :catchall_1
 
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     throw v1
 
     .line 141
@@ -532,6 +536,7 @@
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
 
     .line 145
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     throw v0
 
     .line 143
@@ -543,5 +548,6 @@
     :try_end_8
     .catchall {:try_start_8 .. :try_end_8} :catchall_3
 
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     throw v0
 .end method

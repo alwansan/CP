@@ -21,10 +21,10 @@ for path in ROOT.glob('smali*/com/shabakaty/**/*.smali'):
 names = {'MkvReconciler', 'MkvExporter', 'MkvExporter$Recovered',
          'MkvRepairLedger', 'MkvRepairStartup', 'MkvReconciler$2',
          'MkvReconciler$Audit', 'EpisodeSidecarCleanup', 'DownloadRepair129',
-         'RecoveryCapsule'}
+         'RecoveryCapsule', 'Delete94', 'kw0$l', 'Dismiss109', 'Continue106', 'i42', 'n54', 'WideVerticalVideosView'}
 errors = []
 for cls, (path, source, methods) in classes.items():
-    if path.stem not in names:
+    if path.stem not in names and not path.stem.startswith(('ContinueActions262','MkvCancel262')):
         continue
     for target, sig in set(re.findall(r'invoke-static[^\n]*, (L[^;]+;)->([^\s]+)', source)):
         if target not in classes:
@@ -36,6 +36,16 @@ for cls, (path, source, methods) in classes.items():
             access = definitions[sig]
             if 'private' in access or ('public' not in access and cls.rsplit('/', 1)[0] != target.rsplit('/', 1)[0]):
                 errors.append(f'{path.stem}: inaccessible {target_path.stem}.{sig}')
+    # Field access is also checked: the deletion crash involved a package-private field.
+    for target, signature in set(re.findall(r'(?:sget|sput|iget|iput)[^\n]*, (L[^;]+;)->([^\s]+)', source)):
+        if target not in classes or target == cls:
+            continue
+        target_path, target_source, _ = classes[target]
+        field = re.search(r'^\.field (.*?) ' + re.escape(signature) + r'(?: =[^\n]*)?$', target_source, re.M)
+        if field:
+            access=field[1].split()
+            if 'private' in access or ('public' not in access and cls.rsplit('/',1)[0]!=target.rsplit('/',1)[0]):
+                errors.append(f'{path.stem}: inaccessible field {target_path.stem}.{signature}')
     for method in re.finditer(r'^\.method ([^\n]+)\n(.*?)^\.end method', source, re.M | re.S):
         header, body = method.groups()
         labels = set(re.findall(r'^\s*(:\w+)', body, re.M))

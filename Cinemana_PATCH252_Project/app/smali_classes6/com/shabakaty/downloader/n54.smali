@@ -221,6 +221,7 @@
 
 .method public onDestroyView()V
     .locals 1
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->detachMore(Ljava/lang/Object;)V
 
     .line 1
     iget-object v0, p0, Lcom/shabakaty/downloader/hj;->t:Landroidx/databinding/ViewDataBinding;
@@ -473,6 +474,7 @@
 
     invoke-virtual {p1, p0}, Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;->setItemsListener(Lcom/shabakaty/downloader/pk;)V
 
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->attachMore(Ljava/lang/Object;)V
     return-void
 .end method
 

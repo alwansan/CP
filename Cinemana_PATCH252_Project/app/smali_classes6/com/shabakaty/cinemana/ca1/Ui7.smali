@@ -28,7 +28,7 @@
 
 .field static final TEXT:I = -0x120d0a
 
-.field static app:Landroid/content/Context;
+.field public static app:Landroid/content/Context;
 
 .field static final handoffs:Ljava/util/Map;
     .annotation system Ldalvik/annotation/Signature;

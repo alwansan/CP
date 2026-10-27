@@ -1419,6 +1419,8 @@
 
     move-object/from16 v4, p4
 
+    invoke-static {v1, v4}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->check(Ljava/lang/Object;Ljava/lang/Object;)V
+
     const-string v5, "MKV_FFMPEG_SLOT_RELEASED target="
 
     new-instance v6, Ljava/io/File;
@@ -2171,6 +2173,7 @@
     invoke-virtual {v10}, Ljava/lang/ProcessBuilder;->start()Ljava/lang/Process;
 
     move-result-object v8
+    invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->register(Ljava/lang/Process;)V
 
     .line 450
     invoke-virtual {v8}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
@@ -2370,6 +2373,7 @@
 
     .line 579
     :try_start_2
+    invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->unregister(Ljava/lang/Process;)V
     invoke-virtual {v8}, Ljava/lang/Process;->destroy()V
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
@@ -2455,6 +2459,7 @@
 
     .line 482
     :goto_7
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->checkCurrent()V
     invoke-virtual {v14, v6}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
 
     move-result v0
@@ -2577,6 +2582,7 @@
 
     .line 579
     :try_start_6
+    invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->unregister(Ljava/lang/Process;)V
     invoke-virtual {v8}, Ljava/lang/Process;->destroy()V
     :try_end_6
     .catchall {:try_start_6 .. :try_end_6} :catchall_2
@@ -2784,6 +2790,7 @@
 
     .line 579
     :try_start_8
+    invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->unregister(Ljava/lang/Process;)V
     invoke-virtual {v8}, Ljava/lang/Process;->destroy()V
     :try_end_8
     .catchall {:try_start_8 .. :try_end_8} :catchall_3
@@ -2867,6 +2874,7 @@
 
     .line 529
     :cond_1d
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->checkCurrent()V
     invoke-static {v1, v6, v4, v3}, Lcom/shabakaty/cinemana/features/MkvExporter;->organizeMkv(Landroid/content/Context;Ljava/io/File;Ljava/lang/Object;Ljava/io/File;)Lcom/shabakaty/cinemana/features/MkvExporter$SortResult;
 
     move-result-object v0
@@ -3366,6 +3374,7 @@
 
     .line 579
     :try_start_c
+    invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->unregister(Ljava/lang/Process;)V
     invoke-virtual {v8}, Ljava/lang/Process;->destroy()V
     :try_end_c
     .catchall {:try_start_c .. :try_end_c} :catchall_4
@@ -3452,6 +3461,7 @@
 
     .line 579
     :try_start_e
+    invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->unregister(Ljava/lang/Process;)V
     invoke-virtual {v8}, Ljava/lang/Process;->destroy()V
     :try_end_e
     .catchall {:try_start_e .. :try_end_e} :catchall_5
@@ -3521,6 +3531,7 @@
 
     .line 579
     :try_start_f
+    invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->unregister(Ljava/lang/Process;)V
     invoke-virtual {v8}, Ljava/lang/Process;->destroy()V
     :try_end_f
     .catchall {:try_start_f .. :try_end_f} :catchall_8
@@ -6231,6 +6242,9 @@
 
     .line 81
     :cond_0
+    invoke-static {p0, p2}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->blocked(Ljava/lang/Object;Ljava/lang/Object;)Z
+    move-result v0
+    if-nez v0, :cond_3
     invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
 
     move-result-object p1
@@ -13259,6 +13273,7 @@
 .method public static runRecovered(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/lang/String;)V
     .locals 4
     :try_start_run_recovered
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->check(Ljava/lang/Object;Ljava/lang/Object;)V
     invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Queue110;->mayRepairCompleted(Ljava/lang/Object;)Z
     move-result v0
     if-eqz v0, :run_recovered_finish
@@ -13287,6 +13302,7 @@
     .catchall {:try_start_run_release .. :try_end_run_release} :run_release_failed
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     return-void
     :run_release_failed
     move-exception v1
