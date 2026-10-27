@@ -534,6 +534,13 @@
     if-eqz v9, :prepare_video_url_ready
     invoke-virtual {v6, v7}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
+    move-result v9
+    if-eqz v9, :prepare_video_url_ready
+    const-string v7, "downloadUrl"
+    invoke-virtual {v6, v7}, Lorg/json/JSONObject;->optString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v8
+    const-string v7, "videoUrl"
     :prepare_video_url_ready
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     const-string v7, "videoUrlMayExpireOrContainAccessToken"
