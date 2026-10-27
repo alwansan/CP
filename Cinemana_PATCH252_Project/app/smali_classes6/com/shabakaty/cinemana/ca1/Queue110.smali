@@ -670,6 +670,9 @@
 
     move-result-object p0
 
+    # Restore the request key prefix after retaining the task in v2.
+    const-string v2, "request:"
+
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -689,8 +692,6 @@
     const/4 v1, 0x0
 
     invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->put(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
-
-    const-string v2, "request:"
 
     const-string p0, "DB_COMMIT_ACKNOWLEDGED"
 
