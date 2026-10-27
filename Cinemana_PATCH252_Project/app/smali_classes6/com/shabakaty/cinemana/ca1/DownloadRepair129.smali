@@ -250,21 +250,12 @@
     invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
     move-result-object v1
     new-instance v2, Ljava/io/File;
-    const-string v3, "Cinemana"
+    const-string v3, "Cinemana/work"
     invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
     invoke-virtual {v2}, Ljava/io/File;->exists()Z
     move-result v3
     if-eqz v3, :second_root
-    const/4 v3, 0x6
-    invoke-static {v2, v3, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanTree(Ljava/io/File;I[I)V
-    :second_root
-    new-instance v2, Ljava/io/File;
-    const-string v3, "Download/Cinemana/work"
-    invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    invoke-virtual {v2}, Ljava/io/File;->exists()Z
-    move-result v3
-    if-eqz v3, :report
-    const/4 v3, 0x5
+    const/4 v3, 0x4
     invoke-static {v2, v3, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanTree(Ljava/io/File;I[I)V
     :report
     new-instance v3, Ljava/lang/StringBuilder;
@@ -764,11 +755,7 @@
     invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
     const/4 v3, 0x0
     invoke-static {p0, v2, v3, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanWorkTree(Landroid/content/Context;Ljava/io/File;I[I)V
-    new-instance v2, Ljava/io/File;
-    const-string v3, "Download/Cinemana/work"
-    invoke-direct {v2, v1, v3}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-    const/4 v3, 0x0
-    invoke-static {p0, v2, v3, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->scanWorkTree(Landroid/content/Context;Ljava/io/File;I[I)V
+
     new-instance v3, Ljava/lang/StringBuilder;
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
     const-string v4, "DISK_MKV_SCAN mp4="
@@ -830,6 +817,9 @@
     invoke-virtual {p1}, Ljava/io/File;->listFiles()[Ljava/io/File;
     move-result-object v0
     if-eqz v0, :work_scan_done
+    new-instance v5, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;
+    invoke-direct {v5}, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;-><init>()V
+    invoke-static {v0, v5}, Ljava/util/Arrays;->sort([Ljava/lang/Object;Ljava/util/Comparator;)V
     array-length v1, v0
     const/4 v2, 0x0
     :work_scan_loop
