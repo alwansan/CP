@@ -3170,8 +3170,19 @@
     move-object/from16 v13, p1
     invoke-static {v12, v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
     move-result v15
-    and-int/2addr v15, v16
+    if-eqz v15, :capsule_refresh_db_done
 
+    # The remux changes file length/mtime. Re-promote the final path and exact final byte count.
+    invoke-static {v1, v4, v7, v3}, Lcom/shabakaty/cinemana/features/MkvExporter;->promoteDatabaseWithRetry(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Z
+    move-result v15
+    if-eqz v15, :capsule_refresh_db_done
+
+    # Refresh the durable completion receipt/ready notification against the now-final container size.
+    invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->completed(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)V
+    invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z
+    move-result v15
+
+    :capsule_refresh_db_done
     # Retire the compact pending-work ledger only after the canonical MKV promotion/DB commit.
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
     move-result-object v0
