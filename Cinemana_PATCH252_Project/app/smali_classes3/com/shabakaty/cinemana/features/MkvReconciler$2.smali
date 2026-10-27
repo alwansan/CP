@@ -36,47 +36,11 @@
     goto :cond_1
 
     :watch_final_mp4
+    # Only finalized MP4s and .mp4.temp transitions trigger disk reconciliation.
     const-string v0, ".mp4"
-
     invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
     move-result v1
-
-    if-nez v1, :cond_0
-
-    const-string v0, ".srt"
-
-    invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v1
-
-    if-nez v1, :cond_0
-
-    const-string v0, ".ass"
-
-    invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v1
-
-    if-nez v1, :cond_0
-
-    const-string v0, ".ssa"
-
-    invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v1
-
-    if-nez v1, :cond_0
-
-    const-string v0, ".vtt"
-
-    invoke-virtual {p2, v0}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
-
-    move-result v1
-
     if-eqz v1, :cond_1
-
-    :cond_0
     invoke-static {p2}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
 
     :cond_1
