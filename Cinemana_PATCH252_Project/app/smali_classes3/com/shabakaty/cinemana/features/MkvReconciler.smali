@@ -1040,6 +1040,101 @@
 .end method
 
 
+.method public static findDatabaseItemForPath(Landroid/content/Context;Ljava/io/File;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
+    .locals 13
+    move-object/from16 v10, p0
+    move-object/from16 v11, p1
+    const/4 v0, 0x0
+    if-eqz v10, :find_path_done
+    if-eqz v11, :find_path_done
+
+    :try_start_find_path
+    invoke-virtual {v11}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
+    move-result-object v1
+
+    invoke-virtual {v10}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
+    move-result-object v2
+    if-eqz v2, :find_path_context_ready
+    move-object v10, v2
+    :find_path_context_ready
+    instance-of v2, v10, Lcom/shabakaty/cinemana/CinemanaApplication;
+    if-eqz v2, :find_path_done
+    const-string v2, "getDownloadsDao"
+    filled-new-array {v10, v10}, [Ljava/lang/Object;
+    move-result-object v3
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v2
+    if-eqz v2, :find_path_done
+    const-string v3, "readAllDownloads"
+    filled-new-array {v2}, [Ljava/lang/Object;
+    move-result-object v4
+    invoke-static {v3, v4}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v3
+    instance-of v4, v3, Ljava/util/List;
+    if-eqz v4, :find_path_done
+    check-cast v3, Ljava/util/List;
+    check-cast v10, Lcom/shabakaty/cinemana/CinemanaApplication;
+    invoke-virtual {v10}, Lcom/shabakaty/cinemana/CinemanaApplication;->h()Lcom/shabakaty/downloader/jw0;
+    move-result-object v4
+    if-eqz v4, :find_path_done
+    invoke-interface {v3}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+    move-result-object v5
+
+    :find_path_loop
+    invoke-interface {v5}, Ljava/util/Iterator;->hasNext()Z
+    move-result v6
+    if-eqz v6, :find_path_done
+    invoke-interface {v5}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v6
+    if-eqz v6, :find_path_loop
+
+    const-string v7, "x"
+    invoke-static {v6, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v7
+    if-eqz v7, :find_path_loop
+    invoke-virtual {v7}, Ljava/lang/String;->isEmpty()Z
+    move-result v8
+    if-nez v8, :find_path_loop
+
+    new-instance v8, Ljava/io/File;
+    invoke-direct {v8, v7}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-virtual {v8}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
+    move-result-object v8
+    invoke-virtual {v1, v8}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v8
+    if-eqz v8, :find_path_loop
+
+    const-string v8, "s"
+    invoke-static {v6, v8}, Lcom/shabakaty/cinemana/ca1/Restart108;->str(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v8
+    if-eqz v8, :find_path_loop
+    invoke-virtual {v8}, Ljava/lang/String;->isEmpty()Z
+    move-result v9
+    if-nez v9, :find_path_loop
+
+    const-string v9, "readCombinedById"
+    filled-new-array {v4, v8}, [Ljava/lang/Object;
+    move-result-object v12
+    invoke-static {v9, v12}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v9
+    if-eqz v9, :find_path_loop
+    const-string v12, "cinemanaDownloadItem"
+    invoke-static {v9, v12}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v12
+    if-eqz v12, :find_path_loop
+
+    move-object v0, v12
+    goto :try_end_find_path
+
+    :try_end_find_path
+    .catch Ljava/lang/Throwable; {:try_start_find_path .. :try_end_find_path} :find_path_exception
+    goto :find_path_done
+    :find_path_exception
+    move-exception v1
+    :find_path_done
+    return-object v0
+.end method
+
 .method private static findDatabaseItemForToken(Landroid/content/Context;Ljava/lang/String;)Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;
     .locals 12
 
