@@ -93,12 +93,34 @@ jobs:
           ! grep -q 'RecoveryCapsule;->probeMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
           ! grep -q 'RecoveryCapsule;->importFromMedia' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
 
+          # Automatic recovery is work-root scoped, oldest-first, and only responds to MP4/temp transitions.
+          grep -q 'findDatabaseItemForToken' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'MkvReconciler\$Audit' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'MkvRepairAgeComparator' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+          grep -q 'MkvRepairAgeComparator' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          grep -q '".mp4.temp"' 'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler$2.smali'
+          grep -q 'Cinemana/work' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          ! grep -q 'Download/Cinemana/work' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+
+          # Episode-specific recovery records are retired only from confirmed delete paths.
+          grep -q 'EpisodeSidecarCleanup;->deleted(Landroid/content/Context;Ljava/lang/String;)V' 'Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/kw0$l.smali'
+          grep -q 'EpisodeSidecarCleanup;->deleted(Landroid/content/Context;Ljava/lang/String;)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Delete94.smali
+          grep -q 'MkvManifestStore;->clearToken' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/EpisodeSidecarCleanup.smali
+          grep -q 'MkvRepairLedger;->clear' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/EpisodeSidecarCleanup.smali
+
           for smali in \
             Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali \
             'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule$DownloadCompleteTask.smali' \
             Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali \
             Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali \
             Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali \
+            Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvManifestStore.smali \
+            'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler$Audit.smali' \
+            Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvRepairAgeComparator.smali \
+            'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler$2.smali' \
+            Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/EpisodeSidecarCleanup.smali \
+            Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Delete94.smali \
+            'Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/kw0$l.smali' \
             Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali; do
             method_count="$(grep -c '^\.method ' "$smali")"
             end_count="$(grep -c '^\.end method$' "$smali")"
