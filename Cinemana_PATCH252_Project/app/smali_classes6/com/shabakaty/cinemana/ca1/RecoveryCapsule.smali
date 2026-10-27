@@ -1363,7 +1363,7 @@
     if-eqz v8, :restore_request_false
 
     invoke-static {v10}, Lcom/shabakaty/cinemana/ca1/Queue110;->save(Ljava/util/Properties;)V
-    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
+    # The caller performs one queue rescan after batch sidecar recovery completes.
     const/4 v0, 0x1
     goto :try_end_restore_request
 
