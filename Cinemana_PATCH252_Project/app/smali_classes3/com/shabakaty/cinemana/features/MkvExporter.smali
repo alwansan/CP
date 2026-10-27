@@ -1657,7 +1657,7 @@
 
     .line 383
     :cond_4
-        invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Lease115;->stage(Ljava/io/File;)Ljava/io/File;
+    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Lease115;->stage(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v14
 
@@ -1673,21 +1673,18 @@
     .line 386
     :cond_5
 
-    # Preserve v9's original String type across the capsule call; the helper temporarily needs the MP4 File.
-    move-object/from16 v16, v9
+    # Persist recovery data beside the download; do not remux or inject JSON into the MP4.
+    move-object v16, v12
+    move-object v15, v13
     move-object/from16 v8, p0
     move-object/from16 v9, p1
     move-object/from16 v10, p2
     move-object/from16 v11, p4
-    move-object v15, v12
     move-object v12, v13
     move-object v13, v6
     invoke-static/range {v8 .. v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->prepare(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Ljava/io/File;
-    move-result-object v11
-    move-object/from16 v9, v16
-    move-object/from16 v16, v11
-    move-object v13, v12
-    move-object v12, v15
+    move-object v12, v16
+    move-object v13, v15
 
     new-instance v10, Ljava/util/ArrayList;
 
@@ -2071,7 +2068,7 @@
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
     .line 435
-        const-string v8, "-map_chapters"
+    const-string v8, "-map_chapters"
 
     invoke-interface {v10, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
@@ -3107,28 +3104,18 @@
 
     invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->completed(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)V
 
-    # Verify that the downloads DB row now points to this exact final file and accepts its stored byte count.
-    invoke-static {v1, v4, v7}, Lcom/shabakaty/cinemana/ca1/Commit105;->isPromoted(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;)Z
-    move-result v14
-    if-eqz v14, :capsule_not_promoted
-
-    # Mark the sidecar finalized only after the exact final MKV path/size passed DB verification.
+    # Re-check the exact organized path and byte count before retiring any source files.
+    move-object v10, v1
+    move-object v11, v4
     move-object v12, v7
-    move-object/from16 v13, p1
-    invoke-static {v12, v13}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
-    move-result v15
-    and-int/2addr v15, v14
-    if-eqz v15, :capsule_refresh_keep_ledger
-
-    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v0
-    invoke-static {v1, v0, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeAliasFromSource(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;)V
-    invoke-static {v1, v4}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
-    goto :capsule_refresh_keep_ledger
-
-    :capsule_not_promoted
-    const/4 v15, 0x0
-    :capsule_refresh_keep_ledger
+    move-object v13, v3
+    invoke-static/range {v10 .. v13}, Lcom/shabakaty/cinemana/features/MkvExporter;->promoteDatabaseWithRetry(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/io/File;)Z
+    move-result v16
+    if-eqz v16, :cond_26
+    move-object/from16 v10, p1
+    invoke-static {v7, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->finalizeMkv(Ljava/io/File;Ljava/io/File;)Z
+    move-result v16
+    if-eqz v16, :cond_26
 
     .line 564
     new-instance v0, Ljava/io/File;
@@ -3166,8 +3153,6 @@
     invoke-direct {v0, v2, v4}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
     .line 565
-    # Keep both source copies if the final MKV does not carry the refreshed capsule.
-    if-eqz v15, :cond_23
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->exists()Z
 
     move-result v2
@@ -3186,9 +3171,6 @@
     move-result v9
 
     if-nez v9, :cond_23
-
-    # Do not delete the completed MP4 if refreshing its final MKV capsule failed.
-    if-eqz v15, :cond_23
 
     .line 566
     new-instance v9, Ljava/lang/StringBuilder;
@@ -3229,7 +3211,6 @@
 
     .line 568
     :cond_23
-    if-eqz v15, :cond_24
     invoke-virtual {v0}, Ljava/io/File;->exists()Z
 
     move-result v2
@@ -3281,8 +3262,6 @@
 
     .line 571
     :cond_24
-    # Preserve subtitle inputs as well when refreshing the capsule failed.
-    if-eqz v15, :cond_26
     invoke-interface/range {p2 .. p2}, Ljava/util/List;->iterator()Ljava/util/Iterator;
 
     move-result-object v0
@@ -3352,12 +3331,9 @@
 
     .line 576
     :cond_26
-    # Remove this episode's recovery JSON only after final DB promotion, MP4 removal, and subtitle cleanup.
-    if-eqz v15, :sidecar_cleanup_done
-    move-object v10, v7
-    move-object/from16 v11, p1
-    invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
-    :sidecar_cleanup_done
+    # Sidecar is deleted only when final MKV identity/path is committed and the MP4 source is gone.
+    invoke-static {v7, p1}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z
+
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -6423,10 +6399,6 @@
     nop
 
     .line 95
-    const-string p0, "MKV_QUEUED"
-    const-string p1, "exporter_entered_after_final_mp4_check"
-    invoke-static {v1, p2, p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->recordItem(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
-
     invoke-static {p2, v4, v5, v6, v3}, Lcom/shabakaty/cinemana/features/MkvExporter;->buildJobKey(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v2
@@ -13137,221 +13109,4 @@
     :cond_3
     :goto_2
     return-void
-.end method
-
-
-.method public static onRecoveredVideo(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z
-    .locals 13
-
-    if-eqz p0, :recovered_reject
-    if-eqz p1, :recovered_reject
-    if-eqz p2, :recovered_reject
-
-    invoke-virtual {p0}, Landroid/content/Context;->getApplicationContext()Landroid/content/Context;
-    move-result-object v0
-    if-eqz v0, :recovered_context_ready
-    move-object p0, v0
-
-    :recovered_context_ready
-    invoke-virtual {p2}, Ljava/io/File;->isFile()Z
-    move-result v0
-    if-eqz v0, :recovered_reject
-
-    invoke-virtual {p2}, Ljava/io/File;->length()J
-    move-result-wide v0
-    const-wide/16 v2, 0x400
-    cmp-long v0, v0, v2
-    if-lez v0, :recovered_reject
-
-    invoke-virtual {p2}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v0
-    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->extension(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v0
-    const-string v1, "mp4"
-    invoke-virtual {v1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v0
-    if-eqz v0, :recovered_reject
-
-:recovered_valid_mp4
-    invoke-static {p0, p2}, Lcom/shabakaty/cinemana/ca1/Inputs114;->verified(Ljava/lang/Object;Ljava/io/File;)Ljava/util/List;
-    move-result-object v0
-    if-eqz v0, :recovered_reject
-
-    const-string v0, "title"
-    const-string v1, "getTitle"
-    filled-new-array {v0, v1}, [Ljava/lang/String;
-    move-result-object v0
-    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->stringProperty(Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v4
-
-    const-string v0, "season"
-    const-string v1, "getSeason"
-    filled-new-array {v0, v1}, [Ljava/lang/String;
-    move-result-object v0
-    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->stringProperty(Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v5
-
-    const-string v0, "episodeNumber"
-    const-string v1, "getEpisodeNumber"
-    filled-new-array {v0, v1}, [Ljava/lang/String;
-    move-result-object v0
-    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->stringProperty(Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v6
-
-    invoke-virtual {p2}, Ljava/io/File;->getAbsolutePath()Ljava/lang/String;
-    move-result-object v7
-
-    invoke-static {p1, v4, v5, v6, v7}, Lcom/shabakaty/cinemana/features/MkvExporter;->buildJobKey(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v3
-
-    sget-object v8, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_LOCK:Ljava/lang/Object;
-    monitor-enter v8
-    sget-object v9, Lcom/shabakaty/cinemana/features/MkvExporter;->ACTIVE_JOB_KEYS:Ljava/util/Set;
-    invoke-interface {v9, v3}, Ljava/util/Set;->contains(Ljava/lang/Object;)Z
-    move-result v0
-    if-eqz v0, :recovered_queue_add
-    monitor-exit v8
-    const/4 v0, 0x1
-    return v0
-
-    :recovered_queue_add
-    invoke-interface {v9, v3}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
-    monitor-exit v8
-
-    # Keep stable context/item copies for the exception path before any parameter register is reused.
-    move-object v0, p0
-    move-object v1, p1
-
-    :try_start_recovered_queue
-    const/4 v2, 0x1
-    const-string v8, "QUEUED"
-    invoke-static {p0, p1, v2, v8}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
-
-    # Save original parameters before reusing the highest parameter registers for the contiguous constructor range.
-    move-object v0, p0
-    move-object v1, p1
-    move-object v2, p2
-
-    new-instance v8, Lcom/shabakaty/cinemana/features/MkvExporter$2;
-    move-object v9, v0
-    move-object v10, v3
-    move-object v11, v7
-    move-object v12, v4
-    move-object p0, v5
-    move-object p1, v6
-    move-object p2, v1
-    invoke-direct/range {v8 .. v15}, Lcom/shabakaty/cinemana/features/MkvExporter$2;-><init>(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
-
-    move-object p0, v0
-    move-object p1, v1
-    move-object p2, v2
-
-    sget-object v7, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
-    invoke-interface {v7, v8}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
-    :try_end_recovered_queue
-    .catch Ljava/lang/Throwable; {:try_start_recovered_queue .. :try_end_recovered_queue} :recovered_queue_failed
-
-    const/4 v0, 0x1
-    return v0
-
-    :recovered_queue_failed
-    move-exception v2
-    sget-object v6, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_LOCK:Ljava/lang/Object;
-    monitor-enter v6
-    sget-object v7, Lcom/shabakaty/cinemana/features/MkvExporter;->ACTIVE_JOB_KEYS:Ljava/util/Set;
-    invoke-interface {v7, v3}, Ljava/util/Set;->remove(Ljava/lang/Object;)Z
-    monitor-exit v6
-    const/4 v2, 0x0
-    const-string v6, "FAILED"
-    invoke-static {v0, v1, v2, v6}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
-
-    :recovered_reject
-    const/4 v0, 0x0
-    return v0
-.end method
-
-
-.method public static matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
-    .locals 7
-
-    if-eqz p0, :disk_output_no_match
-    if-eqz p1, :disk_output_no_match
-
-    new-instance v0, Ljava/io/File;
-    invoke-direct {v0, p1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-
-    invoke-virtual {v0}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v1
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvExporter;->extension(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v2
-    const-string v3, "mkv"
-    invoke-virtual {v3, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v2
-    if-eqz v2, :disk_output_no_match
-
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvExporter;->stripExtension(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v1
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvExporter;->normalizeName(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v1
-
-    invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
-    move-result-object v2
-    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvExporter;->stripExtension(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v2
-
-    # Strip only the unique [cnm-token] suffix from the source MP4; don't fuzzy-match episode numbers alone.
-    const-string v3, " [cnm-"
-    invoke-virtual {v2, v3}, Ljava/lang/String;->indexOf(Ljava/lang/String;)I
-    move-result v4
-    if-ltz v4, :disk_output_normalize_source
-    const/4 v5, 0x0
-    invoke-virtual {v2, v5, v4}, Ljava/lang/String;->substring(II)Ljava/lang/String;
-    move-result-object v2
-
-    :disk_output_normalize_source
-    invoke-static {v2}, Lcom/shabakaty/cinemana/features/MkvExporter;->normalizeName(Ljava/lang/String;)Ljava/lang/String;
-    move-result-object v2
-    invoke-virtual {v1, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-    move-result v0
-    return v0
-
-    :disk_output_no_match
-    const/4 v0, 0x0
-    return v0
-.end method
-
-
-.method public static matchesDiskSourceOrOutput(Ljava/io/File;Ljava/lang/String;)Z
-    .locals 4
-
-    if-eqz p0, :source_output_no_match
-    if-eqz p1, :source_output_no_match
-
-    :try_start_source_output_match
-    new-instance v0, Ljava/io/File;
-    invoke-direct {v0, p1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-virtual {p0}, Ljava/io/File;->getCanonicalFile()Ljava/io/File;
-    move-result-object v1
-    invoke-virtual {v0}, Ljava/io/File;->getCanonicalFile()Ljava/io/File;
-    move-result-object v2
-    invoke-virtual {v1, v2}, Ljava/io/File;->equals(Ljava/lang/Object;)Z
-    move-result v3
-    :try_end_source_output_match
-    .catch Ljava/lang/Throwable; {:try_start_source_output_match .. :try_end_source_output_match} :source_output_compare_failed
-
-    if-eqz v3, :source_output_check_target
-    const/4 v0, 0x1
-    return v0
-
-    :source_output_compare_failed
-    move-exception v0
-
-    :source_output_check_target
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->matchesDiskOutputPath(Ljava/io/File;Ljava/lang/String;)Z
-    move-result v0
-    return v0
-
-    :source_output_no_match
-    const/4 v0, 0x0
-    return v0
 .end method
