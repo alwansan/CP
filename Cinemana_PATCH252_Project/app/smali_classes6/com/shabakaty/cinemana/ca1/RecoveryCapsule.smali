@@ -761,6 +761,9 @@ d
     invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
     move-result-object v8
     invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    const-string v7, "mp4MetadataEmbedded"
+    const-string v8, "true"
+    invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     invoke-virtual {v6}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
     move-result-object v7
     invoke-static {v2, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
@@ -775,25 +778,16 @@ d
     move-object v16, v1
     invoke-static/range {v12 .. v16}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->embedMp4(Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/io/File;Ljava/lang/String;)Z
     move-result v8
-    if-eqz v8, :prepare_return_manifest
-    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->length()J
-    move-result-wide v8
-    const-string v10, "embeddedSourceContainerSizeBytes"
-    invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
-    move-result-object v11
-    invoke-virtual {v6, v10, v11}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-    const-string v10, "embeddedSourceContainerLastModifiedMs"
-    invoke-virtual/range {p1 .. p1}, Ljava/io/File;->lastModified()J
-    move-result-wide v8
-    invoke-static {v8, v9}, Ljava/lang/Long;->toString(J)Ljava/lang/String;
-    move-result-object v11
-    invoke-virtual {v6, v10, v11}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
-    const-string v10, "mp4MetadataEmbedded"
-    const-string v11, "true"
-    invoke-virtual {v6, v10, v11}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+    if-nez v8, :prepare_return_manifest
+
+    # The sidecar explicitly reports failure if the MP4 container could not be updated.
+    const-string v7, "mp4MetadataEmbedded"
+    const-string v8, "false"
+    invoke-virtual {v6, v7, v8}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
     invoke-virtual {v6}, Lorg/json/JSONObject;->toString()Ljava/lang/String;
-    move-result-object v10
-    invoke-static {v2, v10}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+    move-result-object v7
+    invoke-static {v2, v7}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->writeText(Ljava/io/File;Ljava/lang/String;)Z
+
     :prepare_return_manifest
     return-object v2
     :try_end_prepare
