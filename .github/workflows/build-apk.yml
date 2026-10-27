@@ -59,40 +59,45 @@ jobs:
           du -sh Cinemana_PATCH252_Project
           ls -lh signing/checkpoint145-debug.keystore
 
-      - name: Verify recovery capsule integration
+      - name: Verify sidecar recovery and legacy media metadata
         shell: bash
         run: |
           set -euo pipefail
           grep -q 'RecoveryCapsule;->prepare' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
-          grep -q 'RecoveryCapsule;->manifestBase64' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
-          grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'RecoveryCapsule;->finalizeMkv' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'RecoveryCapsule;->cleanupCompleted' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
           grep -q 'RecoveryCapsule;->seed(Ljava/lang/Object;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
           grep -q 'RecoveryCapsule;->scheduleDownloadComplete(Ljava/lang/Object;I)V' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
           grep -q 'RecoveryCapsule;->completeDownload(Ljava/lang/Object;I)V' 'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule$DownloadCompleteTask.smali'
-          grep -q 'RecoveryCapsule\$DownloadCompleteTask' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
-          grep -q 'RecoveryCapsule;->importFromMedia' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
-          grep -q 'RecoveryCapsule;->tokenFromCapsuleFile' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
-          grep -q '^\.method private static embedMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
-          grep -q 'RecoveryCapsule;->finalizeMkv' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
-          grep -q 'Commit105;->isPromoted' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
-          grep -q 'RecoveryCapsule;->updateDoneSize' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'cleanupCompleted(Ljava/io/File;Ljava/io/File;)Z' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q 'legacy_simple_metadata_only_no_json_in_media' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          grep -q '"-metadata"' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q '"-map_chapters"' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          grep -q 'language=' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
           grep -q 'sourceComplete' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'downloadResumePolicy' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
           grep -q 'sha256(Ljava/io/File;)Ljava/lang/String;' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
-          grep -q '"sha256"' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
-          grep -q 'dump_attachment:t:0' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
-          grep -q 'DownloadRepair129;->startup(Landroid/content/Context;)V' Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/CinemanaApplication.smali
+          ! grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          ! grep -q 'cnm_recovery_manifest_b64' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          ! grep -q -- '->embedMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali
+          ! grep -q 'RecoveryCapsule;->probeMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
+          ! grep -q 'RecoveryCapsule;->probeMp4' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali
+          ! grep -q 'RecoveryCapsule;->probeMp4' Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali
+          ! grep -q 'RecoveryCapsule;->importFromMedia' Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali
+
           for smali in \
             Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule.smali \
             'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/RecoveryCapsule$DownloadCompleteTask.smali' \
             Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali \
             Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali \
-            Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali; do
+            Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali \
+            Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.smali; do
             method_count="$(grep -c '^\.method ' "$smali")"
             end_count="$(grep -c '^\.end method$' "$smali")"
             test "$method_count" -eq "$end_count"
           done
-          echo "Recovery capsule integration checks: PASS"
+          echo "Sidecar-only recovery and legacy media metadata checks: PASS"
+
       - name: Build unsigned APK
         shell: bash
         run: |
