@@ -3,7 +3,7 @@
 .source "ContinueActions262.java"
 
 # interfaces
-.implements Landroid/view/MenuItem$OnMenuItemClickListener;
+.implements Landroid/view/View$OnClickListener;
 
 
 # annotations
@@ -34,14 +34,12 @@
 
 
 # virtual methods
-.method public onMenuItemClick(Landroid/view/MenuItem;)Z
+.method public onClick(Landroid/view/View;)V
     .locals 0
 
     iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$1;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
     invoke-virtual {p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->begin()V
 
-    const/4 p1, 0x1
-
-    return p1
+    return-void
 .end method

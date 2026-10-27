@@ -224,7 +224,7 @@
 
     invoke-virtual {v2, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    const-string p2, " / "
+    const-string p2, "/"
 
     invoke-virtual {v2, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -265,7 +265,7 @@
 
     move-result p0
 
-    if-nez p0, :cond_52
+    if-nez p0, :cond_53
 
     invoke-virtual {p2}, Ljava/lang/String;->isEmpty()Z
 
@@ -273,14 +273,19 @@
 
     if-eqz p0, :cond_50
 
-    goto :goto_52
+    goto :goto_53
 
     :cond_50
-    const-string p1, " \u00b7 "
+    const-string p0, " \u2022 "
 
-    :cond_52
-    :goto_52
-    invoke-virtual {p3, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    goto :goto_54
+
+    :cond_53
+    :goto_53
+    move-object p0, p1
+
+    :goto_54
+    invoke-virtual {p3, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     invoke-virtual {p3, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -288,7 +293,31 @@
 
     move-result-object p0
 
-    return-object p0
+    invoke-virtual {p0}, Ljava/lang/String;->isEmpty()Z
+
+    move-result p2
+
+    if-eqz p2, :cond_65
+
+    goto :goto_76
+
+    :cond_65
+    new-instance p1, Ljava/lang/StringBuilder;
+
+    const-string p2, "   "
+
+    invoke-direct {p1, p2}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {p1, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {p1, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {p1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p1
+
+    :goto_76
+    return-object p1
 .end method
 
 .method static time(J)Ljava/lang/String;

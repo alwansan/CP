@@ -1,4 +1,4 @@
-name: Build and Sign Cinemana PATCH263 Resume and Delete Fix APK
+name: Build and Sign Cinemana PATCH264 Resume Toolbar and Spacing APK
 
 on:
   workflow_dispatch:
@@ -166,10 +166,10 @@ jobs:
           UNSIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
           ALIGNED="Cinemana_PATCH252_Project/output/Cinemana_PATCH252_aligned.apk"
           if [[ "$GITHUB_REF_NAME" == "fix/download-mkv-self-repair" ]]; then
-            SIGNED_NAME="Cinemana_PATCH263_ResumeDeleteFix_signed.apk"
-            TAG_SUFFIX="resume-delete-fix"
+            SIGNED_NAME="Cinemana_PATCH264_ResumeToolbar_signed.apk"
+            TAG_SUFFIX="resume-toolbar"
             DISPLAY_NAME="Continue Watching and Safe Delete"
-            PATCH_VERSION="263"
+            PATCH_VERSION="264"
           elif [[ "$GITHUB_REF_NAME" == "fix/sequential-sync-dialog-zero" ]]; then
             SIGNED_NAME="Cinemana_PATCH257_SubtitleSyncDialogZero_signed.apk"
             TAG_SUFFIX="sequential-sync-zero"
@@ -209,7 +209,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: "Cinemana PATCH${{ steps.sign.outputs.patch_version }} ${{ steps.sign.outputs.display_name }} #${{ github.run_number }}"
           body: |
-            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'PATCH263 repairs the application/native DAO mixup behind failed download deletion and recovery lookup. Continue Watching keeps a clean work title on home and displays separate season, episode, and playback progress on More. History deletion refreshes the wrapped video adapter immediately. Failed deletions retain existing selections and show bounded error details. Host regression checks and APK assembly/signature verification passed; device testing is still required.' || 'Automated build and APK signature verification completed.' }}
+            ${{ github.ref_name == 'fix/download-mkv-self-repair' && 'PATCH264 formats Continue Watching subtitles with three spaces at each edge and a compact episode/time separator. The More-page trash control is now owned by the page toolbar and follows fragment visibility instead of relying on the shared options menu. Existing history selection and download deletion behavior is preserved. Host checks and APK assembly/signature verification passed; Android device interaction remains to be tested.' || 'Automated build and APK signature verification completed.' }}
             Automated build and APK signature verification completed.
             Source commit: ${{ github.sha }}.
             The APK is signed with signing/checkpoint145-debug.keystore.

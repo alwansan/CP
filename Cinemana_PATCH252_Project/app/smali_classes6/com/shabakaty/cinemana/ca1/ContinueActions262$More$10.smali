@@ -3,12 +3,12 @@
 .source "ContinueActions262.java"
 
 # interfaces
-.implements Ljava/lang/Runnable;
+.implements Landroid/content/DialogInterface$OnClickListener;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->begin()V
+    value = Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->chooseWork()V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,12 +20,21 @@
 # instance fields
 .field final synthetic this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
+.field final synthetic val$keys:Ljava/util/List;
+
 
 # direct methods
-.method constructor <init>(Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;)V
+.method constructor <init>(Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;Ljava/util/List;)V
     .locals 0
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()V"
+        }
+    .end annotation
 
     iput-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+
+    iput-object p2, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->val$keys:Ljava/util/List;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -34,59 +43,67 @@
 
 
 # virtual methods
-.method public run()V
-    .locals 5
+.method public onClick(Landroid/content/DialogInterface;I)V
+    .locals 3
 
-    iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+    iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
-    iget-boolean v0, v0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->mode:Z
+    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->items()Ljava/util/List;
 
-    if-eqz v0, :cond_32
+    move-result-object p1
 
-    iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+    invoke-interface {p1}, Ljava/util/List;->iterator()Ljava/util/Iterator;
 
-    iget-object v0, v0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->recycler:Landroid/view/View;
+    move-result-object p1
 
-    iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+    :cond_a
+    :goto_a
+    invoke-interface {p1}, Ljava/util/Iterator;->hasNext()Z
 
-    iget-object v1, v1, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->recycler:Landroid/view/View;
+    move-result v0
 
-    invoke-virtual {v1}, Landroid/view/View;->getPaddingLeft()I
+    if-eqz v0, :cond_34
+
+    invoke-interface {p1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v0
+
+    iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->val$keys:Ljava/util/List;
+
+    invoke-interface {v1, p2}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Ljava/lang/String;
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->access$200(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-virtual {v1, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v1
 
-    iget-object v2, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+    if-eqz v1, :cond_a
 
-    iget v2, v2, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->oldPadding:I
+    iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
-    iget-object v3, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+    iget-object v1, v1, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->selected:Ljava/util/LinkedHashSet;
 
-    iget-object v3, v3, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->bar:Landroid/widget/LinearLayout;
+    const-string v2, "nb"
 
-    invoke-virtual {v3}, Landroid/widget/LinearLayout;->getHeight()I
+    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->text(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
 
-    move-result v3
+    move-result-object v0
 
-    add-int/2addr v2, v3
+    invoke-virtual {v1, v0}, Ljava/util/LinkedHashSet;->add(Ljava/lang/Object;)Z
 
-    iget-object v3, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+    goto :goto_a
 
-    iget-object v3, v3, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->recycler:Landroid/view/View;
+    :cond_34
+    iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
-    invoke-virtual {v3}, Landroid/view/View;->getPaddingRight()I
+    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->update()V
 
-    move-result v3
-
-    iget-object v4, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$10;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
-
-    iget-object v4, v4, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->recycler:Landroid/view/View;
-
-    invoke-virtual {v4}, Landroid/view/View;->getPaddingBottom()I
-
-    move-result v4
-
-    invoke-virtual {v0, v1, v2, v3, v4}, Landroid/view/View;->setPadding(IIII)V
-
-    :cond_32
     return-void
 .end method

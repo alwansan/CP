@@ -183,11 +183,15 @@ public final class ContinueActions262 {
         }
         throw new IllegalArgumentException("Missing video adapter");
     }
+    public static void visibility(Object fragment,boolean active){
+        try{View root=(View)call(fragment,"getView");More p=pages.get(root);if(p!=null){p.active=active;if(p.fallback!=null)p.fallback.setVisibility(active?View.VISIBLE:View.GONE);}}
+        catch(Exception e){error("continue_more_visibility264",e);}
+    }
     static final class More {
         final WeakReference<View> root;
         final LinkedHashSet<String> selected=new LinkedHashSet<String>();
         Object adapter;View recycler;LinearLayout bar;TextView count;Menu menu;ImageButton fallback;
-        boolean mode;int oldPadding;
+        boolean mode,inlineAction;boolean active=true;int oldPadding;
         More(View v){root=new WeakReference<View>(v);}
         List<Object> items() {
             try {Object a=get(adapter,"a");if(a instanceof List)return new ArrayList<Object>((List<?>)a);}
@@ -198,17 +202,23 @@ public final class ContinueActions262 {
                 View r=root.get();if(r==null)return;
                 recycler=find(r,"RecyclerView");if(recycler==null)throw new IllegalStateException("Missing continue list");
                 adapter=contentAdapter(call(recycler,"getAdapter"));oldPadding=recycler.getPaddingTop();
-                View toolbar=find(r.getRootView(),"Toolbar");
-                if(toolbar!=null) {
+                View toolbar=r.getRootView().findViewById(0x7f0a0280);
+                if(toolbar==null)toolbar=find(r.getRootView(),"Toolbar");
+                fallback=new ImageButton(r.getContext());fallback.setImageResource(android.R.drawable.ic_menu_delete);fallback.setColorFilter(Color.WHITE);
+                fallback.setContentDescription(tr("حذف من أكمل المشاهدة"));fallback.setBackgroundColor(Color.TRANSPARENT);
+                fallback.setOnClickListener(new View.OnClickListener(){public void onClick(View v){begin();}});
+                if(toolbar instanceof ViewGroup) {
+                    // A page-owned toolbar child survives the shared options-menu rebuild.
                     menu=(Menu)call(toolbar,"getMenu");menu.removeItem(MENU_ID);
-                    MenuItem item=menu.add(0,MENU_ID,0,tr("حذف من أكمل المشاهدة"));item.setIcon(android.R.drawable.ic_menu_delete);item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                    item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){public boolean onMenuItemClick(MenuItem item){begin();return true;}});
+                    ViewGroup.LayoutParams params=(ViewGroup.LayoutParams)Class.forName("androidx.appcompat.widget.Toolbar$e").getConstructor(int.class,int.class).newInstance(dp(r.getContext(),48),dp(r.getContext(),48));
+                    Continue106.set(params,"a",Integer.valueOf(Gravity.LEFT|Gravity.CENTER_VERTICAL));
+                    ((ViewGroup)toolbar).addView(fallback,params);
                 } else {
-                    fallback=new ImageButton(r.getContext());fallback.setImageResource(android.R.drawable.ic_menu_delete);fallback.setContentDescription(tr("حذف من أكمل المشاهدة"));fallback.setBackgroundColor(Color.rgb(30,30,30));
+                    inlineAction=true;fallback.setBackgroundColor(Color.rgb(30,30,30));
                     ((ViewGroup)r).addView(fallback,new ViewGroup.LayoutParams(dp(r.getContext(),48),dp(r.getContext(),48)));
-                    fallback.setOnClickListener(new View.OnClickListener(){public void onClick(View v){begin();}});
                     recycler.setPadding(recycler.getPaddingLeft(),oldPadding+dp(r.getContext(),48),recycler.getPaddingRight(),recycler.getPaddingBottom());
                 }
+                fallback.setVisibility(active?View.VISIBLE:View.GONE);
                 call(adapter,"notifyDataSetChanged");
             } catch(Exception e){error("continue_more_toolbar262",e);}
         }
@@ -262,7 +272,7 @@ public final class ContinueActions262 {
             try {List<Object> filtered=new ArrayList<Object>();synchronized(Continue106.class){for(Object m:items())if(Continue106.entries.containsKey(text(m,"nb")))filtered.add(m);}call(adapter,"e",filtered);synchronized(Continue106.class){selected.retainAll(Continue106.entries.keySet());}update();}
             catch(Exception e){error("continue_more_refresh262",e);}
         }
-        void end(){mode=false;selected.clear();View r=root.get();if(r instanceof ViewGroup && bar!=null)((ViewGroup)r).removeView(bar);bar=null;if(recycler!=null)recycler.setPadding(recycler.getPaddingLeft(),oldPadding+(fallback==null?0:dp(recycler.getContext(),48)),recycler.getPaddingRight(),recycler.getPaddingBottom());update();}
-        void detach(){end();if(menu!=null)menu.removeItem(MENU_ID);View r=root.get();if(r instanceof ViewGroup && fallback!=null)((ViewGroup)r).removeView(fallback);adapter=null;recycler=null;}
+        void end(){mode=false;selected.clear();View r=root.get();if(r instanceof ViewGroup && bar!=null)((ViewGroup)r).removeView(bar);bar=null;if(recycler!=null)recycler.setPadding(recycler.getPaddingLeft(),oldPadding+(inlineAction?dp(recycler.getContext(),48):0),recycler.getPaddingRight(),recycler.getPaddingBottom());update();}
+        void detach(){end();if(menu!=null)menu.removeItem(MENU_ID);if(fallback!=null && fallback.getParent() instanceof ViewGroup)((ViewGroup)fallback.getParent()).removeView(fallback);fallback=null;adapter=null;recycler=null;}
     }
 }

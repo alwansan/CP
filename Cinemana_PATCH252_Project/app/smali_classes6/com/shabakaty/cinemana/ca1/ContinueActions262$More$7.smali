@@ -35,13 +35,11 @@
 
 # virtual methods
 .method public onClick(Landroid/view/View;)V
-    .locals 1
+    .locals 0
 
     iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$7;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
-    const/4 v0, 0x1
-
-    invoke-virtual {p1, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->chooseScope(Z)V
+    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->confirm()V
 
     return-void
 .end method

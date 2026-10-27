@@ -29,10 +29,10 @@ public class Flow262Test {
  public static void main(String[] args)throws Exception {
   String[][] titles={{"ناروتو S01","ناروتو"},{"Naruto S01 E29","Naruto"},{"Naruto S٠١","Naruto"},{"S.W.A.T.","S.W.A.T."},{"Season of the Witch","Season of the Witch"},{"The S01 Story","The S01 Story"},{"1899","1899"}};
   for(String[] t:titles)ok(t[1].equals(ContinueActions262.cleanTitle(t[0])),"Title: "+t[0]);
-  ok("S01 E15 · 12:04 / 24:00".equals(ResumeDisplay263.subtitle("1","15",724000,1440000)),"Separate episode and progress");
+  ok("   S01 E15 • 12:04/24:00   ".equals(ResumeDisplay263.subtitle("1","15",724000,1440000)),"Separate episode and progress");
   ok("E02".equals(ResumeDisplay263.episode("","٢")),"Unknown season stays unknown");
   ok("".equals(ResumeDisplay263.episode("0","null")),"No fake zero episode");
-  ok("S01 E02 · 1:00 / 1:00".equals(ResumeDisplay263.subtitle("1","2",90000,60000)),"Progress clamps to duration");
+  ok("   S01 E02 • 1:00/1:00   ".equals(ResumeDisplay263.subtitle("1","2",90000,60000)),"Progress clamps to duration");
   ok("ناروتو".equals(ContinueActions262.cleanTitle("ناروتو S01\u200f")),"Bidi title suffix");
   Adapter adapter=new Adapter();Object footer=new Object();Object wrapped=new androidx.recyclerview.widget.g(new androidx.recyclerview.widget.g(adapter,footer),footer);
   ok(ContinueActions262.contentAdapter(wrapped)==adapter,"Unwrap actual ConcatAdapter video child, preserve footer");
@@ -40,8 +40,10 @@ public class Flow262Test {
   ok(adapter.a.size()==1,"History refresh targets video adapter list setter");
   ok(ContinueActions262.contentAdapter(adapter)==adapter,"Unwrapped adapter supported");
   Continue106.entries.put("resume",new Entry());
-  ok("S01 E15 · 12:04 / 24:00".equals(ContinueActions262.resumeSubtitle(new Model())),"Real field-based resume row binding");
-  Continue106.entries.clear();ok("S01 E15".equals(ContinueActions262.resumeSubtitle(new Model())),"Metadata survives absent progress entry");
+  ok("   S01 E15 • 12:04/24:00   ".equals(ContinueActions262.resumeSubtitle(new Model())),"Real field-based resume row binding");
+  Continue106.entries.clear();ok("   S01 E15   ".equals(ContinueActions262.resumeSubtitle(new Model())),"Metadata survives absent progress entry");
+  ok("   S01 E06 • 0:00/23:24   ".equals(ResumeDisplay263.subtitle("1","6",0,1404000)),"Exact requested spacing and separator");
+  ok("".equals(ResumeDisplay263.subtitle("","",0,0)),"Empty metadata stays empty without phantom spaces");
   TestContext c=context();c.wrongDao=true;boolean rejected=false;
   try{MkvCancel262.prepareDelete(c,new Item("bad"));}catch(IllegalArgumentException expected){rejected=true;}
   ok(rejected && c.values==null,"Wrong DAO rejected before persistent delete intent");c.wrongDao=false;

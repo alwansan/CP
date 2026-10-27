@@ -39,13 +39,7 @@
 
     iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$4;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
-    iget-object p1, p1, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->selected:Ljava/util/LinkedHashSet;
-
-    invoke-virtual {p1}, Ljava/util/LinkedHashSet;->clear()V
-
-    iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$4;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
-
-    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->update()V
+    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->chooseWork()V
 
     return-void
 .end method

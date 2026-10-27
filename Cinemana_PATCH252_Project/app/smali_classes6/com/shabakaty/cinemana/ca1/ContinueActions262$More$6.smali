@@ -39,7 +39,7 @@
 
     iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$6;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
-    const/4 v0, 0x0
+    const/4 v0, 0x1
 
     invoke-virtual {p1, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->chooseScope(Z)V
 

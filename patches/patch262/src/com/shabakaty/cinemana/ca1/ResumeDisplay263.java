@@ -11,7 +11,8 @@ public final class ResumeDisplay263 {
  public static String episode(String season,String episode){String s=number(season),e=number(episode);return (s.isEmpty()?"":"S"+s)+(e.isEmpty()?"":(s.isEmpty()?"":" ")+"E"+e);}
  static String time(long ms){long s=Math.max(0,ms)/1000;return s>=3600?String.format(Locale.ROOT,"%d:%02d:%02d",s/3600,s/60%60,s%60):String.format(Locale.ROOT,"%d:%02d",s/60,s%60);}
  public static String subtitle(String season,String episode,long p,long d){
-  String code=episode(season,episode);String progress=d>0?time(Math.min(Math.max(0,p),d))+" / "+time(d):p>0?time(p):"";
-  return code+(code.isEmpty()||progress.isEmpty()?"":" · ")+progress;
+  String code=episode(season,episode);String progress=d>0?time(Math.min(Math.max(0,p),d))+"/"+time(d):p>0?time(p):"";
+  String line=code+(code.isEmpty()||progress.isEmpty()?"":" • ")+progress;
+  return line.isEmpty()?"":"   "+line+"   ";
  }
 }

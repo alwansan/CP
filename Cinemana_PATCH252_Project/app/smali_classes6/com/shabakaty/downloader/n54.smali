@@ -515,3 +515,20 @@
 
     return-void
 .end method
+
+# The shared toolbar action belongs only to the visible Continue Watching page.
+.method public onResume()V
+    .locals 1
+    invoke-super {p0}, Lcom/shabakaty/downloader/hj;->onResume()V
+    const/4 v0, 0x1
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->visibility(Ljava/lang/Object;Z)V
+    return-void
+.end method
+
+.method public onPause()V
+    .locals 1
+    const/4 v0, 0x0
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->visibility(Ljava/lang/Object;Z)V
+    invoke-super {p0}, Lcom/shabakaty/downloader/hj;->onPause()V
+    return-void
+.end method

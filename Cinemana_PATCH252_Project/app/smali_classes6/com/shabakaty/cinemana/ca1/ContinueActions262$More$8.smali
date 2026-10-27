@@ -39,7 +39,7 @@
 
     iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More$8;->this$0:Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
 
-    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->confirm()V
+    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->end()V
 
     return-void
 .end method
