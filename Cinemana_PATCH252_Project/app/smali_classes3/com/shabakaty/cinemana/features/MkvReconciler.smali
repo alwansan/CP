@@ -916,6 +916,10 @@
 
     if-eqz v0, :scan_root_done
 
+    new-instance v14, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;
+    invoke-direct {v14}, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;-><init>()V
+    invoke-static {v0, v14}, Ljava/util/Arrays;->sort([Ljava/lang/Object;Ljava/util/Comparator;)V
+
     array-length v1, v0
 
     const/4 v2, 0x0
