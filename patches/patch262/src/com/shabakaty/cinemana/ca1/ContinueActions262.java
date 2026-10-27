@@ -26,8 +26,7 @@ public final class ContinueActions262 {
     static void error(String s, Exception e) { Continue106.log(s,e); }
     public static boolean isDetails() { return Boolean.TRUE.equals(details.get()); }
     public static String cleanTitle(String s) {
-        if (s == null) return "";
-        return s.replaceAll("(?iu)\\s+S[0-9٠-٩]+(?:\\s*E[0-9٠-٩]+)?\\s*$", "").trim();
+        return ResumeDisplay263.cleanTitle(s);
     }
     private static String label(Object m) {
         for(String k : new String[]{"customArTitle","arTitle","title","customEnTitle","enTitle"}) {
@@ -48,11 +47,27 @@ public final class ContinueActions262 {
         return null;
     }
     public static void bindHorizontal(Object binding, boolean enabled) {
-        bind(binding,enabled,"U","T","X");
+        bind(binding,enabled,"U","T","P");
     }
     public static void bindWide(Object binding) {
-        try { View v=(View)get(binding,"v"); bind(binding,page(v)!=null,"S","R","M"); }
+        try {
+            View v=(View)get(binding,"v");boolean enabled=page(v)!=null;
+            bind(binding,enabled,"S","R","M");
+            if(enabled){
+                String line=resumeSubtitle(get(binding,"S"));
+                TextView subtitle=(TextView)get(binding,"O");subtitle.setText(line);subtitle.setVisibility(line.isEmpty()?View.GONE:View.VISIBLE);
+                ((View)get(binding,"Q")).setVisibility(View.GONE);
+            }
+        }
         catch(Exception e) { error("continue_wide_bind262",e); }
+    }
+    static String resumeSubtitle(Object model)throws Exception {
+        Object entry;long p=0,d=0;
+        synchronized(Continue106.class){
+            entry=Continue106.entries.get(text(model,"nb"));
+            if(entry!=null){p=((Number)get(entry,"p")).longValue();d=((Number)get(entry,"d")).longValue();}
+        }
+        return ResumeDisplay263.subtitle(text(model,"season"),text(model,"episodeNummer"),p,d);
     }
     private static void bind(Object binding,boolean enabled,String modelField,String listenerField,String titleField) {
         try {
@@ -157,6 +172,17 @@ public final class ContinueActions262 {
         try {View root=(View)call(fragment,"getView");More p=pages.remove(root);if(p!=null)p.detach();}
         catch(Exception e){error("continue_more_detach262",e);}
     }
+    // Native fo3 also uses ConcatAdapter.f().get(0) for videos; its footer is independent.
+    static Object contentAdapter(Object adapter)throws Exception {
+        for(int depth=0;adapter!=null && depth<8;depth++){
+            if(!"androidx.recyclerview.widget.g".equals(adapter.getClass().getName())){
+                if(!(get(adapter,"a") instanceof List))throw new IllegalArgumentException("Missing video list");
+                return adapter;
+            }
+            List<?> children=(List<?>)call(adapter,"f");adapter=children.isEmpty()?null:children.get(0);
+        }
+        throw new IllegalArgumentException("Missing video adapter");
+    }
     static final class More {
         final WeakReference<View> root;
         final LinkedHashSet<String> selected=new LinkedHashSet<String>();
@@ -171,7 +197,7 @@ public final class ContinueActions262 {
             try {
                 View r=root.get();if(r==null)return;
                 recycler=find(r,"RecyclerView");if(recycler==null)throw new IllegalStateException("Missing continue list");
-                adapter=call(recycler,"getAdapter");oldPadding=recycler.getPaddingTop();
+                adapter=contentAdapter(call(recycler,"getAdapter"));oldPadding=recycler.getPaddingTop();
                 View toolbar=find(r.getRootView(),"Toolbar");
                 if(toolbar!=null) {
                     menu=(Menu)call(toolbar,"getMenu");menu.removeItem(MENU_ID);
@@ -233,7 +259,7 @@ public final class ContinueActions262 {
             new AlertDialog.Builder(root.get().getContext()).setTitle(tr("حذف من أكمل المشاهدة")).setMessage(tr("حذف العناصر المحددة من سجل المشاهدة؟")+" ("+snapshot.size()+")").setPositiveButton(tr("حذف"),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface d,int which){remove(snapshot);end();}}).setNegativeButton(tr("إلغاء"),null).show();
         }
         void refresh(){
-            try {List<Object> filtered=new ArrayList<Object>();synchronized(Continue106.class){for(Object m:items())if(Continue106.entries.containsKey(text(m,"nb")))filtered.add(m);}call(adapter,"e",filtered);selected.retainAll(Continue106.entries.keySet());update();}
+            try {List<Object> filtered=new ArrayList<Object>();synchronized(Continue106.class){for(Object m:items())if(Continue106.entries.containsKey(text(m,"nb")))filtered.add(m);}call(adapter,"e",filtered);synchronized(Continue106.class){selected.retainAll(Continue106.entries.keySet());}update();}
             catch(Exception e){error("continue_more_refresh262",e);}
         }
         void end(){mode=false;selected.clear();View r=root.get();if(r instanceof ViewGroup && bar!=null)((ViewGroup)r).removeView(bar);bar=null;if(recycler!=null)recycler.setPadding(recycler.getPaddingLeft(),oldPadding+(fallback==null?0:dp(recycler.getContext(),48)),recycler.getPaddingRight(),recycler.getPaddingBottom());update();}

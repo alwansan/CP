@@ -567,7 +567,7 @@
 .end method
 
 .method public static prepareDelete(Landroid/content/Context;Ljava/lang/Object;)V
-    .locals 13
+    .locals 12
     .annotation system Ldalvik/annotation/Throws;
         value = {
             Ljava/lang/Exception;
@@ -582,327 +582,305 @@
 
     move-result v0
 
-    if-nez v0, :cond_16a
+    if-nez v0, :cond_156
 
-    const-string v0, "getDownloadsDao"
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/DownloadStore263;->combined(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Object;
 
-    const/4 v1, 0x2
+    move-result-object v0
 
-    new-array v2, v1, [Ljava/lang/Object;
+    const-string v1, "cinemanaDownloadItem"
+
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_14e
+
+    const-string v1, "downloadTaskId"
+
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->number(Ljava/lang/Object;Ljava/lang/String;)J
+
+    move-result-wide v1
+
+    long-to-int v2, v1
+
+    const-string v1, "ca1_delete_intent"
 
     const/4 v3, 0x0
 
-    aput-object p0, v2, v3
+    invoke-virtual {p0, v1, v3}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
+
+    move-result-object v1
+
+    invoke-interface {v1}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+
+    move-result-object v1
 
     const/4 v4, 0x1
 
-    aput-object p0, v2, v4
+    invoke-interface {v1, p1, v4}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
 
-    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v1
 
-    move-result-object v0
+    invoke-interface {v1}, Landroid/content/SharedPreferences$Editor;->commit()Z
 
-    const-string v2, "readCombinedById"
+    move-result v1
 
-    new-array v5, v1, [Ljava/lang/Object;
-
-    aput-object v0, v5, v3
-
-    aput-object p1, v5, v4
-
-    invoke-static {v2, v5}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
-    move-result-object v0
-
-    const-string v2, "cinemanaDownloadItem"
-
-    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_162
-
-    const-string v2, "downloadTaskId"
-
-    invoke-static {v0, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->number(Ljava/lang/Object;Ljava/lang/String;)J
-
-    move-result-wide v5
-
-    long-to-int v2, v5
-
-    const-string v5, "ca1_delete_intent"
-
-    invoke-virtual {p0, v5, v3}, Landroid/content/Context;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
-
-    move-result-object v5
-
-    invoke-interface {v5}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
-
-    move-result-object v5
-
-    invoke-interface {v5, p1, v4}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
-
-    move-result-object v5
-
-    invoke-interface {v5}, Landroid/content/SharedPreferences$Editor;->commit()Z
-
-    move-result v5
-
-    if-eqz v5, :cond_15a
+    if-eqz v1, :cond_146
 
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Fresh121;->deleted(Ljava/lang/Object;Ljava/lang/String;)V
 
-    if-eqz v2, :cond_6e
+    if-eqz v2, :cond_59
 
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->active(I)Z
 
-    move-result v5
+    move-result v1
 
-    if-eqz v5, :cond_6e
+    if-eqz v1, :cond_59
 
-    const-string v5, "com.liulishuo.filedownloader.FileDownloader"
+    const-string v1, "com.liulishuo.filedownloader.FileDownloader"
 
-    invoke-static {v5}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+    invoke-static {v1}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
 
-    move-result-object v5
+    move-result-object v1
 
-    const-string v6, "getImpl"
+    const-string v5, "getImpl"
 
-    new-array v7, v3, [Ljava/lang/Object;
+    new-array v6, v3, [Ljava/lang/Object;
 
-    invoke-static {v5, v6, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {v1, v5, v6}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    move-result-object v5
+    move-result-object v1
 
-    const-string v6, "pause"
+    const-string v5, "pause"
 
     invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
 
-    move-result-object v7
+    move-result-object v6
 
-    new-array v8, v4, [Ljava/lang/Object;
+    new-array v7, v4, [Ljava/lang/Object;
 
-    aput-object v7, v8, v3
+    aput-object v6, v7, v3
 
-    invoke-static {v5, v6, v8}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {v1, v5, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    :cond_6e
-    const-string v5, "com.shabakaty.cinemana.features.MkvExporter"
+    :cond_59
+    const-string v1, "com.shabakaty.cinemana.features.MkvExporter"
 
-    invoke-static {v5}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+    invoke-static {v1}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v1
+
+    const-string v5, "JOB_LOCK"
+
+    invoke-static {v1, v5}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
 
     move-result-object v5
 
-    const-string v6, "JOB_LOCK"
+    const-string v6, "ACTIVE_JOB_KEYS"
 
-    invoke-static {v5, v6}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+    invoke-static {v1, v6}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
 
     move-result-object v6
 
-    const-string v7, "ACTIVE_JOB_KEYS"
+    check-cast v6, Ljava/util/Set;
 
-    invoke-static {v5, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+    const-string v7, "JOB_EXECUTOR"
+
+    invoke-static {v1, v7}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    new-instance v7, Ljava/lang/StringBuilder;
+
+    const-string v8, "item:"
+
+    invoke-direct {v7, v8}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v7, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v7
 
-    check-cast v7, Ljava/util/Set;
+    monitor-enter v5
 
-    const-string v8, "JOB_EXECUTOR"
+    :try_start_82
+    instance-of v8, v1, Ljava/util/concurrent/ThreadPoolExecutor;
 
-    invoke-static {v5, v8}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+    if-eqz v8, :cond_c8
 
-    move-result-object v5
+    check-cast v1, Ljava/util/concurrent/ThreadPoolExecutor;
 
-    new-instance v8, Ljava/lang/StringBuilder;
+    new-instance v8, Ljava/util/ArrayList;
 
-    const-string v9, "item:"
-
-    invoke-direct {v8, v9}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
-
-    invoke-virtual {v8, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v8
-
-    monitor-enter v6
-
-    :try_start_97
-    instance-of v9, v5, Ljava/util/concurrent/ThreadPoolExecutor;
-
-    if-eqz v9, :cond_dd
-
-    check-cast v5, Ljava/util/concurrent/ThreadPoolExecutor;
-
-    new-instance v9, Ljava/util/ArrayList;
-
-    invoke-virtual {v5}, Ljava/util/concurrent/ThreadPoolExecutor;->getQueue()Ljava/util/concurrent/BlockingQueue;
-
-    move-result-object v10
-
-    invoke-direct {v9, v10}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
-
-    invoke-virtual {v9}, Ljava/util/ArrayList;->iterator()Ljava/util/Iterator;
+    invoke-virtual {v1}, Ljava/util/concurrent/ThreadPoolExecutor;->getQueue()Ljava/util/concurrent/BlockingQueue;
 
     move-result-object v9
 
-    :cond_aa
-    :goto_aa
-    invoke-interface {v9}, Ljava/util/Iterator;->hasNext()Z
+    invoke-direct {v8, v9}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
 
-    move-result v10
+    invoke-virtual {v8}, Ljava/util/ArrayList;->iterator()Ljava/util/Iterator;
 
-    if-eqz v10, :cond_dd
+    move-result-object v8
 
-    invoke-interface {v9}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    :cond_95
+    :goto_95
+    invoke-interface {v8}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v9
+
+    if-eqz v9, :cond_c8
+
+    invoke-interface {v8}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v9
+
+    check-cast v9, Ljava/lang/Runnable;
+
+    const-string v10, ""
+    :try_end_a3
+    .catchall {:try_start_82 .. :try_end_a3} :catchall_143
+
+    :try_start_a3
+    const-string v11, "val$jobKey"
+
+    invoke-static {v9, v11}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v11
+
+    invoke-static {v11}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
 
     move-result-object v10
+    :try_end_ad
+    .catch Ljava/lang/Exception; {:try_start_a3 .. :try_end_ad} :catch_ae
+    .catchall {:try_start_a3 .. :try_end_ad} :catchall_143
 
-    check-cast v10, Ljava/lang/Runnable;
+    goto :goto_b8
 
-    const-string v11, ""
+    :catch_ae
+    :try_start_ae
+    const-string v11, "key"
+
+    invoke-static {v9, v11}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v11
+
+    invoke-static {v11}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v10
     :try_end_b8
-    .catchall {:try_start_97 .. :try_end_b8} :catchall_157
+    .catch Ljava/lang/Exception; {:try_start_ae .. :try_end_b8} :catch_b8
+    .catchall {:try_start_ae .. :try_end_b8} :catchall_143
 
+    :catch_b8
+    :goto_b8
     :try_start_b8
-    const-string v12, "val$jobKey"
-
-    invoke-static {v10, v12}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v12
-
-    invoke-static {v12}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
-
-    move-result-object v11
-    :try_end_c2
-    .catch Ljava/lang/Exception; {:try_start_b8 .. :try_end_c2} :catch_c3
-    .catchall {:try_start_b8 .. :try_end_c2} :catchall_157
-
-    goto :goto_cd
-
-    :catch_c3
-    :try_start_c3
-    const-string v12, "key"
-
-    invoke-static {v10, v12}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v12
-
-    invoke-static {v12}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
-
-    move-result-object v11
-    :try_end_cd
-    .catch Ljava/lang/Exception; {:try_start_c3 .. :try_end_cd} :catch_cd
-    .catchall {:try_start_c3 .. :try_end_cd} :catchall_157
-
-    :catch_cd
-    :goto_cd
-    :try_start_cd
-    invoke-virtual {v8, v11}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-
-    move-result v11
-
-    if-eqz v11, :cond_aa
-
-    invoke-virtual {v5, v10}, Ljava/util/concurrent/ThreadPoolExecutor;->remove(Ljava/lang/Runnable;)Z
+    invoke-virtual {v7, v10}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v10
 
-    if-eqz v10, :cond_aa
+    if-eqz v10, :cond_95
 
-    invoke-interface {v7, v8}, Ljava/util/Set;->remove(Ljava/lang/Object;)Z
+    invoke-virtual {v1, v9}, Ljava/util/concurrent/ThreadPoolExecutor;->remove(Ljava/lang/Runnable;)Z
 
-    goto :goto_aa
+    move-result v9
 
-    :cond_dd
-    monitor-exit v6
-    :try_end_de
-    .catchall {:try_start_cd .. :try_end_de} :catchall_157
+    if-eqz v9, :cond_95
+
+    invoke-interface {v6, v7}, Ljava/util/Set;->remove(Ljava/lang/Object;)Z
+
+    goto :goto_95
+
+    :cond_c8
+    monitor-exit v5
+    :try_end_c9
+    .catchall {:try_start_b8 .. :try_end_c9} :catchall_143
 
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
-    move-result-wide v9
+    move-result-wide v8
 
-    sget-object v5, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
+    sget-object v1, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
 
-    const-wide/16 v11, 0xf
+    const-wide/16 v10, 0xf
 
-    invoke-virtual {v5, v11, v12}, Ljava/util/concurrent/TimeUnit;->toNanos(J)J
+    invoke-virtual {v1, v10, v11}, Ljava/util/concurrent/TimeUnit;->toNanos(J)J
 
-    move-result-wide v11
+    move-result-wide v10
 
-    add-long/2addr v9, v11
+    add-long/2addr v8, v10
 
-    :goto_eb
-    sget-object v5, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->processes:Ljava/util/concurrent/ConcurrentHashMap;
+    :goto_d6
+    sget-object v1, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->processes:Ljava/util/concurrent/ConcurrentHashMap;
 
-    invoke-virtual {v5, p1}, Ljava/util/concurrent/ConcurrentHashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-virtual {v1, p1}, Ljava/util/concurrent/ConcurrentHashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
 
-    move-result-object v5
+    move-result-object v1
 
-    check-cast v5, Ljava/lang/Process;
+    check-cast v1, Ljava/lang/Process;
 
-    if-eqz v5, :cond_f8
+    if-eqz v1, :cond_e3
 
-    invoke-virtual {v5}, Ljava/lang/Process;->destroy()V
+    invoke-virtual {v1}, Ljava/lang/Process;->destroy()V
 
-    :cond_f8
-    monitor-enter v6
+    :cond_e3
+    monitor-enter v5
 
-    :try_start_f9
-    invoke-interface {v7, v8}, Ljava/util/Set;->contains(Ljava/lang/Object;)Z
+    :try_start_e4
+    invoke-interface {v6, v7}, Ljava/util/Set;->contains(Ljava/lang/Object;)Z
 
-    move-result v5
+    move-result v1
 
-    monitor-exit v6
-    :try_end_fe
-    .catchall {:try_start_f9 .. :try_end_fe} :catchall_154
+    monitor-exit v5
+    :try_end_e9
+    .catchall {:try_start_e4 .. :try_end_e9} :catchall_140
 
-    if-eqz v2, :cond_108
+    if-eqz v2, :cond_f3
 
     invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->active(I)Z
 
+    move-result v10
+
+    if-eqz v10, :cond_f3
+
+    const/4 v10, 0x1
+
+    goto :goto_f4
+
+    :cond_f3
+    const/4 v10, 0x0
+
+    :goto_f4
+    sget-object v11, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->workers:Ljava/util/concurrent/ConcurrentHashMap;
+
+    invoke-virtual {v11, p1}, Ljava/util/concurrent/ConcurrentHashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v11
+
+    check-cast v11, Ljava/lang/Thread;
+
+    if-eqz v11, :cond_106
+
+    invoke-virtual {v11}, Ljava/lang/Thread;->isAlive()Z
+
     move-result v11
 
-    if-eqz v11, :cond_108
+    if-eqz v11, :cond_106
 
     const/4 v11, 0x1
 
-    goto :goto_109
+    goto :goto_107
 
-    :cond_108
+    :cond_106
     const/4 v11, 0x0
 
-    :goto_109
-    sget-object v12, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->workers:Ljava/util/concurrent/ConcurrentHashMap;
+    :goto_107
+    if-nez v1, :cond_12a
 
-    invoke-virtual {v12, p1}, Ljava/util/concurrent/ConcurrentHashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    if-nez v10, :cond_12a
 
-    move-result-object v12
-
-    check-cast v12, Ljava/lang/Thread;
-
-    if-eqz v12, :cond_11b
-
-    invoke-virtual {v12}, Ljava/lang/Thread;->isAlive()Z
-
-    move-result v12
-
-    if-eqz v12, :cond_11b
-
-    const/4 v12, 0x1
-
-    goto :goto_11c
-
-    :cond_11b
-    const/4 v12, 0x0
-
-    :goto_11c
-    if-nez v5, :cond_13e
-
-    if-nez v11, :cond_13e
-
-    if-nez v12, :cond_13e
+    if-nez v11, :cond_12a
 
     const-string p1, "com.shabakaty.cinemana.features.MkvStateStore"
 
@@ -910,46 +888,48 @@
 
     move-result-object p1
 
-    const-string v2, "setBusy"
+    const-string v1, "setBusy"
 
-    const/4 v5, 0x4
+    const/4 v2, 0x4
 
-    new-array v5, v5, [Ljava/lang/Object;
+    new-array v2, v2, [Ljava/lang/Object;
 
-    aput-object p0, v5, v3
+    aput-object p0, v2, v3
 
-    aput-object v0, v5, v4
+    aput-object v0, v2, v4
 
     sget-object p0, Ljava/lang/Boolean;->FALSE:Ljava/lang/Boolean;
 
-    aput-object p0, v5, v1
+    const/4 v0, 0x2
+
+    aput-object p0, v2, v0
 
     const-string p0, "CANCELLED"
 
     const/4 v0, 0x3
 
-    aput-object p0, v5, v0
+    aput-object p0, v2, v0
 
-    invoke-static {p1, v2, v5}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {p1, v1, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
 
     return-void
 
-    :cond_13e
+    :cond_12a
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
-    move-result-wide v11
+    move-result-wide v10
 
-    cmp-long v5, v11, v9
+    cmp-long v1, v10, v8
 
-    if-gez v5, :cond_14c
+    if-gez v1, :cond_138
 
-    const-wide/16 v11, 0x32
+    const-wide/16 v10, 0x32
 
-    invoke-static {v11, v12}, Ljava/lang/Thread;->sleep(J)V
+    invoke-static {v10, v11}, Ljava/lang/Thread;->sleep(J)V
 
-    goto :goto_eb
+    goto :goto_d6
 
-    :cond_14c
+    :cond_138
     new-instance p0, Ljava/io/IOException;
 
     const-string p1, "MKV cancellation is pending; media retained for a safe retry"
@@ -958,27 +938,27 @@
 
     throw p0
 
-    :catchall_154
+    :catchall_140
     move-exception p0
 
-    :try_start_155
-    monitor-exit v6
-    :try_end_156
-    .catchall {:try_start_155 .. :try_end_156} :catchall_154
+    :try_start_141
+    monitor-exit v5
+    :try_end_142
+    .catchall {:try_start_141 .. :try_end_142} :catchall_140
 
     throw p0
 
-    :catchall_157
+    :catchall_143
     move-exception p0
 
-    :try_start_158
-    monitor-exit v6
-    :try_end_159
-    .catchall {:try_start_158 .. :try_end_159} :catchall_157
+    :try_start_144
+    monitor-exit v5
+    :try_end_145
+    .catchall {:try_start_144 .. :try_end_145} :catchall_143
 
     throw p0
 
-    :cond_15a
+    :cond_146
     new-instance p0, Ljava/io/IOException;
 
     const-string p1, "Unable to persist delete intent"
@@ -987,7 +967,7 @@
 
     throw p0
 
-    :cond_162
+    :cond_14e
     new-instance p0, Ljava/io/IOException;
 
     const-string p1, "Download item disappeared before cancellation"
@@ -996,7 +976,7 @@
 
     throw p0
 
-    :cond_16a
+    :cond_156
     new-instance p0, Ljava/io/IOException;
 
     const-string p1, "Missing deletion identity"

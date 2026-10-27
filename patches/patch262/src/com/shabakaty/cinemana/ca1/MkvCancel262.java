@@ -43,8 +43,7 @@ public final class MkvCancel262 {
     }
     public static void prepareDelete(Context context,Object snapshot) throws Exception {
         String id=id(snapshot);if(id.isEmpty())throw new IOException("Missing deletion identity");
-        Object dao=Restart108.exp("getDownloadsDao",new Object[]{context,context});
-        Object row=Restart108.exp("readCombinedById",new Object[]{dao,id});
+        Object row=DownloadStore263.combined(context,id);
         Object item=Restart108.get(row,"cinemanaDownloadItem");
         if(item==null)throw new IOException("Download item disappeared before cancellation");
         int task=(int)Restart108.number(item,"downloadTaskId");

@@ -100,7 +100,7 @@
 
     iput-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->recycler:Landroid/view/View;
 
-    if-eqz v1, :cond_da
+    if-eqz v1, :cond_de
 
     const-string v2, "getAdapter"
 
@@ -109,6 +109,10 @@
     new-array v4, v3, [Ljava/lang/Object;
 
     invoke-static {v1, v2, v4}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->contentAdapter(Ljava/lang/Object;)Ljava/lang/Object;
 
     move-result-object v1
 
@@ -131,16 +135,16 @@
     invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->find(Landroid/view/View;Ljava/lang/String;)Landroid/view/View;
 
     move-result-object v1
-    :try_end_32
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_32} :catch_e2
+    :try_end_36
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_36} :catch_e6
 
     const-string v2, "\u062d\u0630\u0641 \u0645\u0646 \u0623\u0643\u0645\u0644 \u0627\u0644\u0645\u0634\u0627\u0647\u062f\u0629"
 
     const v4, 0x108003c
 
-    if-eqz v1, :cond_65
+    if-eqz v1, :cond_69
 
-    :try_start_39
+    :try_start_3d
     const-string v0, "getMenu"
 
     new-array v5, v3, [Ljava/lang/Object;
@@ -179,9 +183,9 @@
 
     invoke-interface {v0, v1}, Landroid/view/MenuItem;->setOnMenuItemClickListener(Landroid/view/MenuItem$OnMenuItemClickListener;)Landroid/view/MenuItem;
 
-    goto :goto_d0
+    goto :goto_d4
 
-    :cond_65
+    :cond_69
     new-instance v1, Landroid/widget/ImageButton;
 
     invoke-virtual {v0}, Landroid/view/View;->getContext()Landroid/content/Context;
@@ -282,7 +286,7 @@
 
     invoke-virtual {v1, v2, v4, v0, v5}, Landroid/view/View;->setPadding(IIII)V
 
-    :goto_d0
+    :goto_d4
     iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->adapter:Ljava/lang/Object;
 
     const-string v1, "notifyDataSetChanged"
@@ -291,9 +295,9 @@
 
     invoke-static {v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    goto :goto_e8
+    goto :goto_ec
 
-    :cond_da
+    :cond_de
     new-instance v0, Ljava/lang/IllegalStateException;
 
     const-string v1, "Missing continue list"
@@ -301,17 +305,17 @@
     invoke-direct {v0, v1}, Ljava/lang/IllegalStateException;-><init>(Ljava/lang/String;)V
 
     throw v0
-    :try_end_e2
-    .catch Ljava/lang/Exception; {:try_start_39 .. :try_end_e2} :catch_e2
+    :try_end_e6
+    .catch Ljava/lang/Exception; {:try_start_3d .. :try_end_e6} :catch_e6
 
-    :catch_e2
+    :catch_e6
     move-exception v0
 
     const-string v1, "continue_more_toolbar262"
 
     invoke-static {v1, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->error(Ljava/lang/String;Ljava/lang/Exception;)V
 
-    :goto_e8
+    :goto_ec
     return-void
 .end method
 
@@ -1169,7 +1173,7 @@
 
     monitor-enter v1
     :try_end_8
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_8} :catch_4c
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_8} :catch_53
 
     :try_start_8
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->items()Ljava/util/List;
@@ -1213,7 +1217,7 @@
     :cond_2c
     monitor-exit v1
     :try_end_2d
-    .catchall {:try_start_8 .. :try_end_2d} :catchall_49
+    .catchall {:try_start_8 .. :try_end_2d} :catchall_50
 
     :try_start_2d
     iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->adapter:Ljava/lang/Object;
@@ -1230,43 +1234,68 @@
 
     invoke-static {v1, v2, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->selected:Ljava/util/LinkedHashSet;
+    const-class v0, Lcom/shabakaty/cinemana/ca1/Continue106;
 
-    sget-object v1, Lcom/shabakaty/cinemana/ca1/Continue106;->entries:Ljava/util/Map;
+    monitor-enter v0
+    :try_end_3d
+    .catch Ljava/lang/Exception; {:try_start_2d .. :try_end_3d} :catch_53
 
-    invoke-interface {v1}, Ljava/util/Map;->keySet()Ljava/util/Set;
+    :try_start_3d
+    iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->selected:Ljava/util/LinkedHashSet;
 
-    move-result-object v1
+    sget-object v2, Lcom/shabakaty/cinemana/ca1/Continue106;->entries:Ljava/util/Map;
 
-    invoke-virtual {v0, v1}, Ljava/util/LinkedHashSet;->retainAll(Ljava/util/Collection;)Z
+    invoke-interface {v2}, Ljava/util/Map;->keySet()Ljava/util/Set;
 
+    move-result-object v2
+
+    invoke-virtual {v1, v2}, Ljava/util/LinkedHashSet;->retainAll(Ljava/util/Collection;)Z
+
+    monitor-exit v0
+    :try_end_49
+    .catchall {:try_start_3d .. :try_end_49} :catchall_4d
+
+    :try_start_49
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->update()V
-    :try_end_48
-    .catch Ljava/lang/Exception; {:try_start_2d .. :try_end_48} :catch_4c
+    :try_end_4c
+    .catch Ljava/lang/Exception; {:try_start_49 .. :try_end_4c} :catch_53
 
-    goto :goto_52
+    goto :goto_59
 
-    :catchall_49
+    :catchall_4d
+    move-exception v1
+
+    :try_start_4e
+    monitor-exit v0
+    :try_end_4f
+    .catchall {:try_start_4e .. :try_end_4f} :catchall_4d
+
+    :try_start_4f
+    throw v1
+    :try_end_50
+    .catch Ljava/lang/Exception; {:try_start_4f .. :try_end_50} :catch_53
+
+    :catchall_50
     move-exception v0
 
-    :try_start_4a
+    :try_start_51
     monitor-exit v1
-    :try_end_4b
-    .catchall {:try_start_4a .. :try_end_4b} :catchall_49
+    :try_end_52
+    .catchall {:try_start_51 .. :try_end_52} :catchall_50
 
-    :try_start_4b
+    :try_start_52
     throw v0
-    :try_end_4c
-    .catch Ljava/lang/Exception; {:try_start_4b .. :try_end_4c} :catch_4c
+    :try_end_53
+    .catch Ljava/lang/Exception; {:try_start_52 .. :try_end_53} :catch_53
 
-    :catch_4c
+    :catch_53
     move-exception v0
 
     const-string v1, "continue_more_refresh262"
 
     invoke-static {v1, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->error(Ljava/lang/String;Ljava/lang/Exception;)V
 
-    :goto_52
+    :goto_59
     return-void
 .end method
 

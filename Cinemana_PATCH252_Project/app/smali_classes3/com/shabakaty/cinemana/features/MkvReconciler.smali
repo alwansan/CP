@@ -967,7 +967,7 @@
     if-nez v9, :find_path_loop
 
     const-string v9, "readCombinedById"
-    filled-new-array {v2, v8}, [Ljava/lang/Object;
+    filled-new-array {v4, v8}, [Ljava/lang/Object;
     move-result-object v12
     invoke-static {v9, v12}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v9
@@ -1067,7 +1067,7 @@
     if-nez v9, :find_db_row_loop
 
     const-string v9, "readCombinedById"
-    filled-new-array {v1, v8}, [Ljava/lang/Object;
+    filled-new-array {v3, v8}, [Ljava/lang/Object;
     move-result-object v10
     invoke-static {v9, v10}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v9
@@ -1304,8 +1304,8 @@
     if-nez v10, :disk_item_dao_loop
 
     const-string v10, "readCombinedById"
-    # Pass the persistent Downloads DAO (v2), not the live downloader manager (v1).
-    filled-new-array {v2, v9}, [Ljava/lang/Object;
+    # Combined episode rows require the application DAO (v1).
+    filled-new-array {v1, v9}, [Ljava/lang/Object;
     move-result-object v11
     invoke-static {v10, v11}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v10

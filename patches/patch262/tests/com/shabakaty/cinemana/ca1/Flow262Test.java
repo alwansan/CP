@@ -4,8 +4,12 @@ import com.shabakaty.cinemana.features.MkvExporter;
 public class Flow262Test {
  static int assertions;
  static void ok(boolean x,String message){assertions++;if(!x)throw new AssertionError(message);}
+ static final class Adapter {public List<Object> a=new ArrayList<Object>();public void e(List<Object> items){a=items;}}
+ static final class Model {String nb="resume",season="1",episodeNummer="15";}
+ static final class Entry {long p=724000,d=1440000;}
  static final class Item {String id,path;int downloadTaskId;Item(String id){this.id=id;path="/tmp/episode-"+id+".mp4";}}
  static final class TestContext extends ContextWrapper {
+  boolean wrongDao;public Context getApplicationContext(){return this;} public Object h(){return wrongDao?new com.shabakaty.downloader.lz0():new com.shabakaty.downloader.kw0();}
   Map<String,Object> values;TestContext(){super(null);}
   public SharedPreferences getSharedPreferences(String n,int mode){
    if(values==null)values=new HashMap<String,Object>();
@@ -25,7 +29,27 @@ public class Flow262Test {
  public static void main(String[] args)throws Exception {
   String[][] titles={{"ناروتو S01","ناروتو"},{"Naruto S01 E29","Naruto"},{"Naruto S٠١","Naruto"},{"S.W.A.T.","S.W.A.T."},{"Season of the Witch","Season of the Witch"},{"The S01 Story","The S01 Story"},{"1899","1899"}};
   for(String[] t:titles)ok(t[1].equals(ContinueActions262.cleanTitle(t[0])),"Title: "+t[0]);
-  TestContext c=context();Item queued=new Item("queued");Restart108.items.put(queued.id,queued);
+  ok("S01 E15 · 12:04 / 24:00".equals(ResumeDisplay263.subtitle("1","15",724000,1440000)),"Separate episode and progress");
+  ok("E02".equals(ResumeDisplay263.episode("","٢")),"Unknown season stays unknown");
+  ok("".equals(ResumeDisplay263.episode("0","null")),"No fake zero episode");
+  ok("S01 E02 · 1:00 / 1:00".equals(ResumeDisplay263.subtitle("1","2",90000,60000)),"Progress clamps to duration");
+  ok("ناروتو".equals(ContinueActions262.cleanTitle("ناروتو S01\u200f")),"Bidi title suffix");
+  Adapter adapter=new Adapter();Object footer=new Object();Object wrapped=new androidx.recyclerview.widget.g(new androidx.recyclerview.widget.g(adapter,footer),footer);
+  ok(ContinueActions262.contentAdapter(wrapped)==adapter,"Unwrap actual ConcatAdapter video child, preserve footer");
+  ContinueActions262.call(ContinueActions262.contentAdapter(wrapped),"e",Collections.singletonList(new Model()));
+  ok(adapter.a.size()==1,"History refresh targets video adapter list setter");
+  ok(ContinueActions262.contentAdapter(adapter)==adapter,"Unwrapped adapter supported");
+  Continue106.entries.put("resume",new Entry());
+  ok("S01 E15 · 12:04 / 24:00".equals(ContinueActions262.resumeSubtitle(new Model())),"Real field-based resume row binding");
+  Continue106.entries.clear();ok("S01 E15".equals(ContinueActions262.resumeSubtitle(new Model())),"Metadata survives absent progress entry");
+  TestContext c=context();c.wrongDao=true;boolean rejected=false;
+  try{MkvCancel262.prepareDelete(c,new Item("bad"));}catch(IllegalArgumentException expected){rejected=true;}
+  ok(rejected && c.values==null,"Wrong DAO rejected before persistent delete intent");c.wrongDao=false;
+  Set<String> selected=new LinkedHashSet<String>(Arrays.asList("kept","gone"));DownloadStore263.Errors results=new DownloadStore263.Errors();DownloadStore263.recordSuccess(results,new Item("gone"));DownloadStore263.retainFailed(selected,results);
+  ok(selected.equals(Collections.singleton("kept")),"Only failed existing rows remain selected");
+  List<String> errors=new ArrayList<String>();for(int i=0;i<100;i++)errors.add(String.join("",Collections.nCopies(500,"x")));
+  ok(DownloadStore263.errorSummary(errors).length()<1100,"Bulk errors bounded");
+  Item queued=new Item("queued");Restart108.items.put(queued.id,queued);
   ThreadPoolExecutor pool=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);MkvExporter.JOB_EXECUTOR=pool;
   CountDownLatch started=new CountDownLatch(1),release=new CountDownLatch(1);
   pool.execute(()->{started.countDown();try{release.await();}catch(InterruptedException e){Thread.currentThread().interrupt();}});started.await();

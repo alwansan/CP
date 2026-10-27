@@ -400,7 +400,7 @@
 
     const-string v0, "T"
 
-    const-string v1, "X"
+    const-string v1, "P"
 
     const-string v2, "U"
 
@@ -410,51 +410,97 @@
 .end method
 
 .method public static bindWide(Ljava/lang/Object;)V
-    .locals 4
+    .locals 5
 
-    :try_start_0
-    const-string v0, "v"
+    const-string v0, "S"
+
+    :try_start_2
+    const-string v1, "v"
+
+    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Landroid/view/View;
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->page(Landroid/view/View;)Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+
+    move-result-object v1
+
+    const/4 v2, 0x0
+
+    if-eqz v1, :cond_13
+
+    const/4 v1, 0x1
+
+    goto :goto_14
+
+    :cond_13
+    const/4 v1, 0x0
+
+    :goto_14
+    const-string v3, "R"
+
+    const-string v4, "M"
+
+    invoke-static {p0, v1, v0, v3, v4}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->bind(Ljava/lang/Object;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    if-eqz v1, :cond_4f
 
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
 
     move-result-object v0
 
-    check-cast v0, Landroid/view/View;
-
-    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->page(Landroid/view/View;)Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->resumeSubtitle(Ljava/lang/Object;)Ljava/lang/String;
 
     move-result-object v0
 
-    if-eqz v0, :cond_10
+    const-string v1, "O"
 
-    const/4 v0, 0x1
+    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
 
-    goto :goto_11
+    move-result-object v1
 
-    :cond_10
-    const/4 v0, 0x0
+    check-cast v1, Landroid/widget/TextView;
 
-    :goto_11
-    const-string v1, "S"
+    invoke-virtual {v1, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    const-string v2, "R"
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
 
-    const-string v3, "M"
+    move-result v0
 
-    invoke-static {p0, v0, v1, v2, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->bind(Ljava/lang/Object;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-    :try_end_1a
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_1a} :catch_1b
+    const/16 v3, 0x8
 
-    goto :goto_21
+    if-eqz v0, :cond_3a
 
-    :catch_1b
+    const/16 v2, 0x8
+
+    :cond_3a
+    invoke-virtual {v1, v2}, Landroid/widget/TextView;->setVisibility(I)V
+
+    const-string v0, "Q"
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object p0
+
+    check-cast p0, Landroid/view/View;
+
+    invoke-virtual {p0, v3}, Landroid/view/View;->setVisibility(I)V
+    :try_end_48
+    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_48} :catch_49
+
+    goto :goto_4f
+
+    :catch_49
     move-exception p0
 
     const-string v0, "continue_wide_bind262"
 
     invoke-static {v0, p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->error(Ljava/lang/String;Ljava/lang/Exception;)V
 
-    :goto_21
+    :cond_4f
+    :goto_4f
     return-void
 .end method
 
@@ -474,26 +520,110 @@
 .end method
 
 .method public static cleanTitle(Ljava/lang/String;)Ljava/lang/String;
-    .locals 2
+    .locals 0
 
-    const-string v0, ""
-
-    if-nez p0, :cond_5
-
-    return-object v0
-
-    :cond_5
-    const-string v1, "(?iu)\\s+S[0-9\u0660-\u0669]+(?:\\s*E[0-9\u0660-\u0669]+)?\\s*$"
-
-    invoke-virtual {p0, v1, v0}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object p0
-
-    invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ResumeDisplay263;->cleanTitle(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object p0
 
     return-object p0
+.end method
+
+.method static contentAdapter(Ljava/lang/Object;)Ljava/lang/Object;
+    .locals 4
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/lang/Exception;
+        }
+    .end annotation
+
+    const/4 v0, 0x0
+
+    const/4 v1, 0x0
+
+    :goto_2
+    if-eqz p0, :cond_44
+
+    const/16 v2, 0x8
+
+    if-ge v1, v2, :cond_44
+
+    invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+
+    move-result-object v2
+
+    invoke-virtual {v2}, Ljava/lang/Class;->getName()Ljava/lang/String;
+
+    move-result-object v2
+
+    const-string v3, "androidx.recyclerview.widget.g"
+
+    invoke-virtual {v3, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v2
+
+    if-nez v2, :cond_2b
+
+    const-string v0, "a"
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v0
+
+    instance-of v0, v0, Ljava/util/List;
+
+    if-eqz v0, :cond_23
+
+    return-object p0
+
+    :cond_23
+    new-instance p0, Ljava/lang/IllegalArgumentException;
+
+    const-string v0, "Missing video list"
+
+    invoke-direct {p0, v0}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/String;)V
+
+    throw p0
+
+    :cond_2b
+    const-string v2, "f"
+
+    new-array v3, v0, [Ljava/lang/Object;
+
+    invoke-static {p0, v2, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object p0
+
+    check-cast p0, Ljava/util/List;
+
+    invoke-interface {p0}, Ljava/util/List;->isEmpty()Z
+
+    move-result v2
+
+    if-eqz v2, :cond_3d
+
+    const/4 p0, 0x0
+
+    goto :goto_41
+
+    :cond_3d
+    invoke-interface {p0, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object p0
+
+    :goto_41
+    add-int/lit8 v1, v1, 0x1
+
+    goto :goto_2
+
+    :cond_44
+    new-instance p0, Ljava/lang/IllegalArgumentException;
+
+    const-string v0, "Missing video adapter"
+
+    invoke-direct {p0, v0}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/String;)V
+
+    throw p0
 .end method
 
 .method public static detachMore(Ljava/lang/Object;)V
@@ -1256,6 +1386,104 @@
 
     :cond_4f
     return-void
+.end method
+
+.method static resumeSubtitle(Ljava/lang/Object;)Ljava/lang/String;
+    .locals 10
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/lang/Exception;
+        }
+    .end annotation
+
+    const-class v0, Lcom/shabakaty/cinemana/ca1/Continue106;
+
+    monitor-enter v0
+
+    :try_start_3
+    sget-object v1, Lcom/shabakaty/cinemana/ca1/Continue106;->entries:Ljava/util/Map;
+
+    const-string v2, "nb"
+
+    invoke-static {p0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->text(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-interface {v1, v2}, Ljava/util/Map;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    if-eqz v1, :cond_2c
+
+    const-string v2, "p"
+
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Ljava/lang/Number;
+
+    invoke-virtual {v2}, Ljava/lang/Number;->longValue()J
+
+    move-result-wide v2
+
+    const-string v4, "d"
+
+    invoke-static {v1, v4}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Ljava/lang/Number;
+
+    invoke-virtual {v1}, Ljava/lang/Number;->longValue()J
+
+    move-result-wide v4
+
+    move-wide v6, v2
+
+    move-wide v8, v4
+
+    goto :goto_30
+
+    :cond_2c
+    const-wide/16 v2, 0x0
+
+    move-wide v6, v2
+
+    move-wide v8, v6
+
+    :goto_30
+    monitor-exit v0
+    :try_end_31
+    .catchall {:try_start_3 .. :try_end_31} :catchall_42
+
+    const-string v0, "season"
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->text(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v4
+
+    const-string v0, "episodeNummer"
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->text(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v5
+
+    invoke-static/range {v4 .. v9}, Lcom/shabakaty/cinemana/ca1/ResumeDisplay263;->subtitle(Ljava/lang/String;Ljava/lang/String;JJ)Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+
+    :catchall_42
+    move-exception p0
+
+    :try_start_43
+    monitor-exit v0
+    :try_end_44
+    .catchall {:try_start_43 .. :try_end_44} :catchall_42
+
+    throw p0
 .end method
 
 .method static text(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;

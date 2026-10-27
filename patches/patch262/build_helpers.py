@@ -29,7 +29,7 @@ with tempfile.TemporaryDirectory(prefix='patch262-') as t:
   if not a.r8_jar:raise SystemExit('--r8-jar is required to regenerate Smali')
   dex=temp/'dex';dex.mkdir();smali=temp/'smali';smali.mkdir()
   program=[]
-  for prefix in ['ContinueActions262','MkvCancel262']:
+  for prefix in ['ContinueActions262','MkvCancel262','DownloadStore263','ResumeDisplay263']:
    program+=sorted((classes/'com/shabakaty/cinemana/ca1').glob(prefix+'*.class'))
   java_home=Path(shutil.which('java')).resolve().parents[1]
   run('java','-cp',a.r8_jar,'com.android.tools.r8.D8','--release','--min-api','21','--lib',a.android_jar,'--lib',java_home,'--output',dex,*program)
@@ -37,7 +37,7 @@ with tempfile.TemporaryDirectory(prefix='patch262-') as t:
   run('java','com.sun.tools.javac.Main','-cp',apktool,'-d',temp,HERE/'Disassemble262.java')
   run('java','-cp',str(temp)+':'+str(apktool),'Disassemble262',dex/'classes.dex',smali)
   dest=ROOT/'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1'
-  for prefix in ['ContinueActions262','MkvCancel262']:
+  for prefix in ['ContinueActions262','MkvCancel262','DownloadStore263','ResumeDisplay263']:
    for old in dest.glob(prefix+'*.smali'):old.unlink()
   files=list((smali/'com/shabakaty/cinemana/ca1').glob('*.smali'))
   if not files:raise SystemExit('No helper classes generated')

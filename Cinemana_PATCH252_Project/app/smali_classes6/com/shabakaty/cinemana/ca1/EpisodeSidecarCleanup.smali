@@ -282,15 +282,7 @@
     if-eqz p0, :capture_none
     if-eqz p1, :capture_none
     :try_start_capture
-    const-string v0, "getDownloadsDao"
-    filled-new-array {p0, p0}, [Ljava/lang/Object;
-    move-result-object v1
-    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-    move-result-object v0
-    const-string v1, "readCombinedById"
-    filled-new-array {v0, p1}, [Ljava/lang/Object;
-    move-result-object v2
-    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/ca1/Restart108;->exp(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/DownloadStore263;->combined(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Object;
     move-result-object v0
     const-string v1, "cinemanaDownloadItem"
     invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;

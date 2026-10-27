@@ -1675,9 +1675,9 @@
     .locals 9
 
     .line 11
-    new-instance v0, Ljava/util/ArrayList;
+    new-instance v0, Lcom/shabakaty/cinemana/ca1/DownloadStore263$Errors;
 
-    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
+    invoke-direct {v0}, Lcom/shabakaty/cinemana/ca1/DownloadStore263$Errors;-><init>()V
 
     invoke-interface {p0}, Ljava/util/List;->iterator()Ljava/util/Iterator;
 
@@ -1742,6 +1742,7 @@
 
     :cond_1
     invoke-static {p1, v5, v2, v3}, Lcom/shabakaty/cinemana/ca1/Delete94;->delete(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+    invoke-static {v0, v5}, Lcom/shabakaty/cinemana/ca1/DownloadStore263;->recordSuccess(Ljava/util/List;Ljava/lang/Object;)V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 

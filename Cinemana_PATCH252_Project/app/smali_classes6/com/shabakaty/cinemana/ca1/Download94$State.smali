@@ -2354,8 +2354,7 @@
 
     :cond_0
     iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/Download94$State;->selected:Ljava/util/LinkedHashSet;
-
-    invoke-virtual {v0}, Ljava/util/LinkedHashSet;->clear()V
+    invoke-static {v0, p2}, Lcom/shabakaty/cinemana/ca1/DownloadStore263;->retainFailed(Ljava/util/Set;Ljava/util/List;)V
 
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/ca1/Download94$State;->update()V
 
@@ -2391,7 +2390,7 @@
 
     const-string v3, "\n"
 
-    invoke-static {v3, p2}, Landroid/text/TextUtils;->join(Ljava/lang/CharSequence;Ljava/lang/Iterable;)Ljava/lang/String;
+    invoke-static {p2}, Lcom/shabakaty/cinemana/ca1/DownloadStore263;->errorSummary(Ljava/util/List;)Ljava/lang/String;
 
     move-result-object p2
 

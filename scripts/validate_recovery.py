@@ -24,7 +24,7 @@ names = {'MkvReconciler', 'MkvExporter', 'MkvExporter$Recovered',
          'RecoveryCapsule', 'Delete94', 'kw0$l', 'Dismiss109', 'Continue106', 'i42', 'n54', 'WideVerticalVideosView'}
 errors = []
 for cls, (path, source, methods) in classes.items():
-    if path.stem not in names and not path.stem.startswith(('ContinueActions262','MkvCancel262')):
+    if path.stem not in names and not path.stem.startswith(('ContinueActions262','MkvCancel262','DownloadStore263','ResumeDisplay263')):
         continue
     for target, sig in set(re.findall(r'invoke-static[^\n]*, (L[^;]+;)->([^\s]+)', source)):
         if target not in classes:
@@ -77,6 +77,18 @@ if 'scheduleWithFixedDelay' in reconciler:
 observer = next(v[1] for k,v in classes.items() if k.endswith('/MkvReconciler$2;'))
 if '->reconcileToken' in observer or '->reconcileAll' in observer:
     errors.append('FileObserver does synchronous repair I/O')
+# The native data-binding source is the authority for the displayed title field.
+helper=(Path(__file__).resolve().parents[1]/'patches/patch262/src/com/shabakaty/cinemana/ca1/ContinueActions262.java').read_text()
+home=next(v[1] for k,v in classes.items() if k.endswith('/g42;'))
+title_binding=re.search(r'f42;->([A-Z]):Landroid/widget/TextView;\s+invoke-static \{[^}]+\}, Lcom/shabakaty/downloader/gm4;->e',home)
+selector=re.search(r'bind\(binding,enabled,"U","T","([A-Z])"\)',helper)
+if not title_binding or not selector or title_binding[1]!=selector[1]:
+    errors.append('Continue Watching home title selector does not match native localized title binding')
+# Combined episode readers must use h() application DAO, never the native lz0 DAO.
+for method,reg in [('findDatabaseItemForPath','v4'),('findDatabaseItemForToken','v3'),('findItemForDiskSource','v1')]:
+    body=re.search(r'\.method [^\n]* '+method+r'\(.*?\.end method',reconciler,re.S)
+    if not body or not re.search(r'"readCombinedById"\s+(?:#[^\n]*\s+)?filled-new-array \{'+reg+r',',body[0]):
+        errors.append(method+': incorrect application DAO receiver')
 for err in errors:
     print(err, file=sys.stderr)
 if errors:
