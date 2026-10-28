@@ -230,8 +230,8 @@ public final class LocalRuntime {
      // Populate compatibility rows on a fresh installation before restoring flags/progress.
      java.util.LinkedHashMap<String,Item> all=new java.util.LinkedHashMap<>();
      for(ListKind k:new ListKind[]{ListKind.FAVORITE,ListKind.WATCH_LATER,ListKind.WATCHED,ListKind.PROGRESS,ListKind.SUBSCRIPTION})for(Item item:data().list(k))all.put(item.id,item);
-     java.util.LinkedHashMap<String,String> types=new java.util.LinkedHashMap<>();android.database.Cursor columns=db.rawQuery("PRAGMA table_info(video_model)",null);
-     try{while(columns.moveToNext())types.put(columns.getString(1),columns.getString(2));}finally{columns.close();}
+     java.util.LinkedHashMap<String,String> types=new java.util.LinkedHashMap<>();android.database.Cursor modelColumns=db.rawQuery("PRAGMA table_info(video_model)",null);
+     try{while(modelColumns.moveToNext())types.put(modelColumns.getString(1),modelColumns.getString(2));}finally{modelColumns.close();}
      for(Item item:all.values()){
       JSONObject model=model(item);android.content.ContentValues row=new android.content.ContentValues();
       for(Map.Entry<String,String> col:types.entrySet()){

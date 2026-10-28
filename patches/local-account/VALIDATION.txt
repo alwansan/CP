@@ -3,11 +3,11 @@ Base: 06ec99add982ace4b35898f763b31ec532a5a7e5
 Branch: feature/local-account
 PASS host persistence, schema, ZIP round-trip, path rejection, truncated ZIP rejection, rollback on invalid import, baseline, deduplication, unsubscribe, restore baseline, progress/config reopen, interrupted-write recovery.
 PASS native API bridge behavior: personal operations stay local, zero-based pagination, remote catalogue delegation, cached-details fallback, server comments rejected.
-PASS 911 generated helper member references checked against actual project classes; platform-inherited members excluded from declaration-only checks.
+PASS 924 generated helper member references checked against actual project classes; platform-inherited members excluded from declaration-only checks.
 PASS existing recovery linkage check and 8 existing regression tests.
 PASS full Apktool build with all original dex files plus classes11.dex.
 PASS zipalign 4-byte alignment and apksigner v1/v2/v3 signature verification.
 NOT RUN Android/ART execution, visual device QA, live episode API access from user's network, actual background notification delivery or device SAF interactions.
 No raw user logs or authentication credentials were added to this patch.
-Unsigned SHA-256: c178b8a6ec9e8d404b8813dc26762837820be24eeddde430a930995bebba2759
-Signed SHA-256: a8206a6a8044c8c6148f4ba3400352b6626d0eebf36f4a13658519709d687ce0
+Unsigned SHA-256: 20abc0465ae4ea8890434a60742206f56d9d6b5ad225c311c13f332252666033
+Signed SHA-256: ce855e60e1c13de99d1afd0c1a083204a9e51704ed54b15852c344152aa168d3
