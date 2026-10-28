@@ -55,7 +55,7 @@
     .catchall {:try_start_1 .. :try_end_8} :catchall_10
 
     :goto_8
-    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->access$100()Ljava/util/concurrent/atomic/AtomicBoolean;
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->access$200()Ljava/util/concurrent/atomic/AtomicBoolean;
 
     move-result-object v1
 
@@ -84,7 +84,7 @@
     return-void
 
     :goto_1a
-    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->access$100()Ljava/util/concurrent/atomic/AtomicBoolean;
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->access$200()Ljava/util/concurrent/atomic/AtomicBoolean;
 
     move-result-object v2
 

@@ -40,7 +40,7 @@
 
 # virtual methods
 .method public invoke(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;
-    .locals 21
+    .locals 22
     .annotation system Ldalvik/annotation/Throws;
         value = {
             Ljava/lang/Throwable;
@@ -140,7 +140,7 @@
 
     move-result v4
 
-    if-nez v4, :cond_bd
+    if-nez v4, :cond_da
 
     const-string v4, "m"
 
@@ -148,14 +148,14 @@
 
     move-result v4
 
-    if-eqz v4, :cond_5d
+    if-eqz v4, :cond_5e
 
-    goto :goto_bd
+    goto/16 :goto_da
 
-    :cond_5d
-    const-string v19, "r"
-
+    :cond_5e
     const-string v20, "x"
+
+    const-string v21, "l"
 
     const-string v6, "a"
 
@@ -183,7 +183,9 @@
 
     const-string v18, "f"
 
-    filled-new-array/range {v6 .. v20}, [Ljava/lang/String;
+    const-string v19, "r"
+
+    filled-new-array/range {v6 .. v21}, [Ljava/lang/String;
 
     move-result-object v3
 
@@ -195,7 +197,7 @@
 
     move-result v3
 
-    if-eqz v3, :cond_94
+    if-eqz v3, :cond_97
 
     new-instance v3, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;
 
@@ -207,8 +209,8 @@
 
     return-object v3
 
-    :cond_94
-    :try_start_94
+    :cond_97
+    :try_start_97
     iget-object v3, v1, Lcom/shabakaty/cinemana/local/LocalRuntime$3;->val$remote:Ljava/lang/Object;
 
     move-object/from16 v4, p2
@@ -221,13 +223,13 @@
 
     invoke-virtual {v2, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
-    move-result v2
+    move-result v4
 
-    if-eqz v2, :cond_b6
+    if-eqz v4, :cond_b9
 
-    instance-of v2, v3, Lcom/shabakaty/downloader/f74;
+    instance-of v4, v3, Lcom/shabakaty/downloader/f74;
 
-    if-eqz v2, :cond_b6
+    if-eqz v4, :cond_b9
 
     new-instance v2, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;
 
@@ -240,15 +242,42 @@
     move-result-object v0
 
     invoke-direct {v2, v3, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;-><init>(Lcom/shabakaty/downloader/f74;Ljava/lang/String;)V
-    :try_end_b5
-    .catch Ljava/lang/reflect/InvocationTargetException; {:try_start_94 .. :try_end_b5} :catch_b7
 
     return-object v2
 
-    :cond_b6
+    :cond_b9
+    const-string v4, "b"
+
+    invoke-virtual {v2, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v2
+
+    if-eqz v2, :cond_d3
+
+    instance-of v2, v3, Lcom/shabakaty/downloader/qf1;
+
+    if-eqz v2, :cond_d3
+
+    new-instance v2, Lcom/shabakaty/cinemana/local/LocalRuntime$EpisodeFlow;
+
+    check-cast v3, Lcom/shabakaty/downloader/qf1;
+
+    aget-object v0, v0, v5
+
+    invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-direct {v2, v3, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime$EpisodeFlow;-><init>(Lcom/shabakaty/downloader/qf1;Ljava/lang/String;)V
+    :try_end_d2
+    .catch Ljava/lang/reflect/InvocationTargetException; {:try_start_97 .. :try_end_d2} :catch_d4
+
+    return-object v2
+
+    :cond_d3
     return-object v3
 
-    :catch_b7
+    :catch_d4
     move-exception v0
 
     invoke-virtual {v0}, Ljava/lang/reflect/InvocationTargetException;->getCause()Ljava/lang/Throwable;
@@ -257,22 +286,22 @@
 
     throw v0
 
-    :cond_bd
-    :goto_bd
+    :cond_da
+    :goto_da
     invoke-virtual {v2, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v2
 
-    if-eqz v2, :cond_c6
+    if-eqz v2, :cond_e3
 
     const-string v2, "parental"
 
-    goto :goto_c8
+    goto :goto_e5
 
-    :cond_c6
+    :cond_e3
     const-string v2, "translation"
 
-    :goto_c8
+    :goto_e5
     aget-object v0, v0, v5
 
     invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;

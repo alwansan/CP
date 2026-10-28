@@ -52,14 +52,14 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH266_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH266_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH266_signed.apk
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH266_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH267_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH267_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH267_signed.apk
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH267_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-Local-Account-PATCH266
+          name: Cinemana-Local-Account-PATCH267
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH266_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH267_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           if-no-files-found: error

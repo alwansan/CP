@@ -13,14 +13,23 @@ public class RuntimeBridgeTest {
   UserListApi list=(UserListApi)await(api.e("0","ignored","3"));check(list.data.size()==1&&list.data.get(0).arTitle.equals("فيلم"));
   check(((UserListApi)await(api.e("1","ignored","3"))).data.isEmpty());
   check(((r25)await(api.a("100"))).favorit);
-  await(api.d("ignored","100","3"));check(!((r25)await(api.a("100"))).favorit);
-  await(api.t("ignored","200","2"));check(((r25)await(api.a("200"))).watchLater.equals("1"));
+  check(((LogoutResponseApi)await(api.d("ignored","100","3"))).status.equals("true"));check(!((r25)await(api.a("100"))).favorit);
+  check(((LogoutResponseApi)await(api.t("ignored","200","2"))).status.equals("true"));check(((r25)await(api.a("200"))).watchLater.equals("1"));
   await(api.t("ignored","200","1"));check(((r25)await(api.a("200"))).watched);
   try{await(api.f("ignored","200","private"));throw new AssertionError();}catch(IOException expected){}
+  check(((LogoutResponseApi)await(api.C("ignored","200","1"))).status.equals("true"));
+  check(((java.util.List)await(api.l("442"))).isEmpty());
+  LocalRuntime.store.put(ListKind.WATCHED,new Item("443","حلقة",0,"{\"nb\":\"443\",\"rootSeries\":\"442\"}"));
+  check(((java.util.List)await(api.l("442"))).equals(java.util.Arrays.asList("443")));
   check(remote[0]==0);
+  final int[] signals={0};final boolean[] cancelled={false};
+  qf1 source=new qf1(){public void i(ef4 subscriber){subscriber.d(new lf4(){public void cancel(){cancelled[0]=true;}public void u(long n){check(n==2);subscriber.e(java.util.Arrays.asList("episode"));subscriber.a();}});}};
+  new LocalRuntime.EpisodeFlow(source,"442").i(new wg1(){public void d(lf4 subscription){subscription.u(2);}public void e(Object v){check(((java.util.List)v).size()==1);signals[0]++;}public void a(){signals[0]++;}public void b(Throwable t){throw new AssertionError(t);}});
+  check(signals[0]==2&&!cancelled[0]);
+
   LocalRuntime.store.put(ListKind.FAVORITE,new Item("100","فيلم",0,"{\"nb\":\"100\",\"ar_title\":\"فيلم\"}"));
   check(((VideoModelApi)await(api.A("100","none"))).nb.equals("100"));
   try{await(api.A("9","none"));throw new AssertionError();}catch(Exception expected){}check(remote[0]==2);
-  System.out.println("PASS native API routing: local reads/mutations/status/pagination, blocked server comments, remote catalogue delegation");
+  System.out.println("PASS response contract true, local episode highlights, catalogue demand/completion; native API routing: local reads/mutations/status/pagination, blocked server comments, remote catalogue delegation");
  }finally{LocalRuntime.IO.shutdownNow();LocalRuntime.NETWORK.shutdownNow();}}
 }

@@ -1,13 +1,15 @@
-PATCH266 local-account validation, 2026-10-28
+PATCH267 local-account validation, 2026-10-28
 Base: 06ec99add982ace4b35898f763b31ec532a5a7e5
 Branch: feature/local-account
 PASS host persistence, schema, ZIP round-trip, path rejection, truncated ZIP rejection, rollback on invalid import, baseline, deduplication, unsubscribe, restore baseline, progress/config reopen, interrupted-write recovery.
 PASS native API bridge behavior: personal operations stay local, zero-based pagination, remote catalogue delegation, cached-details fallback, server comments rejected.
-PASS 924 generated helper member references checked against actual project classes; platform-inherited members excluded from declaration-only checks.
+PASS 1044 generated helper member references checked against actual project classes; platform-inherited members excluded from declaration-only checks.
 PASS existing recovery linkage check and 8 existing regression tests.
 PASS full Apktool build with all original dex files plus classes11.dex.
 PASS zipalign 4-byte alignment and apksigner v1/v2/v3 signature verification.
 NOT RUN Android/ART execution, visual device QA, live episode API access from user's network, actual background notification delivery or device SAF interactions.
 No raw user logs or authentication credentials were added to this patch.
-Unsigned SHA-256: 20abc0465ae4ea8890434a60742206f56d9d6b5ad225c311c13f332252666033
-Signed SHA-256: ce855e60e1c13de99d1afd0c1a083204a9e51704ed54b15852c344152aa168d3
+Unsigned SHA-256: 5bddb22be0d3e76af66b3785f78db1d2a19bd2e7d0a88c3b874de41a52e47240
+Signed SHA-256: b1c24711daf42447a925da971743bccc7bb577bb786a3d055b07ef3e18c97a8b
+PASS PATCH267: literal true mutation response contract, local highlightEpisode root filtering, catalogue demand/completion forwarding, native response/HTTP/poster linkage, single edit entry, three original icons with foreground tint.
+POSTER NOTE: bounded catalogue-thumbnail fallback implemented; live device image delivery not verified.

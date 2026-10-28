@@ -22,9 +22,11 @@
 
 .field final synthetic val$observer:Lcom/shabakaty/downloader/y74;
 
+.field final synthetic val$started:J
+
 
 # direct methods
-.method constructor <init>(Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;Lcom/shabakaty/downloader/y74;)V
+.method constructor <init>(Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;Lcom/shabakaty/downloader/y74;J)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -36,6 +38,8 @@
 
     iput-object p2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;->val$observer:Lcom/shabakaty/downloader/y74;
 
+    iput-wide p3, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;->val$started:J
+
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -45,6 +49,38 @@
 # virtual methods
 .method public b(Ljava/lang/Throwable;)V
     .locals 3
+
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    const-string v1, "detail_failed id="
+
+    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;->this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;
+
+    iget-object v1, v1, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;->id:Ljava/lang/String;
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->safeId(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v1, " type="
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->causeTypes(Ljava/lang/Throwable;)Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
 
     sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->IO:Ljava/util/concurrent/ScheduledExecutorService;
 
@@ -70,31 +106,49 @@
 .end method
 
 .method synthetic lambda$b$0$com-shabakaty-cinemana-local-LocalRuntime$CaptureSingle$1(Lcom/shabakaty/downloader/y74;Ljava/lang/Throwable;)V
-    .locals 1
+    .locals 2
 
-    :try_start_0
+    const-string v0, "detail_local_fallback id="
+
+    :try_start_2
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;->this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;
+
+    iget-object v1, v1, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;->id:Ljava/lang/String;
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->cachedModel(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    invoke-interface {p1, v1}, Lcom/shabakaty/downloader/y74;->onSuccess(Ljava/lang/Object;)V
+
+    new-instance v1, Ljava/lang/StringBuilder;
+
+    invoke-direct {v1, v0}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;->this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;
 
     iget-object v0, v0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;->id:Ljava/lang/String;
 
-    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->cachedModel(Ljava/lang/String;)Ljava/lang/Object;
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->safeId(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v0
 
-    invoke-interface {p1, v0}, Lcom/shabakaty/downloader/y74;->onSuccess(Ljava/lang/Object;)V
+    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    const-string v0, "detail_local_fallback"
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
 
     invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
-    :try_end_10
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_10} :catch_11
+    :try_end_24
+    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_24} :catch_25
 
-    goto :goto_14
+    goto :goto_28
 
-    :catch_11
+    :catch_25
     invoke-interface {p1, p2}, Lcom/shabakaty/downloader/y74;->b(Ljava/lang/Throwable;)V
 
-    :goto_14
+    :goto_28
     return-void
 .end method
 

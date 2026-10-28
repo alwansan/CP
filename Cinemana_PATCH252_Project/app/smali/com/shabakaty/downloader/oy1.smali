@@ -427,6 +427,9 @@
 .method public static final c(Lcom/facebook/drawee/view/SimpleDraweeView;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/String;)V
     .locals 2
 
+    invoke-static {p0, p1, p4}, Lcom/shabakaty/cinemana/local/PosterFallback;->source(Landroid/view/View;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object p1
+
     const-string v0, "view"
 
     invoke-static {p0, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
@@ -540,6 +543,8 @@
 
     move-result-object p1
 
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/local/PosterFallback;->controller(Landroid/view/View;Ljava/lang/Object;)V
+
     invoke-virtual {p0, p1}, Lcom/facebook/drawee/view/DraweeView;->setController(Lcom/facebook/drawee/interfaces/DraweeController;)V
 
     goto :goto_4
@@ -571,6 +576,8 @@
     invoke-virtual {v0}, Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;->a()Lcom/facebook/drawee/controller/AbstractDraweeController;
 
     move-result-object p1
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/local/PosterFallback;->controller(Landroid/view/View;Ljava/lang/Object;)V
 
     invoke-virtual {p0, p1}, Lcom/facebook/drawee/view/DraweeView;->setController(Lcom/facebook/drawee/interfaces/DraweeController;)V
 

@@ -321,9 +321,13 @@
     move-result-object v0
 
     .line 23
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->httpRequest(Ljava/lang/Object;)V
+
     invoke-interface {p1, v0}, Lcom/shabakaty/downloader/w22$a;->a(Lcom/shabakaty/downloader/vr3;)Lcom/shabakaty/downloader/ws3;
 
     move-result-object p1
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->httpResponse(Ljava/lang/Object;)V
 
     return-object p1
 .end method

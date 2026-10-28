@@ -14,11 +14,21 @@
 # instance fields
 .field private avatar:Landroid/widget/ImageView;
 
+.field private background:I
+
 .field private busy:Z
 
 .field private content:Landroid/widget/LinearLayout;
 
+.field private draftName:Ljava/lang/String;
+
+.field private muted:I
+
 .field private name:Landroid/widget/EditText;
+
+.field private primary:I
+
+.field private raised:I
 
 .field private restartAfterImport:Z
 
@@ -34,71 +44,7 @@
     return-void
 .end method
 
-.method static synthetic access$000(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;I)V
-    .locals 0
-
-    invoke-direct {p0, p1, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->pick(Ljava/lang/String;I)V
-
-    return-void
-.end method
-
-.method static synthetic access$100(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Landroid/widget/EditText;
-    .locals 0
-
-    iget-object p0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
-
-    return-object p0
-.end method
-
-.method static synthetic access$1000(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;)V
-    .locals 0
-
-    invoke-direct {p0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->openVideo(Ljava/lang/String;)V
-
-    return-void
-.end method
-
-.method static synthetic access$200(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;)V
-    .locals 0
-
-    invoke-direct {p0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->toast(Ljava/lang/String;)V
-
-    return-void
-.end method
-
-.method static synthetic access$300(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)[B
-    .locals 0
-
-    iget-object p0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->selected:[B
-
-    return-object p0
-.end method
-
-.method static synthetic access$400(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Lcom/shabakaty/cinemana/local/LocalAccountActivity$Task;Ljava/lang/String;)V
-    .locals 0
-
-    invoke-direct {p0, p1, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->work(Lcom/shabakaty/cinemana/local/LocalAccountActivity$Task;Ljava/lang/String;)V
-
-    return-void
-.end method
-
-.method static synthetic access$500(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;)V
-    .locals 0
-
-    invoke-direct {p0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->showList(Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;)V
-
-    return-void
-.end method
-
-.method static synthetic access$600(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Z
-    .locals 0
-
-    iget-boolean p0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->busy:Z
-
-    return p0
-.end method
-
-.method static synthetic access$602(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Z)Z
+.method static synthetic access$002(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Z)Z
     .locals 0
 
     iput-boolean p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->busy:Z
@@ -106,15 +52,15 @@
     return p1
 .end method
 
-.method static synthetic access$700(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Landroid/widget/ImageView;
+.method static synthetic access$100(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;)V
     .locals 0
 
-    iget-object p0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+    invoke-direct {p0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->toast(Ljava/lang/String;)V
 
-    return-object p0
+    return-void
 .end method
 
-.method static synthetic access$800(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Z
+.method static synthetic access$200(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Z
     .locals 0
 
     iget-boolean p0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->restartAfterImport:Z
@@ -122,7 +68,7 @@
     return p0
 .end method
 
-.method static synthetic access$900(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+.method static synthetic access$300(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
     .locals 0
 
     invoke-direct {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->render()V
@@ -130,8 +76,8 @@
     return-void
 .end method
 
-.method private button(Ljava/lang/String;Ljava/lang/Runnable;)V
-    .locals 4
+.method private button(Ljava/lang/String;Ljava/lang/Runnable;Z)V
+    .locals 2
 
     new-instance v0, Landroid/widget/Button;
 
@@ -139,65 +85,152 @@
 
     invoke-virtual {v0, p1}, Landroid/widget/Button;->setText(Ljava/lang/CharSequence;)V
 
+    const/high16 p1, 0x41800000    # 16.0f
+
+    invoke-virtual {v0, p1}, Landroid/widget/Button;->setTextSize(F)V
+
     const/4 p1, 0x0
 
     invoke-virtual {v0, p1}, Landroid/widget/Button;->setAllCaps(Z)V
 
-    iget-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+    if-eqz p3, :cond_16
 
-    new-instance v1, Landroid/widget/LinearLayout$LayoutParams;
+    iget p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->background:I
 
-    const/4 v2, -0x1
+    goto :goto_18
 
-    const/4 v3, -0x2
+    :cond_16
+    iget p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
 
-    invoke-direct {v1, v2, v3}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+    :goto_18
+    invoke-virtual {v0, p1}, Landroid/widget/Button;->setTextColor(I)V
 
-    invoke-virtual {p1, v0, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+    if-eqz p3, :cond_20
 
-    new-instance p1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda0;
+    iget p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
 
-    invoke-direct {p1, p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda0;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/Runnable;)V
+    goto :goto_22
+
+    :cond_20
+    iget p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->raised:I
+
+    :goto_22
+    const/16 p3, 0xc
+
+    invoke-direct {p0, p1, p3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->rounded(II)Landroid/graphics/drawable/GradientDrawable;
+
+    move-result-object p1
+
+    invoke-virtual {v0, p1}, Landroid/widget/Button;->setBackground(Landroid/graphics/drawable/Drawable;)V
+
+    new-instance p1, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/16 p3, 0x34
+
+    invoke-direct {p0, p3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result p3
+
+    const/4 v1, -0x1
+
+    invoke-direct {p1, v1, p3}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+
+    const/16 p3, 0x10
+
+    invoke-direct {p0, p3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result p3
+
+    iput p3, p1, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
+
+    iget-object p3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+
+    invoke-virtual {p3, v0, p1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    new-instance p1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda12;
+
+    invoke-direct {p1, p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda12;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/Runnable;)V
 
     invoke-virtual {v0, p1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     return-void
 .end method
 
-.method private openVideo(Ljava/lang/String;)V
+.method private color(Ljava/lang/String;I)I
     .locals 3
 
-    new-instance v0, Landroid/content/Intent;
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->getResources()Landroid/content/res/Resources;
 
-    new-instance v1, Ljava/lang/StringBuilder;
+    move-result-object v0
 
-    const-string v2, "https://cinemana.shabakaty.cc/video/"
-
-    invoke-direct {v1, v2}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
-
-    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object p1
-
-    invoke-static {p1}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object p1
-
-    const-string v1, "android.intent.action.VIEW"
-
-    invoke-direct {v0, v1, p1}, Landroid/content/Intent;-><init>(Ljava/lang/String;Landroid/net/Uri;)V
+    const-string v1, "attr"
 
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->getPackageName()Ljava/lang/String;
 
-    move-result-object p1
+    move-result-object v2
 
-    invoke-virtual {v0, p1}, Landroid/content/Intent;->setPackage(Ljava/lang/String;)Landroid/content/Intent;
+    invoke-virtual {v0, p1, v1, v2}, Landroid/content/res/Resources;->getIdentifier(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
 
-    invoke-virtual {p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->startActivity(Landroid/content/Intent;)V
+    move-result p1
 
-    return-void
+    new-instance v0, Landroid/util/TypedValue;
+
+    invoke-direct {v0}, Landroid/util/TypedValue;-><init>()V
+
+    if-eqz p1, :cond_2e
+
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->getTheme()Landroid/content/res/Resources$Theme;
+
+    move-result-object v1
+
+    const/4 v2, 0x1
+
+    invoke-virtual {v1, p1, v0, v2}, Landroid/content/res/Resources$Theme;->resolveAttribute(ILandroid/util/TypedValue;Z)Z
+
+    move-result p1
+
+    if-eqz p1, :cond_2e
+
+    iget p1, v0, Landroid/util/TypedValue;->type:I
+
+    const/16 v1, 0x10
+
+    if-lt p1, v1, :cond_2e
+
+    iget p1, v0, Landroid/util/TypedValue;->type:I
+
+    const/16 v1, 0x1f
+
+    if-gt p1, v1, :cond_2e
+
+    iget p2, v0, Landroid/util/TypedValue;->data:I
+
+    :cond_2e
+    return p2
+.end method
+
+.method private dp(I)I
+    .locals 1
+
+    int-to-float p1, p1
+
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->getResources()Landroid/content/res/Resources;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Landroid/content/res/Resources;->getDisplayMetrics()Landroid/util/DisplayMetrics;
+
+    move-result-object v0
+
+    iget v0, v0, Landroid/util/DisplayMetrics;->density:F
+
+    mul-float p1, p1, v0
+
+    invoke-static {p1}, Ljava/lang/Math;->round(F)I
+
+    move-result p1
+
+    return p1
 .end method
 
 .method private pick(Ljava/lang/String;I)V
@@ -371,73 +404,394 @@
 .end method
 
 .method private render()V
-    .locals 5
+    .locals 14
+
+    const-string v0, "cinColorBackground"
+
+    const v1, -0xefedec
+
+    invoke-direct {p0, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->color(Ljava/lang/String;I)I
+
+    move-result v0
+
+    iput v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->background:I
+
+    const-string v0, "cinColorSurfaceRaised"
+
+    const v1, -0xdfd8d3
+
+    invoke-direct {p0, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->color(Ljava/lang/String;I)I
+
+    move-result v0
+
+    iput v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->raised:I
+
+    const-string v0, "cinColorTextPrimary"
+
+    const v1, -0xb0a09
+
+    invoke-direct {p0, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->color(Ljava/lang/String;I)I
+
+    move-result v0
+
+    iput v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
+
+    const-string v0, "cinColorTextSecondary"
+
+    const v1, -0x554f4b
+
+    invoke-direct {p0, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->color(Ljava/lang/String;I)I
+
+    move-result v0
+
+    iput v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->muted:I
 
     new-instance v0, Landroid/widget/ScrollView;
 
     invoke-direct {v0, p0}, Landroid/widget/ScrollView;-><init>(Landroid/content/Context;)V
 
-    new-instance v1, Landroid/widget/LinearLayout;
+    const/4 v1, 0x1
 
-    invoke-direct {v1, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
+    invoke-virtual {v0, v1}, Landroid/widget/ScrollView;->setFillViewport(Z)V
 
-    iput-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+    iget v2, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->background:I
 
-    const/4 v2, 0x1
+    invoke-virtual {v0, v2}, Landroid/widget/ScrollView;->setBackgroundColor(I)V
 
-    invoke-virtual {v1, v2}, Landroid/widget/LinearLayout;->setOrientation(I)V
+    new-instance v2, Landroid/widget/LinearLayout;
 
-    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+    invoke-direct {v2, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
 
-    const/16 v3, 0x1c
+    iput-object v2, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
 
-    const/16 v4, 0x18
+    invoke-virtual {v2, v1}, Landroid/widget/LinearLayout;->setOrientation(I)V
 
-    invoke-virtual {v1, v3, v4, v3, v4}, Landroid/widget/LinearLayout;->setPadding(IIII)V
+    iget-object v2, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
 
-    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+    const/16 v3, 0x14
 
-    invoke-virtual {v0, v1}, Landroid/widget/ScrollView;->addView(Landroid/view/View;)V
+    invoke-direct {p0, v3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v4
+
+    const/16 v5, 0xc
+
+    invoke-direct {p0, v5}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v6
+
+    invoke-direct {p0, v3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v7
+
+    const/16 v8, 0x1c
+
+    invoke-direct {p0, v8}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v9
+
+    invoke-virtual {v2, v4, v6, v7, v9}, Landroid/widget/LinearLayout;->setPadding(IIII)V
+
+    iget-object v2, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+
+    invoke-virtual {v2, v1}, Landroid/widget/LinearLayout;->setLayoutDirection(I)V
+
+    iget-object v2, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+
+    invoke-virtual {v0, v2}, Landroid/widget/ScrollView;->addView(Landroid/view/View;)V
 
     invoke-virtual {p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->setContentView(Landroid/view/View;)V
 
-    const-string v0, "\u062d\u0633\u0627\u0628\u064a \u0627\u0644\u0645\u062d\u0644\u064a"
+    const-string v0, "\u062a\u0639\u062f\u064a\u0644"
 
     invoke-virtual {p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->setTitle(Ljava/lang/CharSequence;)V
 
-    const-string v0, "\u062d\u0633\u0627\u0628\u0643 \u0645\u062d\u0641\u0648\u0638 \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u062c\u0647\u0627\u0632"
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->getWindow()Landroid/view/Window;
 
-    const/16 v1, 0x16
+    move-result-object v2
 
-    invoke-direct {p0, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->text(Ljava/lang/String;I)V
+    iget v4, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->background:I
 
-    const-string v0, "\u0644\u0627 \u064a\u062d\u062a\u0627\u062c \u0628\u0631\u064a\u062f \u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a \u0623\u0648 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641. \u062c\u0644\u0628 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0648\u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u062c\u062f\u064a\u062f\u0629 \u064a\u062d\u062a\u0627\u062c \u0627\u062a\u0635\u0627\u0644\u0627\u064b \u0628\u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a."
+    invoke-virtual {v2, v4}, Landroid/view/Window;->setStatusBarColor(I)V
 
-    const/16 v1, 0xf
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->getWindow()Landroid/view/Window;
 
-    invoke-direct {p0, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->text(Ljava/lang/String;I)V
+    move-result-object v2
 
-    new-instance v0, Landroid/widget/ImageView;
+    iget v4, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->background:I
 
-    invoke-direct {v0, p0}, Landroid/widget/ImageView;-><init>(Landroid/content/Context;)V
+    invoke-virtual {v2, v4}, Landroid/view/Window;->setNavigationBarColor(I)V
 
-    iput-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+    new-instance v2, Landroid/widget/LinearLayout;
 
-    sget-object v1, Landroid/widget/ImageView$ScaleType;->CENTER_CROP:Landroid/widget/ImageView$ScaleType;
+    invoke-direct {v2, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
 
-    invoke-virtual {v0, v1}, Landroid/widget/ImageView;->setScaleType(Landroid/widget/ImageView$ScaleType;)V
+    const/16 v4, 0x10
 
-    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+    invoke-virtual {v2, v4}, Landroid/widget/LinearLayout;->setGravity(I)V
 
-    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+    iget-object v6, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+
+    new-instance v7, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/16 v9, 0x34
+
+    invoke-direct {p0, v9}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v9
+
+    const/4 v10, -0x1
+
+    invoke-direct {v7, v10, v9}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+
+    invoke-virtual {v6, v2, v7}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    new-instance v6, Landroid/widget/TextView;
+
+    invoke-direct {v6, p0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+
+    const-string v7, "\u2192"
+
+    invoke-virtual {v6, v7}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    iget v7, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
+
+    invoke-virtual {v6, v7}, Landroid/widget/TextView;->setTextColor(I)V
+
+    const/high16 v7, 0x41f00000    # 30.0f
+
+    invoke-virtual {v6, v7}, Landroid/widget/TextView;->setTextSize(F)V
+
+    const/16 v7, 0x11
+
+    invoke-virtual {v6, v7}, Landroid/widget/TextView;->setGravity(I)V
+
+    const-string v7, "\u0631\u062c\u0648\u0639"
+
+    invoke-virtual {v6, v7}, Landroid/widget/TextView;->setContentDescription(Ljava/lang/CharSequence;)V
+
+    new-instance v7, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/16 v9, 0x30
+
+    invoke-direct {p0, v9}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v9
+
+    invoke-direct {v7, v9, v10}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+
+    invoke-virtual {v2, v6, v7}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    new-instance v7, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda1;
+
+    invoke-direct {v7, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda1;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+
+    invoke-virtual {v6, v7}, Landroid/widget/TextView;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    new-instance v6, Landroid/widget/TextView;
+
+    invoke-direct {v6, p0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+
+    invoke-virtual {v6, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    const/high16 v0, 0x41b00000    # 22.0f
+
+    invoke-virtual {v6, v0}, Landroid/widget/TextView;->setTextSize(F)V
+
+    iget v7, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
+
+    invoke-virtual {v6, v7}, Landroid/widget/TextView;->setTextColor(I)V
+
+    invoke-virtual {v2, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+
+    new-instance v2, Landroid/widget/LinearLayout;
+
+    invoke-direct {v2, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
+
+    invoke-virtual {v2, v4}, Landroid/widget/LinearLayout;->setGravity(I)V
+
+    const/16 v6, 0x18
+
+    invoke-direct {p0, v6}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v7
+
+    invoke-direct {p0, v6}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v6
+
+    const/4 v9, 0x0
+
+    invoke-virtual {v2, v9, v7, v9, v6}, Landroid/widget/LinearLayout;->setPadding(IIII)V
+
+    iget-object v6, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
+
+    new-instance v7, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/4 v11, -0x2
+
+    invoke-direct {v7, v10, v11}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+
+    invoke-virtual {v6, v2, v7}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    new-instance v6, Landroid/widget/ImageView;
+
+    invoke-direct {v6, p0}, Landroid/widget/ImageView;-><init>(Landroid/content/Context;)V
+
+    iput-object v6, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+
+    sget-object v7, Landroid/widget/ImageView$ScaleType;->CENTER_CROP:Landroid/widget/ImageView$ScaleType;
+
+    invoke-virtual {v6, v7}, Landroid/widget/ImageView;->setScaleType(Landroid/widget/ImageView$ScaleType;)V
+
+    iget-object v6, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+
+    iget v7, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->raised:I
+
+    const/16 v12, 0x40
+
+    invoke-direct {p0, v7, v12}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->rounded(II)Landroid/graphics/drawable/GradientDrawable;
+
+    move-result-object v7
+
+    invoke-virtual {v6, v7}, Landroid/widget/ImageView;->setBackground(Landroid/graphics/drawable/Drawable;)V
+
+    iget-object v6, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+
+    invoke-virtual {v6, v1}, Landroid/widget/ImageView;->setClipToOutline(Z)V
+
+    iget-object v6, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+
+    const-string v7, "\u0635\u0648\u0631\u0629 \u0627\u0644\u062d\u0633\u0627\u0628"
+
+    invoke-virtual {v6, v7}, Landroid/widget/ImageView;->setContentDescription(Ljava/lang/CharSequence;)V
+
+    iget-object v6, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+
+    new-instance v7, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/16 v12, 0x70
+
+    invoke-direct {p0, v12}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v13
+
+    invoke-direct {p0, v12}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v12
+
+    invoke-direct {v7, v13, v12}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+
+    invoke-virtual {v2, v6, v7}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    new-instance v6, Landroid/widget/LinearLayout;
+
+    invoke-direct {v6, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
+
+    invoke-virtual {v6, v1}, Landroid/widget/LinearLayout;->setOrientation(I)V
+
+    invoke-direct {p0, v3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v7
+
+    invoke-direct {p0, v3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v3
+
+    invoke-virtual {v6, v7, v9, v3, v9}, Landroid/widget/LinearLayout;->setPadding(IIII)V
 
     new-instance v3, Landroid/widget/LinearLayout$LayoutParams;
 
-    const/16 v4, 0xc8
+    const/high16 v7, 0x3f800000    # 1.0f
 
-    invoke-direct {v3, v4, v4}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+    invoke-direct {v3, v9, v11, v7}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
 
-    invoke-virtual {v0, v1, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+    invoke-virtual {v2, v6, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    new-instance v2, Landroid/widget/TextView;
+
+    invoke-direct {v2, p0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+
+    iget-object v3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->draftName:Ljava/lang/String;
+
+    if-nez v3, :cond_16b
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->name()Ljava/lang/String;
+
+    move-result-object v3
+
+    :cond_16b
+    invoke-virtual {v2, v3}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    iget v3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
+
+    invoke-virtual {v2, v3}, Landroid/widget/TextView;->setTextColor(I)V
+
+    invoke-virtual {v2, v0}, Landroid/widget/TextView;->setTextSize(F)V
+
+    const/4 v0, 0x0
+
+    invoke-virtual {v2, v0, v1}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;I)V
+
+    invoke-virtual {v6, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+
+    new-instance v0, Landroid/widget/Button;
+
+    invoke-direct {v0, p0}, Landroid/widget/Button;-><init>(Landroid/content/Context;)V
+
+    const-string v2, "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0635\u0648\u0631\u0629"
+
+    invoke-virtual {v0, v2}, Landroid/widget/Button;->setText(Ljava/lang/CharSequence;)V
+
+    invoke-virtual {v0, v9}, Landroid/widget/Button;->setAllCaps(Z)V
+
+    iget v2, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
+
+    invoke-virtual {v0, v2}, Landroid/widget/Button;->setTextColor(I)V
+
+    iget v2, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->raised:I
+
+    invoke-direct {p0, v2, v5}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->rounded(II)Landroid/graphics/drawable/GradientDrawable;
+
+    move-result-object v2
+
+    invoke-virtual {v0, v2}, Landroid/widget/Button;->setBackground(Landroid/graphics/drawable/Drawable;)V
+
+    new-instance v2, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/16 v3, 0x2e
+
+    invoke-direct {p0, v3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v3
+
+    invoke-direct {v2, v10, v3}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+
+    invoke-direct {p0, v5}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v3
+
+    iput v3, v2, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
+
+    invoke-virtual {v6, v0, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+
+    new-instance v2, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda2;
+
+    invoke-direct {v2, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda2;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+
+    invoke-virtual {v0, v2}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    const-string v0, "\u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a"
+
+    const/16 v2, 0x13
+
+    invoke-direct {p0, v0, v2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->text(Ljava/lang/String;I)V
+
+    const-string v0, "\u0627\u0644\u0627\u0633\u0645"
+
+    const/16 v3, 0xe
+
+    invoke-direct {p0, v0, v3}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->text(Ljava/lang/String;I)V
 
     new-instance v0, Landroid/widget/EditText;
 
@@ -445,165 +799,190 @@
 
     iput-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
 
-    invoke-virtual {v0, v2}, Landroid/widget/EditText;->setSingleLine(Z)V
+    invoke-virtual {v0, v1}, Landroid/widget/EditText;->setSingleLine(Z)V
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
 
-    const-string v1, "\u0627\u0644\u0627\u0633\u0645"
+    iget v3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
 
-    invoke-virtual {v0, v1}, Landroid/widget/EditText;->setHint(Ljava/lang/CharSequence;)V
+    invoke-virtual {v0, v3}, Landroid/widget/EditText;->setTextColor(I)V
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    const/high16 v3, 0x41880000    # 17.0f
+
+    invoke-virtual {v0, v3}, Landroid/widget/EditText;->setTextSize(F)V
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    iget v3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->muted:I
+
+    invoke-virtual {v0, v3}, Landroid/widget/EditText;->setHintTextColor(I)V
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    const-string v3, "\u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645"
+
+    invoke-virtual {v0, v3}, Landroid/widget/EditText;->setHint(Ljava/lang/CharSequence;)V
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    iget-object v3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->draftName:Ljava/lang/String;
+
+    if-nez v3, :cond_1f2
 
     invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->name()Ljava/lang/String;
 
-    move-result-object v1
+    move-result-object v3
 
-    invoke-virtual {v0, v1}, Landroid/widget/EditText;->setText(Ljava/lang/CharSequence;)V
+    :cond_1f2
+    invoke-virtual {v0, v3}, Landroid/widget/EditText;->setText(Ljava/lang/CharSequence;)V
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
 
-    new-array v1, v2, [Landroid/text/InputFilter;
+    new-array v3, v1, [Landroid/text/InputFilter;
 
-    new-instance v2, Landroid/text/InputFilter$LengthFilter;
+    new-instance v6, Landroid/text/InputFilter$LengthFilter;
 
-    const/16 v3, 0x50
+    const/16 v7, 0x50
 
-    invoke-direct {v2, v3}, Landroid/text/InputFilter$LengthFilter;-><init>(I)V
+    invoke-direct {v6, v7}, Landroid/text/InputFilter$LengthFilter;-><init>(I)V
 
-    const/4 v3, 0x0
+    aput-object v6, v3, v9
 
-    aput-object v2, v1, v3
+    invoke-virtual {v0, v3}, Landroid/widget/EditText;->setFilters([Landroid/text/InputFilter;)V
 
-    invoke-virtual {v0, v1}, Landroid/widget/EditText;->setFilters([Landroid/text/InputFilter;)V
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    iget v3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->raised:I
+
+    invoke-direct {p0, v3, v5}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->rounded(II)Landroid/graphics/drawable/GradientDrawable;
+
+    move-result-object v3
+
+    invoke-virtual {v0, v3}, Landroid/widget/EditText;->setBackground(Landroid/graphics/drawable/Drawable;)V
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    invoke-direct {p0, v4}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v3
+
+    invoke-direct {p0, v4}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result v5
+
+    invoke-virtual {v0, v3, v9, v5, v9}, Landroid/widget/EditText;->setPadding(IIII)V
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
 
-    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+    iget-object v3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
 
-    invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;
+    const/16 v6, 0x36
 
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    invoke-direct {p0, v6}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
 
-    const-string v1, "\u0627\u062e\u062a\u064a\u0627\u0631 \u0635\u0648\u0631\u0629"
+    move-result v6
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    invoke-direct {v5, v10, v6}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$2;
+    invoke-virtual {v0, v3, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$2;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda3;
 
-    const-string v1, "\u062d\u0641\u0638 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a"
+    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda3;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    const-string v3, "\u062d\u0641\u0638 \u0627\u0644\u062a\u063a\u064a\u064a\u0631\u0627\u062a"
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$3;
+    invoke-direct {p0, v3, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;Z)V
 
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$3;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    new-instance v0, Landroid/view/View;
 
-    const-string v1, "\u0627\u0644\u0645\u0641\u0636\u0644\u0629"
+    invoke-direct {v0, p0}, Landroid/view/View;-><init>(Landroid/content/Context;)V
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    iget v3, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->raised:I
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$4;
+    invoke-virtual {v0, v3}, Landroid/view/View;->setBackgroundColor(I)V
 
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$4;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    new-instance v3, Landroid/widget/LinearLayout$LayoutParams;
 
-    const-string v1, "\u0627\u0644\u0645\u0634\u0627\u0647\u062f\u0629 \u0644\u0627\u062d\u0642\u0627\u064b"
+    invoke-direct {p0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    move-result v1
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$5;
+    invoke-direct {v3, v10, v1}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$5;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    invoke-direct {p0, v8}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
 
-    const-string v1, "\u0627\u0644\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u0645\u0634\u0627\u0647\u064e\u062f\u0629"
+    move-result v1
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    iput v1, v3, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$6;
+    invoke-direct {p0, v4}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
 
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$6;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    move-result v1
 
-    const-string v1, "\u0627\u0644\u0627\u0634\u062a\u0631\u0627\u0643\u0627\u062a \u0648\u062a\u0646\u0628\u064a\u0647\u0627\u062a \u0627\u0644\u062d\u0644\u0642\u0627\u062a"
+    iput v1, v3, Landroid/widget/LinearLayout$LayoutParams;->bottomMargin:I
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$7;
+    invoke-virtual {v1, v0, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$7;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    const-string v0, "\u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0627\u062d\u062a\u064a\u0627\u0637\u064a"
 
-    const-string v1, "\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062a"
+    invoke-direct {p0, v0, v2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->text(Ljava/lang/String;I)V
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda4;
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$8;
+    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda4;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
 
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$8;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    const-string v1, "\u062a\u0635\u062f\u064a\u0631 \u0646\u0633\u062e\u0629 \u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0629"
 
-    const-string v1, "\u062a\u0635\u062f\u064a\u0631 \u0646\u0633\u062e\u0629 \u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0629 \u0644\u0644\u062d\u0633\u0627\u0628"
+    invoke-direct {p0, v1, v0, v9}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;Z)V
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda5;
 
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$9;
-
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$9;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda5;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
 
     const-string v1, "\u0627\u0633\u062a\u064a\u0631\u0627\u062f \u0646\u0633\u062e\u0629 \u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0629"
 
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
-
-    const-string v0, "\u0627\u0644\u062a\u0646\u0628\u064a\u0647\u0627\u062a \u062a\u064f\u0641\u062d\u0635 \u062f\u0648\u0631\u064a\u0627\u064b \u0639\u0646\u062f \u062a\u0648\u0641\u0631 \u0627\u0644\u0634\u0628\u0643\u0629. \u0623\u0646\u062f\u0631\u0648\u064a\u062f \u0642\u062f \u064a\u0624\u062e\u0631 \u0627\u0644\u0641\u062d\u0635 \u0628\u0627\u0644\u062e\u0644\u0641\u064a\u0629. \u0623\u0648\u0644 \u0641\u062d\u0635 \u0644\u0644\u0639\u0645\u0644 \u064a\u062d\u0641\u0638 \u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u062d\u0627\u0644\u064a\u0629 \u062f\u0648\u0646 \u0625\u0634\u0639\u0627\u0631."
-
-    const/16 v1, 0xe
-
-    invoke-direct {p0, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->text(Ljava/lang/String;I)V
-
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$10;
-
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$10;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
-
-    const-string v1, "\u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u0622\u0646"
-
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
-
-    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$11;
-
-    invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$11;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
-
-    const-string v1, "\u0627\u0644\u0639\u0648\u062f\u0629 \u0644\u0644\u062a\u0637\u0628\u064a\u0642"
-
-    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;)V
+    invoke-direct {p0, v1, v0, v9}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->button(Ljava/lang/String;Ljava/lang/Runnable;Z)V
 
     sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->IO:Ljava/util/concurrent/ScheduledExecutorService;
 
-    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$12;
+    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda6;
 
-    invoke-direct {v1, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$12;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    invoke-direct {v1, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda6;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
 
     invoke-interface {v0, v1}, Ljava/util/concurrent/ScheduledExecutorService;->execute(Ljava/lang/Runnable;)V
 
     return-void
 .end method
 
-.method private showList(Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;)V
-    .locals 2
+.method private rounded(II)Landroid/graphics/drawable/GradientDrawable;
+    .locals 1
 
-    sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->IO:Ljava/util/concurrent/ScheduledExecutorService;
+    new-instance v0, Landroid/graphics/drawable/GradientDrawable;
 
-    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$14;
+    invoke-direct {v0}, Landroid/graphics/drawable/GradientDrawable;-><init>()V
 
-    invoke-direct {v1, p0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$14;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;)V
+    invoke-virtual {v0, p1}, Landroid/graphics/drawable/GradientDrawable;->setColor(I)V
 
-    invoke-interface {v0, v1}, Ljava/util/concurrent/ScheduledExecutorService;->execute(Ljava/lang/Runnable;)V
+    invoke-direct {p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
 
-    return-void
+    move-result p1
+
+    int-to-float p1, p1
+
+    invoke-virtual {v0, p1}, Landroid/graphics/drawable/GradientDrawable;->setCornerRadius(F)V
+
+    return-object v0
 .end method
 
 .method private text(Ljava/lang/String;I)V
-    .locals 1
+    .locals 2
 
     new-instance v0, Landroid/widget/TextView;
 
@@ -615,11 +994,35 @@
 
     invoke-virtual {v0, p1}, Landroid/widget/TextView;->setTextSize(F)V
 
-    const/4 p1, 0x4
+    const/16 p1, 0x13
 
-    const/16 p2, 0xe
+    if-lt p2, p1, :cond_13
 
-    invoke-virtual {v0, p1, p2, p1, p2}, Landroid/widget/TextView;->setPadding(IIII)V
+    iget p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->primary:I
+
+    goto :goto_15
+
+    :cond_13
+    iget p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->muted:I
+
+    :goto_15
+    invoke-virtual {v0, p1}, Landroid/widget/TextView;->setTextColor(I)V
+
+    const/16 p1, 0xc
+
+    invoke-direct {p0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result p1
+
+    const/16 p2, 0xa
+
+    invoke-direct {p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->dp(I)I
+
+    move-result p2
+
+    const/4 v1, 0x0
+
+    invoke-virtual {v0, v1, p1, v1, p2}, Landroid/widget/TextView;->setPadding(IIII)V
 
     iget-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->content:Landroid/widget/LinearLayout;
 
@@ -662,9 +1065,9 @@
 
     sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->IO:Ljava/util/concurrent/ScheduledExecutorService;
 
-    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$13;
+    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;
 
-    invoke-direct {v1, p0, p1, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$13;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Lcom/shabakaty/cinemana/local/LocalAccountActivity$Task;Ljava/lang/String;)V
+    invoke-direct {v1, p0, p1, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Lcom/shabakaty/cinemana/local/LocalAccountActivity$Task;Ljava/lang/String;)V
 
     invoke-interface {v0, v1}, Ljava/util/concurrent/ScheduledExecutorService;->execute(Ljava/lang/Runnable;)V
 
@@ -673,7 +1076,7 @@
 
 
 # virtual methods
-.method synthetic lambda$button$0$com-shabakaty-cinemana-local-LocalAccountActivity(Ljava/lang/Runnable;Landroid/view/View;)V
+.method synthetic lambda$button$9$com-shabakaty-cinemana-local-LocalAccountActivity(Ljava/lang/Runnable;Landroid/view/View;)V
     .locals 0
 
     iget-boolean p2, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->busy:Z
@@ -686,7 +1089,7 @@
     return-void
 .end method
 
-.method synthetic lambda$onActivityResult$1$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/net/Uri;)V
+.method synthetic lambda$onActivityResult$10$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/net/Uri;)V
     .locals 9
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -718,11 +1121,11 @@
 
     const-string v4, "invalid image"
 
-    if-lez v2, :cond_7a
+    if-lez v2, :cond_6a
 
     iget v2, v0, Landroid/graphics/BitmapFactory$Options;->outHeight:I
 
-    if-lez v2, :cond_7a
+    if-lez v2, :cond_6a
 
     iget v2, v0, Landroid/graphics/BitmapFactory$Options;->outWidth:I
 
@@ -738,7 +1141,7 @@
 
     cmp-long v2, v5, v7
 
-    if-gtz v2, :cond_7a
+    if-gtz v2, :cond_6a
 
     new-instance v2, Landroid/graphics/BitmapFactory$Options;
 
@@ -776,7 +1179,7 @@
 
     move-result-object p1
 
-    if-eqz p1, :cond_74
+    if-eqz p1, :cond_64
 
     new-instance v0, Ljava/io/ByteArrayOutputStream;
 
@@ -796,30 +1199,16 @@
 
     iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->selected:[B
 
-    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
-
-    move-result-object p1
-
-    invoke-virtual {p1}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->name()Ljava/lang/String;
-
-    move-result-object v0
-
-    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->selected:[B
-
-    invoke-virtual {p1, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->profile(Ljava/lang/String;[B)V
-
-    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->updateProfile()V
-
     return-void
 
-    :cond_74
+    :cond_64
     new-instance p1, Ljava/io/IOException;
 
     invoke-direct {p1, v4}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
     throw p1
 
-    :cond_7a
+    :cond_6a
     new-instance p1, Ljava/io/IOException;
 
     invoke-direct {p1, v4}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
@@ -827,7 +1216,7 @@
     throw p1
 .end method
 
-.method synthetic lambda$onActivityResult$2$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/net/Uri;)V
+.method synthetic lambda$onActivityResult$11$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/net/Uri;)V
     .locals 4
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -1009,7 +1398,7 @@
     throw p1
 .end method
 
-.method synthetic lambda$onActivityResult$3$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/net/Uri;)V
+.method synthetic lambda$onActivityResult$12$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/net/Uri;)V
     .locals 2
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -1025,12 +1414,12 @@
 
     move-result-object p1
 
-    if-eqz p1, :cond_26
+    if-eqz p1, :cond_28
 
     :try_start_a
     invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->importAccount(Ljava/io/InputStream;)V
     :try_end_d
-    .catchall {:try_start_a .. :try_end_d} :catchall_24
+    .catchall {:try_start_a .. :try_end_d} :catchall_26
 
     if-eqz p1, :cond_12
 
@@ -1040,6 +1429,8 @@
     const/4 p1, 0x0
 
     iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->selected:[B
+
+    iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->draftName:Ljava/lang/String;
 
     invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->updateProfile()V
 
@@ -1055,13 +1446,13 @@
 
     return-void
 
-    :catchall_24
+    :catchall_26
     move-exception v0
 
-    goto :goto_2e
+    goto :goto_30
 
-    :cond_26
-    :try_start_26
+    :cond_28
+    :try_start_28
     new-instance v0, Ljava/io/IOException;
 
     const-string v1, "document not readable"
@@ -1069,27 +1460,341 @@
     invoke-direct {v0, v1}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
     throw v0
-    :try_end_2e
-    .catchall {:try_start_26 .. :try_end_2e} :catchall_24
+    :try_end_30
+    .catchall {:try_start_28 .. :try_end_30} :catchall_26
 
-    :goto_2e
-    if-eqz p1, :cond_38
+    :goto_30
+    if-eqz p1, :cond_3a
 
-    :try_start_30
+    :try_start_32
     invoke-virtual {p1}, Ljava/io/InputStream;->close()V
-    :try_end_33
-    .catchall {:try_start_30 .. :try_end_33} :catchall_34
+    :try_end_35
+    .catchall {:try_start_32 .. :try_end_35} :catchall_36
 
-    goto :goto_38
+    goto :goto_3a
 
-    :catchall_34
+    :catchall_36
     move-exception p1
 
     invoke-virtual {v0, p1}, Ljava/lang/Throwable;->addSuppressed(Ljava/lang/Throwable;)V
 
-    :cond_38
-    :goto_38
+    :cond_3a
+    :goto_3a
     throw v0
+.end method
+
+.method synthetic lambda$render$0$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/view/View;)V
+    .locals 0
+
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->finish()V
+
+    return-void
+.end method
+
+.method synthetic lambda$render$1$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/view/View;)V
+    .locals 1
+
+    iget-boolean p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->busy:Z
+
+    if-nez p1, :cond_16
+
+    iget-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    invoke-virtual {p1}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
+
+    move-result-object p1
+
+    invoke-virtual {p1}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    move-result-object p1
+
+    iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->draftName:Ljava/lang/String;
+
+    const-string p1, "image/*"
+
+    const/4 v0, 0x1
+
+    invoke-direct {p0, p1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->pick(Ljava/lang/String;I)V
+
+    :cond_16
+    return-void
+.end method
+
+.method synthetic lambda$render$2$com-shabakaty-cinemana-local-LocalAccountActivity(Ljava/lang/String;)V
+    .locals 2
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/lang/Exception;
+        }
+    .end annotation
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
+
+    move-result-object v0
+
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->selected:[B
+
+    if-nez v1, :cond_c
+
+    invoke-virtual {v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->avatar()[B
+
+    move-result-object v1
+
+    :cond_c
+    invoke-virtual {v0, p1, v1}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->profile(Ljava/lang/String;[B)V
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->updateProfile()V
+
+    const/4 p1, 0x0
+
+    iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->selected:[B
+
+    return-void
+.end method
+
+.method synthetic lambda$render$3$com-shabakaty-cinemana-local-LocalAccountActivity()V
+    .locals 2
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    invoke-virtual {v0}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/String;->isEmpty()Z
+
+    move-result v1
+
+    if-eqz v1, :cond_1a
+
+    const-string v0, "\u0627\u0643\u062a\u0628 \u0627\u0644\u0627\u0633\u0645 \u0623\u0648\u0644\u0627\u064b"
+
+    invoke-direct {p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->toast(Ljava/lang/String;)V
+
+    return-void
+
+    :cond_1a
+    iput-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->draftName:Ljava/lang/String;
+
+    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda0;
+
+    invoke-direct {v1, p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda0;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;)V
+
+    const-string v0, "\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u062a\u063a\u064a\u064a\u0631\u0627\u062a"
+
+    invoke-direct {p0, v1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->work(Lcom/shabakaty/cinemana/local/LocalAccountActivity$Task;Ljava/lang/String;)V
+
+    return-void
+.end method
+
+.method synthetic lambda$render$4$com-shabakaty-cinemana-local-LocalAccountActivity()V
+    .locals 2
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    invoke-virtual {v0}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    iput-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->draftName:Ljava/lang/String;
+
+    new-instance v0, Landroid/content/Intent;
+
+    const-string v1, "android.intent.action.OPEN_DOCUMENT_TREE"
+
+    invoke-direct {v0, v1}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
+
+    const/4 v1, 0x3
+
+    invoke-virtual {v0, v1}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
+
+    const/4 v1, 0x2
+
+    invoke-virtual {p0, v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->startActivityForResult(Landroid/content/Intent;I)V
+
+    return-void
+.end method
+
+.method synthetic lambda$render$5$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/content/DialogInterface;I)V
+    .locals 0
+
+    const-string p1, "application/zip"
+
+    const/4 p2, 0x3
+
+    invoke-direct {p0, p1, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->pick(Ljava/lang/String;I)V
+
+    return-void
+.end method
+
+.method synthetic lambda$render$6$com-shabakaty-cinemana-local-LocalAccountActivity()V
+    .locals 3
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->name:Landroid/widget/EditText;
+
+    invoke-virtual {v0}, Landroid/widget/EditText;->getText()Landroid/text/Editable;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    iput-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->draftName:Ljava/lang/String;
+
+    new-instance v0, Landroid/app/AlertDialog$Builder;
+
+    invoke-direct {v0, p0}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+
+    const-string v1, "\u0627\u0633\u062a\u064a\u0631\u0627\u062f \u0646\u0633\u062e\u0629 \u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0629"
+
+    invoke-virtual {v0, v1}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v0
+
+    const-string v1, "\u0633\u062a\u064f\u0633\u062a\u0628\u062f\u0644 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062d\u0633\u0627\u0628 \u0627\u0644\u062d\u0627\u0644\u064a\u0629 \u0628\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0646\u0633\u062e\u0629 \u0627\u0644\u0645\u062e\u062a\u0627\u0631\u0629."
+
+    invoke-virtual {v0, v1}, Landroid/app/AlertDialog$Builder;->setMessage(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v0
+
+    const-string v1, "\u0625\u0644\u063a\u0627\u0621"
+
+    const/4 v2, 0x0
+
+    invoke-virtual {v0, v1, v2}, Landroid/app/AlertDialog$Builder;->setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v0
+
+    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda7;
+
+    invoke-direct {v1, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda7;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+
+    const-string v2, "\u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u0645\u0644\u0641"
+
+    invoke-virtual {v0, v2, v1}, Landroid/app/AlertDialog$Builder;->setPositiveButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Landroid/app/AlertDialog$Builder;->show()Landroid/app/AlertDialog;
+
+    return-void
+.end method
+
+.method synthetic lambda$render$7$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/graphics/Bitmap;)V
+    .locals 3
+
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->isFinishing()Z
+
+    move-result v0
+
+    if-nez v0, :cond_28
+
+    if-eqz p1, :cond_e
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+
+    invoke-virtual {v0, p1}, Landroid/widget/ImageView;->setImageBitmap(Landroid/graphics/Bitmap;)V
+
+    goto :goto_28
+
+    :cond_e
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->getResources()Landroid/content/res/Resources;
+
+    move-result-object p1
+
+    const-string v0, "drawable"
+
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->getPackageName()Ljava/lang/String;
+
+    move-result-object v1
+
+    const-string v2, "ic_profile"
+
+    invoke-virtual {p1, v2, v0, v1}, Landroid/content/res/Resources;->getIdentifier(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+
+    move-result p1
+
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->avatar:Landroid/widget/ImageView;
+
+    if-nez p1, :cond_25
+
+    const p1, 0x1080048
+
+    :cond_25
+    invoke-virtual {v0, p1}, Landroid/widget/ImageView;->setImageResource(I)V
+
+    :cond_28
+    :goto_28
+    return-void
+.end method
+
+.method synthetic lambda$render$8$com-shabakaty-cinemana-local-LocalAccountActivity()V
+    .locals 3
+
+    :try_start_0
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->selected:[B
+
+    if-nez v0, :cond_c
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->avatar()[B
+
+    move-result-object v0
+
+    :cond_c
+    array-length v1, v0
+
+    if-nez v1, :cond_11
+
+    const/4 v0, 0x0
+
+    goto :goto_17
+
+    :cond_11
+    array-length v1, v0
+
+    const/4 v2, 0x0
+
+    invoke-static {v0, v2, v1}, Landroid/graphics/BitmapFactory;->decodeByteArray([BII)Landroid/graphics/Bitmap;
+
+    move-result-object v0
+
+    :goto_17
+    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda11;
+
+    invoke-direct {v1, p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda11;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Landroid/graphics/Bitmap;)V
+
+    invoke-virtual {p0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->runOnUiThread(Ljava/lang/Runnable;)V
+    :try_end_1f
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_1f} :catch_20
+
+    goto :goto_26
+
+    :catch_20
+    move-exception v0
+
+    const-string v1, "profile_load"
+
+    invoke-static {v1, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
+
+    :goto_26
+    return-void
 .end method
 
 .method protected onActivityResult(IILandroid/content/Intent;)V
@@ -1120,11 +1825,11 @@
 
     if-ne p1, p3, :cond_21
 
-    new-instance p1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda1;
+    new-instance p1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda8;
 
-    invoke-direct {p1, p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda1;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Landroid/net/Uri;)V
+    invoke-direct {p1, p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda8;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Landroid/net/Uri;)V
 
-    const-string p2, "\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629"
+    const-string p2, "\u062a\u0645 \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u0635\u0648\u0631\u0629\u061b \u0627\u0636\u063a\u0637 \u062d\u0641\u0638 \u0627\u0644\u062a\u063a\u064a\u064a\u0631\u0627\u062a"
 
     invoke-direct {p0, p1, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->work(Lcom/shabakaty/cinemana/local/LocalAccountActivity$Task;Ljava/lang/String;)V
 
@@ -1135,9 +1840,9 @@
 
     if-ne p1, p3, :cond_2f
 
-    new-instance p1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda2;
+    new-instance p1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda9;
 
-    invoke-direct {p1, p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda2;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Landroid/net/Uri;)V
+    invoke-direct {p1, p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda9;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Landroid/net/Uri;)V
 
     const-string p2, "\u062a\u0645 \u062a\u0635\u062f\u064a\u0631 \u0627\u0644\u0646\u0633\u062e\u0629 \u0625\u0644\u0649 \u0627\u0644\u0645\u062c\u0644\u062f \u0627\u0644\u0645\u062e\u062a\u0627\u0631"
 
@@ -1150,9 +1855,9 @@
 
     if-ne p1, p3, :cond_3c
 
-    new-instance p1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda3;
+    new-instance p1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda10;
 
-    invoke-direct {p1, p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda3;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Landroid/net/Uri;)V
+    invoke-direct {p1, p0, p2}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda10;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Landroid/net/Uri;)V
 
     const-string p2, "\u062a\u0645 \u0627\u0633\u062a\u064a\u0631\u0627\u062f \u0627\u0644\u062d\u0633\u0627\u0628 \u0648\u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a"
 

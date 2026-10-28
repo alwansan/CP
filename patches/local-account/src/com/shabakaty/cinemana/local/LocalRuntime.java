@@ -21,7 +21,7 @@ public final class LocalRuntime {
  static volatile boolean scanCancelled;private static volatile long lastMigrationAttempt;
  static final long INTERVAL=6*60*60*1000L;
  public static synchronized void init(Context context){
-  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);
+  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH267");
   IO.execute(new Runnable(){public void run(){try{data();ensureLegacy();schedule();requestScan(false);}catch(Exception e){failure("init",e);}}});
  }
  static synchronized LocalAccountStore data()throws IOException{
@@ -60,10 +60,11 @@ public final class LocalRuntime {
     IO.execute(new Runnable(){public void run(){try{data().setConfig(setting,value);}catch(Exception e){failure("settings",e);}}});
     return Class.forName("com.shabakaty.downloader.qv4").getField("a").get(null);
    }
-   if(Arrays.asList("a","d","e","t","p","q","v","y","s","B","C","E","f","r","x").contains(key))return new LocalSingle(new Callable<Object>(){public Object call()throws Exception{return local(key,args);}});
+   if(Arrays.asList("a","d","e","t","p","q","v","y","s","B","C","E","f","r","x","l").contains(key))return new LocalSingle(new Callable<Object>(){public Object call()throws Exception{return local(key,args);}});
    try{
     Object value=method.invoke(remote,args);
     if(key.equals("A")&&value instanceof f74)return new CaptureSingle((f74)value,String.valueOf(args[0]));
+    if(key.equals("b")&&value instanceof qf1)return new EpisodeFlow((qf1)value,String.valueOf(args[0]));
     return value;
    }catch(InvocationTargetException e){throw e.getCause();}
   }});
@@ -78,6 +79,13 @@ public final class LocalRuntime {
  static Object local(String op,Object[] a)throws Exception{
   LocalAccountStore s=data();ensureLegacy();log("api_local operation="+op);
   if(op.equals("f")||op.equals("r")||op.equals("x")||op.equals("E"))throw new IOException("التعليقات على الخادم تحتاج حساب شبكتي؛ حسابك الحالي محلي");
+  if(op.equals("l")){
+   String root=String.valueOf(a[0]);List<String> ids=new ArrayList<>();
+   for(Item i:s.list(ListKind.WATCHED)){
+    JSONObject o=model(i);if(i.id.equals(root)||root.equals(o.optString("rootSeries")))ids.add(i.id);
+   }
+   log("highlight_local id="+safeId(root)+" count="+ids.size());return ids;
+  }
   if(op.equals("a")){
    String id=String.valueOf(a[0]);JSONObject status=new JSONObject();
    String rating=s.config("rating_"+id,"");status.put("like",rating.equals("1")).put("dislike",rating.equals("0"));
@@ -87,11 +95,11 @@ public final class LocalRuntime {
   if(op.equals("t")||op.equals("d")){
    String id=String.valueOf(a[1]);ListKind k=kind(String.valueOf(a[2]));
    if(op.equals("t"))s.put(k,item(id));else s.remove(k,id);
-   return dto("user.LogoutResponseApi","{\"status\":\"success\"}");
+   return dto("user.LogoutResponseApi","{\"status\":\"true\"}");
   }
   if(op.equals("v")||op.equals("y")){
    String id=String.valueOf(a[1]);if(op.equals("v")){s.put(ListKind.SUBSCRIPTION,item(id));log("subscription_baseline_pending");requestScan(true);}else s.remove(ListKind.SUBSCRIPTION,id);
-   return "success";
+   return "true";
   }
   if(op.equals("e")){
    int page=Integer.parseInt(String.valueOf(a[0]));List<Item> items=s.list(kind(String.valueOf(a[2])));Collections.reverse(items);
@@ -101,14 +109,14 @@ public final class LocalRuntime {
   if(op.equals("p")){JSONArray array=new JSONArray();for(Item i:s.list(ListKind.SUBSCRIPTION))array.put(model(i));return dtoArray(array);}
   if(op.equals("q")){JSONArray array=new JSONArray();List<Item> items=s.inbox();Collections.reverse(items);int limit=Math.max(1,Math.min(100,Integer.parseInt(String.valueOf(a[0]))));for(int n=0;n<Math.min(limit,items.size());n++)array.put(model(items.get(n)));return dto("user.NotificationsListApi",new JSONObject().put("new",String.valueOf(items.size())).put("notifications",array).toString());}
   if(op.equals("C")){// Like/dislike remains a local preference; never fabricate a server vote.
-   s.setConfig("rating_"+String.valueOf(a[1]),String.valueOf(a[2]));return dto("user.LogoutResponseApi","{\"status\":\"success\",\"likeNumber\":\"0\",\"dislikeNumebr\":\"0\"}");
+   s.setConfig("rating_"+String.valueOf(a[1]),String.valueOf(a[2]));return dto("user.LogoutResponseApi","{\"status\":\"true\",\"likeNumber\":\"0\",\"dislikeNumebr\":\"0\"}");
   }
   return new JSONObject(); // legacy device registration/logout suppressed, no tokens sent
  }
  static List<Object> dtoArray(JSONArray array)throws Exception{List<Object> list=new ArrayList<>();for(int i=0;i<array.length();i++)list.add(dto("VideoModelApi",array.getJSONObject(i).toString()));return list;}
  static JSONObject model(Item i)throws JSONException{return i.payload.length()>0?new JSONObject(i.payload):new JSONObject().put("nb",i.id).put("en_title",i.title).put("ar_title",i.title).put("kind","1");}
  static Item item(String id)throws Exception{
-  String json=cache.get(id);if(json==null)for(ListKind k:ListKind.values()){Item i=data().find(k,id);if(i!=null&&i.payload.length()>0)return i;}
+  String json; synchronized(cache){json=cache.get(id);}if(json==null)for(ListKind k:ListKind.values()){Item i=data().find(k,id);if(i!=null&&i.payload.length()>0)return i;}
   if(json==null)return new Item(id,"عمل "+id,0);
   JSONObject o=new JSONObject(json);String title=o.optString("ar_title");if(title.length()==0)title=o.optString("en_title",id);return new Item(id,title,0,json);
  }
@@ -118,7 +126,7 @@ public final class LocalRuntime {
    for(String key:new String[]{"nb","ar_title","en_title","custom_ar_title","custom_en_title","kind","rootSeries","season","episodeNummer","episode_flag","imgObjUrl","imgThumbObjUrl","imgMediumThumbObjUrl","year","duration","publishDate","rate","stars","filmRating","seriesRating","finished","ar_content","en_content"}){
     if(o.has(key)){Object field=o.get(key);if(field instanceof String&&((String)field).length()>4000)field=((String)field).substring(0,4000);snapshot.put(key,field);}
    }
-   String json=snapshot.toString();if(json.length()>20000)throw new IOException("metadata limit");cache.put(id,json);while(cache.size()>64)cache.remove(cache.keySet().iterator().next());
+   String json=snapshot.toString();if(json.length()>20000)throw new IOException("metadata limit");synchronized(cache){cache.put(id,json);while(cache.size()>64)cache.remove(cache.keySet().iterator().next());}
   }catch(Exception e){failure("metadata",e);}
  }
  public static void progress(final String id,final long position){
@@ -134,7 +142,7 @@ public final class LocalRuntime {
  public static long progressValue(String id){try{Item i=data().find(ListKind.PROGRESS,id);return i==null?0:i.positionMs;}catch(Exception e){return 0;}}
  public static void decorate(android.view.View root){
   final Context context=root.getContext();android.view.View row=root.findViewWithTag("local_account266");
-  if(row!=null)row.setOnClickListener(v->open(context));
+  if(row!=null)row.setVisibility(android.view.View.GONE);
   final String[] hidden={"profile_logout_item","profile_login_linear","login_qr_button"};
   android.view.View.OnLayoutChangeListener hide=(view,l,t,r,b,ol,ot,oright,ob)->{for(String id:hidden){int n=context.getResources().getIdentifier(id,"id",context.getPackageName());android.view.View v=root.findViewById(n);if(v!=null&&v.getVisibility()!=android.view.View.GONE)v.setVisibility(android.view.View.GONE);}};
   root.addOnLayoutChangeListener(hide);root.post(()->hide.onLayoutChange(root,0,0,0,0,0,0,0,0));
@@ -261,9 +269,34 @@ public final class LocalRuntime {
   final Callable<Object> call;LocalSingle(Callable<Object> c){call=c;}
   public void l(final y74 observer){final Cancel cancel=new Cancel();observer.c(cancel);IO.execute(new Runnable(){public void run(){if(cancel.cancelled)return;try{Object result=call.call();if(!cancel.cancelled)observer.onSuccess(result);}catch(Exception e){failure("local_operation",e);if(!cancel.cancelled)observer.b(e);}}});}
  }
+ static String requestLabel(Object request)throws Exception {
+  Object url=request.getClass().getField("b").get(request);String path=new java.net.URI(url.toString()).getPath();
+  for(String route:new String[]{"allVideoInfo","videoSeason","transcoddedFiles"}){String prefix="/"+route+"/id/";int offset=path.indexOf(prefix);if(offset>=0)return route+" id="+safeId(path.substring(offset+prefix.length()));}
+  return "";
+ }
+ public static void httpRequest(Object request){try{String label=requestLabel(request);if(!label.isEmpty())log("http_begin route="+label);}catch(Exception ignored){}}
+ public static void httpResponse(Object response){try{Object request=response.getClass().getField("s").get(response);String label=requestLabel(request);if(!label.isEmpty())log("http_result route="+label+" status="+response.getClass().getField("v").getInt(response));}catch(Exception ignored){}}
+ static String safeId(String value){return value!=null&&value.matches("[A-Za-z0-9_-]{1,100}")?value:"invalid";}
+ static String causeTypes(Throwable error){StringBuilder out=new StringBuilder();for(int n=0;error!=null&&n<4;n++,error=error.getCause()){if(n>0)out.append('/');out.append(error.getClass().getSimpleName());}return out.toString();}
  static final class CaptureSingle extends f74 {
   final f74 upstream;final String id;CaptureSingle(f74 s,String id){upstream=s;this.id=id;}
-  public void l(final y74 observer){upstream.a(new y74(){public void c(mu0 d){observer.c(d);}public void b(final Throwable t){IO.execute(()->{try{observer.onSuccess(cachedModel(id));log("detail_local_fallback");}catch(Exception missing){observer.b(t);}});}public void onSuccess(final Object result){IO.execute(new Runnable(){public void run(){capture(result);}});observer.onSuccess(result);}});}
+  public void l(final y74 observer){final long started=System.currentTimeMillis();log("detail_begin id="+safeId(id));upstream.a(new y74(){public void c(mu0 d){observer.c(d);}public void b(final Throwable t){log("detail_failed id="+safeId(id)+" type="+causeTypes(t));IO.execute(()->{try{observer.onSuccess(cachedModel(id));log("detail_local_fallback id="+safeId(id));}catch(Exception missing){observer.b(t);}});}public void onSuccess(final Object result){
+   IO.execute(new Runnable(){public void run(){capture(result);try{JSONObject o=new JSONObject(JSON.i(result));log("detail_result id="+safeId(id)+" kind="+("1".equals(o.optString("kind"))?"1":"2".equals(o.optString("kind"))?"2":"other")+" root="+safeId(o.optString("rootSeries"))+" poster="+(!o.optString("imgObjUrl").isEmpty())+" elapsed_ms="+(System.currentTimeMillis()-started));}catch(Exception e){failure("detail_trace",e);}}});observer.onSuccess(result);}});}
+ }
+ /** Forward the original catalogue stream with its demand and cancellation intact. */
+ static final class EpisodeFlow extends qf1 {
+  final qf1 upstream;final String id;EpisodeFlow(qf1 source,String value){upstream=source;id=value;}
+  public void i(final ef4 downstream){upstream.h(new wg1(){
+   final java.util.concurrent.atomic.AtomicBoolean terminal=new java.util.concurrent.atomic.AtomicBoolean();
+   final long started=System.currentTimeMillis();volatile ScheduledFuture<?> deadline;volatile lf4 subscription;
+   public void d(final lf4 next){subscription=next;log("season_begin id="+safeId(id));
+    deadline=IO.schedule(()->{if(terminal.compareAndSet(false,true)){next.cancel();log("season_timeout id="+safeId(id));downstream.b(new java.net.SocketTimeoutException("episode catalogue timeout"));}},35,TimeUnit.SECONDS);
+    downstream.d(new lf4(){public void u(long n){next.u(n);}public void cancel(){terminal.set(true);if(deadline!=null)deadline.cancel(false);next.cancel();log("season_cancel id="+safeId(id));}});
+   }
+   public void e(Object value){if(terminal.get())return;if(deadline!=null)deadline.cancel(false);int count=value instanceof Collection?((Collection)value).size():-1;log("season_result id="+safeId(id)+" count="+count+" elapsed_ms="+(System.currentTimeMillis()-started));downstream.e(value);}
+   public void b(Throwable error){if(terminal.compareAndSet(false,true)){if(deadline!=null)deadline.cancel(false);log("season_failed id="+safeId(id)+" type="+causeTypes(error));downstream.b(error);}}
+   public void a(){if(terminal.compareAndSet(false,true)){if(deadline!=null)deadline.cancel(false);downstream.a();}}
+  });}
  }
  static void schedule(){try{
   JobScheduler scheduler=(JobScheduler)app.getSystemService(Context.JOB_SCHEDULER_SERVICE);boolean exists=false;for(JobInfo j:scheduler.getAllPendingJobs())if(j.getId()==26601)exists=true;

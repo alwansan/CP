@@ -33,3 +33,19 @@ assert any(a.get(ns+'name')=='com.shabakaty.cinemana.local.LocalAccountActivity'
 assert any(a.get(ns+'name')=='com.shabakaty.cinemana.local.LocalEpisodeJob' and a.get(ns+'permission')=='android.permission.BIND_JOB_SERVICE' for a in application.findall('service'))
 assert all('com/shabakaty/downloader' not in str(f.relative_to(root/'smali_classes11')) for f in (root/'smali_classes11').rglob('*.smali'))
 print('PASS local helper linkage:',checked,'member references; API/UI/progress/job wiring; no stub classes packaged')
+
+# PATCH267 native contracts: the success branch in UserActions accepts literal "true".
+assert 'const-string v0, "true"' in classes['Lcom/shabakaty/downloader/ku1;'][1]
+assert 'LocalRuntime;->httpRequest' in classes['Lcom/shabakaty/downloader/jf;'][1]
+assert 'PosterFallback;->source' in classes['Lcom/shabakaty/downloader/oy1;'][1]
+assert 'PosterFallback;->controller' in classes['Lcom/shabakaty/downloader/oy1;'][1]
+listener=classes['Lcom/facebook/drawee/controller/ControllerListener;'][1]
+assert '.method public abstract f(Ljava/lang/String;Ljava/lang/Throwable;)V' in listener
+assert '.method public abstract b(Ljava/lang/String;Ljava/lang/Object;Landroid/graphics/drawable/Animatable;)V' in listener
+assert re.search(r'^\.method public [^\n]*g\(Lcom/facebook/drawee/controller/ControllerListener;\)V',classes['Lcom/facebook/drawee/controller/AbstractDraweeController;'][1],re.M)
+for file in (root/'res').glob('layout*/fragment_profile.xml'):assert 'local_account266' not in file.read_text()
+layout=ET.parse(root/'res/layout/fragment_user_lists.xml')
+icons=layout.findall('.//ImageView');assert len(icons)==3
+assert {i.get(ns+'src') for i in icons}=={'@drawable/ic_history','@drawable/ic_heart_big','@drawable/ic_categories'}
+assert all(i.get(ns+'tint')=='?cinColorTextPrimary' for i in icons)
+print('PASS PATCH267 native response/HTTP/poster contracts; single edit entry; three visible original list icons')

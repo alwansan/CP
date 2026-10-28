@@ -36,15 +36,39 @@
 
 # virtual methods
 .method public l(Lcom/shabakaty/downloader/y74;)V
-    .locals 2
+    .locals 4
 
-    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;->upstream:Lcom/shabakaty/downloader/f74;
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
-    new-instance v1, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;
+    move-result-wide v0
 
-    invoke-direct {v1, p0, p1}, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;-><init>(Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;Lcom/shabakaty/downloader/y74;)V
+    new-instance v2, Ljava/lang/StringBuilder;
 
-    invoke-virtual {v0, v1}, Lcom/shabakaty/downloader/f74;->a(Lcom/shabakaty/downloader/y74;)V
+    const-string v3, "detail_begin id="
+
+    invoke-direct {v2, v3}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    iget-object v3, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;->id:Ljava/lang/String;
+
+    invoke-static {v3}, Lcom/shabakaty/cinemana/local/LocalRuntime;->safeId(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v3
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-static {v2}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
+
+    iget-object v2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;->upstream:Lcom/shabakaty/downloader/f74;
+
+    new-instance v3, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;
+
+    invoke-direct {v3, p0, p1, v0, v1}, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle$1;-><init>(Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;Lcom/shabakaty/downloader/y74;J)V
+
+    invoke-virtual {v2, v3}, Lcom/shabakaty/downloader/f74;->a(Lcom/shabakaty/downloader/y74;)V
 
     return-void
 .end method

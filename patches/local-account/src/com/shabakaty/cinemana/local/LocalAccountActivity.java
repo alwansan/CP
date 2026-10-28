@@ -5,29 +5,34 @@ import com.shabakaty.cinemana.local.LocalAccountStore.*;
 
 /** Account editor and SAF backup UI. Reads, image decoding and ZIP work run on the serial worker. */
 public final class LocalAccountActivity extends Activity {
- private LinearLayout content;private EditText name;private ImageView avatar;private byte[] selected;private boolean busy;private boolean restartAfterImport;
+ private LinearLayout content;private EditText name;private ImageView avatar;private byte[] selected;private boolean busy;private boolean restartAfterImport;private String draftName;private int background,raised,primary,muted;
  public void onCreate(Bundle state){super.onCreate(state);LocalRuntime.init(this);render();if(Build.VERSION.SDK_INT>=33&&checkSelfPermission("android.permission.POST_NOTIFICATIONS")!=0)requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"},266);}
+ private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
+ private int color(String attr,int fallback){int id=getResources().getIdentifier(attr,"attr",getPackageName());android.util.TypedValue value=new android.util.TypedValue();return id!=0&&getTheme().resolveAttribute(id,value,true)&&value.type>=16&&value.type<=31?value.data:fallback;}
+ private android.graphics.drawable.GradientDrawable rounded(int fill,int radius){android.graphics.drawable.GradientDrawable d=new android.graphics.drawable.GradientDrawable();d.setColor(fill);d.setCornerRadius(dp(radius));return d;}
  private void render(){
-  ScrollView scroll=new ScrollView(this);content=new LinearLayout(this);content.setOrientation(1);content.setPadding(28,24,28,24);scroll.addView(content);setContentView(scroll);setTitle("حسابي المحلي");
-  text("حسابك محفوظ على هذا الجهاز",22);text("لا يحتاج بريد إلكتروني أو رقم هاتف. جلب المحتوى والحلقات الجديدة يحتاج اتصالاً بالإنترنت.",15);
-  avatar=new ImageView(this);avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);content.addView(avatar,new LinearLayout.LayoutParams(200,200));
-  name=new EditText(this);name.setSingleLine(true);name.setHint("الاسم");name.setText(LocalRuntime.name());name.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(80)});content.addView(name);
-  button("اختيار صورة",new Runnable(){public void run(){pick("image/*",1);}});
-  button("حفظ الملف الشخصي",new Runnable(){public void run(){final String value=name.getText().toString().trim();if(value.isEmpty()){toast("اكتب الاسم أولاً");return;}work(new Task(){public void run()throws Exception{LocalAccountStore s=LocalRuntime.data();s.profile(value,selected==null?s.avatar():selected);LocalRuntime.updateProfile();}},"تم حفظ الحساب");}});
-  button("المفضلة",new Runnable(){public void run(){showList(ListKind.FAVORITE);}});
-  button("المشاهدة لاحقاً",new Runnable(){public void run(){showList(ListKind.WATCH_LATER);}});
-  button("الأعمال المشاهَدة",new Runnable(){public void run(){showList(ListKind.WATCHED);}});
-  button("الاشتراكات وتنبيهات الحلقات",new Runnable(){public void run(){showList(ListKind.SUBSCRIPTION);}});
-  button("الإشعارات",new Runnable(){public void run(){showList(null);}});
-  button("تصدير نسخة احتياطية للحساب",new Runnable(){public void run(){if(busy)return;Intent intent=new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);startActivityForResult(intent,2);}});
-  button("استيراد نسخة احتياطية",new Runnable(){public void run(){if(busy)return;new AlertDialog.Builder(LocalAccountActivity.this).setMessage("الاستيراد يستبدل بيانات الحساب المحلي الحالية ببيانات النسخة. التنزيلات لا تتغير.").setNegativeButton("إلغاء",null).setPositiveButton("اختيار النسخة",(d,w)->pick("application/zip",3)).show();}});
-  text("التنبيهات تُفحص دورياً عند توفر الشبكة. أندرويد قد يؤخر الفحص بالخلفية. أول فحص للعمل يحفظ الحلقات الحالية دون إشعار.",14);
-  button("التحقق من الحلقات الآن",new Runnable(){public void run(){LocalRuntime.requestScan(true);toast("تم طلب الفحص؛ النتيجة تظهر في الإشعارات واللوق");}});
-  button("العودة للتطبيق",new Runnable(){public void run(){finish();}});
-  LocalRuntime.IO.execute(new Runnable(){public void run(){try{final byte[] bytes=LocalRuntime.data().avatar();final Bitmap bitmap=bytes.length==0?null:BitmapFactory.decodeByteArray(bytes,0,bytes.length);runOnUiThread(()->{if(!isFinishing())avatar.setImageBitmap(bitmap);});}catch(Exception e){LocalRuntime.failure("profile_load",e);}}});
+  background=color("cinColorBackground",0xff101214);raised=color("cinColorSurfaceRaised",0xff20272d);primary=color("cinColorTextPrimary",0xfff4f5f7);muted=color("cinColorTextSecondary",0xffaab0b5);
+  ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);scroll.setBackgroundColor(background);content=new LinearLayout(this);content.setOrientation(1);content.setPadding(dp(20),dp(12),dp(20),dp(28));content.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);scroll.addView(content);setContentView(scroll);setTitle("تعديل");
+  if(Build.VERSION.SDK_INT>=21){getWindow().setStatusBarColor(background);getWindow().setNavigationBarColor(background);}
+  LinearLayout toolbar=new LinearLayout(this);toolbar.setGravity(Gravity.CENTER_VERTICAL);content.addView(toolbar,new LinearLayout.LayoutParams(-1,dp(52)));
+  TextView back=new TextView(this);back.setText("→");back.setTextColor(primary);back.setTextSize(30);back.setGravity(Gravity.CENTER);back.setContentDescription("رجوع");toolbar.addView(back,new LinearLayout.LayoutParams(dp(48),-1));back.setOnClickListener(v->finish());
+  TextView title=new TextView(this);title.setText("تعديل");title.setTextSize(22);title.setTextColor(primary);toolbar.addView(title);
+  LinearLayout header=new LinearLayout(this);header.setGravity(Gravity.CENTER_VERTICAL);header.setPadding(0,dp(24),0,dp(24));content.addView(header,new LinearLayout.LayoutParams(-1,-2));
+  avatar=new ImageView(this);avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);avatar.setBackground(rounded(raised,64));avatar.setClipToOutline(true);avatar.setContentDescription("صورة الحساب");header.addView(avatar,new LinearLayout.LayoutParams(dp(112),dp(112)));
+  LinearLayout summary=new LinearLayout(this);summary.setOrientation(1);summary.setPadding(dp(20),0,dp(20),0);header.addView(summary,new LinearLayout.LayoutParams(0,-2,1));
+  TextView display=new TextView(this);display.setText(draftName==null?LocalRuntime.name():draftName);display.setTextColor(primary);display.setTextSize(22);display.setTypeface(null,1);summary.addView(display);
+  Button picture=new Button(this);picture.setText("تغيير الصورة");picture.setAllCaps(false);picture.setTextColor(primary);picture.setBackground(rounded(raised,12));LinearLayout.LayoutParams pp=new LinearLayout.LayoutParams(-1,dp(46));pp.topMargin=dp(12);summary.addView(picture,pp);picture.setOnClickListener(v->{if(!busy){draftName=name.getText().toString();pick("image/*",1);}});
+  text("الملف الشخصي",19);text("الاسم",14);
+  name=new EditText(this);name.setSingleLine(true);name.setTextColor(primary);name.setTextSize(17);name.setHintTextColor(muted);name.setHint("اسم المستخدم");name.setText(draftName==null?LocalRuntime.name():draftName);name.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(80)});name.setBackground(rounded(raised,12));name.setPadding(dp(16),0,dp(16),0);content.addView(name,new LinearLayout.LayoutParams(-1,dp(54)));
+  button("حفظ التغييرات",()->{final String value=name.getText().toString().trim();if(value.isEmpty()){toast("اكتب الاسم أولاً");return;}draftName=value;work(()->{LocalAccountStore store=LocalRuntime.data();store.profile(value,selected==null?store.avatar():selected);LocalRuntime.updateProfile();selected=null;},"تم حفظ التغييرات");},true);
+  View divider=new View(this);divider.setBackgroundColor(raised);LinearLayout.LayoutParams line=new LinearLayout.LayoutParams(-1,dp(1));line.topMargin=dp(28);line.bottomMargin=dp(16);content.addView(divider,line);
+  text("النسخ الاحتياطي",19);
+  button("تصدير نسخة احتياطية",()->{draftName=name.getText().toString();Intent intent=new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);startActivityForResult(intent,2);},false);
+  button("استيراد نسخة احتياطية",()->{draftName=name.getText().toString();new AlertDialog.Builder(this).setTitle("استيراد نسخة احتياطية").setMessage("ستُستبدل بيانات الحساب الحالية ببيانات النسخة المختارة.").setNegativeButton("إلغاء",null).setPositiveButton("اختيار الملف",(d,w)->pick("application/zip",3)).show();},false);
+  LocalRuntime.IO.execute(()->{try{final byte[] bytes=selected==null?LocalRuntime.data().avatar():selected;final Bitmap bitmap=bytes.length==0?null:BitmapFactory.decodeByteArray(bytes,0,bytes.length);runOnUiThread(()->{if(!isFinishing()){if(bitmap!=null)avatar.setImageBitmap(bitmap);else{int icon=getResources().getIdentifier("ic_profile","drawable",getPackageName());avatar.setImageResource(icon==0?android.R.drawable.ic_menu_myplaces:icon);}}});}catch(Exception e){LocalRuntime.failure("profile_load",e);}});
  }
- private void text(String s,int size){TextView v=new TextView(this);v.setText(s);v.setTextSize(size);v.setPadding(4,14,4,14);content.addView(v);}
- private void button(String s,final Runnable action){Button b=new Button(this);b.setText(s);b.setAllCaps(false);content.addView(b,new LinearLayout.LayoutParams(-1,-2));b.setOnClickListener(v->{if(!busy)action.run();});}
+ private void text(String label,int size){TextView view=new TextView(this);view.setText(label);view.setTextSize(size);view.setTextColor(size>=19?primary:muted);view.setPadding(0,dp(12),0,dp(10));content.addView(view);}
+ private void button(String label,final Runnable action,boolean save){Button button=new Button(this);button.setText(label);button.setTextSize(16);button.setAllCaps(false);button.setTextColor(save?background:primary);button.setBackground(rounded(save?primary:raised,12));LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(-1,dp(52));params.topMargin=dp(16);content.addView(button,params);button.setOnClickListener(v->{if(!busy)action.run();});}
  private void pick(String type,int code){if(busy)return;Intent intent=new Intent(Intent.ACTION_OPEN_DOCUMENT).setType(type).addCategory(Intent.CATEGORY_OPENABLE);startActivityForResult(intent,code);}
  private interface Task{void run()throws Exception;}
  private void work(final Task task,final String success){if(busy)return;busy=true;toast("جارٍ التنفيذ…");LocalRuntime.IO.execute(new Runnable(){public void run(){try{task.run();runOnUiThread(()->{busy=false;if(!isFinishing()){toast(success);if(restartAfterImport){Intent launch=getPackageManager().getLaunchIntentForPackage(getPackageName());if(launch!=null){launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);startActivity(launch);finish();return;}}render();}});}catch(final Exception e){LocalRuntime.failure("account_ui",e);runOnUiThread(()->{busy=false;if(!isFinishing())toast("تعذر إكمال العملية؛ راجع سجل التشخيص.");});}}});}
@@ -36,20 +41,15 @@ public final class LocalAccountActivity extends Activity {
    if(bounds.outWidth<=0||bounds.outHeight<=0||(long)bounds.outWidth*bounds.outHeight>100000000)throw new IOException("invalid image");
    BitmapFactory.Options options=new BitmapFactory.Options();options.inSampleSize=1;while(Math.max(bounds.outWidth,bounds.outHeight)/options.inSampleSize>512)options.inSampleSize*=2;
    Bitmap bitmap=BitmapFactory.decodeByteArray(bytes,0,bytes.length,options);if(bitmap==null)throw new IOException("invalid image");ByteArrayOutputStream out=new ByteArrayOutputStream();bitmap.compress(Bitmap.CompressFormat.JPEG,85,out);bitmap.recycle();
-   selected=out.toByteArray();LocalAccountStore s=LocalRuntime.data();s.profile(s.name(),selected);LocalRuntime.updateProfile();},"تم حفظ الصورة");
+   selected=out.toByteArray();},"تم اختيار الصورة؛ اضغط حفظ التغييرات");
   else if(request==2)work(()->{
    LocalRuntime.flushProgress();LocalRuntime.snapshotLegacy(!LocalRuntime.data().config("legacy_seeded","0").equals("1"));
    Uri parent=DocumentsContract.buildDocumentUriUsingTree(uri,DocumentsContract.getTreeDocumentId(uri));String filename="Cinemana-account-"+new SimpleDateFormat("yyyyMMdd-HHmmss",Locale.ROOT).format(new Date())+".zip";
    Uri target=DocumentsContract.createDocument(getContentResolver(),parent,"application/zip",filename);if(target==null)throw new IOException("document not created");
    try(OutputStream out=getContentResolver().openOutputStream(target,"w")){if(out==null)throw new IOException("document not writable");LocalRuntime.data().exportZip(out);}catch(Exception e){try{DocumentsContract.deleteDocument(getContentResolver(),target);}catch(Exception ignored){}throw e;}
   },"تم تصدير النسخة إلى المجلد المختار");
-  else if(request==3)work(()->{try(InputStream in=getContentResolver().openInputStream(uri)){if(in==null)throw new IOException("document not readable");LocalRuntime.importAccount(in);}selected=null;LocalRuntime.updateProfile();LocalRuntime.restoreLegacy();LocalRuntime.log("ui_refresh_after_import");restartAfterImport=true;},"تم استيراد الحساب وتحديث البيانات");
+  else if(request==3)work(()->{try(InputStream in=getContentResolver().openInputStream(uri)){if(in==null)throw new IOException("document not readable");LocalRuntime.importAccount(in);}selected=null;draftName=null;LocalRuntime.updateProfile();LocalRuntime.restoreLegacy();LocalRuntime.log("ui_refresh_after_import");restartAfterImport=true;},"تم استيراد الحساب وتحديث البيانات");
  }
  private byte[] read(Uri uri,int limit)throws IOException{try(InputStream in=getContentResolver().openInputStream(uri);ByteArrayOutputStream out=new ByteArrayOutputStream()){if(in==null)throw new IOException("image unreadable");byte[] b=new byte[8192];int n;while((n=in.read(b))!=-1){if(out.size()+n>limit)throw new IOException("image limit");out.write(b,0,n);}return out.toByteArray();}}
- private void showList(final ListKind kind){LocalRuntime.IO.execute(new Runnable(){public void run(){try{final java.util.List<Item> items=kind==null?LocalRuntime.data().inbox():LocalRuntime.data().list(kind);Collections.reverse(items);runOnUiThread(()->{if(isFinishing())return;String[] titles=new String[items.size()];for(int n=0;n<titles.length;n++)titles[n]=items.get(n).title;
-   new AlertDialog.Builder(LocalAccountActivity.this).setTitle(kind==null?"الإشعارات":"عناصر الحساب").setItems(titles,(dialog,index)->{
-    final Item item=items.get(index);new AlertDialog.Builder(LocalAccountActivity.this).setTitle(item.title).setItems(kind==null?new String[]{"فتح الحلقة"}:new String[]{"فتح العمل","إزالة من القائمة"},(d,choice)->{if(choice==0)openVideo(item.id);else work(()->LocalRuntime.data().remove(kind,item.id),"تمت الإزالة");}).setNegativeButton("رجوع",null).show();}).setNegativeButton("إغلاق",null).show();});
-  }catch(Exception e){LocalRuntime.failure("list_ui",e);}}});}
- private void openVideo(String id){Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse("https://cinemana.shabakaty.cc/video/"+id));intent.setPackage(getPackageName());startActivity(intent);}
  private void toast(String text){Toast.makeText(this,text,Toast.LENGTH_LONG).show();}
 }

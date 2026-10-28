@@ -43,11 +43,7 @@ needle='    invoke-super {p0}, Landroidx/fragment/app/Fragment;->onResume()V';as
 p=base/'cinemana/ui/login/LoginActivity.smali';replace_method(p,'onCreate(Landroid/os/Bundle;)V','    .locals 0\n    invoke-super {p0, p1}, Lcom/shabakaty/downloader/xi;->onCreate(Landroid/os/Bundle;)V\n    invoke-static {p0}, '+runtime+'->open(Landroid/content/Context;)V\n    invoke-virtual {p0}, Landroid/app/Activity;->finish()V\n    return-void')
 p=base/'cinemana/domain/models/local/VideoModel.smali';s=p.read_text();start=s.index('.method public final a(Lcom/shabakaty/downloader/s25;');end=s.index('.end method',start);part=s[start:end];part=part.replace('    return-void','    invoke-static {p0}, '+runtime+'->overlay(Ljava/lang/Object;)V\n    return-void');s=s[:start]+part+s[end:];p.write_text(s)
 p=base/'downloader/t25.smali';s=p.read_text();start=s.index('.method public q(Ljava/lang/String;J');end=s.index('.end method',start);part=s[start:end];part=part.replace('    .line 1','    invoke-static {p1, p2, p3}, '+runtime+'->progress(Ljava/lang/String;J)V\n\n    .line 1',1);s=s[:start]+part+s[end:];p.write_text(s)
-# Existing binding IDs and hierarchy remain intact; add a dedicated action row in the established container.
-for p in (root/'res').glob('layout*/fragment_profile.xml'):
- s=p.read_text();marker='<LinearLayout android:orientation="vertical" android:id="@id/ca1_cache_clean124"';a=s.index(marker);b=s.index('>',a)+1
- row='\n                <Button android:layout_width="match_parent" android:layout_height="wrap_content" android:tag="local_account266" android:text="حسابي المحلي والنسخ الاحتياطي" android:textAllCaps="false" />'
- s=s[:b]+row+s[b:];p.write_text(s)
+# The native profile edit action opens the local editor; no extra profile row.
 p=root/'AndroidManifest.xml';s=p.read_text();s=s.replace('<application ', '<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <application ',1)
 s=s.replace('</application>','''    <activity android:name="com.shabakaty.cinemana.local.LocalAccountActivity" android:exported="false" android:label="حسابي المحلي" android:theme="@android:style/Theme.Material.NoActionBar" />
         <service android:name="com.shabakaty.cinemana.local.LocalEpisodeJob" android:permission="android.permission.BIND_JOB_SERVICE" android:exported="true" />
