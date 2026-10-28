@@ -17,7 +17,8 @@ if [[ ! -f "$APKTOOL" || ! -f "$FRAME_DIR/1.apk" || ! -f "$APP_DIR/apktool.yml" 
   exit 1
 fi
 echo "Building project: $APP_DIR"
-"$JAVA_BIN" -jar "$APKTOOL" b -f -p "$FRAME_DIR" -o "$UNSIGNED" "$APP_DIR"
+"$JAVA_BIN" -jar "$APKTOOL" b -f -j 1 -p "$FRAME_DIR" -o "$UNSIGNED" "$APP_DIR"
+python3 "$ROOT/../scripts/verify_apk_dex.py" "$UNSIGNED" --smali-root "$APP_DIR"
 echo
 echo "Build completed: $UNSIGNED"
 echo "This APK is unsigned. Sign it with apksigner before installing."

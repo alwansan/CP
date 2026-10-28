@@ -1,15 +1,14 @@
-PATCH269 validation, 2026-10-28
-Base: 4632f39da999a6cb70f0d4491e36e238b0d4858f (PATCH268)
+PATCH270 validation, 2026-10-28
+Base: 6eef7ca58c01d4396d7a8f32ec02648b3e84508c
 Branch: feature/local-account
-PASS all existing storage/ZIP/baseline/API tests.
-PASS rich/blank metadata merge and metadata refresh preserving progress and deleted membership; specified placeholder category exclusion.
-PASS expiry parsing and signed-URL identity/quality candidate selection, excluding stale URLs and other qualities/hosts.
-PASS real localhost HTTP range probes: 206 MP4 accepted, 200 HTML and 403 rejected.
-PASS 2005 generated helper references checked against native classes; original continue renderer and metadata/retry bridge contracts.
-PASS original recovery linkage and 8 recovery/reference regression tests.
-PASS full Apktool build, 11 DEX files, APK content check, zipalign, apksigner v1/v2/v3 verification with the existing signing certificate.
-Observed user evidence: episode 145 retried an expired URL with HTTP403; re-adding obtained a fresh signature for the same media path and completed. Uploaded account state contains blank compatibility metadata from the prior upgrade.
-NOT RUN Android visual UI, real metadata refill, public catalogue refresh from user network, or real automatic download requeue. Nonempty partial downloads are preserved and logged for separate verified-resume work.
-No raw logs, user account binary, images, signed media URLs or OAuth credentials committed.
-Unsigned SHA-256: 254b6a65fb869b452f0a294d351a6f4d194ca831c2fcc8370324ca33d220123e
-Signed SHA-256: 11afcaf5abc6965b22374ee53a80c3f6a855aef67e9897a579d84b2aa15d150b
+Corrects PATCH269 delivery: its classes2.dex has a zeroed 112-byte header and was not a valid DEX, although ZIP/signature checks passed. Source j32 was present. Earlier APK content validation was insufficient.
+PASS seven DEX guard regression tests including zero-header and truncated-output cases.
+PASS guard rejects the actual delivered PATCH269 APK with classes2.dex: invalid DEX magic.
+PASS clean single-job Apktool build with integrated packaged DEX guard.
+PASS signed APK: all 11 DEX files, 17,639 class definitions match their Smali sources exactly; j32 and CinemanaApplication exist as class definitions; digests, lengths, bounds, map and duplicate checks.
+PASS official Android build-tools dexdump -c on every packaged DEX.
+PASS zipalign and apksigner v1/v2/v3 with the existing certificate.
+No application logic changed in PATCH270; no account/download data changes.
+NOT RUN startup on Android hardware; no Android emulator/runtime available here.
+Unsigned SHA-256: ee45d5f99a35d4fc1d8aa42da41516998051ba565a023f307f49df6d79a7b8b1
+Signed SHA-256: d003cd3bf72c71b26620a5a6df3588561acdaae20de0555bbbd32a050534f96c
