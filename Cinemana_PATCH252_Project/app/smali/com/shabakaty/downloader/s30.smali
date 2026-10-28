@@ -163,7 +163,7 @@
 
     const/4 v7, 0x0
 
-    const-string v2, "https://account.shabakaty.cc/"
+    const-string v2, "https://account.shabakaty.com/"
 
     move-object v1, v0
 

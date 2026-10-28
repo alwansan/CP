@@ -90,6 +90,8 @@
 .method public final getSigninIntent(Landroid/app/Activity;Ljava/lang/String;)Landroid/content/Intent;
     .locals 14
 
+    invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->start(Landroid/app/Activity;)V
+
     move-object v0, p1
 
     move-object/from16 v8, p2
@@ -377,6 +379,9 @@
 
     check-cast p1, Lcom/google/android/gms/auth/api/signin/GoogleSignInAccount;
 
+    const-string v0, "google_account_result_ok"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
+
     .line 2
     new-instance v0, Lcom/shabakaty/downloader/a63;
 
@@ -435,8 +440,16 @@
     iget-object p1, p1, Lcom/google/android/gms/auth/api/signin/GoogleSignInAccount;->x:Ljava/lang/String;
 
     .line 11
-    invoke-static {p1}, Lcom/shabakaty/downloader/j32;->c(Ljava/lang/Object;)V
-
+    if-eqz p1, :missing_code
+    invoke-virtual {p1}, Ljava/lang/String;->length()I
+    move-result v3
+    if-nez v3, :has_code
+    :missing_code
+    const-string v0, "google_authorization_code_missing"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->fail()V
+    return-void
+    :has_code
     invoke-virtual {v2, p2, p1}, Lcom/shabakaty/downloader/th1$a;->a(Ljava/lang/String;Ljava/lang/String;)Lcom/shabakaty/downloader/th1$a;
 
     .line 12
@@ -474,6 +487,7 @@
     invoke-virtual {p1, v1}, Lcom/shabakaty/downloader/pn3;->l0(Lcom/shabakaty/downloader/wq;)V
     :try_end_0
     .catch Lcom/shabakaty/downloader/g9; {:try_start_0 .. :try_end_0} :catch_0
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :auth_unexpected
 
     goto :goto_0
 
@@ -481,8 +495,17 @@
     move-exception p1
 
     .line 18
-    invoke-virtual {p1}, Ljava/lang/Exception;->printStackTrace()V
+    iget-object v0, p1, Lcom/shabakaty/downloader/g9;->r:Lcom/google/android/gms/common/api/Status;
+    iget v0, v0, Lcom/google/android/gms/common/api/Status;->s:I
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->googleError(I)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->fail()V
 
+    goto :goto_0
+    :auth_unexpected
+    move-exception p1
+    const-string v0, "google_result_processing_failure"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->fail()V
     :goto_0
     return-void
 .end method

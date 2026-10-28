@@ -1416,28 +1416,8 @@
         }
     .end annotation
 
-    .line 1
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/data/api/UserNetworkManager;->LOG_TAG:Ljava/lang/String;
-
-    const-string v1, "response(get token): "
-
-    invoke-static {v1}, Lcom/shabakaty/downloader/um3;->a(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    .line 2
-    iget-object v2, p1, Lcom/shabakaty/downloader/xs3;->b:Ljava/lang/Object;
-
-    .line 3
-    check-cast v2, Lcom/shabakaty/usermanagement/data/model/response/TokenResponse;
-
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+    const-string v0, "shabakaty_token_response_received"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
 
     .line 4
     iget-object p1, p1, Lcom/shabakaty/downloader/xs3;->b:Ljava/lang/Object;
@@ -1531,28 +1511,8 @@
         }
     .end annotation
 
-    .line 1
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/data/api/UserNetworkManager;->LOG_TAG:Ljava/lang/String;
-
-    const-string v1, "response(refresh token): "
-
-    invoke-static {v1}, Lcom/shabakaty/downloader/um3;->a(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    .line 2
-    iget-object v2, p1, Lcom/shabakaty/downloader/xs3;->b:Ljava/lang/Object;
-
-    .line 3
-    check-cast v2, Lcom/shabakaty/usermanagement/data/model/response/TokenResponse;
-
-    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+    const-string v0, "shabakaty_refresh_response_received"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
 
     .line 4
     iget-object v0, p1, Lcom/shabakaty/downloader/xs3;->a:Lcom/shabakaty/downloader/ws3;

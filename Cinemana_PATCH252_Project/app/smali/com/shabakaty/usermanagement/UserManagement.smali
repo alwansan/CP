@@ -1051,6 +1051,9 @@
 
 .method public final handleGoogleSignInResult(Lcom/shabakaty/downloader/uk4;)V
     .locals 2
+
+    const-string v0, "google_activity_result_received"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "(",
@@ -1118,6 +1121,9 @@
 .method public final login(Ljava/lang/String;Ljava/lang/String;)V
     .locals 1
 
+    const-string v0, "password_login_begin"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
+
     const-string v0, "username"
 
     invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
@@ -1136,6 +1142,14 @@
 
 .method public loginResult(Z)V
     .locals 3
+
+    if-eqz p1, :auth_failed
+    const-string v0, "login_result_success"
+    goto :auth_record
+    :auth_failed
+    const-string v0, "login_result_failed"
+    :auth_record
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
 
     if-eqz p1, :cond_0
 
@@ -1836,6 +1850,9 @@
 .method public onGoogleLoginFail()V
     .locals 2
 
+    const-string v0, "google_login_failed"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
+
     .line 1
     iget-object v0, p0, Lcom/shabakaty/usermanagement/UserManagement;->loginCallback:Lcom/shabakaty/usermanagement/callbacks/LoginCallback;
 
@@ -1851,6 +1868,9 @@
 
 .method public onGoogleLoginSuccess(Ljava/lang/String;)V
     .locals 1
+
+    const-string v0, "shabakaty_google_login_begin"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
 
     const-string v0, "googleAccessToken"
 

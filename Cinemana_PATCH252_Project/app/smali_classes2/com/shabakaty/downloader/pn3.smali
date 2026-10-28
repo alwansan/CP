@@ -689,6 +689,10 @@
 .method public final g()Lcom/shabakaty/downloader/ws3;
     .locals 10
 
+    const-string v0, "request_begin"
+    const/4 v1, 0x0
+    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->network(Lcom/shabakaty/downloader/pn3;Ljava/lang/String;I)V
+
     .line 1
     new-instance v2, Ljava/util/ArrayList;
 
@@ -819,6 +823,9 @@
     .line 27
     invoke-virtual {p0, v1}, Lcom/shabakaty/downloader/pn3;->i(Ljava/io/IOException;)Ljava/io/IOException;
 
+    const-string v3, "http_response"
+    iget v4, v2, Lcom/shabakaty/downloader/ws3;->v:I
+    invoke-static {p0, v3, v4}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->network(Lcom/shabakaty/downloader/pn3;Ljava/lang/String;I)V
     return-object v2
 
     .line 28
@@ -845,6 +852,12 @@
 
     :catch_0
     move-exception v0
+    invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/Class;->getSimpleName()Ljava/lang/String;
+    move-result-object v2
+    const/4 v3, 0x0
+    invoke-static {p0, v2, v3}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->network(Lcom/shabakaty/downloader/pn3;Ljava/lang/String;I)V
 
     .line 30
     :try_start_2

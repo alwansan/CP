@@ -1,0 +1,15 @@
+Base: 06ec99add982ace4b35898f763b31ec532a5a7e5
+Branch: fix/auth-login-diagnostics
+Date: 2026-10-28
+PASS: Full Apktool 2.12.1 build (all ten dex files and resources)
+Unsigned APK SHA256: 97838b3784c78e64ad81615b333377fdb8335ef9a069a2035fc7714ad7ccdbfd
+PASS: scripts/test_auth_har.py (3 privacy/flow tests)
+PASS: scripts/validate_recovery.py
+PASS: scripts/test_reference_guards.py (3 tests)
+PASS: scripts/test_recovery_flow.py (5 tests)
+PASS: git diff --check
+HAR analysis: 355 entries total; 6 Google authorization events, 3 Google error-page events.
+No app core/connect/token or core/connect/google calls in supplied captures.
+NOT RUN: Android runtime/ART verification, account sign-in, UI timeout/callback behavior on device.
+NOT RUN: APK signing, installation, or release publication.
+No authentication tokens, passwords, cookies, raw captures, or client-secret values added to reports.

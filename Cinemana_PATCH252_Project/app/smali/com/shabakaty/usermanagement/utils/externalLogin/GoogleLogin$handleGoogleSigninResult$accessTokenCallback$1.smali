@@ -72,7 +72,8 @@
     invoke-static {p2, p1}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
 
     .line 1
-    invoke-virtual {p2}, Ljava/io/IOException;->printStackTrace()V
+    const-string v0, "google_token_transport_failure"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
 
     .line 2
     sget-object p1, Lcom/shabakaty/usermanagement/utils/externalLogin/GoogleLogin;->INSTANCE:Lcom/shabakaty/usermanagement/utils/externalLogin/GoogleLogin;
@@ -100,6 +101,18 @@
 
     invoke-static {p2, p1}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
 
+    iget v0, p2, Lcom/shabakaty/downloader/ws3;->v:I
+    const/16 p1, 0xc8
+    if-lt v0, p1, :http_failure
+    const/16 p1, 0x12c
+    if-lt v0, p1, :http_ok
+    :http_failure
+    invoke-virtual {p2}, Lcom/shabakaty/downloader/ws3;->close()V
+    const-string v0, "google_token_http_rejected"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->fail()V
+    return-void
+    :http_ok
     .line 1
     :try_start_0
     iget-object p1, p2, Lcom/shabakaty/downloader/ws3;->y:Lcom/shabakaty/downloader/ys3;
@@ -134,6 +147,16 @@
 
     move-result-object p1
 
+    invoke-virtual {p1}, Ljava/lang/String;->length()I
+    move-result v0
+    if-nez v0, :token_present
+    const-string v0, "google_token_missing"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->fail()V
+    return-void
+    :token_present
+    const-string v0, "google_token_present"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
     .line 5
     sget-object p2, Lcom/shabakaty/usermanagement/utils/externalLogin/GoogleLogin;->INSTANCE:Lcom/shabakaty/usermanagement/utils/externalLogin/GoogleLogin;
 
@@ -155,7 +178,8 @@
 
     .line 6
     :goto_1
-    invoke-virtual {p1}, Ljava/lang/Exception;->printStackTrace()V
+    const-string v0, "google_token_parse_or_callback_failure"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/AuthTrace;->emit(Ljava/lang/String;)V
 
     .line 7
     sget-object p1, Lcom/shabakaty/usermanagement/utils/externalLogin/GoogleLogin;->INSTANCE:Lcom/shabakaty/usermanagement/utils/externalLogin/GoogleLogin;
