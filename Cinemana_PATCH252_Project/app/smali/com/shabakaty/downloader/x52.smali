@@ -1248,6 +1248,7 @@
     invoke-virtual {v0, v6}, Landroid/widget/FrameLayout;->setVisibility(I)V
 
     :cond_1c
+    invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/local/AccountUi;->watched(Ljava/lang/Object;)V
     return-void
 
     :catchall_0

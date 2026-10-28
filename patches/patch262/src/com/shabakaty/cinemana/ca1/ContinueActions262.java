@@ -1,6 +1,7 @@
 package com.shabakaty.cinemana.ca1;
 
 import android.app.Activity;
+import com.shabakaty.cinemana.local.AccountUi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -48,6 +49,7 @@ public final class ContinueActions262 {
     }
     public static void bindHorizontal(Object binding, boolean enabled) {
         bind(binding,enabled,"U","T","P");
+        AccountUi.resume(binding,enabled);
     }
     public static void bindWide(Object binding) {
         try {
@@ -103,26 +105,10 @@ public final class ContinueActions262 {
         }
     }
     static void popup(final View anchor,final Bound b) {
-        final Context c=anchor.getContext();
-        LinearLayout box=new LinearLayout(c);box.setOrientation(LinearLayout.VERTICAL);
-        TextView arrow=new TextView(c);arrow.setText("▲");arrow.setTextColor(Color.rgb(42,42,42));arrow.setTextSize(12);arrow.setGravity(Gravity.RIGHT);arrow.setPadding(0,0,dp(c,20),0);
-        box.addView(arrow,new LinearLayout.LayoutParams(-1,dp(c,14)));
-        LinearLayout panel=new LinearLayout(c);panel.setOrientation(LinearLayout.VERTICAL);panel.setBackgroundColor(Color.rgb(42,42,42));box.addView(panel);
-        final PopupWindow popup=new PopupWindow(box,dp(c,240),-2,true);
-        popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));popup.setOutsideTouchable(true);
-        View info=action(c,tr("أظهر تفاصيل العمل"),android.R.drawable.ic_menu_info_details);
-        View remove=action(c,tr("حذف من أكمل المشاهدة"),android.R.drawable.ic_menu_delete);
-        panel.addView(info);panel.addView(remove);
-        info.setOnClickListener(new View.OnClickListener(){ public void onClick(View v){popup.dismiss();openDetails(anchor,b);} });
-        remove.setOnClickListener(new View.OnClickListener(){public void onClick(View v){popup.dismiss();remove(Collections.singleton(text(b.model,"nb")));}});
         anchor.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-        popup.showAsDropDown(anchor,Math.max(0,anchor.getWidth()-dp(c,240)),0);
+        AccountUi.actions(anchor,()->openDetails(anchor,b),()->remove(Collections.singleton(text(b.model,"nb"))));
     }
-    static View action(Context c,String title,int icon) {
-        LinearLayout row=new LinearLayout(c);row.setGravity(Gravity.CENTER_VERTICAL);row.setPadding(dp(c,14),dp(c,10),dp(c,14),dp(c,10));row.setMinimumHeight(dp(c,48));
-        ImageView image=new ImageView(c);image.setImageResource(icon);image.setColorFilter(Color.WHITE);row.addView(image,new LinearLayout.LayoutParams(dp(c,24),dp(c,24)));
-        TextView text=new TextView(c);text.setText(title);text.setTextColor(Color.WHITE);text.setTextSize(15);text.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);row.addView(text,new LinearLayout.LayoutParams(0,-2,1));return row;
-    }
+
     static void openDetails(View anchor,Bound b) {
         try {
             Object model=b.model;
@@ -229,22 +215,23 @@ public final class ContinueActions262 {
                 call(adapter,"notifyDataSetChanged");
             } catch(Exception e){error("continue_more_toolbar262",e);}
         }
-        Button button(Context c,String title,View.OnClickListener l){Button b=new Button(c);b.setText(tr(title));b.setTextSize(12);b.setOnClickListener(l);return b;}
+        LinearLayout.LayoutParams cell(Context c){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(c,54),1);p.setMargins(dp(c,4),dp(c,4),dp(c,4),dp(c,4));return p;}
+        Button button(Context c,String title,View.OnClickListener l){Button b=new Button(c);b.setText(tr(title));b.setTextSize(13);AccountUi.button(b,title.contains("حذف"));b.setOnClickListener(l);return b;}
         void begin(){
             if(mode){confirm();return;}
             View r=root.get();if(!(r instanceof ViewGroup)||recycler==null)return;
-            mode=true;Context c=r.getContext();bar=new LinearLayout(c);bar.setOrientation(LinearLayout.VERTICAL);bar.setBackgroundColor(Color.rgb(35,35,35));
+            mode=true;Context c=r.getContext();bar=new LinearLayout(c);bar.setOrientation(LinearLayout.VERTICAL);bar.setBackground(AccountUi.shape(c,0xff202225,16));bar.setPadding(dp(c,12),dp(c,10),dp(c,12),dp(c,10));
             count=new TextView(c);count.setTextColor(Color.WHITE);count.setGravity(Gravity.CENTER);bar.addView(count);
             LinearLayout first=new LinearLayout(c);bar.addView(first);
-            first.addView(button(c,"تحديد الكل",new View.OnClickListener(){public void onClick(View v){for(Object m:items())selected.add(text(m,"nb"));update();}}),new LinearLayout.LayoutParams(0,-2,1));
-            first.addView(button(c,"إلغاء تحديد الكل",new View.OnClickListener(){public void onClick(View v){selected.clear();update();}}),new LinearLayout.LayoutParams(0,-2,1));
-            first.addView(button(c,"تحديد عمل",new View.OnClickListener(){public void onClick(View v){chooseWork();}}),new LinearLayout.LayoutParams(0,-2,1));
+            first.addView(button(c,"تحديد الكل",new View.OnClickListener(){public void onClick(View v){for(Object m:items())selected.add(text(m,"nb"));update();}}),cell(c));
+            first.addView(button(c,"إلغاء تحديد الكل",new View.OnClickListener(){public void onClick(View v){selected.clear();update();}}),cell(c));
+            first.addView(button(c,"تحديد عمل",new View.OnClickListener(){public void onClick(View v){chooseWork();}}),cell(c));
             LinearLayout scopes=new LinearLayout(c);bar.addView(scopes);
-            scopes.addView(button(c,"تحديد موسم",new View.OnClickListener(){public void onClick(View v){chooseScope(false);}}),new LinearLayout.LayoutParams(0,-2,1));
-            scopes.addView(button(c,"تحديد نطاق",new View.OnClickListener(){public void onClick(View v){chooseScope(true);}}),new LinearLayout.LayoutParams(0,-2,1));
+            scopes.addView(button(c,"تحديد موسم",new View.OnClickListener(){public void onClick(View v){chooseScope(false);}}),cell(c));
+            scopes.addView(button(c,"تحديد نطاق",new View.OnClickListener(){public void onClick(View v){chooseScope(true);}}),cell(c));
             LinearLayout second=new LinearLayout(c);bar.addView(second);
-            second.addView(button(c,"حذف المحدد",new View.OnClickListener(){public void onClick(View v){confirm();}}),new LinearLayout.LayoutParams(0,-2,1));
-            second.addView(button(c,"إلغاء",new View.OnClickListener(){public void onClick(View v){end();}}),new LinearLayout.LayoutParams(0,-2,1));
+            second.addView(button(c,"حذف المحدد",new View.OnClickListener(){public void onClick(View v){confirm();}}),cell(c));
+            second.addView(button(c,"إلغاء",new View.OnClickListener(){public void onClick(View v){end();}}),cell(c));
             ((ViewGroup)r).addView(bar,new ViewGroup.LayoutParams(-1,-2));bar.bringToFront();
             bar.post(new Runnable(){public void run(){if(mode)recycler.setPadding(recycler.getPaddingLeft(),oldPadding+bar.getHeight(),recycler.getPaddingRight(),recycler.getPaddingBottom());}});update();
         }
@@ -253,18 +240,18 @@ public final class ContinueActions262 {
         void chooseWork(){
             final LinkedHashMap<String,String> works=new LinkedHashMap<String,String>();for(Object m:items())works.put(work(m),label(m));
             final List<String> keys=new ArrayList<String>(works.keySet());
-            new AlertDialog.Builder(root.get().getContext()).setTitle(tr("تحديد عمل")).setItems(works.values().toArray(new String[0]),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface d,int which){for(Object m:items())if(keys.get(which).equals(work(m)))selected.add(text(m,"nb"));update();}}).setNegativeButton(tr("إلغاء"),null).show();
+            new AccountUi.Builder(root.get().getContext()).setTitle(tr("تحديد عمل")).setItems(works.values().toArray(new String[0]),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface d,int which){for(Object m:items())if(keys.get(which).equals(work(m)))selected.add(text(m,"nb"));update();}}).setNegativeButton(tr("إلغاء"),null).show();
         }
         void chooseScope(final boolean range){
             final LinkedHashMap<String,String> scopes=new LinkedHashMap<String,String>();
             for(Object m:items())scopes.put(work(m)+"|"+text(m,"season"),label(m)+" — "+tr("الموسم")+" "+text(m,"season"));
             final List<String> keys=new ArrayList<String>(scopes.keySet());
-            new AlertDialog.Builder(root.get().getContext()).setTitle(tr("اختر العمل والموسم")).setItems(scopes.values().toArray(new String[0]),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface d,int which){
+            new AccountUi.Builder(root.get().getContext()).setTitle(tr("اختر العمل والموسم")).setItems(scopes.values().toArray(new String[0]),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface d,int which){
                 final List<Object> scope=new ArrayList<Object>();for(Object m:items())if(keys.get(which).equals(work(m)+"|"+text(m,"season")))scope.add(m);
                 if(!range){for(Object m:scope)selected.add(text(m,"nb"));update();return;}
                 Context c=root.get().getContext();LinearLayout form=new LinearLayout(c);form.setOrientation(LinearLayout.VERTICAL);
                 final EditText from=new EditText(c),to=new EditText(c);from.setInputType(2);to.setInputType(2);from.setHint(tr("من الحلقة"));to.setHint(tr("إلى الحلقة"));form.addView(from);form.addView(to);
-                new AlertDialog.Builder(c).setTitle(tr("تحديد نطاق")).setView(form).setPositiveButton(tr("تحديد"),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface dialog,int w){
+                new AccountUi.Builder(c).setTitle(tr("تحديد نطاق")).setView(form).setPositiveButton(tr("تحديد"),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface dialog,int w){
                     try{int a=Integer.parseInt(from.getText().toString()),b=Integer.parseInt(to.getText().toString());if(a<0||b<a)throw new NumberFormatException();for(Object m:scope){try{int e=Integer.parseInt(text(m,"episodeNummer"));if(e>=a&&e<=b)selected.add(text(m,"nb"));}catch(NumberFormatException skip){}}update();}
                     catch(NumberFormatException invalid){Toast.makeText(root.get().getContext(),tr("أدخل نطاق حلقات صحيحًا"),Toast.LENGTH_SHORT).show();}
                 }}).setNegativeButton(tr("إلغاء"),null).show();
@@ -273,7 +260,7 @@ public final class ContinueActions262 {
         void confirm(){
             if(selected.isEmpty())return;
             final Set<String> snapshot=new LinkedHashSet<String>(selected);
-            new AlertDialog.Builder(root.get().getContext()).setTitle(tr("حذف من أكمل المشاهدة")).setMessage(tr("حذف العناصر المحددة من سجل المشاهدة؟")+" ("+snapshot.size()+")").setPositiveButton(tr("حذف"),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface d,int which){remove(snapshot);end();}}).setNegativeButton(tr("إلغاء"),null).show();
+            new AccountUi.Builder(root.get().getContext()).setTitle(tr("حذف من أكمل المشاهدة")).setMessage(tr("حذف العناصر المحددة من سجل المشاهدة؟")+" ("+snapshot.size()+")").setPositiveButton(tr("حذف"),new android.content.DialogInterface.OnClickListener(){public void onClick(android.content.DialogInterface d,int which){remove(snapshot);end();}}).setNegativeButton(tr("إلغاء"),null).show();
         }
         void refresh(){
             try {List<Object> filtered=new ArrayList<Object>();synchronized(Continue106.class){for(Object m:items())if(Continue106.entries.containsKey(text(m,"nb")))filtered.add(m);}call(adapter,"e",filtered);synchronized(Continue106.class){selected.retainAll(Continue106.entries.keySet());}update();}

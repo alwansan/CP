@@ -1,4 +1,4 @@
-.class Lcom/shabakaty/cinemana/local/LocalRuntime$3$1;
+.class Lcom/shabakaty/cinemana/local/LocalRuntime$4$1;
 .super Ljava/lang/Object;
 .source "LocalRuntime.java"
 
@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/shabakaty/cinemana/local/LocalRuntime$3;->invoke(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;
+    value = Lcom/shabakaty/cinemana/local/LocalRuntime$4;->invoke(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -18,7 +18,7 @@
 
 
 # instance fields
-.field final synthetic this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$3;
+.field final synthetic this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$4;
 
 .field final synthetic val$setting:Ljava/lang/String;
 
@@ -26,7 +26,7 @@
 
 
 # direct methods
-.method constructor <init>(Lcom/shabakaty/cinemana/local/LocalRuntime$3;Ljava/lang/String;Ljava/lang/String;)V
+.method constructor <init>(Lcom/shabakaty/cinemana/local/LocalRuntime$4;Ljava/lang/String;Ljava/lang/String;)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -34,11 +34,11 @@
         }
     .end annotation
 
-    iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$1;->this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$3;
+    iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$1;->this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$4;
 
-    iput-object p2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$1;->val$setting:Ljava/lang/String;
+    iput-object p2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$1;->val$setting:Ljava/lang/String;
 
-    iput-object p3, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$1;->val$value:Ljava/lang/String;
+    iput-object p3, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$1;->val$value:Ljava/lang/String;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -55,9 +55,9 @@
 
     move-result-object v0
 
-    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$1;->val$setting:Ljava/lang/String;
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$1;->val$setting:Ljava/lang/String;
 
-    iget-object v2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$1;->val$value:Ljava/lang/String;
+    iget-object v2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$1;->val$value:Ljava/lang/String;
 
     invoke-virtual {v0, v1, v2}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->setConfig(Ljava/lang/String;Ljava/lang/String;)V
     :try_end_b

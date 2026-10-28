@@ -28,7 +28,7 @@
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1$$ExternalSyntheticLambda1;->f$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;
 
-    invoke-virtual {v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->lambda$run$1$com-shabakaty-cinemana-local-LocalAccountActivity$1()V
+    invoke-virtual {v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->lambda$run$2$com-shabakaty-cinemana-local-LocalAccountActivity$1()V
 
     return-void
 .end method

@@ -54,7 +54,7 @@
 
     const/4 v1, 0x0
 
-    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$002(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Z)Z
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$102(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Z)Z
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
 
@@ -66,11 +66,11 @@
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
 
-    invoke-static {v0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$100(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;)V
+    invoke-static {v0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$200(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;)V
 
     iget-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
 
-    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$200(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Z
+    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$400(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Z
 
     move-result p1
 
@@ -111,20 +111,30 @@
     :cond_3e
     iget-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
 
-    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$300(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$500(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
 
     :cond_43
     return-void
 .end method
 
-.method synthetic lambda$run$1$com-shabakaty-cinemana-local-LocalAccountActivity$1()V
-    .locals 2
+.method synthetic lambda$run$1$com-shabakaty-cinemana-local-LocalAccountActivity$1(Landroid/content/DialogInterface;I)V
+    .locals 0
+
+    iget-object p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$300(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)V
+
+    return-void
+.end method
+
+.method synthetic lambda$run$2$com-shabakaty-cinemana-local-LocalAccountActivity$1()V
+    .locals 3
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
 
     const/4 v1, 0x0
 
-    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$002(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Z)Z
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$102(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Z)Z
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
 
@@ -132,15 +142,67 @@
 
     move-result v0
 
-    if-nez v0, :cond_15
+    if-nez v0, :cond_4b
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
 
     const-string v1, "\u062a\u0639\u0630\u0631 \u0625\u0643\u0645\u0627\u0644 \u0627\u0644\u0639\u0645\u0644\u064a\u0629\u061b \u0631\u0627\u062c\u0639 \u0633\u062c\u0644 \u0627\u0644\u062a\u0634\u062e\u064a\u0635."
 
-    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$100(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;)V
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$200(Lcom/shabakaty/cinemana/local/LocalAccountActivity;Ljava/lang/String;)V
 
-    :cond_15
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$000(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Ljava/lang/String;
+
+    move-result-object v0
+
+    const-string v1, "backup_export"
+
+    invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v0
+
+    if-eqz v0, :cond_4b
+
+    new-instance v0, Lcom/shabakaty/cinemana/local/AccountUi$Builder;
+
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
+
+    invoke-direct {v0, v1}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;-><init>(Landroid/content/Context;)V
+
+    const-string v1, "\u0637\u0631\u064a\u0642\u0629 \u062d\u0641\u0638 \u0628\u062f\u064a\u0644\u0629"
+
+    invoke-virtual {v0, v1}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v0
+
+    const-string v1, "\u064a\u0645\u0643\u0646 \u0627\u062e\u062a\u064a\u0627\u0631 \u0645\u0644\u0641 ZIP \u0645\u0628\u0627\u0634\u0631\u0629 \u0628\u062f\u0644\u0627\u064b \u0645\u0646 \u0627\u0644\u0645\u062c\u0644\u062f."
+
+    invoke-virtual {v0, v1}, Landroid/app/AlertDialog$Builder;->setMessage(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v0
+
+    new-instance v1, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1$$ExternalSyntheticLambda2;
+
+    invoke-direct {v1, p0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1$$ExternalSyntheticLambda2;-><init>(Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;)V
+
+    const-string v2, "\u062d\u0641\u0638 \u0645\u0644\u0641 ZIP"
+
+    invoke-virtual {v0, v2, v1}, Landroid/app/AlertDialog$Builder;->setPositiveButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v0
+
+    const-string v1, "\u0625\u063a\u0644\u0627\u0642"
+
+    const/4 v2, 0x0
+
+    invoke-virtual {v0, v1, v2}, Landroid/app/AlertDialog$Builder;->setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Landroid/app/AlertDialog$Builder;->show()Landroid/app/AlertDialog;
+
+    :cond_4b
     return-void
 .end method
 
@@ -164,12 +226,16 @@
     :try_end_11
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_11} :catch_12
 
-    goto :goto_22
+    goto :goto_26
 
     :catch_12
     move-exception v0
 
-    const-string v1, "account_ui"
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$1;->this$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
+
+    invoke-static {v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->access$000(Lcom/shabakaty/cinemana/local/LocalAccountActivity;)Ljava/lang/String;
+
+    move-result-object v1
 
     invoke-static {v1, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
 
@@ -181,6 +247,6 @@
 
     invoke-virtual {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->runOnUiThread(Ljava/lang/Runnable;)V
 
-    :goto_22
+    :goto_26
     return-void
 .end method

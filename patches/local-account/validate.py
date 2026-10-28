@@ -8,7 +8,7 @@ for file in root.glob('smali*/**/*.smali'):
  s=file.read_text();m=re.search(r'^\.class[^\n]* (L[^;]+;)$',s,re.M)
  if m:classes[m[1]]=(file,s)
 checked=0
-helpers=list((root/'smali_classes11').rglob('*.smali'))+[root/'smali_classes6/com/shabakaty/cinemana/ca1/LocalAccountLog.smali']
+helpers=list((root/'smali_classes11').rglob('*.smali'))+list((root/'smali_classes6/com/shabakaty/cinemana/ca1').glob('ContinueActions262*.smali'))+[root/'smali_classes6/com/shabakaty/cinemana/ca1/LocalAccountLog.smali']
 assert helpers
 for file in helpers:
  s=file.read_text()
@@ -18,7 +18,7 @@ for file in helpers:
   # Compiler targets for our bridges and direct legacy calls have declarations here.
   if signature.startswith('('):
    if name in ('onCreate','onPause','onStartJob','onStopJob','clone'):continue
-   assert re.search(r'^\.method [^\n]* '+re.escape(name+signature)+r'$',target,re.M) or re.search(r'^\.super Landroid/',target,re.M),(file,owner,name,signature)
+   assert re.search(r'^\.method (?:[^\n]* )?'+re.escape(name+signature)+r'$',target,re.M) or re.search(r'^\.super Landroid/',target,re.M),(file,owner,name,signature)
   else:assert re.search(r'^\.field[^\n]* '+re.escape(name+signature)+r'$',target,re.M),(file,owner,name,signature)
   checked+=1
 # The API factory and all personal route consumers share the wrapped interface.
@@ -49,3 +49,13 @@ icons=layout.findall('.//ImageView');assert len(icons)==3
 assert {i.get(ns+'src') for i in icons}=={'@drawable/ic_history','@drawable/ic_heart_big','@drawable/ic_categories'}
 assert all(i.get(ns+'tint')=='?cinColorTextPrimary' for i in icons)
 print('PASS PATCH267 native response/HTTP/poster contracts; single edit entry; three visible original list icons')
+
+assert 'AccountUi;->watched' in classes['Lcom/shabakaty/downloader/x52;'][1]
+assert 'LocalRuntime;->removeProgress' in classes['Lcom/shabakaty/cinemana/ca1/Continue106;'][1]
+assert 'LocalRuntime;->resumeProgress' in classes['Lcom/shabakaty/cinemana/ca1/Continue106;'][1]
+assert 'LocalRuntime;->profileResume' in classes['Lcom/shabakaty/cinemana/ui/home_activity/HomeActivity;'][1]
+assert 'AccountUi;->resume' in classes['Lcom/shabakaty/cinemana/ca1/ContinueActions262;'][1]
+for owner,field in [('Lcom/shabakaty/downloader/g42;','W:Lcom/facebook/drawee/view/SimpleDraweeView;'),('Lcom/shabakaty/downloader/g42;','X:Landroid/widget/TextView;'),('Lcom/shabakaty/downloader/x52;','Y:Lcom/facebook/drawee/view/SimpleDraweeView;')]:assert field in classes[owner][1]
+assert 'getSmallPicture()Ljava/lang/String;' in classes['Lcom/shabakaty/usermanagement/UserManagement;'][1]
+assert 'H0(Ljava/lang/String;)V' in classes['Lcom/shabakaty/downloader/hx2;'][1]
+print('PASS PATCH268 continue deletion/persistence, resume/watched overlays, avatar refresh and native field contracts')

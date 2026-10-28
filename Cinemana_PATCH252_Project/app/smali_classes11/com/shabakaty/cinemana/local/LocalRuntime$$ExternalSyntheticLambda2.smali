@@ -60,7 +60,7 @@
 
     move/from16 v12, p9
 
-    invoke-static/range {v1 .. v12}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$decorate$3([Ljava/lang/String;Landroid/content/Context;Landroid/view/View;Landroid/view/View;IIIIIIII)V
+    invoke-static/range {v1 .. v12}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$decorate$6([Ljava/lang/String;Landroid/content/Context;Landroid/view/View;Landroid/view/View;IIIIIIII)V
 
     return-void
 .end method

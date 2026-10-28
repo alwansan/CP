@@ -325,6 +325,9 @@
 .method public F(Ljava/lang/String;)V
     .locals 2
 
+    const/4 v0, 0x0
+    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->watchedChanged(Ljava/lang/String;Z)V
+
     .line 1
     iget-object v0, p0, Lcom/shabakaty/downloader/t25;->a:Lcom/shabakaty/downloader/vt3;
 
@@ -1000,6 +1003,9 @@
 
 .method public e(Ljava/lang/String;)V
     .locals 2
+
+    const/4 v0, 0x1
+    invoke-static {p1, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->watchedChanged(Ljava/lang/String;Z)V
 
     .line 1
     iget-object v0, p0, Lcom/shabakaty/downloader/t25;->a:Lcom/shabakaty/downloader/vt3;

@@ -1,4 +1,4 @@
-.class Lcom/shabakaty/cinemana/local/LocalRuntime$3$2;
+.class Lcom/shabakaty/cinemana/local/LocalRuntime$4$2;
 .super Ljava/lang/Object;
 .source "LocalRuntime.java"
 
@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/shabakaty/cinemana/local/LocalRuntime$3;->invoke(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;
+    value = Lcom/shabakaty/cinemana/local/LocalRuntime$4;->invoke(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -27,7 +27,7 @@
 
 
 # instance fields
-.field final synthetic this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$3;
+.field final synthetic this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$4;
 
 .field final synthetic val$args:[Ljava/lang/Object;
 
@@ -35,7 +35,7 @@
 
 
 # direct methods
-.method constructor <init>(Lcom/shabakaty/cinemana/local/LocalRuntime$3;Ljava/lang/String;[Ljava/lang/Object;)V
+.method constructor <init>(Lcom/shabakaty/cinemana/local/LocalRuntime$4;Ljava/lang/String;[Ljava/lang/Object;)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -43,11 +43,11 @@
         }
     .end annotation
 
-    iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$2;->this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$3;
+    iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$2;->this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$4;
 
-    iput-object p2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$2;->val$key:Ljava/lang/String;
+    iput-object p2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$2;->val$key:Ljava/lang/String;
 
-    iput-object p3, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$2;->val$args:[Ljava/lang/Object;
+    iput-object p3, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$2;->val$args:[Ljava/lang/Object;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -64,9 +64,9 @@
         }
     .end annotation
 
-    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$2;->val$key:Ljava/lang/String;
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$2;->val$key:Ljava/lang/String;
 
-    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$3$2;->val$args:[Ljava/lang/Object;
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$4$2;->val$args:[Ljava/lang/Object;
 
     invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->local(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
 

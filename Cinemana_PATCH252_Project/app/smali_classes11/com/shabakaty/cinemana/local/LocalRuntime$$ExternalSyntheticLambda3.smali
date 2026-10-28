@@ -34,7 +34,7 @@
 
     iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$$ExternalSyntheticLambda3;->f$1:Landroid/view/View;
 
-    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$decorate$4(Landroid/view/View$OnLayoutChangeListener;Landroid/view/View;)V
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$decorate$7(Landroid/view/View$OnLayoutChangeListener;Landroid/view/View;)V
 
     return-void
 .end method

@@ -218,9 +218,9 @@
 
     invoke-virtual {v0, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    new-instance v3, Landroid/app/AlertDialog$Builder;
+    new-instance v3, Lcom/shabakaty/cinemana/local/AccountUi$Builder;
 
-    invoke-direct {v3, p2}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+    invoke-direct {v3, p2}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;-><init>(Landroid/content/Context;)V
 
     const-string p2, "\u062a\u062d\u062f\u064a\u062f \u0646\u0637\u0627\u0642"
 
@@ -228,7 +228,7 @@
 
     move-result-object p2
 
-    invoke-virtual {v3, p2}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+    invoke-virtual {v3, p2}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
 
     move-result-object p2
 

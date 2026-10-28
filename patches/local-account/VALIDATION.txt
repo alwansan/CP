@@ -1,15 +1,15 @@
-PATCH267 local-account validation, 2026-10-28
-Base: 06ec99add982ace4b35898f763b31ec532a5a7e5
+PATCH268 local-account validation, 2026-10-28
+Base: 44f0cdcf0aacbad5674430542f3135a04cd61303 (PATCH267)
 Branch: feature/local-account
-PASS host persistence, schema, ZIP round-trip, path rejection, truncated ZIP rejection, rollback on invalid import, baseline, deduplication, unsubscribe, restore baseline, progress/config reopen, interrupted-write recovery.
-PASS native API bridge behavior: personal operations stay local, zero-based pagination, remote catalogue delegation, cached-details fallback, server comments rejected.
-PASS 1044 generated helper member references checked against actual project classes; platform-inherited members excluded from declaration-only checks.
-PASS existing recovery linkage check and 8 existing regression tests.
-PASS full Apktool build with all original dex files plus classes11.dex.
-PASS zipalign 4-byte alignment and apksigner v1/v2/v3 signature verification.
-NOT RUN Android/ART execution, visual device QA, live episode API access from user's network, actual background notification delivery or device SAF interactions.
-No raw user logs or authentication credentials were added to this patch.
-Unsigned SHA-256: 5bddb22be0d3e76af66b3785f78db1d2a19bd2e7d0a88c3b874de41a52e47240
-Signed SHA-256: b1c24711daf42447a925da971743bccc7bb577bb786a3d055b07ef3e18c97a8b
-PASS PATCH267: literal true mutation response contract, local highlightEpisode root filtering, catalogue demand/completion forwarding, native response/HTTP/poster linkage, single edit entry, three original icons with foreground tint.
-POSTER NOTE: bounded catalogue-thumbnail fallback implemented; live device image delivery not verified.
+PASS host storage, physical progress deletion/reopen, state replacement pruning, relocation preserving baseline, 100-item inbox cap, restored baseline detects only additional episode IDs.
+PASS large Arabic/emoji/escaped preference storage and ZIP round-trip; missing and duplicate chunks rejected; artwork-less category filtering; previous API routing and response contract tests.
+PASS 1821 helper member references against actual native classes, including rebuilt ContinueActions262; package-private declarations included.
+PASS native watched/resume binding fields, Continue106 deletion/persistence hooks and HomeActivity avatar refresh; existing response, HTTP, poster, profile and job contracts.
+PASS existing recovery linkage check and 8 existing recovery/reference regression tests.
+PASS full Apktool assembly; aligned APK; apksigner v1/v2/v3 verification.
+NOT RUN physical Android visual QA, image chooser provider behavior, actual SAF export/import, uninstall/reinstall, or a notification for a newly released episode.
+Observed in user's PATCH267 logs: anonymous episode HTTP200 and two baseline reconciliations without old-episode alerts. This is not proof of future background delivery.
+Canonical account path when writable: /storage/emulated/0/Cinemana/work/data/local-account/account.bin; private fallback is shown explicitly in editor.
+No raw user logs, media files, download database or OAuth credentials committed.
+Unsigned SHA-256: 1bfeb05360ad74654b0b161f5422ac88d0aded1d54e552150d12276393cae8e7
+Signed SHA-256: d12ddb580a900c09626cf3cc1a941cbb24a07c99f54df8db02ad8f2e335d37ea

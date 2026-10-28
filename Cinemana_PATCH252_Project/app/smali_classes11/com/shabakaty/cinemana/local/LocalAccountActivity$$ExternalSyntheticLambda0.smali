@@ -34,7 +34,7 @@
 
     iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda0;->f$1:Ljava/lang/String;
 
-    invoke-virtual {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->lambda$render$2$com-shabakaty-cinemana-local-LocalAccountActivity(Ljava/lang/String;)V
+    invoke-virtual {v0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->lambda$render$4$com-shabakaty-cinemana-local-LocalAccountActivity(Ljava/lang/String;)V
 
     return-void
 .end method

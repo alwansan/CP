@@ -45,6 +45,19 @@ public final class LocalAccountStore {
         if(backup.exists()){if(current.exists()&&!current.delete())throw new IOException("recovery failed");if(!backup.renameTo(current))throw new IOException("recovery failed");}
         state=current.exists()?decode(read(current)):new State();
     }
+    public synchronized File directory(){return directory;}
+    public synchronized LocalAccountStore relocate(File target)throws IOException {
+        if(directory.getCanonicalFile().equals(target.getCanonicalFile()))return this;
+        LocalAccountStore moved=new LocalAccountStore(target,events);
+        if(!new File(target,"account.bin").exists())moved.commit(copy());
+        event("account_relocated",1);return moved;
+    }
+    public synchronized boolean hasBaseline(String id){return state.known.containsKey(id);}
+    public synchronized int baselineSize(String id){Set<String> ids=state.known.get(id);return ids==null?0:ids.size();}
+    public synchronized void replace(ListKind kind,List<Item> items)throws IOException {
+        State next=copy();next.lists.get(kind).clear();for(Item item:items)next.lists.get(kind).put(item.id,item);commit(next);
+    }
+    public synchronized void removeProgress(String id)throws IOException {State next=copy();next.lists.get(ListKind.PROGRESS).remove(id);commit(next);event("progress_removed",1);}
     private void event(String e,int n){if(events!=null)try{events.record(e,n);}catch(RuntimeException ignored){}}
     public synchronized String name(){return state.name;}
     public synchronized byte[] avatar(){return state.avatar.clone();}
@@ -83,6 +96,7 @@ public final class LocalAccountStore {
             if(!next.inbox.containsKey(key)){next.inbox.put(key,episode);added.add(episode);}
         }
         previous.addAll(fetched);next.known.put(series,previous);
+        while(next.inbox.size()>100){String key=next.inbox.keySet().iterator().next();Item old=next.inbox.remove(key);next.config.remove("delivered_"+old.id);}
         commit(next);event("episodes_reconciled",added.size());return added;
     }
     /** Caller owns output stream (SAF document). No paths or original account credentials exported. */
@@ -93,7 +107,7 @@ public final class LocalAccountStore {
     }
     /** Entire archive validated in memory before atomic replacement. Rejects traversal, duplicates,
      * unknown entries, inflated payloads, future schemas and truncated data. On failure state survives.
-     * Import resets episode baselines to avoid old-episode alerts on a different installation.
+     * Restored episode baselines preserve which releases the user already knew about.
      */
     public synchronized void importZip(InputStream source)throws IOException {
         ByteArrayOutputStream archive=new ByteArrayOutputStream();byte[] chunk=new byte[8192];int length;
@@ -114,7 +128,7 @@ public final class LocalAccountStore {
             payload=bytes.toByteArray();zip.closeEntry();
         }
         if(payload==null)throw new IOException("empty backup");
-        State next=decode(payload);next.known.clear();next.config.put("last_scan","0");next.config.put("scan_cursor","0");next.config.put("legacy_seeded","1");commit(next);event("backup_imported",1);
+        State next=decode(payload);next.config.put("last_scan","0");next.config.put("scan_cursor","0");next.config.put("legacy_seeded","1");commit(next);event("backup_imported",1);
     }
     public synchronized void merge(Map<ListKind,List<Item>> records)throws IOException {
         State next=copy();for(Map.Entry<ListKind,List<Item>> e:records.entrySet())for(Item item:e.getValue())next.lists.get(e.getKey()).put(item.id,item);commit(next);
@@ -147,7 +161,7 @@ public final class LocalAccountStore {
         validId(key);validText(value,4096);State next=copy();next.config.put(key,value);commit(next);
     }
     public synchronized Item find(ListKind kind,String id){return state.lists.get(kind).get(id);}
-    public synchronized void clearInbox()throws IOException {State next=copy();next.inbox.clear();commit(next);}
+    public synchronized void clearInbox()throws IOException {State next=copy();next.inbox.clear();for(String key:new ArrayList<>(next.config.keySet()))if(key.startsWith("delivered_"))next.config.remove(key);commit(next);}
     private static String validId(String s){if(s==null||!s.matches("[A-Za-z0-9_-]{1,100}"))throw new IllegalArgumentException("invalid id");return s;}
     private static String validText(String s,int max){if(s==null||s.length()>max)throw new IllegalArgumentException("invalid text");return s;}
     private static void item(DataOutputStream out,Item i)throws IOException {out.writeUTF(i.id);out.writeUTF(i.title);out.writeLong(i.positionMs);out.writeUTF(i.payload);}

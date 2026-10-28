@@ -6,7 +6,7 @@ p=argparse.ArgumentParser();p.add_argument('--android-jar',type=Path,required=Tr
 def run(*cmd):subprocess.run([str(x) for x in cmd],check=True)
 with tempfile.TemporaryDirectory(prefix='local-account-tests-') as temp:
  t=Path(temp);main=t/'main';main.mkdir();test=t/'test';test.mkdir()
- run('java','com.sun.tools.javac.Main','-encoding','UTF-8','-cp',a.android_jar,'-d',main,*here.glob('src/**/*.java'),*here.glob('stubs/**/*.java'),here/'tests/LocalAccountStoreTest.java')
+ run('java','com.sun.tools.javac.Main','-encoding','UTF-8','-cp',a.android_jar,'-d',main,*here.glob('src/**/*.java'),*here.glob('stubs/**/*.java'),here.parent/'patch262/src/com/shabakaty/cinemana/ca1/ContinueActions262.java',here.parent/'patch262/src/com/shabakaty/cinemana/ca1/ResumeDisplay263.java',here.parent/'patch262/stubs/com/shabakaty/cinemana/ca1/Continue106.java',here.parent/'patch262/stubs/com/shabakaty/cinemana/ca1/I18n161.java',here/'tests/LocalAccountStoreTest.java')
  run('java','-cp',main,'LocalAccountStoreTest')
  run('java','com.sun.tools.javac.Main','-encoding','UTF-8','-cp',str(a.android_jar)+':'+str(a.gson_jar)+':'+str(main),'-d',test,*here.glob('tests/runtime/**/*.java'),here/'tests/RuntimeBridgeTest.java')
  run('java','-cp',str(test)+':'+str(main)+':'+str(a.android_jar)+':'+str(a.gson_jar),'com.shabakaty.cinemana.local.RuntimeBridgeTest')

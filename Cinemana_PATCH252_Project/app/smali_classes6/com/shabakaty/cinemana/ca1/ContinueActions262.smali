@@ -109,104 +109,6 @@
     return-object p0
 .end method
 
-.method static action(Landroid/content/Context;Ljava/lang/String;I)Landroid/view/View;
-    .locals 5
-
-    new-instance v0, Landroid/widget/LinearLayout;
-
-    invoke-direct {v0, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
-
-    const/16 v1, 0x10
-
-    invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->setGravity(I)V
-
-    const/16 v1, 0xe
-
-    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v2
-
-    const/16 v3, 0xa
-
-    invoke-static {p0, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v4
-
-    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v1
-
-    invoke-static {p0, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v3
-
-    invoke-virtual {v0, v2, v4, v1, v3}, Landroid/widget/LinearLayout;->setPadding(IIII)V
-
-    const/16 v1, 0x30
-
-    invoke-static {p0, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v1
-
-    invoke-virtual {v0, v1}, Landroid/widget/LinearLayout;->setMinimumHeight(I)V
-
-    new-instance v1, Landroid/widget/ImageView;
-
-    invoke-direct {v1, p0}, Landroid/widget/ImageView;-><init>(Landroid/content/Context;)V
-
-    invoke-virtual {v1, p2}, Landroid/widget/ImageView;->setImageResource(I)V
-
-    const/4 p2, -0x1
-
-    invoke-virtual {v1, p2}, Landroid/widget/ImageView;->setColorFilter(I)V
-
-    new-instance v2, Landroid/widget/LinearLayout$LayoutParams;
-
-    const/16 v3, 0x18
-
-    invoke-static {p0, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v4
-
-    invoke-static {p0, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v3
-
-    invoke-direct {v2, v4, v3}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
-
-    invoke-virtual {v0, v1, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
-
-    new-instance v1, Landroid/widget/TextView;
-
-    invoke-direct {v1, p0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
-
-    invoke-virtual {v1, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    invoke-virtual {v1, p2}, Landroid/widget/TextView;->setTextColor(I)V
-
-    const/high16 p0, 0x41700000    # 15.0f
-
-    invoke-virtual {v1, p0}, Landroid/widget/TextView;->setTextSize(F)V
-
-    const/16 p0, 0x15
-
-    invoke-virtual {v1, p0}, Landroid/widget/TextView;->setGravity(I)V
-
-    new-instance p0, Landroid/widget/LinearLayout$LayoutParams;
-
-    const/4 p1, -0x2
-
-    const/high16 p2, 0x3f800000    # 1.0f
-
-    const/4 v2, 0x0
-
-    invoke-direct {p0, v2, p1, p2}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
-
-    invoke-virtual {v0, v1, p0}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
-
-    return-object v0
-.end method
-
 .method public static attachMore(Ljava/lang/Object;)V
     .locals 3
 
@@ -271,9 +173,9 @@
 
     invoke-interface {v0, p0, v1}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
-    new-instance v0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$4;
+    new-instance v0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$2;
 
-    invoke-direct {v0, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$4;-><init>(Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;)V
+    invoke-direct {v0, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$2;-><init>(Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;)V
 
     invoke-virtual {p0, v0}, Landroid/view/View;->post(Ljava/lang/Runnable;)Z
     :try_end_41
@@ -405,6 +307,8 @@
     const-string v2, "U"
 
     invoke-static {p0, p1, v2, v0, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->bind(Ljava/lang/Object;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/local/AccountUi;->resume(Ljava/lang/Object;Z)V
 
     return-void
 .end method
@@ -902,6 +806,34 @@
     return-object p0
 .end method
 
+.method static synthetic lambda$popup$0(Landroid/view/View;Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
+    .locals 0
+
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->openDetails(Landroid/view/View;Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
+
+    return-void
+.end method
+
+.method static synthetic lambda$popup$1(Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
+    .locals 1
+
+    iget-object p0, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;->model:Ljava/lang/Object;
+
+    const-string v0, "nb"
+
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->text(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-static {p0}, Ljava/util/Collections;->singleton(Ljava/lang/Object;)Ljava/util/Set;
+
+    move-result-object p0
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->remove(Ljava/util/Collection;)V
+
+    return-void
+.end method
+
 .method static openDetails(Landroid/view/View;Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
     .locals 6
 
@@ -1128,159 +1060,21 @@
 .end method
 
 .method static popup(Landroid/view/View;Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
-    .locals 9
+    .locals 2
 
-    invoke-virtual {p0}, Landroid/view/View;->getContext()Landroid/content/Context;
+    const/4 v0, 0x0
 
-    move-result-object v0
+    invoke-virtual {p0, v0}, Landroid/view/View;->performHapticFeedback(I)Z
 
-    new-instance v1, Landroid/widget/LinearLayout;
+    new-instance v0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$$ExternalSyntheticLambda0;
 
-    invoke-direct {v1, v0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
+    invoke-direct {v0, p0, p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$$ExternalSyntheticLambda0;-><init>(Landroid/view/View;Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
 
-    const/4 v2, 0x1
+    new-instance v1, Lcom/shabakaty/cinemana/ca1/ContinueActions262$$ExternalSyntheticLambda1;
 
-    invoke-virtual {v1, v2}, Landroid/widget/LinearLayout;->setOrientation(I)V
+    invoke-direct {v1, p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$$ExternalSyntheticLambda1;-><init>(Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
 
-    new-instance v3, Landroid/widget/TextView;
-
-    invoke-direct {v3, v0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
-
-    const-string v4, "\u25b2"
-
-    invoke-virtual {v3, v4}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    const/16 v4, 0x2a
-
-    invoke-static {v4, v4, v4}, Landroid/graphics/Color;->rgb(III)I
-
-    move-result v5
-
-    invoke-virtual {v3, v5}, Landroid/widget/TextView;->setTextColor(I)V
-
-    const/high16 v5, 0x41400000    # 12.0f
-
-    invoke-virtual {v3, v5}, Landroid/widget/TextView;->setTextSize(F)V
-
-    const/4 v5, 0x5
-
-    invoke-virtual {v3, v5}, Landroid/widget/TextView;->setGravity(I)V
-
-    const/16 v5, 0x14
-
-    invoke-static {v0, v5}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v5
-
-    const/4 v6, 0x0
-
-    invoke-virtual {v3, v6, v6, v5, v6}, Landroid/widget/TextView;->setPadding(IIII)V
-
-    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
-
-    const/16 v7, 0xe
-
-    invoke-static {v0, v7}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v7
-
-    const/4 v8, -0x1
-
-    invoke-direct {v5, v8, v7}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
-
-    invoke-virtual {v1, v3, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
-
-    new-instance v3, Landroid/widget/LinearLayout;
-
-    invoke-direct {v3, v0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
-
-    invoke-virtual {v3, v2}, Landroid/widget/LinearLayout;->setOrientation(I)V
-
-    invoke-static {v4, v4, v4}, Landroid/graphics/Color;->rgb(III)I
-
-    move-result v4
-
-    invoke-virtual {v3, v4}, Landroid/widget/LinearLayout;->setBackgroundColor(I)V
-
-    invoke-virtual {v1, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    new-instance v4, Landroid/widget/PopupWindow;
-
-    const/16 v5, 0xf0
-
-    invoke-static {v0, v5}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v7
-
-    const/4 v8, -0x2
-
-    invoke-direct {v4, v1, v7, v8, v2}, Landroid/widget/PopupWindow;-><init>(Landroid/view/View;IIZ)V
-
-    new-instance v1, Landroid/graphics/drawable/ColorDrawable;
-
-    invoke-direct {v1, v6}, Landroid/graphics/drawable/ColorDrawable;-><init>(I)V
-
-    invoke-virtual {v4, v1}, Landroid/widget/PopupWindow;->setBackgroundDrawable(Landroid/graphics/drawable/Drawable;)V
-
-    invoke-virtual {v4, v2}, Landroid/widget/PopupWindow;->setOutsideTouchable(Z)V
-
-    const-string v1, "\u0623\u0638\u0647\u0631 \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0639\u0645\u0644"
-
-    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->tr(Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v1
-
-    const v2, 0x1080041
-
-    invoke-static {v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->action(Landroid/content/Context;Ljava/lang/String;I)Landroid/view/View;
-
-    move-result-object v1
-
-    const-string v2, "\u062d\u0630\u0641 \u0645\u0646 \u0623\u0643\u0645\u0644 \u0627\u0644\u0645\u0634\u0627\u0647\u062f\u0629"
-
-    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->tr(Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v2
-
-    const v7, 0x108003c
-
-    invoke-static {v0, v2, v7}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->action(Landroid/content/Context;Ljava/lang/String;I)Landroid/view/View;
-
-    move-result-object v2
-
-    invoke-virtual {v3, v1}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    invoke-virtual {v3, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
-
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/ContinueActions262$2;
-
-    invoke-direct {v3, v4, p0, p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$2;-><init>(Landroid/widget/PopupWindow;Landroid/view/View;Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
-
-    invoke-virtual {v1, v3}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-
-    new-instance v1, Lcom/shabakaty/cinemana/ca1/ContinueActions262$3;
-
-    invoke-direct {v1, v4, p1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$3;-><init>(Landroid/widget/PopupWindow;Lcom/shabakaty/cinemana/ca1/ContinueActions262$Bound;)V
-
-    invoke-virtual {v2, v1}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-
-    invoke-virtual {p0, v6}, Landroid/view/View;->performHapticFeedback(I)Z
-
-    invoke-virtual {p0}, Landroid/view/View;->getWidth()I
-
-    move-result p1
-
-    invoke-static {v0, v5}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
-
-    move-result v0
-
-    sub-int/2addr p1, v0
-
-    invoke-static {v6, p1}, Ljava/lang/Math;->max(II)I
-
-    move-result p1
-
-    invoke-virtual {v4, p0, p1, v6}, Landroid/widget/PopupWindow;->showAsDropDown(Landroid/view/View;II)V
+    invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/local/AccountUi;->actions(Landroid/view/View;Ljava/lang/Runnable;Ljava/lang/Runnable;)V
 
     return-void
 .end method

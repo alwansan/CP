@@ -1517,8 +1517,50 @@
     throw v0
 .end method
 
+.method public declared-synchronized baselineSize(Ljava/lang/String;)I
+    .locals 1
+
+    monitor-enter p0
+
+    :try_start_1
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountStore;->state:Lcom/shabakaty/cinemana/local/LocalAccountStore$State;
+
+    iget-object v0, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->known:Ljava/util/Map;
+
+    invoke-interface {v0, p1}, Ljava/util/Map;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object p1
+
+    check-cast p1, Ljava/util/Set;
+
+    if-nez p1, :cond_f
+
+    const/4 p1, 0x0
+
+    goto :goto_13
+
+    :cond_f
+    invoke-interface {p1}, Ljava/util/Set;->size()I
+
+    move-result p1
+    :try_end_13
+    .catchall {:try_start_1 .. :try_end_13} :catchall_15
+
+    :goto_13
+    monitor-exit p0
+
+    return p1
+
+    :catchall_15
+    move-exception p1
+
+    monitor-exit p0
+
+    throw p1
+.end method
+
 .method public declared-synchronized clearInbox()V
-    .locals 2
+    .locals 4
     .annotation system Ldalvik/annotation/Throws;
         value = {
             Ljava/io/IOException;
@@ -1536,15 +1578,58 @@
 
     invoke-virtual {v1}, Ljava/util/LinkedHashMap;->clear()V
 
+    new-instance v1, Ljava/util/ArrayList;
+
+    iget-object v2, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->config:Ljava/util/Map;
+
+    invoke-interface {v2}, Ljava/util/Map;->keySet()Ljava/util/Set;
+
+    move-result-object v2
+
+    invoke-direct {v1, v2}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
+
+    invoke-virtual {v1}, Ljava/util/ArrayList;->iterator()Ljava/util/Iterator;
+
+    move-result-object v1
+
+    :cond_19
+    :goto_19
+    invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v2
+
+    if-eqz v2, :cond_33
+
+    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Ljava/lang/String;
+
+    const-string v3, "delivered_"
+
+    invoke-virtual {v2, v3}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+
+    move-result v3
+
+    if-eqz v3, :cond_19
+
+    iget-object v3, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->config:Ljava/util/Map;
+
+    invoke-interface {v3, v2}, Ljava/util/Map;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+
+    goto :goto_19
+
+    :cond_33
     invoke-direct {p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->commit(Lcom/shabakaty/cinemana/local/LocalAccountStore$State;)V
-    :try_end_d
-    .catchall {:try_start_1 .. :try_end_d} :catchall_f
+    :try_end_36
+    .catchall {:try_start_1 .. :try_end_36} :catchall_38
 
     monitor-exit p0
 
     return-void
 
-    :catchall_f
+    :catchall_38
     move-exception v0
 
     monitor-exit p0
@@ -1588,6 +1673,28 @@
     monitor-exit p0
 
     throw p1
+.end method
+
+.method public declared-synchronized directory()Ljava/io/File;
+    .locals 1
+
+    monitor-enter p0
+
+    :try_start_1
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountStore;->directory:Ljava/io/File;
+    :try_end_3
+    .catchall {:try_start_1 .. :try_end_3} :catchall_5
+
+    monitor-exit p0
+
+    return-object v0
+
+    :catchall_5
+    move-exception v0
+
+    monitor-exit p0
+
+    throw v0
 .end method
 
 .method public declared-synchronized exportZip(Ljava/io/OutputStream;)V
@@ -1681,6 +1788,34 @@
     throw p1
 .end method
 
+.method public declared-synchronized hasBaseline(Ljava/lang/String;)Z
+    .locals 1
+
+    monitor-enter p0
+
+    :try_start_1
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountStore;->state:Lcom/shabakaty/cinemana/local/LocalAccountStore$State;
+
+    iget-object v0, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->known:Ljava/util/Map;
+
+    invoke-interface {v0, p1}, Ljava/util/Map;->containsKey(Ljava/lang/Object;)Z
+
+    move-result p1
+    :try_end_9
+    .catchall {:try_start_1 .. :try_end_9} :catchall_b
+
+    monitor-exit p0
+
+    return p1
+
+    :catchall_b
+    move-exception p1
+
+    monitor-exit p0
+
+    throw p1
+.end method
+
 .method public declared-synchronized importZip(Ljava/io/InputStream;)V
     .locals 10
     .annotation system Ldalvik/annotation/Throws;
@@ -1754,13 +1889,13 @@
 
     move-result v2
 
-    if-lt v0, v2, :cond_100
+    if-lt v0, v2, :cond_fb
 
     aget-byte v2, p1, v0
 
     const/16 v3, 0x50
 
-    if-ne v2, v3, :cond_fc
+    if-ne v2, v3, :cond_f7
 
     add-int/lit8 v2, v0, 0x1
 
@@ -1768,7 +1903,7 @@
 
     const/16 v3, 0x4b
 
-    if-ne v2, v3, :cond_fc
+    if-ne v2, v3, :cond_f7
 
     add-int/lit8 v2, v0, 0x2
 
@@ -1776,7 +1911,7 @@
 
     const/4 v3, 0x5
 
-    if-ne v2, v3, :cond_fc
+    if-ne v2, v3, :cond_f7
 
     add-int/lit8 v2, v0, 0x3
 
@@ -1784,7 +1919,7 @@
 
     const/4 v3, 0x6
 
-    if-ne v2, v3, :cond_fc
+    if-ne v2, v3, :cond_f7
 
     add-int/lit8 v2, v0, 0x14
 
@@ -1808,7 +1943,7 @@
 
     array-length v2, p1
 
-    if-ne v3, v2, :cond_fc
+    if-ne v3, v2, :cond_f7
 
     new-instance v0, Ljava/util/zip/ZipInputStream;
 
@@ -1904,15 +2039,11 @@
     throw p1
 
     :cond_c3
-    if-eqz v1, :cond_f4
+    if-eqz v1, :cond_ef
 
     invoke-static {v1}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->decode([B)Lcom/shabakaty/cinemana/local/LocalAccountStore$State;
 
     move-result-object p1
-
-    iget-object v0, p1, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->known:Ljava/util/Map;
-
-    invoke-interface {v0}, Ljava/util/Map;->clear()V
 
     iget-object v0, p1, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->config:Ljava/util/Map;
 
@@ -1945,15 +2076,15 @@
     const/4 v0, 0x1
 
     invoke-direct {p0, p1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->event(Ljava/lang/String;I)V
-    :try_end_f2
-    .catchall {:try_start_1 .. :try_end_f2} :catchall_108
+    :try_end_ed
+    .catchall {:try_start_1 .. :try_end_ed} :catchall_103
 
     monitor-exit p0
 
     return-void
 
-    :cond_f4
-    :try_start_f4
+    :cond_ef
+    :try_start_ef
     new-instance p1, Ljava/io/IOException;
 
     const-string v0, "empty backup"
@@ -1962,12 +2093,12 @@
 
     throw p1
 
-    :cond_fc
+    :cond_f7
     add-int/lit8 v0, v0, -0x1
 
     goto/16 :goto_2e
 
-    :cond_100
+    :cond_fb
     new-instance p1, Ljava/io/IOException;
 
     const-string v0, "incomplete ZIP"
@@ -1975,10 +2106,10 @@
     invoke-direct {p1, v0}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
     throw p1
-    :try_end_108
-    .catchall {:try_start_f4 .. :try_end_108} :catchall_108
+    :try_end_103
+    .catchall {:try_start_ef .. :try_end_103} :catchall_103
 
-    :catchall_108
+    :catchall_103
     move-exception p1
 
     monitor-exit p0
@@ -2394,7 +2525,7 @@
 
     move-result-object p1
     :try_end_1b
-    .catchall {:try_start_1 .. :try_end_1b} :catchall_b2
+    .catchall {:try_start_1 .. :try_end_1b} :catchall_ed
 
     monitor-exit p0
 
@@ -2440,7 +2571,7 @@
 
     move-result-object p1
     :try_end_42
-    .catchall {:try_start_1d .. :try_end_42} :catchall_b2
+    .catchall {:try_start_1d .. :try_end_42} :catchall_ed
 
     monitor-exit p0
 
@@ -2541,6 +2672,64 @@
 
     invoke-interface {p2, p1, v2}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
+    :goto_a4
+    iget-object p1, v1, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->inbox:Ljava/util/LinkedHashMap;
+
+    invoke-virtual {p1}, Ljava/util/LinkedHashMap;->size()I
+
+    move-result p1
+
+    const/16 p2, 0x64
+
+    if-le p1, p2, :cond_df
+
+    iget-object p1, v1, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->inbox:Ljava/util/LinkedHashMap;
+
+    invoke-virtual {p1}, Ljava/util/LinkedHashMap;->keySet()Ljava/util/Set;
+
+    move-result-object p1
+
+    invoke-interface {p1}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+
+    move-result-object p1
+
+    invoke-interface {p1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object p1
+
+    check-cast p1, Ljava/lang/String;
+
+    iget-object p2, v1, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->inbox:Ljava/util/LinkedHashMap;
+
+    invoke-virtual {p2, p1}, Ljava/util/LinkedHashMap;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object p1
+
+    check-cast p1, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;
+
+    iget-object p2, v1, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->config:Ljava/util/Map;
+
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v2, "delivered_"
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    iget-object p1, p1, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
+
+    invoke-virtual {v0, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-interface {p2, p1}, Ljava/util/Map;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+
+    goto :goto_a4
+
+    :cond_df
     invoke-direct {p0, v1}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->commit(Lcom/shabakaty/cinemana/local/LocalAccountStore$State;)V
 
     const-string p1, "episodes_reconciled"
@@ -2550,14 +2739,94 @@
     move-result p2
 
     invoke-direct {p0, p1, p2}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->event(Ljava/lang/String;I)V
-    :try_end_b0
-    .catchall {:try_start_44 .. :try_end_b0} :catchall_b2
+    :try_end_eb
+    .catchall {:try_start_44 .. :try_end_eb} :catchall_ed
 
     monitor-exit p0
 
     return-object v3
 
-    :catchall_b2
+    :catchall_ed
+    move-exception p1
+
+    monitor-exit p0
+
+    throw p1
+.end method
+
+.method public declared-synchronized relocate(Ljava/io/File;)Lcom/shabakaty/cinemana/local/LocalAccountStore;
+    .locals 3
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/io/IOException;
+        }
+    .end annotation
+
+    monitor-enter p0
+
+    :try_start_1
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountStore;->directory:Ljava/io/File;
+
+    invoke-virtual {v0}, Ljava/io/File;->getCanonicalFile()Ljava/io/File;
+
+    move-result-object v0
+
+    invoke-virtual {p1}, Ljava/io/File;->getCanonicalFile()Ljava/io/File;
+
+    move-result-object v1
+
+    invoke-virtual {v0, v1}, Ljava/io/File;->equals(Ljava/lang/Object;)Z
+
+    move-result v0
+    :try_end_f
+    .catchall {:try_start_1 .. :try_end_f} :catchall_36
+
+    if-eqz v0, :cond_13
+
+    monitor-exit p0
+
+    return-object p0
+
+    :cond_13
+    :try_start_13
+    new-instance v0, Lcom/shabakaty/cinemana/local/LocalAccountStore;
+
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalAccountStore;->events:Lcom/shabakaty/cinemana/local/LocalAccountStore$Events;
+
+    invoke-direct {v0, p1, v1}, Lcom/shabakaty/cinemana/local/LocalAccountStore;-><init>(Ljava/io/File;Lcom/shabakaty/cinemana/local/LocalAccountStore$Events;)V
+
+    new-instance v1, Ljava/io/File;
+
+    const-string v2, "account.bin"
+
+    invoke-direct {v1, p1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+
+    invoke-virtual {v1}, Ljava/io/File;->exists()Z
+
+    move-result p1
+
+    if-nez p1, :cond_2e
+
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->copy()Lcom/shabakaty/cinemana/local/LocalAccountStore$State;
+
+    move-result-object p1
+
+    invoke-direct {v0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->commit(Lcom/shabakaty/cinemana/local/LocalAccountStore$State;)V
+
+    :cond_2e
+    const-string p1, "account_relocated"
+
+    const/4 v1, 0x1
+
+    invoke-direct {p0, p1, v1}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->event(Ljava/lang/String;I)V
+    :try_end_34
+    .catchall {:try_start_13 .. :try_end_34} :catchall_36
+
+    monitor-exit p0
+
+    return-object v0
+
+    :catchall_36
     move-exception p1
 
     monitor-exit p0
@@ -2614,6 +2883,138 @@
     return-void
 
     :catchall_24
+    move-exception p1
+
+    monitor-exit p0
+
+    throw p1
+.end method
+
+.method public declared-synchronized removeProgress(Ljava/lang/String;)V
+    .locals 3
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/io/IOException;
+        }
+    .end annotation
+
+    monitor-enter p0
+
+    :try_start_1
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->copy()Lcom/shabakaty/cinemana/local/LocalAccountStore$State;
+
+    move-result-object v0
+
+    iget-object v1, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->lists:Ljava/util/EnumMap;
+
+    sget-object v2, Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;->PROGRESS:Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;
+
+    invoke-virtual {v1, v2}, Ljava/util/EnumMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Ljava/util/LinkedHashMap;
+
+    invoke-virtual {v1, p1}, Ljava/util/LinkedHashMap;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+
+    invoke-direct {p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->commit(Lcom/shabakaty/cinemana/local/LocalAccountStore$State;)V
+
+    const-string p1, "progress_removed"
+
+    const/4 v0, 0x1
+
+    invoke-direct {p0, p1, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->event(Ljava/lang/String;I)V
+    :try_end_1b
+    .catchall {:try_start_1 .. :try_end_1b} :catchall_1d
+
+    monitor-exit p0
+
+    return-void
+
+    :catchall_1d
+    move-exception p1
+
+    monitor-exit p0
+
+    throw p1
+.end method
+
+.method public declared-synchronized replace(Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;Ljava/util/List;)V
+    .locals 4
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;",
+            "Ljava/util/List<",
+            "Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;",
+            ">;)V"
+        }
+    .end annotation
+
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/io/IOException;
+        }
+    .end annotation
+
+    monitor-enter p0
+
+    :try_start_1
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->copy()Lcom/shabakaty/cinemana/local/LocalAccountStore$State;
+
+    move-result-object v0
+
+    iget-object v1, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->lists:Ljava/util/EnumMap;
+
+    invoke-virtual {v1, p1}, Ljava/util/EnumMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Ljava/util/LinkedHashMap;
+
+    invoke-virtual {v1}, Ljava/util/LinkedHashMap;->clear()V
+
+    invoke-interface {p2}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+
+    move-result-object p2
+
+    :goto_14
+    invoke-interface {p2}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v1
+
+    if-eqz v1, :cond_2e
+
+    invoke-interface {p2}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;
+
+    iget-object v2, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$State;->lists:Ljava/util/EnumMap;
+
+    invoke-virtual {v2, p1}, Ljava/util/EnumMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Ljava/util/LinkedHashMap;
+
+    iget-object v3, v1, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
+
+    invoke-virtual {v2, v3, v1}, Ljava/util/LinkedHashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+
+    goto :goto_14
+
+    :cond_2e
+    invoke-direct {p0, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->commit(Lcom/shabakaty/cinemana/local/LocalAccountStore$State;)V
+    :try_end_31
+    .catchall {:try_start_1 .. :try_end_31} :catchall_33
+
+    monitor-exit p0
+
+    return-void
+
+    :catchall_33
     move-exception p1
 
     monitor-exit p0

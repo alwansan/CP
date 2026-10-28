@@ -20,7 +20,7 @@
 .method public final run()V
     .locals 0
 
-    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$progress$1()V
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$progress$2()V
 
     return-void
 .end method

@@ -2087,6 +2087,7 @@
     :cond_0
     invoke-super {p0}, Lcom/shabakaty/downloader/ji1;->onResume()V
 
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->profileResume(Ljava/lang/Object;)V
     return-void
 .end method
 

@@ -13,39 +13,50 @@ public final class LocalRuntime {
  static volatile Context app;static volatile LocalAccountStore store;static volatile Object api;
  static final ExecutorService NETWORK=Executors.newSingleThreadExecutor();
  private static final java.util.concurrent.atomic.AtomicBoolean scanning=new java.util.concurrent.atomic.AtomicBoolean();
+ private static final Set<String> mutedProgress=Collections.newSetFromMap(new ConcurrentHashMap<String,Boolean>());
  private static final ConcurrentHashMap<String,Long> pendingProgress=new ConcurrentHashMap<>();
  private static final java.util.concurrent.atomic.AtomicBoolean progressScheduled=new java.util.concurrent.atomic.AtomicBoolean();
  private static final lr1 JSON=new lr1();
  private static final LinkedHashMap<String,String> cache=new LinkedHashMap<>();
  private static final String MODELS="com.shabakaty.cinemana.domain.models.remote.";
- static volatile boolean scanCancelled;private static volatile long lastMigrationAttempt;
+ static volatile boolean scanCancelled;private static volatile long lastMigrationAttempt;private static long storageProbe,lastStateSnapshot;private static volatile boolean stateDirty;
  static final long INTERVAL=6*60*60*1000L;
  public static synchronized void init(Context context){
-  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH267");
-  IO.execute(new Runnable(){public void run(){try{data();ensureLegacy();schedule();requestScan(false);}catch(Exception e){failure("init",e);}}});
+  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH268");
+  IO.execute(new Runnable(){public void run(){try{data();ensureLegacy();try{if(!data().config("upgrade268","0").equals("1")){snapshotLegacy(true);data().setConfig("upgrade268","1");log("account_upgrade268_complete");}}catch(Exception upgrade){failure("account_upgrade268",upgrade);}schedule();requestScan(false);}catch(Exception e){failure("init",e);}}});
  }
- static synchronized LocalAccountStore data()throws IOException{
-  if(store==null){if(app==null)throw new IOException("local account not initialized");
-   store=new LocalAccountStore(new File(app.getFilesDir(),"data/local-account"),new LocalAccountStore.Events(){public void record(String e,int n){log(e+" count="+n);}});
-   updateProfile();
-  }return store;
+ static File sharedDirectory(){return new File(Environment.getExternalStorageDirectory(),"Cinemana/work/data/local-account");}
+ static synchronized LocalAccountStore data()throws IOException {
+  if(app==null&&store==null)throw new IOException("local account not initialized");if(app==null)return store;
+  File privateDir=new File(app.getFilesDir(),"data/local-account");boolean restore=false;
+  if(store==null){File shared=sharedDirectory();boolean available=(shared.isDirectory()||shared.mkdirs())&&shared.canWrite();File selected=available?shared:privateDir;
+   File old=new File(privateDir,"account.bin");restore=available&&new File(shared,"account.bin").isFile()&&!old.exists()&&!app.getSharedPreferences("local_profile",0).getBoolean("loaded_shared",false);
+   if(available&&old.exists()&&!new File(shared,"account.bin").exists())store=new LocalAccountStore(privateDir,new LocalAccountStore.Events(){public void record(String e,int n){log(e+" count="+n);}}).relocate(shared);
+   else store=new LocalAccountStore(selected,new LocalAccountStore.Events(){public void record(String e,int n){log(e+" count="+n);}});
+   if(available){app.getSharedPreferences("local_profile",0).edit().putBoolean("loaded_shared",true).apply();if(old.exists()){old.delete();new File(privateDir,"avatar.jpg").delete();}}
+   storageProbe=System.currentTimeMillis();log("account_storage shared="+available);updateProfile();
+  }else if(store.directory().equals(privateDir)&&System.currentTimeMillis()-storageProbe>30000){storageProbe=System.currentTimeMillis();File target=sharedDirectory();if((target.isDirectory()||target.mkdirs())&&target.canWrite()){store=store.relocate(target);app.getSharedPreferences("local_profile",0).edit().putBoolean("loaded_shared",true).apply();new File(privateDir,"account.bin").delete();new File(privateDir,"avatar.jpg").delete();updateProfile();log("account_storage shared=true");}}
+  if(restore)IO.execute(()->{try{restoreLegacy();Class.forName("com.shabakaty.cinemana.ca1.Continue106").getMethod("portableReload",Object.class).invoke(null,app);log("account_reinstalled_restored");}catch(Exception e){failure("reinstall_restore",e);}});
+  return store;
  }
- static void updateProfile()throws IOException{
-  app.getSharedPreferences("local_profile",0).edit().putString("name",store.name()).apply();
-  File image=new File(app.getFilesDir(),"data/local-account/avatar.jpg");byte[] bytes=store.avatar();
-  if(bytes.length>0){android.util.AtomicFile atomic=new android.util.AtomicFile(image);FileOutputStream out=null;
-   try{out=atomic.startWrite();out.write(bytes);atomic.finishWrite(out);}catch(IOException e){if(out!=null)atomic.failWrite(out);throw e;}}
-  else if(image.exists())image.delete();
+ static void refreshStorage()throws IOException{storageProbe=0;data();}
+ static void updateProfile()throws IOException {
+  byte[] bytes=store.avatar();String path="";File dir=store.directory();
+  if(bytes.length>0){try{String hash=hex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));File image=new File(dir,"avatar-"+hash.substring(0,16)+".jpg");if(!image.exists()){android.util.AtomicFile atomic=new android.util.AtomicFile(image);FileOutputStream out=null;try{out=atomic.startWrite();out.write(bytes);atomic.finishWrite(out);}catch(IOException e){if(out!=null)atomic.failWrite(out);throw e;}}path=Uri.fromFile(image).toString();
+    File[] old=dir.listFiles();if(old!=null)for(File file:old)if((file.getName().equals("avatar.jpg")||file.getName().matches("avatar-[0-9a-f]+\\.jpg"))&&!file.equals(image))file.delete();
+   }catch(java.security.NoSuchAlgorithmException e){throw new IOException(e);}}
+  app.getSharedPreferences("local_profile",0).edit().putString("name",store.name()).putString("avatar",path).apply();
  }
  public static String name(){return app==null?"حسابي":app.getSharedPreferences("local_profile",0).getString("name","حسابي");}
- public static String avatar(){if(app==null)return "";File f=new File(app.getFilesDir(),"data/local-account/avatar.jpg");return f.exists()?Uri.fromFile(f).toString():"";}
+ public static String avatar(){return app==null?"":app.getSharedPreferences("local_profile",0).getString("avatar","");}
+ public static void profileResume(Object activity){try{activity.getClass().getMethod("H0",String.class).invoke(activity,avatar());}catch(NoSuchMethodException ignored){}catch(Exception e){failure("avatar_refresh",e);}}
  public static f74 logout(){return new LocalSingle(()->new JSONObject());}
  public static void open(Context context){context.startActivity(new Intent(context,LocalAccountActivity.class));}
  public static void log(String event){
   Log.i("CinemanaLocal",event);
   com.shabakaty.cinemana.ca1.LocalAccountLog.emit(event);
  }
- static void failure(String phase,Throwable e){log(phase+"_failed type="+e.getClass().getSimpleName());}
+ static void failure(String phase,Throwable e){String site="";for(StackTraceElement frame:e.getStackTrace())if(frame.getClassName().startsWith("com.shabakaty.cinemana.local")){site=" source="+frame.getClassName().substring(frame.getClassName().lastIndexOf('.')+1)+"."+frame.getMethodName()+":"+frame.getLineNumber();break;}log(phase+"_failed type="+causeTypes(e)+site);}
  public static Object wrap(final Object remote){
   api=remote;
   return java.lang.reflect.Proxy.newProxyInstance(remote.getClass().getClassLoader(),new Class[]{k9.class},new InvocationHandler(){public Object invoke(Object proxy,final Method method,final Object[] args)throws Throwable{
@@ -63,6 +74,7 @@ public final class LocalRuntime {
    if(Arrays.asList("a","d","e","t","p","q","v","y","s","B","C","E","f","r","x","l").contains(key))return new LocalSingle(new Callable<Object>(){public Object call()throws Exception{return local(key,args);}});
    try{
     Object value=method.invoke(remote,args);
+    if(key.equals("D")&&value instanceof f74)return new CategorySingle((f74)value);
     if(key.equals("A")&&value instanceof f74)return new CaptureSingle((f74)value,String.valueOf(args[0]));
     if(key.equals("b")&&value instanceof qf1)return new EpisodeFlow((qf1)value,String.valueOf(args[0]));
     return value;
@@ -98,7 +110,7 @@ public final class LocalRuntime {
    return dto("user.LogoutResponseApi","{\"status\":\"true\"}");
   }
   if(op.equals("v")||op.equals("y")){
-   String id=String.valueOf(a[1]);if(op.equals("v")){s.put(ListKind.SUBSCRIPTION,item(id));log("subscription_baseline_pending");requestScan(true);}else s.remove(ListKind.SUBSCRIPTION,id);
+   String id=String.valueOf(a[1]);if(op.equals("v")){s.put(ListKind.SUBSCRIPTION,item(id));log("subscription_baseline_pending");requestBaseline(id);}else s.remove(ListKind.SUBSCRIPTION,id);
    return "true";
   }
   if(op.equals("e")){
@@ -132,12 +144,24 @@ public final class LocalRuntime {
  public static void progress(final String id,final long position){
   pendingProgress.put(id,position);if(progressScheduled.compareAndSet(false,true))IO.schedule(()->{try{flushProgress();}catch(Exception e){failure("progress",e);}finally{progressScheduled.set(false);}},10,TimeUnit.SECONDS);
  }
- public static void flushProgressAsync(){IO.execute(()->{try{flushProgress();}catch(Exception e){failure("progress",e);}});}
+ public static void flushProgressAsync(){IO.execute(()->{try{flushProgress();if(stateDirty)snapshotPreferences();}catch(Exception e){failure("progress",e);}});}
  static void flushProgress()throws Exception{
   Map<String,Long> copy=new HashMap<>(pendingProgress);Map<ListKind,List<Item>> records=new EnumMap<>(ListKind.class);List<Item> items=new ArrayList<>();
-  for(Map.Entry<String,Long> e:copy.entrySet()){Item old=item(e.getKey());items.add(new Item(old.id,old.title,e.getValue(),old.payload));}
-  records.put(ListKind.PROGRESS,items);if(!items.isEmpty()){data().merge(records);for(Map.Entry<String,Long> e:copy.entrySet())pendingProgress.remove(e.getKey(),e.getValue());}
+  for(Map.Entry<String,Long> e:copy.entrySet()){String id=canonicalId(e.getKey());if(mutedProgress.contains(id))continue;Item old=item(id);items.add(new Item(old.id,old.title,e.getValue(),old.payload));}
+  records.put(ListKind.PROGRESS,items);if(!items.isEmpty())data().merge(records);for(Map.Entry<String,Long> e:copy.entrySet())pendingProgress.remove(e.getKey(),e.getValue());if(stateDirty&&System.currentTimeMillis()-lastStateSnapshot>60000)snapshotPreferences();
  }
+ static String canonicalId(String row){if(app==null)return row;for(String filename:app.databaseList()){if(filename.endsWith("-wal")||filename.endsWith("-shm")||filename.endsWith("-journal"))continue;android.database.sqlite.SQLiteDatabase db=null;try{db=android.database.sqlite.SQLiteDatabase.openDatabase(app.getDatabasePath(filename).getPath(),null,android.database.sqlite.SQLiteDatabase.OPEN_READONLY);android.database.Cursor cursor=db.rawQuery("SELECT videoId FROM video_status WHERE id=? OR videoId=? LIMIT 1",new String[]{row,row});try{if(cursor.moveToFirst())return cursor.getString(0);}finally{cursor.close();}}catch(android.database.SQLException ignored){}finally{if(db!=null)db.close();}}return row;}
+ public static void resumeProgress(String id){mutedProgress.remove(id);stateDirty=true;}
+ public static void watchedChanged(final String row,final boolean watched){IO.execute(()->{try{String id=canonicalId(row);if(watched)data().put(ListKind.WATCHED,item(id));else data().remove(ListKind.WATCHED,id);log("watched_changed id="+safeId(id)+" value="+watched);}catch(Exception e){failure("watched_sync",e);}});}
+ public static void removeProgress(final String id){mutedProgress.add(id);pendingProgress.remove(id);IO.execute(()->{try{for(String key:new ArrayList<>(pendingProgress.keySet()))if(id.equals(canonicalId(key)))pendingProgress.remove(key);data().removeProgress(id);for(String filename:app.databaseList()){
+  if(filename.endsWith("-wal")||filename.endsWith("-shm")||filename.endsWith("-journal"))continue;android.database.sqlite.SQLiteDatabase db=null;try{db=android.database.sqlite.SQLiteDatabase.openDatabase(app.getDatabasePath(filename).getPath(),null,android.database.sqlite.SQLiteDatabase.OPEN_READWRITE);db.execSQL("UPDATE video_status SET videoProgress=0 WHERE videoId=?",new Object[]{id});}catch(android.database.SQLException ignored){}finally{if(db!=null)db.close();}}
+  snapshotPreferences();log("continue_removed id="+safeId(id));}catch(Exception e){failure("continue_remove",e);}});}
+ static void snapshotPreferences()throws Exception {
+  List<Item> records=new ArrayList<>();Item settings=data().find(ListKind.STATE,"settings");if(settings!=null)records.add(settings);
+  for(String pref:new String[]{"ca1_continue106"})for(Map.Entry<String,?> entry:app.getSharedPreferences(pref,0).getAll().entrySet())records.addAll(BackupState.encode(pref,entry.getKey(),entry.getValue()));
+  data().replace(ListKind.STATE,records);stateDirty=false;lastStateSnapshot=System.currentTimeMillis();
+ }
+ public static void stateChanged(){stateDirty=true;}
  static Object cachedModel(String id)throws Exception {for(ListKind k:ListKind.values()){Item i=data().find(k,id);if(i!=null&&!i.payload.isEmpty())return dto("VideoModelApi",i.payload);}throw new IOException("no local metadata");}
  public static long progressValue(String id){try{Item i=data().find(ListKind.PROGRESS,id);return i==null?0:i.positionMs;}catch(Exception e){return 0;}}
  public static void decorate(android.view.View root){
@@ -172,10 +196,11 @@ public final class LocalRuntime {
     if(!item.payload.isEmpty()){
      JSONObject o=new JSONObject(item.payload);
      if(k==ListKind.STATE){if(item.id.equals("settings")){java.util.Iterator<String> keys=o.keys();while(keys.hasNext())if(!keys.next().matches("(filter|app|subtitles)_[A-Za-z]+"))throw new IOException("invalid settings");}
-      else{String pref=o.getString("pref");if(!pref.equals("ca1_continue106")&&!pref.equals("ca1_episode_context107"))throw new IOException("invalid preferences");o.getString("key");String type=o.getString("type");if(!java.util.Arrays.asList("String","Long","Integer","Boolean","Float").contains(type))throw new IOException("unsupported preference type");if(type.equals("Long"))o.getLong("value");if(type.equals("Integer"))o.getInt("value");if(type.equals("Boolean"))o.getBoolean("value");if(type.equals("Float"))o.getDouble("value");if(!o.has("value"))throw new IOException("missing preference");}}
+      else{/* Validated together below to detect missing or duplicate chunks. */}}
      else if(!item.id.equals(o.optString("nb")))throw new IOException("metadata id mismatch");
     }
    }
+   BackupState.decode(candidate.list(ListKind.STATE));
    int parental=Integer.parseInt(candidate.config("parental","0"));int translation=Integer.parseInt(candidate.config("translation","0"));
    if(parental<0||parental>3||translation<0||translation>1)throw new IOException("invalid filter");
    // Commit the validated account before refreshing compatibility projections.
@@ -199,7 +224,7 @@ public final class LocalRuntime {
      android.database.Cursor model=db.rawQuery("SELECT nb,arTitle,enTitle,kind,rootSeries,season,episodeNummer,imgObjUrl,imgThumbObjUrl,imgMediumThumbObjUrl FROM video_model WHERE nb=?",new String[]{id});
      try{if(model.moveToFirst()){String[] fields={"nb","ar_title","en_title","kind","rootSeries","season","episodeNummer","imgObjUrl","imgThumbObjUrl","imgMediumThumbObjUrl"};for(int i=0;i<fields.length;i++)if(!model.isNull(i))meta.put(fields[i],model.getString(i));title=meta.optString("ar_title");if(title.isEmpty())title=meta.optString("en_title",id);}}finally{model.close();}
      long position=cursor.getLong(cursor.getColumnIndexOrThrow("videoProgress"));Item item=new Item(id,title,position,meta.toString());
-     if(position>0)records.get(ListKind.PROGRESS).add(item);
+     if(position>0&&app.getSharedPreferences("ca1_continue106",0).contains(id))records.get(ListKind.PROGRESS).add(item);
      if(seed){if(cursor.getInt(cursor.getColumnIndexOrThrow("favorite"))!=0)records.get(ListKind.FAVORITE).add(item);if(cursor.getInt(cursor.getColumnIndexOrThrow("watched"))!=0)records.get(ListKind.WATCHED).add(item);if("1".equals(cursor.getString(cursor.getColumnIndexOrThrow("watchLater"))))records.get(ListKind.WATCH_LATER).add(item);}
     }}finally{cursor.close();}
     // Back up only user settings, not databases containing credentials/download jobs.
@@ -208,13 +233,9 @@ public final class LocalRuntime {
     }}finally{settings.close();}
    }catch(android.database.SQLException e){/* Other app databases do not contain account tables. */}finally{if(db!=null)db.close();}
   }
-  for(String pref:new String[]{"ca1_continue106","ca1_episode_context107"}){
-   for(Map.Entry<String,?> e:app.getSharedPreferences(pref,0).getAll().entrySet()){
-    JSONObject o=new JSONObject().put("pref",pref).put("key",e.getKey()).put("value",e.getValue()).put("type",e.getValue().getClass().getSimpleName());
-    String key=hex(java.security.MessageDigest.getInstance("SHA-256").digest((pref+":"+e.getKey()).getBytes("UTF-8")));
-    records.get(ListKind.STATE).add(new Item(key,"",0,o.toString()));
-   }
-  }
+  for(String pref:new String[]{"ca1_continue106"})for(Map.Entry<String,?> entry:app.getSharedPreferences(pref,0).getAll().entrySet())records.get(ListKind.STATE).addAll(BackupState.encode(pref,entry.getKey(),entry.getValue()));
+  if(found)s.replace(ListKind.PROGRESS,records.remove(ListKind.PROGRESS));
+  s.replace(ListKind.STATE,records.remove(ListKind.STATE));
   s.merge(records);if(seed&&found)s.setConfig("legacy_seeded","1");log("legacy_snapshot_complete");
  }
  private static String hex(byte[] b){StringBuilder s=new StringBuilder();for(byte v:b)s.append(String.format(Locale.ROOT,"%02x",v&255));return s.toString();}
@@ -222,11 +243,10 @@ public final class LocalRuntime {
  static void restoreLegacy()throws Exception {
   data().setConfig("legacy_seeded","1");
   for(String pref:new String[]{"ca1_continue106","ca1_episode_context107"})app.getSharedPreferences(pref,0).edit().clear().commit();
-  for(Item entry:data().list(ListKind.STATE))if(!entry.id.equals("settings")){
-   JSONObject o=new JSONObject(entry.payload);String pref=o.getString("pref");if(!pref.equals("ca1_continue106")&&!pref.equals("ca1_episode_context107"))continue;
-   android.content.SharedPreferences.Editor edit=app.getSharedPreferences(pref,0).edit();String key=o.getString("key"),type=o.getString("type");
-   if(type.equals("String"))edit.putString(key,o.getString("value"));else if(type.equals("Long"))edit.putLong(key,o.getLong("value"));else if(type.equals("Integer"))edit.putInt(key,o.getInt("value"));else if(type.equals("Boolean"))edit.putBoolean(key,o.getBoolean("value"));else if(type.equals("Float"))edit.putFloat(key,(float)o.getDouble("value"));edit.commit();
-  }
+  Map<String,Map<String,Object>> restored=BackupState.decode(data().list(ListKind.STATE));
+  for(Map.Entry<String,Map<String,Object>> group:restored.entrySet()){android.content.SharedPreferences.Editor edit=app.getSharedPreferences(group.getKey(),0).edit();for(Map.Entry<String,Object> entry:group.getValue().entrySet()){
+   String key=entry.getKey();Object value=entry.getValue();if(value instanceof String)edit.putString(key,(String)value);else if(value instanceof Long)edit.putLong(key,(Long)value);else if(value instanceof Integer)edit.putInt(key,(Integer)value);else if(value instanceof Boolean)edit.putBoolean(key,(Boolean)value);else if(value instanceof Float)edit.putFloat(key,(Float)value);
+  }if(!edit.commit())throw new IOException("preferences restore failed");}
   app.getSharedPreferences("local_settings",0).edit().putString("parental",data().config("parental","0")).putString("translation",data().config("translation","0")).apply();
   for(String filename:app.databaseList()){
    if(filename.endsWith("-wal")||filename.endsWith("-shm")||filename.endsWith("-journal"))continue;
@@ -269,6 +289,8 @@ public final class LocalRuntime {
   final Callable<Object> call;LocalSingle(Callable<Object> c){call=c;}
   public void l(final y74 observer){final Cancel cancel=new Cancel();observer.c(cancel);IO.execute(new Runnable(){public void run(){if(cancel.cancelled)return;try{Object result=call.call();if(!cancel.cancelled)observer.onSuccess(result);}catch(Exception e){failure("local_operation",e);if(!cancel.cancelled)observer.b(e);}}});}
  }
+ static Object categories(Object value){if(!(value instanceof List))return value;List<Object> result=new ArrayList<>();for(Object item:(List<?>)value){if(item==null)continue;boolean artwork=false;for(String field:new String[]{"imgObjUrl","imgMediumThumbObjUrl","imgThumbObjUrl"})try{Object image=item.getClass().getField(field).get(item);if(image instanceof String&&(((String)image).startsWith("https://")||((String)image).startsWith("http://"))){artwork=true;break;}}catch(Exception ignored){}if(artwork)result.add(item);}log("categories_filtered kept="+result.size()+" total="+((List)value).size());return result;}
+ static final class CategorySingle extends f74 {final f74 source;CategorySingle(f74 s){source=s;}public void l(y74 o){source.a(new y74(){public void c(mu0 d){o.c(d);}public void b(Throwable e){o.b(e);}public void onSuccess(Object value){o.onSuccess(categories(value));}});}}
  static String requestLabel(Object request)throws Exception {
   Object url=request.getClass().getField("b").get(request);String path=new java.net.URI(url.toString()).getPath();
   for(String route:new String[]{"allVideoInfo","videoSeason","transcoddedFiles"}){String prefix="/"+route+"/id/";int offset=path.indexOf(prefix);if(offset>=0)return route+" id="+safeId(path.substring(offset+prefix.length()));}
@@ -302,6 +324,8 @@ public final class LocalRuntime {
   JobScheduler scheduler=(JobScheduler)app.getSystemService(Context.JOB_SCHEDULER_SERVICE);boolean exists=false;for(JobInfo j:scheduler.getAllPendingJobs())if(j.getId()==26601)exists=true;
   if(!exists)scheduler.schedule(new JobInfo.Builder(26601,new ComponentName(app,LocalEpisodeJob.class)).setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY).setPeriodic(INTERVAL).setPersisted(true).build());
  }catch(Exception e){failure("schedule",e);}}
+ static void requestBaseline(final String id){NETWORK.execute(()->{try{LocalAccountStore account=data();if(account.find(ListKind.SUBSCRIPTION,id)==null||account.hasBaseline(id))return;JSONArray fetched=episodes(id);List<Item> items=episodeItems(item(id),fetched);if(!items.isEmpty()){account=data();account.reconcile(id,items);log("subscription_baseline id="+safeId(id)+" count="+account.baselineSize(id));}}catch(Exception e){failure("subscription_baseline",e);}});}
+ static List<Item> episodeItems(Item show,JSONArray episodes)throws Exception {List<Item> items=new ArrayList<>();for(int n=0;n<episodes.length();n++){JSONObject o=episodes.getJSONObject(n);String id=o.optString("nb");if(!id.matches("[A-Za-z0-9_-]{1,100}"))throw new IOException("invalid episode id");JSONObject compact=new JSONObject();for(String key:new String[]{"nb","kind","rootSeries","season","episodeNummer","ar_title","en_title","imgObjUrl","imgThumbObjUrl","imgMediumThumbObjUrl","publishDate","duration"})if(o.has(key))compact.put(key,o.get(key));items.add(new Item(id,show.title+" — "+o.optString("season","")+":"+o.optString("episodeNummer",""),0,compact.toString()));}return items;}
  public static void requestScan(final boolean force){if(app==null||!scanning.compareAndSet(false,true))return;NETWORK.execute(new Runnable(){public void run(){try{scanCancelled=false;scan(force);}catch(Exception e){failure("scan",e);}finally{scanning.set(false);}}});}
  static void scan(boolean force)throws Exception{
   LocalAccountStore s=data();long now=System.currentTimeMillis(),last=Long.parseLong(s.config("last_scan","0"));
@@ -313,10 +337,8 @@ public final class LocalRuntime {
   long end=android.os.SystemClock.elapsedRealtime()+45000;int done=0;
   for(;done<count&&!scanCancelled&&android.os.SystemClock.elapsedRealtime()<end;done++){
    Item show=subscriptions.get((cursor+done)%subscriptions.size());
-   try{JSONArray episodes=episodes(show.id);if(episodes.length()==0)continue;List<Item> items=new ArrayList<>();
-    for(int n=0;n<episodes.length();n++){JSONObject o=episodes.getJSONObject(n);String id=o.optString("nb");if(!id.matches("[A-Za-z0-9_-]{1,100}"))throw new IOException("invalid episode id");
-     items.add(new Item(id,show.title+" — "+o.optString("season","")+":"+o.optString("episodeNummer",""),0,o.toString()));}
-    s.reconcile(show.id,items);
+   try{JSONArray episodes=episodes(show.id);if(episodes.length()==0)continue;List<Item> items=episodeItems(show,episodes);
+    s=data();s.reconcile(show.id,items);log("subscription_checked id="+safeId(show.id)+" baseline="+s.baselineSize(show.id));
    }catch(Exception e){failure("episode_fetch",e);}
   }
   s.setConfig("scan_cursor",String.valueOf((cursor+done)%subscriptions.size()));s.setConfig("last_scan",String.valueOf(now));log("scan_complete checked="+done);deliver();

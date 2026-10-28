@@ -2716,6 +2716,9 @@
         }
     .end annotation
 
+    iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;->id:Ljava/lang/String;
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->resumeProgress(Ljava/lang/String;)V
+
     .line 66
     new-instance v0, Ljava/util/Properties;
 
@@ -2861,6 +2864,7 @@
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/Continue106;->write(Ljava/lang/Object;)V
 
     .line 70
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->stateChanged()V
     return-void
 .end method
 
@@ -3214,6 +3218,8 @@
 
     :cond_3
     monitor-exit v0
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->removeProgress(Ljava/lang/String;)V
 
     return-void
 

@@ -15,6 +15,7 @@ public class LocalAccountStoreTest {
   LocalAccountStore reopened=new LocalAccountStore(dir,null);check(reopened.inbox().size()==1);check(reopened.name().equals("الوان"));
   ByteArrayOutputStream archive=new ByteArrayOutputStream();s.exportZip(archive);
   reopened.importZip(new ByteArrayInputStream(archive.toByteArray()));check(reopened.list(ListKind.FAVORITE).size()==1);
+  check(reopened.reconcile("series",Arrays.asList(e("1"),e("2"),e("3"),e("4"))).size()==1);
   check(reopened.reconcile("series",Arrays.asList(e("1"),e("2"),e("3"),e("4"))).isEmpty());
   ByteArrayOutputStream bad=new ByteArrayOutputStream();ZipOutputStream z=new ZipOutputStream(bad);z.putNextEntry(new ZipEntry("../account.bin"));z.write(1);z.closeEntry();z.finish();
   try{reopened.importZip(new ByteArrayInputStream(bad.toByteArray()));throw new AssertionError();}catch(IOException expected){}
@@ -27,6 +28,12 @@ public class LocalAccountStoreTest {
   File current=new File(dir,"account.bin"),backup=new File(dir,"account.bin.bak");check(current.renameTo(backup));try(FileOutputStream broken=new FileOutputStream(current)){broken.write(1);}
   reopened=new LocalAccountStore(dir,null);check(reopened.name().equals("الوان"));
   reopened.remove(ListKind.SUBSCRIPTION,"series");check(reopened.reconcile("series",Arrays.asList(e("5"))).isEmpty());
-  System.out.println("PASS persistence, ZIP round-trip, rejected traversal, unchanged state on invalid import, first baseline, deduplication, disappearance/reappearance, unsubscribe, restore baseline");
+  reopened.put(ListKind.PROGRESS,e("delete_me"));reopened.removeProgress("delete_me");check(new LocalAccountStore(dir,null).find(ListKind.PROGRESS,"delete_me")==null);
+  LocalAccountStore migrated=reopened.relocate(Files.createTempDirectory("account-shared").toFile());check(migrated.name().equals(reopened.name()));check(migrated.avatar().length==3);
+  migrated.put(ListKind.SUBSCRIPTION,e("new_series"));check(migrated.reconcile("new_series",Arrays.asList(e("1"))).isEmpty());
+  List<Item> many=new ArrayList<>();for(int n=1;n<=220;n++)many.add(e(String.valueOf(n)));check(migrated.reconcile("new_series",many).size()==219);check(migrated.inbox().size()==100);check(migrated.baselineSize("new_series")==220);check(migrated.reconcile("new_series",many).isEmpty());
+  LocalAccountStore moved=migrated.relocate(Files.createTempDirectory("account-shared2").toFile());check(moved.hasBaseline("new_series")&&moved.baselineSize("new_series")==220&&moved.inbox().size()==100);
+  moved.replace(ListKind.STATE,Arrays.asList(new Item("stale","",0)));moved.replace(ListKind.STATE,Collections.<Item>emptyList());check(new LocalAccountStore(moved.directory(),null).list(ListKind.STATE).isEmpty());
+  System.out.println("PASS physical progress removal, relocation with baseline preservation, bounded inbox and state pruning; persistence, ZIP round-trip, rejected traversal, unchanged state on invalid import, first baseline, deduplication, disappearance/reappearance, unsubscribe, restored baseline only alerts on new IDs");
  }
 }

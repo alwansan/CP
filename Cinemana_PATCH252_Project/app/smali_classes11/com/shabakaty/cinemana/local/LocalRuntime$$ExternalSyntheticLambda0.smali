@@ -20,7 +20,7 @@
 .method public final call()Ljava/lang/Object;
     .locals 1
 
-    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$logout$0()Ljava/lang/Object;
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$logout$1()Ljava/lang/Object;
 
     move-result-object v0
 

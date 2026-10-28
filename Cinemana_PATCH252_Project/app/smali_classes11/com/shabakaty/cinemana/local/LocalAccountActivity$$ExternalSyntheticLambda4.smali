@@ -3,7 +3,7 @@
 .source "D8$$SyntheticClass"
 
 # interfaces
-.implements Ljava/lang/Runnable;
+.implements Landroid/view/View$OnClickListener;
 
 
 # instance fields
@@ -23,12 +23,12 @@
 
 
 # virtual methods
-.method public final run()V
+.method public final onClick(Landroid/view/View;)V
     .locals 1
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity$$ExternalSyntheticLambda4;->f$0:Lcom/shabakaty/cinemana/local/LocalAccountActivity;
 
-    invoke-virtual {v0}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->lambda$render$4$com-shabakaty-cinemana-local-LocalAccountActivity()V
+    invoke-virtual {v0, p1}, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->lambda$render$3$com-shabakaty-cinemana-local-LocalAccountActivity(Landroid/view/View;)V
 
     return-void
 .end method

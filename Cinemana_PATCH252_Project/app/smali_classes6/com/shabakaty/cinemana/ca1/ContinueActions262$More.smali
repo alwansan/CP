@@ -407,7 +407,7 @@
 .end method
 
 .method begin()V
-    .locals 9
+    .locals 7
 
     iget-boolean v0, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->mode:Z
 
@@ -428,13 +428,13 @@
 
     instance-of v1, v0, Landroid/view/ViewGroup;
 
-    if-eqz v1, :cond_114
+    if-eqz v1, :cond_126
 
     iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->recycler:Landroid/view/View;
 
     if-nez v1, :cond_1a
 
-    goto/16 :goto_114
+    goto/16 :goto_126
 
     :cond_1a
     const/4 v1, 0x1
@@ -455,13 +455,39 @@
 
     iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->bar:Landroid/widget/LinearLayout;
 
-    const/16 v3, 0x23
+    const v3, -0xdfdddb
 
-    invoke-static {v3, v3, v3}, Landroid/graphics/Color;->rgb(III)I
+    const/16 v4, 0x10
+
+    invoke-static {v2, v3, v4}, Lcom/shabakaty/cinemana/local/AccountUi;->shape(Landroid/content/Context;II)Landroid/graphics/drawable/GradientDrawable;
+
+    move-result-object v3
+
+    invoke-virtual {v1, v3}, Landroid/widget/LinearLayout;->setBackground(Landroid/graphics/drawable/Drawable;)V
+
+    iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->bar:Landroid/widget/LinearLayout;
+
+    const/16 v3, 0xc
+
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
+
+    move-result v4
+
+    const/16 v5, 0xa
+
+    invoke-static {v2, v5}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
+
+    move-result v6
+
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
 
     move-result v3
 
-    invoke-virtual {v1, v3}, Landroid/widget/LinearLayout;->setBackgroundColor(I)V
+    invoke-static {v2, v5}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
+
+    move-result v5
+
+    invoke-virtual {v1, v4, v6, v3, v5}, Landroid/widget/LinearLayout;->setPadding(IIII)V
 
     new-instance v1, Landroid/widget/TextView;
 
@@ -503,15 +529,9 @@
 
     move-result-object v4
 
-    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
+    invoke-virtual {p0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->cell(Landroid/content/Context;)Landroid/widget/LinearLayout$LayoutParams;
 
-    const/4 v6, 0x0
-
-    const/4 v7, -0x2
-
-    const/high16 v8, 0x3f800000    # 1.0f
-
-    invoke-direct {v5, v6, v7, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    move-result-object v5
 
     invoke-virtual {v1, v4, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -525,9 +545,9 @@
 
     move-result-object v4
 
-    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
+    invoke-virtual {p0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->cell(Landroid/content/Context;)Landroid/widget/LinearLayout$LayoutParams;
 
-    invoke-direct {v5, v6, v7, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    move-result-object v5
 
     invoke-virtual {v1, v4, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -541,9 +561,9 @@
 
     move-result-object v4
 
-    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
+    invoke-virtual {p0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->cell(Landroid/content/Context;)Landroid/widget/LinearLayout$LayoutParams;
 
-    invoke-direct {v5, v6, v7, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    move-result-object v5
 
     invoke-virtual {v1, v4, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -565,9 +585,9 @@
 
     move-result-object v4
 
-    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
+    invoke-virtual {p0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->cell(Landroid/content/Context;)Landroid/widget/LinearLayout$LayoutParams;
 
-    invoke-direct {v5, v6, v7, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    move-result-object v5
 
     invoke-virtual {v1, v4, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -581,9 +601,9 @@
 
     move-result-object v4
 
-    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
+    invoke-virtual {p0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->cell(Landroid/content/Context;)Landroid/widget/LinearLayout$LayoutParams;
 
-    invoke-direct {v5, v6, v7, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    move-result-object v5
 
     invoke-virtual {v1, v4, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -605,9 +625,9 @@
 
     move-result-object v4
 
-    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
+    invoke-virtual {p0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->cell(Landroid/content/Context;)Landroid/widget/LinearLayout$LayoutParams;
 
-    invoke-direct {v5, v6, v7, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    move-result-object v5
 
     invoke-virtual {v1, v4, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -619,13 +639,13 @@
 
     invoke-virtual {p0, v2, v5, v4}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->button(Landroid/content/Context;Ljava/lang/String;Landroid/view/View$OnClickListener;)Landroid/widget/Button;
 
+    move-result-object v4
+
+    invoke-virtual {p0, v2}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->cell(Landroid/content/Context;)Landroid/widget/LinearLayout$LayoutParams;
+
     move-result-object v2
 
-    new-instance v4, Landroid/widget/LinearLayout$LayoutParams;
-
-    invoke-direct {v4, v6, v7, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
-
-    invoke-virtual {v1, v2, v4}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+    invoke-virtual {v1, v4, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
     check-cast v0, Landroid/view/ViewGroup;
 
@@ -633,7 +653,9 @@
 
     new-instance v2, Landroid/view/ViewGroup$LayoutParams;
 
-    invoke-direct {v2, v3, v7}, Landroid/view/ViewGroup$LayoutParams;-><init>(II)V
+    const/4 v4, -0x2
+
+    invoke-direct {v2, v3, v4}, Landroid/view/ViewGroup$LayoutParams;-><init>(II)V
 
     invoke-virtual {v0, v1, v2}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -651,8 +673,8 @@
 
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->update()V
 
-    :cond_114
-    :goto_114
+    :cond_126
+    :goto_126
     return-void
 .end method
 
@@ -669,11 +691,59 @@
 
     invoke-virtual {v0, p1}, Landroid/widget/Button;->setText(Ljava/lang/CharSequence;)V
 
-    const/high16 p1, 0x41400000    # 12.0f
+    const/high16 p1, 0x41500000    # 13.0f
 
     invoke-virtual {v0, p1}, Landroid/widget/Button;->setTextSize(F)V
 
+    const-string p1, "\u062d\u0630\u0641"
+
+    invoke-virtual {p2, p1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+
+    move-result p1
+
+    invoke-static {v0, p1}, Lcom/shabakaty/cinemana/local/AccountUi;->button(Landroid/widget/Button;Z)V
+
     invoke-virtual {v0, p3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    return-object v0
+.end method
+
+.method cell(Landroid/content/Context;)Landroid/widget/LinearLayout$LayoutParams;
+    .locals 5
+
+    new-instance v0, Landroid/widget/LinearLayout$LayoutParams;
+
+    const/16 v1, 0x36
+
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
+
+    move-result v1
+
+    const/high16 v2, 0x3f800000    # 1.0f
+
+    const/4 v3, 0x0
+
+    invoke-direct {v0, v3, v1, v2}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+
+    const/4 v1, 0x4
+
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
+
+    move-result v2
+
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
+
+    move-result v3
+
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
+
+    move-result v4
+
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/ca1/ContinueActions262;->dp(Landroid/content/Context;I)I
+
+    move-result p1
+
+    invoke-virtual {v0, v2, v3, v4, p1}, Landroid/widget/LinearLayout$LayoutParams;->setMargins(IIII)V
 
     return-object v0
 .end method
@@ -779,7 +849,7 @@
 
     invoke-direct {v1, v2}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
 
-    new-instance v2, Landroid/app/AlertDialog$Builder;
+    new-instance v2, Lcom/shabakaty/cinemana/local/AccountUi$Builder;
 
     iget-object v3, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->root:Ljava/lang/ref/WeakReference;
 
@@ -793,7 +863,7 @@
 
     move-result-object v3
 
-    invoke-direct {v2, v3}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+    invoke-direct {v2, v3}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;-><init>(Landroid/content/Context;)V
 
     const-string v3, "\u0627\u062e\u062a\u0631 \u0627\u0644\u0639\u0645\u0644 \u0648\u0627\u0644\u0645\u0648\u0633\u0645"
 
@@ -801,7 +871,7 @@
 
     move-result-object v3
 
-    invoke-virtual {v2, v3}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+    invoke-virtual {v2, v3}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
 
     move-result-object v2
 
@@ -891,7 +961,7 @@
 
     invoke-direct {v1, v2}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
 
-    new-instance v2, Landroid/app/AlertDialog$Builder;
+    new-instance v2, Lcom/shabakaty/cinemana/local/AccountUi$Builder;
 
     iget-object v3, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->root:Ljava/lang/ref/WeakReference;
 
@@ -905,7 +975,7 @@
 
     move-result-object v3
 
-    invoke-direct {v2, v3}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+    invoke-direct {v2, v3}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;-><init>(Landroid/content/Context;)V
 
     const-string v3, "\u062a\u062d\u062f\u064a\u062f \u0639\u0645\u0644"
 
@@ -913,7 +983,7 @@
 
     move-result-object v3
 
-    invoke-virtual {v2, v3}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+    invoke-virtual {v2, v3}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
 
     move-result-object v2
 
@@ -976,7 +1046,7 @@
 
     invoke-direct {v0, v1}, Ljava/util/LinkedHashSet;-><init>(Ljava/util/Collection;)V
 
-    new-instance v1, Landroid/app/AlertDialog$Builder;
+    new-instance v1, Lcom/shabakaty/cinemana/local/AccountUi$Builder;
 
     iget-object v2, p0, Lcom/shabakaty/cinemana/ca1/ContinueActions262$More;->root:Ljava/lang/ref/WeakReference;
 
@@ -990,7 +1060,7 @@
 
     move-result-object v2
 
-    invoke-direct {v1, v2}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+    invoke-direct {v1, v2}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;-><init>(Landroid/content/Context;)V
 
     const-string v2, "\u062d\u0630\u0641 \u0645\u0646 \u0623\u0643\u0645\u0644 \u0627\u0644\u0645\u0634\u0627\u0647\u062f\u0629"
 
@@ -998,7 +1068,7 @@
 
     move-result-object v2
 
-    invoke-virtual {v1, v2}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+    invoke-virtual {v1, v2}, Lcom/shabakaty/cinemana/local/AccountUi$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
 
     move-result-object v1
 
