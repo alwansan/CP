@@ -1326,6 +1326,8 @@
         }
     .end annotation
 
+    invoke-static {p1, p2, p3}, Lcom/shabakaty/cinemana/local/LocalRuntime;->progress(Ljava/lang/String;J)V
+
     .line 1
     iget-object v0, p0, Lcom/shabakaty/downloader/t25;->a:Lcom/shabakaty/downloader/vt3;
 

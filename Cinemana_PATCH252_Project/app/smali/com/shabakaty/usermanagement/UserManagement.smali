@@ -421,57 +421,7 @@
 .end method
 
 .method public final checkMigrations()V
-    .locals 3
-
-    .line 1
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/UserManagement;->scheme:Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;->containsAccessToken()Z
-
-    move-result v0
-
-    if-eqz v0, :cond_1
-
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/UserManagement;->scheme:Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getPictureLarge()Ljava/lang/String;
-
-    move-result-object v0
-
-    invoke-interface {v0}, Ljava/lang/CharSequence;->length()I
-
-    move-result v0
-
-    if-nez v0, :cond_0
-
-    const/4 v0, 0x1
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v0, 0x0
-
-    :goto_0
-    if-eqz v0, :cond_1
-
-    .line 2
-    new-instance v0, Lcom/shabakaty/usermanagement/UserManagement$checkMigrations$callback$1;
-
-    invoke-direct {v0, p0}, Lcom/shabakaty/usermanagement/UserManagement$checkMigrations$callback$1;-><init>(Lcom/shabakaty/usermanagement/UserManagement;)V
-
-    .line 3
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getNewToken()V
-
-    .line 4
-    iget-object v1, p0, Lcom/shabakaty/usermanagement/UserManagement;->userNetworkManager:Lcom/shabakaty/usermanagement/data/api/IUserNetworkManager;
-
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getBearerToken()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-interface {v1, v0, v2}, Lcom/shabakaty/usermanagement/data/api/IUserNetworkManager;->getUserInfo(Lcom/shabakaty/usermanagement/callbacks/GetUserInfoCallback;Ljava/lang/String;)V
-
-    :cond_1
+    .locals 0
     return-void
 .end method
 
@@ -537,64 +487,15 @@
 .end method
 
 .method public final getBearerToken()Ljava/lang/String;
-    .locals 2
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->isLoggedIn()Z
-
-    move-result v0
-
-    if-eqz v0, :cond_0
-
-    sget-object v0, Lcom/shabakaty/usermanagement/utils/AuthUtil;->INSTANCE:Lcom/shabakaty/usermanagement/utils/AuthUtil;
-
-    iget-object v1, p0, Lcom/shabakaty/usermanagement/UserManagement;->scheme:Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    invoke-virtual {v1}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getAccessToken()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Lcom/shabakaty/usermanagement/utils/AuthUtil;->getBearerAuth(Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_0
-
-    :cond_0
+    .locals 1
     const-string v0, ""
-
-    :goto_0
     return-object v0
 .end method
 
 .method public final getFirstName()Ljava/lang/String;
     .locals 1
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getSafeScheme()Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->name()Ljava/lang/String;
     move-result-object v0
-
-    if-eqz v0, :cond_0
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getFirstName()Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v0, 0x0
-
-    :goto_0
-    if-eqz v0, :cond_1
-
-    goto :goto_1
-
-    :cond_1
-    const-string v0, ""
-
-    :goto_1
     return-object v0
 .end method
 
@@ -626,110 +527,20 @@
 .end method
 
 .method public final getLargePicture()Ljava/lang/String;
-    .locals 2
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getSafeScheme()Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
+    .locals 1
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->avatar()Ljava/lang/String;
     move-result-object v0
-
-    if-eqz v0, :cond_0
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getPictureLarge()Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v0, 0x0
-
-    :goto_0
-    if-eqz v0, :cond_1
-
-    goto :goto_1
-
-    :cond_1
-    const-string v0, ""
-
-    .line 2
-    :goto_1
-    invoke-interface {v0}, Ljava/lang/CharSequence;->length()I
-
-    move-result v1
-
-    if-nez v1, :cond_2
-
-    const/4 v1, 0x1
-
-    goto :goto_2
-
-    :cond_2
-    const/4 v1, 0x0
-
-    :goto_2
-    if-eqz v1, :cond_3
-
-    .line 3
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getUserProfilePictureLink()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_3
     return-object v0
 .end method
 
 .method public final getLastName()Ljava/lang/String;
     .locals 1
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getSafeScheme()Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_0
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getLastName()Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v0, 0x0
-
-    :goto_0
-    if-eqz v0, :cond_1
-
-    goto :goto_1
-
-    :cond_1
     const-string v0, ""
-
-    :goto_1
     return-object v0
 .end method
 
 .method public final getNewToken()V
-    .locals 2
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->isLoggedIn()Z
-
-    move-result v0
-
-    if-eqz v0, :cond_0
-
-    .line 2
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/UserManagement;->userNetworkManager:Lcom/shabakaty/usermanagement/data/api/IUserNetworkManager;
-
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getRefreshToken()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-interface {v0, v1}, Lcom/shabakaty/usermanagement/data/api/IUserNetworkManager;->getNewToken(Ljava/lang/String;)V
-
-    :cond_0
+    .locals 0
     return-void
 .end method
 
@@ -764,26 +575,7 @@
 
 .method public final getRefreshToken()Ljava/lang/String;
     .locals 1
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->isLoggedIn()Z
-
-    move-result v0
-
-    if-eqz v0, :cond_0
-
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/UserManagement;->scheme:Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getRefreshToken()Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_0
-
-    :cond_0
     const-string v0, ""
-
-    :goto_0
     return-object v0
 .end method
 
@@ -801,118 +593,22 @@
 .end method
 
 .method public final getSmallPicture()Ljava/lang/String;
-    .locals 2
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getSafeScheme()Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
+    .locals 1
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->avatar()Ljava/lang/String;
     move-result-object v0
-
-    if-eqz v0, :cond_0
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getPictureSmall()Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v0, 0x0
-
-    :goto_0
-    if-eqz v0, :cond_1
-
-    goto :goto_1
-
-    :cond_1
-    const-string v0, ""
-
-    .line 2
-    :goto_1
-    invoke-interface {v0}, Ljava/lang/CharSequence;->length()I
-
-    move-result v1
-
-    if-nez v1, :cond_2
-
-    const/4 v1, 0x1
-
-    goto :goto_2
-
-    :cond_2
-    const/4 v1, 0x0
-
-    :goto_2
-    if-eqz v1, :cond_3
-
-    .line 3
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getUserProfilePictureLink()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_3
     return-object v0
 .end method
 
 .method public final getUserEmail()Ljava/lang/String;
     .locals 1
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->isLoggedIn()Z
-
-    move-result v0
-
-    if-eqz v0, :cond_0
-
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/UserManagement;->scheme:Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getEmail()Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_0
-
-    :cond_0
     const-string v0, ""
-
-    :goto_0
     return-object v0
 .end method
 
 .method public final getUserId()Ljava/lang/String;
-    .locals 2
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->isLoggedIn()Z
-
-    move-result v0
-
-    const-string v1, ""
-
-    if-eqz v0, :cond_1
-
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getSafeScheme()Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_0
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getId()Ljava/lang/String;
-
-    move-result-object v0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v0, 0x0
-
-    :goto_0
-    if-eqz v0, :cond_1
-
-    move-object v1, v0
-
-    :cond_1
-    return-object v1
+    .locals 1
+    const-string v0, "local"
+    return-object v0
 .end method
 
 .method public final getUserInfo(Lcom/shabakaty/usermanagement/callbacks/GetUserInfoCallback;)V
@@ -935,27 +631,9 @@
 .end method
 
 .method public final getUserProfilePictureLink()Ljava/lang/String;
-    .locals 2
-
-    .line 1
-    new-instance v0, Ljava/lang/StringBuilder;
-
-    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
-
-    iget-object v1, p0, Lcom/shabakaty/usermanagement/UserManagement;->baseProfilePictureLink:Ljava/lang/String;
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getUserId()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
+    .locals 1
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->avatar()Ljava/lang/String;
     move-result-object v0
-
     return-object v0
 .end method
 
@@ -969,84 +647,8 @@
 .end method
 
 .method public goZombie()V
-    .locals 4
-
-    .line 1
-    sget-object v0, Lcom/shabakaty/usermanagement/utils/LoginState;->ZOMBIE:Lcom/shabakaty/usermanagement/utils/LoginState;
-
-    invoke-virtual {p0, v0}, Lcom/shabakaty/usermanagement/UserManagement;->updateState(Lcom/shabakaty/usermanagement/utils/LoginState;)Lcom/shabakaty/downloader/q70;
-
-    move-result-object v0
-
-    .line 2
-    sget-object v1, Lcom/shabakaty/downloader/ay3;->c:Lcom/shabakaty/downloader/wx3;
-
-    .line 3
-    invoke-virtual {v0, v1}, Lcom/shabakaty/downloader/q70;->g(Lcom/shabakaty/downloader/wx3;)Lcom/shabakaty/downloader/q70;
-
-    move-result-object v0
-
-    .line 4
-    invoke-static {}, Lcom/shabakaty/downloader/n7;->a()Lcom/shabakaty/downloader/wx3;
-
-    move-result-object v1
-
-    .line 5
-    new-instance v2, Lcom/shabakaty/downloader/q21;
-
-    invoke-direct {v2}, Lcom/shabakaty/downloader/q21;-><init>()V
-
-    const-string v3, "observer is null"
-
-    .line 6
-    invoke-static {v2, v3}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    .line 7
-    :try_start_0
-    new-instance v3, Lcom/shabakaty/downloader/z70$a;
-
-    invoke-direct {v3, v2, v1}, Lcom/shabakaty/downloader/z70$a;-><init>(Lcom/shabakaty/downloader/a80;Lcom/shabakaty/downloader/wx3;)V
-
-    invoke-interface {v0, v3}, Lcom/shabakaty/downloader/c80;->a(Lcom/shabakaty/downloader/a80;)V
-    :try_end_0
-    .catch Ljava/lang/NullPointerException; {:try_start_0 .. :try_end_0} :catch_0
-    .catchall {:try_start_0 .. :try_end_0} :catchall_0
-
+    .locals 0
     return-void
-
-    :catchall_0
-    move-exception v0
-
-    goto :goto_0
-
-    :catch_0
-    move-exception v0
-
-    goto :goto_1
-
-    .line 8
-    :goto_0
-    invoke-static {v0}, Lcom/shabakaty/downloader/kf5;->m(Ljava/lang/Throwable;)V
-
-    .line 9
-    invoke-static {v0}, Lcom/shabakaty/downloader/xv3;->b(Ljava/lang/Throwable;)V
-
-    .line 10
-    new-instance v1, Ljava/lang/NullPointerException;
-
-    const-string v2, "Actually not, but can\'t pass out an exception otherwise..."
-
-    invoke-direct {v1, v2}, Ljava/lang/NullPointerException;-><init>(Ljava/lang/String;)V
-
-    .line 11
-    invoke-virtual {v1, v0}, Ljava/lang/NullPointerException;->initCause(Ljava/lang/Throwable;)Ljava/lang/Throwable;
-
-    .line 12
-    throw v1
-
-    .line 13
-    :goto_1
-    throw v0
 .end method
 
 .method public final handleGoogleSignInResult(Lcom/shabakaty/downloader/uk4;)V
@@ -1082,37 +684,10 @@
 .end method
 
 .method public final isLoggedIn()Z
-    .locals 3
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getSafeScheme()Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    move-result-object v0
-
-    const/4 v1, 0x0
-
-    if-eqz v0, :cond_0
-
-    .line 2
-    sget-object v2, Lcom/shabakaty/usermanagement/utils/LoginState;->Companion:Lcom/shabakaty/usermanagement/utils/LoginState$Companion;
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getLoginStateId()I
-
-    move-result v0
-
-    invoke-virtual {v2, v0}, Lcom/shabakaty/usermanagement/utils/LoginState$Companion;->fromId(I)Lcom/shabakaty/usermanagement/utils/LoginState;
-
-    move-result-object v0
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/utils/LoginState;->LOGGED_IN:Lcom/shabakaty/usermanagement/utils/LoginState;
-
-    if-ne v0, v2, :cond_0
-
-    const/4 v1, 0x1
-
-    :cond_0
-    return v1
+    .locals 1
+    # Local UI identity; no remote credentials are implied.
+    const/4 v0, 0x1
+    return v0
 .end method
 
 .method public final login(Ljava/lang/String;Ljava/lang/String;)V
@@ -1671,143 +1246,17 @@
 .end method
 
 .method public logout()Lcom/shabakaty/downloader/f74;
-    .locals 4
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "()",
-            "Lcom/shabakaty/downloader/f74<",
-            "Ljava/lang/Boolean;",
-            ">;"
-        }
-    .end annotation
-
-    .line 1
-    sget-object v0, Lcom/shabakaty/usermanagement/utils/LoginState;->LOGGED_OUT:Lcom/shabakaty/usermanagement/utils/LoginState;
-
-    invoke-virtual {p0, v0}, Lcom/shabakaty/usermanagement/UserManagement;->updateState(Lcom/shabakaty/usermanagement/utils/LoginState;)Lcom/shabakaty/downloader/q70;
-
+    .locals 1
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->logout()Lcom/shabakaty/downloader/f74;
     move-result-object v0
-
-    .line 2
-    iget-object v1, p0, Lcom/shabakaty/usermanagement/UserManagement;->scheme:Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    invoke-virtual {v1}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->removeAccount()Lcom/shabakaty/downloader/q70;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Lcom/shabakaty/downloader/q70;->b(Lcom/shabakaty/downloader/c80;)Lcom/shabakaty/downloader/q70;
-
-    move-result-object v0
-
-    .line 3
-    sget-object v1, Lcom/shabakaty/usermanagement/UserManagement$logout$1;->INSTANCE:Lcom/shabakaty/usermanagement/UserManagement$logout$1;
-
-    const-string v2, "completionValueSupplier is null"
-
-    .line 4
-    invoke-static {v1, v2}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    .line 5
-    new-instance v2, Lcom/shabakaty/downloader/f80;
-
-    const/4 v3, 0x0
-
-    invoke-direct {v2, v0, v1, v3}, Lcom/shabakaty/downloader/f80;-><init>(Lcom/shabakaty/downloader/c80;Ljava/util/concurrent/Callable;Ljava/lang/Object;)V
-
-    .line 6
-    sget-object v0, Lcom/shabakaty/usermanagement/UserManagement$logout$2;->INSTANCE:Lcom/shabakaty/usermanagement/UserManagement$logout$2;
-
-    const-string v1, "resumeFunction is null"
-
-    .line 7
-    invoke-static {v0, v1}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    .line 8
-    new-instance v1, Lcom/shabakaty/downloader/z74;
-
-    invoke-direct {v1, v2, v0, v3}, Lcom/shabakaty/downloader/z74;-><init>(Lcom/shabakaty/downloader/h84;Lcom/shabakaty/downloader/in1;Ljava/lang/Object;)V
-
-    .line 9
-    sget-object v0, Lcom/shabakaty/downloader/ay3;->c:Lcom/shabakaty/downloader/wx3;
-
-    .line 10
-    invoke-virtual {v1, v0}, Lcom/shabakaty/downloader/f74;->m(Lcom/shabakaty/downloader/wx3;)Lcom/shabakaty/downloader/f74;
-
-    move-result-object v0
-
     return-object v0
 .end method
 
 .method public final observeLoginState()Lcom/shabakaty/downloader/qf1;
-    .locals 3
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "()",
-            "Lcom/shabakaty/downloader/qf1<",
-            "Lcom/shabakaty/usermanagement/utils/LoginState;",
-            ">;"
-        }
-    .end annotation
-
-    .line 1
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/UserManagement;->scheme:Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    .line 2
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->observeRxLoginStateId()Lcom/shabakaty/downloader/qf1;
-
+    .locals 1
+    sget-object v0, Lcom/shabakaty/usermanagement/utils/LoginState;->LOGGED_IN:Lcom/shabakaty/usermanagement/utils/LoginState;
+    invoke-static {v0}, Lcom/shabakaty/downloader/qf1;->d(Ljava/lang/Object;)Lcom/shabakaty/downloader/qf1;
     move-result-object v0
-
-    .line 3
-    sget-object v1, Lcom/shabakaty/usermanagement/UserManagement$observeLoginState$1;->INSTANCE:Lcom/shabakaty/usermanagement/UserManagement$observeLoginState$1;
-
-    invoke-virtual {v0, v1}, Lcom/shabakaty/downloader/qf1;->e(Lcom/shabakaty/downloader/in1;)Lcom/shabakaty/downloader/qf1;
-
-    move-result-object v0
-
-    .line 4
-    sget-object v1, Lcom/shabakaty/usermanagement/utils/LoginState;->LOGGED_OUT:Lcom/shabakaty/usermanagement/utils/LoginState;
-
-    const-string v2, "defaultItem is null"
-
-    .line 5
-    invoke-static {v1, v2}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    .line 6
-    new-instance v2, Lcom/shabakaty/downloader/kg1;
-
-    invoke-direct {v2, v1}, Lcom/shabakaty/downloader/kg1;-><init>(Ljava/lang/Object;)V
-
-    .line 7
-    new-instance v1, Lcom/shabakaty/downloader/xg1;
-
-    invoke-direct {v1, v0, v2}, Lcom/shabakaty/downloader/xg1;-><init>(Lcom/shabakaty/downloader/qf1;Lcom/shabakaty/downloader/wj3;)V
-
-    .line 8
-    sget-object v0, Lcom/shabakaty/usermanagement/UserManagement$observeLoginState$2;->INSTANCE:Lcom/shabakaty/usermanagement/UserManagement$observeLoginState$2;
-
-    const-string v2, "valueSupplier is null"
-
-    .line 9
-    invoke-static {v0, v2}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    .line 10
-    new-instance v2, Lcom/shabakaty/downloader/rg1;
-
-    invoke-direct {v2, v1, v0}, Lcom/shabakaty/downloader/rg1;-><init>(Lcom/shabakaty/downloader/qf1;Lcom/shabakaty/downloader/in1;)V
-
-    .line 11
-    invoke-virtual {v2}, Lcom/shabakaty/downloader/qf1;->b()Lcom/shabakaty/downloader/qf1;
-
-    move-result-object v0
-
-    .line 12
-    sget-object v1, Lcom/shabakaty/downloader/ay3;->c:Lcom/shabakaty/downloader/wx3;
-
-    .line 13
-    invoke-virtual {v0, v1}, Lcom/shabakaty/downloader/qf1;->j(Lcom/shabakaty/downloader/wx3;)Lcom/shabakaty/downloader/qf1;
-
-    move-result-object v0
-
     return-object v0
 .end method
 
@@ -1882,65 +1331,7 @@
 .end method
 
 .method public final refreshTokenIfExpired()V
-    .locals 6
-
-    .line 1
-    iget-object v0, p0, Lcom/shabakaty/usermanagement/UserManagement;->scheme:Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;->hasAccount()Z
-
-    move-result v0
-
-    if-eqz v0, :cond_1
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getSafeScheme()Lcom/shabakaty/usermanagement/utils/account/ShabakatyAccountManager;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_0
-
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->getRefreshTime()Ljava/lang/String;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_0
-
-    invoke-static {v0}, Lcom/shabakaty/downloader/me4;->A(Ljava/lang/String;)Ljava/lang/Long;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_0
-
-    invoke-virtual {v0}, Ljava/lang/Long;->longValue()J
-
-    move-result-wide v0
-
-    goto :goto_0
-
-    :cond_0
-    const-wide/16 v0, 0x0
-
-    .line 3
-    :goto_0
-    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-
-    move-result-wide v2
-
-    const/16 v4, 0x3e8
-
-    int-to-long v4, v4
-
-    div-long/2addr v2, v4
-
-    cmp-long v4, v0, v2
-
-    if-gtz v4, :cond_1
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/UserManagement;->getNewToken()V
-
-    :cond_1
+    .locals 0
     return-void
 .end method
 

@@ -2412,6 +2412,7 @@
 
     :cond_3
     :goto_1
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->overlay(Ljava/lang/Object;)V
     return-void
 .end method
 

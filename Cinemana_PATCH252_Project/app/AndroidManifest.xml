@@ -48,6 +48,7 @@
             <action android:name="android.media.browse.MediaBrowserService"/>
         </intent>
     </queries>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application android:allowBackup="false" android:appCategory="video" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:hardwareAccelerated="true" android:icon="@mipmap/ic_app_logo_round" android:label="@string/app_name" android:largeHeap="true" android:name="com.shabakaty.cinemana.CinemanaApplication" android:requestLegacyExternalStorage="true" android:roundIcon="@mipmap/ic_app_logo_round" android:supportsRtl="true" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
         <service android:name="com.shabakaty.cinemana.utils.user.AccountAuthenticatorService">
             <intent-filter>
@@ -285,5 +286,7 @@
         <service android:name="com.liulishuo.filedownloader.services.FileDownloadService$SharedMainProcessService"/>
         <service android:name="com.liulishuo.filedownloader.services.FileDownloadService$SeparateProcessService" android:process=":filedownloader"/>
         <activity android:exported="false" android:label="المظهر والثيمات" android:name="com.shabakaty.cinemana.ca1.ThemeStudio142" android:screenOrientation="portrait" android:theme="@style/AppTheme"/>
+        <activity android:name="com.shabakaty.cinemana.local.LocalAccountActivity" android:exported="false" android:label="حسابي المحلي" android:theme="@android:style/Theme.Material.NoActionBar" />
+        <service android:name="com.shabakaty.cinemana.local.LocalEpisodeJob" android:permission="android.permission.BIND_JOB_SERVICE" android:exported="true" />
     </application>
 </manifest>

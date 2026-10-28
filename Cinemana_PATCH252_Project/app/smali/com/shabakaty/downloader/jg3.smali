@@ -318,55 +318,10 @@
 .end method
 
 .method public c1()V
-    .locals 3
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/hj;->c2()Lcom/shabakaty/downloader/xk;
-
+    .locals 1
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireContext()Landroid/content/Context;
     move-result-object v0
-
-    check-cast v0, Lcom/shabakaty/downloader/fh3;
-
-    .line 2
-    iget-object v0, v0, Lcom/shabakaty/downloader/fh3;->h:Lcom/shabakaty/usermanagement/UserManagement;
-
-    .line 3
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/UserManagement;->isLoggedIn()Z
-
-    move-result v0
-
-    if-eqz v0, :cond_0
-
-    const-string v0, "$this$findNavController"
-
-    .line 4
-    invoke-static {p0, v0}, Lcom/shabakaty/downloader/j32;->f(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 5
-    invoke-static {p0}, Landroidx/navigation/fragment/NavHostFragment;->X1(Landroidx/fragment/app/Fragment;)Landroidx/navigation/NavController;
-
-    move-result-object v0
-
-    const-string v1, "NavHostFragment.findNavController(this)"
-
-    invoke-static {v0, v1}, Lcom/shabakaty/downloader/j32;->b(Ljava/lang/Object;Ljava/lang/String;)V
-
-    const/16 v1, 0x1008
-
-    const/4 v2, 0x0
-
-    .line 6
-    invoke-virtual {v0, v1, v2, v2, v2}, Landroidx/navigation/NavController;->i(ILandroid/os/Bundle;Landroidx/navigation/g;Landroidx/navigation/h$a;)V
-
-    goto :goto_0
-
-    :cond_0
-    const v0, 0x7f12016c
-
-    .line 7
-    invoke-virtual {p0, v0}, Lcom/shabakaty/downloader/jg3;->q(I)V
-
-    :goto_0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->open(Landroid/content/Context;)V
     return-void
 .end method
 
@@ -387,113 +342,18 @@
 .end method
 
 .method public h()V
-    .locals 3
-
-    .line 1
-    new-instance v0, Landroid/content/Intent;
-
-    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
-
-    move-result-object v1
-
-    const-class v2, Lcom/shabakaty/cinemana/ui/login/LoginActivity;
-
-    invoke-direct {v0, v1, v2}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
-
-    .line 2
-    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getActivity()Lcom/shabakaty/downloader/ji1;
-
-    move-result-object v1
-
-    if-nez v1, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    invoke-virtual {v1, v0}, Landroid/app/Activity;->startActivity(Landroid/content/Intent;)V
-
-    :goto_0
+    .locals 1
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireContext()Landroid/content/Context;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->open(Landroid/content/Context;)V
     return-void
 .end method
 
 .method public i0()V
-    .locals 3
-
-    .line 1
-    new-instance v0, Lcom/shabakaty/downloader/bn2;
-
+    .locals 1
     invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireContext()Landroid/content/Context;
-
-    move-result-object v1
-
-    invoke-direct {v0, v1}, Lcom/shabakaty/downloader/bn2;-><init>(Landroid/content/Context;)V
-
-    .line 2
-    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getResources()Landroid/content/res/Resources;
-
-    move-result-object v1
-
-    const v2, 0x7f120169
-
-    invoke-virtual {v1, v2}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Lcom/shabakaty/downloader/bn2;->q(Ljava/lang/CharSequence;)Lcom/shabakaty/downloader/bn2;
-
     move-result-object v0
-
-    .line 3
-    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getResources()Landroid/content/res/Resources;
-
-    move-result-object v1
-
-    const v2, 0x7f1201a7
-
-    invoke-virtual {v1, v2}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
-
-    move-result-object v1
-
-    .line 4
-    iget-object v2, v0, Landroidx/appcompat/app/b$a;->a:Landroidx/appcompat/app/AlertController$b;
-
-    iput-object v1, v2, Landroidx/appcompat/app/AlertController$b;->f:Ljava/lang/CharSequence;
-
-    .line 5
-    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getResources()Landroid/content/res/Resources;
-
-    move-result-object v1
-
-    const v2, 0x7f1202a6
-
-    invoke-virtual {v1, v2}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/downloader/ig3;->s:Lcom/shabakaty/downloader/ig3;
-
-    invoke-virtual {v0, v1, v2}, Lcom/shabakaty/downloader/bn2;->m(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lcom/shabakaty/downloader/bn2;
-
-    .line 6
-    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getResources()Landroid/content/res/Resources;
-
-    move-result-object v1
-
-    const v2, 0x7f1202bc
-
-    invoke-virtual {v1, v2}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
-
-    move-result-object v1
-
-    new-instance v2, Lcom/shabakaty/downloader/ph0;
-
-    invoke-direct {v2, p0}, Lcom/shabakaty/downloader/ph0;-><init>(Lcom/shabakaty/downloader/jg3;)V
-
-    invoke-virtual {v0, v1, v2}, Lcom/shabakaty/downloader/bn2;->o(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lcom/shabakaty/downloader/bn2;
-
-    .line 7
-    invoke-virtual {v0}, Landroidx/appcompat/app/b$a;->j()Landroidx/appcompat/app/b;
-
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->open(Landroid/content/Context;)V
     return-void
 .end method
 
@@ -580,6 +440,10 @@
     .line 2
     invoke-super {p0}, Landroidx/fragment/app/Fragment;->onResume()V
 
+    invoke-virtual {p0}, Lcom/shabakaty/downloader/hj;->c2()Lcom/shabakaty/downloader/xk;
+    move-result-object v0
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->profileState(Ljava/lang/Object;)V
+
     return-void
 .end method
 
@@ -594,6 +458,8 @@
     invoke-super {p0, p1, p2}, Lcom/shabakaty/downloader/hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 
     invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Enhancements;->profile(Landroid/view/View;)V
+
+    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->decorate(Landroid/view/View;)V
 
     .line 2
     invoke-virtual {p0}, Lcom/shabakaty/downloader/hj;->c2()Lcom/shabakaty/downloader/xk;

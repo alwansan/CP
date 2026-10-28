@@ -47,9 +47,8 @@
     .line 4
     iget-object v0, p0, Lcom/shabakaty/downloader/jf;->a:Lcom/shabakaty/usermanagement/UserManagement;
 
-    invoke-virtual {v0}, Lcom/shabakaty/usermanagement/UserManagement;->isLoggedIn()Z
-
-    move-result v0
+    # Catalogue reads remain anonymous in local account mode.
+    const/4 v0, 0x0
 
     if-eqz v0, :cond_0
 

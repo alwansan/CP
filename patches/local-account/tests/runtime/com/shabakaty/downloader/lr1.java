@@ -1,0 +1,1 @@
+package com.shabakaty.downloader;public class lr1 {private final com.google.gson.Gson g=new com.google.gson.Gson();public Object e(String s,Class c){return g.fromJson(s,c);}public String i(Object o){return g.toJson(o);}}

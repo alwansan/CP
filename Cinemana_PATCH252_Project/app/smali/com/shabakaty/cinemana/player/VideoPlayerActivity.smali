@@ -1034,6 +1034,7 @@
     :cond_0
     invoke-super {p0}, Lcom/shabakaty/downloader/ji1;->onPause()V
 
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->flushProgressAsync()V
     return-void
 .end method
 

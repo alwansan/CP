@@ -301,59 +301,8 @@
 .end method
 
 .method public getAccessToken()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_ACCESS_TOKEN()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_ACCESS_TOKEN()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
+    .locals 1
+    const-string v0, ""
     return-object v0
 .end method
 
@@ -375,59 +324,8 @@
 .end method
 
 .method public getEmail()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_EMAIL()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_EMAIL()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
+    .locals 1
+    const-string v0, ""
     return-object v0
 .end method
 
@@ -449,59 +347,9 @@
 .end method
 
 .method public getFirstName()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
+    .locals 1
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->name()Ljava/lang/String;
     move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_FIRST_NAME()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_FIRST_NAME()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
     return-object v0
 .end method
 
@@ -523,59 +371,8 @@
 .end method
 
 .method public getId()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_ID()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_ID()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
+    .locals 1
+    const-string v0, "local"
     return-object v0
 .end method
 
@@ -597,59 +394,8 @@
 .end method
 
 .method public getLastName()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_LAST_NAME()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_LAST_NAME()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
+    .locals 1
+    const-string v0, ""
     return-object v0
 .end method
 
@@ -671,67 +417,8 @@
 .end method
 
 .method public getLoginStateId()I
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_LOGIN_STATE_ID()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_LOGIN_STATE_ID()I
-
-    move-result v0
-
-    goto :goto_2
-
-    .line 5
-    :cond_2
-    invoke-static {v0}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
-
-    move-result v0
-
-    :goto_2
+    .locals 1
+    const/4 v0, 0x1
     return v0
 .end method
 
@@ -753,59 +440,9 @@
 .end method
 
 .method public getPictureLarge()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
+    .locals 1
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->avatar()Ljava/lang/String;
     move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_PICTURE_LARGE()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_PICTURE_LARGE()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
     return-object v0
 .end method
 
@@ -827,59 +464,9 @@
 .end method
 
 .method public getPictureSmall()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
+    .locals 1
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->avatar()Ljava/lang/String;
     move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_PICTURE_SMALL()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_PICTURE_SMALL()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
     return-object v0
 .end method
 
@@ -901,59 +488,8 @@
 .end method
 
 .method public getRefreshTime()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_REFRESH_TIME()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_REFRESH_TIME()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
+    .locals 1
+    const-string v0, ""
     return-object v0
 .end method
 
@@ -975,59 +511,8 @@
 .end method
 
 .method public getRefreshToken()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_REFRESH_TOKEN()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_REFRESH_TOKEN()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
+    .locals 1
+    const-string v0, ""
     return-object v0
 .end method
 
@@ -1049,59 +534,8 @@
 .end method
 
 .method public getTokenType()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_TOKEN_TYPE()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_TOKEN_TYPE()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
+    .locals 1
+    const-string v0, ""
     return-object v0
 .end method
 
@@ -1123,59 +557,9 @@
 .end method
 
 .method public getUserName()Ljava/lang/String;
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
+    .locals 1
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->name()Ljava/lang/String;
     move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_USER_NAME()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v3}, Landroid/accounts/AccountManager;->getUserData(Landroid/accounts/Account;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v0
-
-    const/4 v1, 0x1
-
-    if-eqz v0, :cond_1
-
-    .line 3
-    invoke-static {v0}, Lcom/shabakaty/downloader/ne4;->D(Ljava/lang/CharSequence;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_0
-
-    :cond_0
-    const/4 v3, 0x0
-
-    goto :goto_1
-
-    :cond_1
-    :goto_0
-    const/4 v3, 0x1
-
-    :goto_1
-    if-ne v3, v1, :cond_2
-
-    .line 4
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getDEFAULT_USER_NAME()Ljava/lang/String;
-
-    move-result-object v0
-
-    :cond_2
     return-object v0
 .end method
 
@@ -2223,38 +1607,7 @@
 .end method
 
 .method public saveAccessToken(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "accessToken"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_ACCESS_TOKEN()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveAccessTokenSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
@@ -2283,330 +1636,47 @@
 .end method
 
 .method public saveEmail(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "email"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_EMAIL()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveEmailSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public saveFirstName(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "firstName"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_FIRST_NAME()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveFirstNameSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public saveId(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "id"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_ID()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveIdSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public saveLastName(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "lastName"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_LAST_NAME()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveLastNameSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public saveLoginStateId(I)V
-    .locals 4
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_LOGIN_STATE_ID()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-static {p1}, Ljava/lang/String;->valueOf(I)Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v1, v0, v2, v3}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveLoginStateIdSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-static {p1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object p1
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public savePictureLarge(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "pictureLarge"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_PICTURE_LARGE()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrievePictureLargeSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public savePictureSmall(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "pictureSmall"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_PICTURE_SMALL()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrievePictureSmallSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public saveRefreshTime(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "refreshTime"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_REFRESH_TIME()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveRefreshTimeSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public saveRefreshToken(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "refreshToken"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_REFRESH_TOKEN()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveRefreshTokenSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
@@ -2943,74 +2013,12 @@
 .end method
 
 .method public saveTokenType(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "tokenType"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_TOKEN_TYPE()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveTokenTypeSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 
 .method public saveUserName(Ljava/lang/String;)V
-    .locals 3
-
-    const-string v0, "userName"
-
-    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 1
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/g74;->retrieveAccount()Landroid/accounts/Account;
-
-    move-result-object v0
-
-    .line 2
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/wi;->getManager()Landroid/accounts/AccountManager;
-
-    move-result-object v1
-
-    .line 3
-    sget-object v2, Lcom/shabakaty/usermanagement/data/model/UserConstants;->Companion:Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;
-
-    invoke-virtual {v2}, Lcom/shabakaty/usermanagement/data/model/UserConstants$Companion;->getKEY_USER_NAME()Ljava/lang/String;
-
-    move-result-object v2
-
-    invoke-virtual {v1, v0, v2, p1}, Landroid/accounts/AccountManager;->setUserData(Landroid/accounts/Account;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 4
-    invoke-virtual {p0}, Lcom/shabakaty/usermanagement/data/model/UserScheme;->retrieveUserNameSubject()Lcom/shabakaty/downloader/sl;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Lcom/shabakaty/downloader/sl;->e(Ljava/lang/Object;)V
-
+    .locals 0
     return-void
 .end method
 

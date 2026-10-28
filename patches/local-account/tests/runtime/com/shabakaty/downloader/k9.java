@@ -1,0 +1,1 @@
+package com.shabakaty.downloader;public interface k9 {f74 a(String id);f74 e(String page,String user,String kind);f74 t(String user,String id,String kind);f74 d(String user,String id,String kind);f74 p();f74 q(String count);f74 C(String user,String id,String value);f74 f(String user,String id,String comment);f74 A(String id,String cache);}

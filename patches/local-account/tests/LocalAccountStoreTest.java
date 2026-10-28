@@ -19,6 +19,13 @@ public class LocalAccountStoreTest {
   ByteArrayOutputStream bad=new ByteArrayOutputStream();ZipOutputStream z=new ZipOutputStream(bad);z.putNextEntry(new ZipEntry("../account.bin"));z.write(1);z.closeEntry();z.finish();
   try{reopened.importZip(new ByteArrayInputStream(bad.toByteArray()));throw new AssertionError();}catch(IOException expected){}
   check(reopened.name().equals("الوان"));
+  byte[] zip=archive.toByteArray();try{reopened.importZip(new ByteArrayInputStream(Arrays.copyOf(zip,zip.length-10)));throw new AssertionError();}catch(IOException expected){}
+  check(reopened.name().equals("الوان"));
+  reopened.setConfig("parental","2");reopened.put(ListKind.PROGRESS,new Item("episode","حلقة",60000,"{\"nb\":\"episode\"}"));
+  reopened=new LocalAccountStore(dir,null);check(reopened.find(ListKind.PROGRESS,"episode").positionMs==60000);check(reopened.config("parental","0").equals("2"));
+  // Simulate process death after rotating the old file, before finalizing the new one.
+  File current=new File(dir,"account.bin"),backup=new File(dir,"account.bin.bak");check(current.renameTo(backup));try(FileOutputStream broken=new FileOutputStream(current)){broken.write(1);}
+  reopened=new LocalAccountStore(dir,null);check(reopened.name().equals("الوان"));
   reopened.remove(ListKind.SUBSCRIPTION,"series");check(reopened.reconcile("series",Arrays.asList(e("5"))).isEmpty());
   System.out.println("PASS persistence, ZIP round-trip, rejected traversal, unchanged state on invalid import, first baseline, deduplication, disappearance/reappearance, unsubscribe, restore baseline");
  }

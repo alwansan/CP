@@ -1,0 +1,1 @@
+package com.shabakaty.cinemana.domain.models.remote;public class VideoModelApi {public String nb;@com.google.gson.annotations.SerializedName("ar_title")public String arTitle;@com.google.gson.annotations.SerializedName("en_title")public String enTitle;}

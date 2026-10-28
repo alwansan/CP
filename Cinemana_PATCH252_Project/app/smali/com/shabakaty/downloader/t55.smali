@@ -98,6 +98,8 @@
 
     invoke-static {v0, v1}, Lcom/shabakaty/downloader/j32;->d(Ljava/lang/Object;Ljava/lang/String;)V
 
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->wrap(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v0
     check-cast v0, Lcom/shabakaty/downloader/k9;
 
     return-object v0

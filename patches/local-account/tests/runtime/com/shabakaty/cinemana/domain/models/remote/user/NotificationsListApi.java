@@ -1,0 +1,1 @@
+package com.shabakaty.cinemana.domain.models.remote.user;public class NotificationsListApi {public String newValue;public java.util.List<com.shabakaty.cinemana.domain.models.remote.VideoModelApi> notifications;}
