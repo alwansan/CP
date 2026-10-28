@@ -553,52 +553,61 @@
 
     invoke-virtual {v0, p1, v1, v2}, Landroid/content/res/Resources;->getIdentifier(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
 
-    move-result p1
+    move-result v0
 
-    if-nez p1, :cond_15
+    if-nez v0, :cond_15
 
     return-void
 
     :cond_15
     invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;
 
-    move-result-object v0
+    move-result-object v1
 
     invoke-virtual {p0}, Landroid/view/View;->getContext()Landroid/content/Context;
 
-    move-result-object v1
+    move-result-object v2
 
-    invoke-virtual {v1}, Landroid/content/Context;->getTheme()Landroid/content/res/Resources$Theme;
+    invoke-virtual {v2}, Landroid/content/Context;->getTheme()Landroid/content/res/Resources$Theme;
 
-    move-result-object v1
+    move-result-object v2
 
-    invoke-virtual {v0, p1, v1}, Landroid/content/res/Resources;->getDrawable(ILandroid/content/res/Resources$Theme;)Landroid/graphics/drawable/Drawable;
-
-    move-result-object p1
-
-    invoke-virtual {p1}, Landroid/graphics/drawable/Drawable;->mutate()Landroid/graphics/drawable/Drawable;
-
-    move-result-object p1
-
-    const/4 v0, -0x1
-
-    invoke-virtual {p1, v0}, Landroid/graphics/drawable/Drawable;->setTint(I)V
-
-    invoke-virtual {p0}, Landroid/view/View;->getContext()Landroid/content/Context;
+    invoke-virtual {v1, v0, v2}, Landroid/content/res/Resources;->getDrawable(ILandroid/content/res/Resources$Theme;)Landroid/graphics/drawable/Drawable;
 
     move-result-object v0
+
+    invoke-virtual {v0}, Landroid/graphics/drawable/Drawable;->mutate()Landroid/graphics/drawable/Drawable;
+
+    move-result-object v0
+
+    const-string v1, "ic_watched"
+
+    invoke-virtual {p1, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result p1
+
+    if-eqz p1, :cond_35
+
+    const/4 p1, -0x1
+
+    invoke-virtual {v0, p1}, Landroid/graphics/drawable/Drawable;->setTint(I)V
+
+    :cond_35
+    invoke-virtual {p0}, Landroid/view/View;->getContext()Landroid/content/Context;
+
+    move-result-object p1
 
     const/16 v1, 0x1e
 
-    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/AccountUi;->dp(Landroid/content/Context;I)I
+    invoke-static {p1, v1}, Lcom/shabakaty/cinemana/local/AccountUi;->dp(Landroid/content/Context;I)I
 
-    move-result v0
+    move-result p1
 
     invoke-virtual {p0}, Landroid/view/View;->getWidth()I
 
     move-result v1
 
-    sub-int/2addr v1, v0
+    sub-int/2addr v1, p1
 
     div-int/lit8 v1, v1, 0x2
 
@@ -606,40 +615,40 @@
 
     move-result v2
 
-    sub-int/2addr v2, v0
+    sub-int/2addr v2, p1
 
     div-int/lit8 v2, v2, 0x2
 
-    add-int v3, v1, v0
+    add-int v3, v1, p1
 
-    add-int/2addr v0, v2
+    add-int/2addr p1, v2
 
-    invoke-virtual {p1, v1, v2, v3, v0}, Landroid/graphics/drawable/Drawable;->setBounds(IIII)V
+    invoke-virtual {v0, v1, v2, v3, p1}, Landroid/graphics/drawable/Drawable;->setBounds(IIII)V
 
     invoke-virtual {p0}, Landroid/view/View;->getOverlay()Landroid/view/ViewOverlay;
 
-    move-result-object v0
+    move-result-object p1
 
-    invoke-virtual {v0}, Landroid/view/ViewOverlay;->clear()V
+    invoke-virtual {p1}, Landroid/view/ViewOverlay;->clear()V
 
     invoke-virtual {p0}, Landroid/view/View;->getOverlay()Landroid/view/ViewOverlay;
 
     move-result-object p0
 
-    invoke-virtual {p0, p1}, Landroid/view/ViewOverlay;->add(Landroid/graphics/drawable/Drawable;)V
-    :try_end_59
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_59} :catch_5a
+    invoke-virtual {p0, v0}, Landroid/view/ViewOverlay;->add(Landroid/graphics/drawable/Drawable;)V
+    :try_end_61
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_61} :catch_62
 
-    goto :goto_60
+    goto :goto_68
 
-    :catch_5a
+    :catch_62
     move-exception p0
 
     const-string p1, "overlay_icon"
 
     invoke-static {p1, p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    :goto_60
+    :goto_68
     return-void
 .end method
 
@@ -663,6 +672,201 @@
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/local/AccountUi;->drawIcon(Landroid/view/View;Ljava/lang/String;)V
 
     :cond_12
+    return-void
+.end method
+
+.method static nativeResume(Landroid/view/View;)V
+    .locals 8
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/lang/Exception;
+        }
+    .end annotation
+
+    invoke-virtual {p0}, Landroid/view/View;->getOverlay()Landroid/view/ViewOverlay;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Landroid/view/ViewOverlay;->clear()V
+
+    invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;
+
+    move-result-object v0
+
+    invoke-virtual {p0}, Landroid/view/View;->getContext()Landroid/content/Context;
+
+    move-result-object v1
+
+    invoke-virtual {v1}, Landroid/content/Context;->getPackageName()Ljava/lang/String;
+
+    move-result-object v1
+
+    const-string v2, "ic_continue"
+
+    const-string v3, "drawable"
+
+    invoke-virtual {v0, v2, v3, v1}, Landroid/content/res/Resources;->getIdentifier(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+
+    move-result v0
+
+    invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;
+
+    move-result-object v1
+
+    invoke-virtual {p0}, Landroid/view/View;->getContext()Landroid/content/Context;
+
+    move-result-object v2
+
+    invoke-virtual {v2}, Landroid/content/Context;->getTheme()Landroid/content/res/Resources$Theme;
+
+    move-result-object v2
+
+    invoke-virtual {v1, v0, v2}, Landroid/content/res/Resources;->getDrawable(ILandroid/content/res/Resources$Theme;)Landroid/graphics/drawable/Drawable;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Landroid/graphics/drawable/Drawable;->mutate()Landroid/graphics/drawable/Drawable;
+
+    move-result-object v0
+
+    const/4 v1, -0x1
+
+    invoke-virtual {v0, v1}, Landroid/graphics/drawable/Drawable;->setTint(I)V
+
+    const-string v1, "com.facebook.drawee.drawable.ScalingUtils$ScaleType"
+
+    invoke-static {v1}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v1
+
+    const-string v2, "f"
+
+    invoke-virtual {v1, v2}, Ljava/lang/Class;->getField(Ljava/lang/String;)Ljava/lang/reflect/Field;
+
+    move-result-object v2
+
+    const/4 v3, 0x0
+
+    invoke-virtual {v2, v3}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    const-string v3, "com.facebook.drawee.drawable.ScaleTypeDrawable"
+
+    invoke-static {v3}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v3
+
+    const/4 v4, 0x2
+
+    new-array v5, v4, [Ljava/lang/Class;
+
+    const-class v6, Landroid/graphics/drawable/Drawable;
+
+    const/4 v7, 0x0
+
+    aput-object v6, v5, v7
+
+    const/4 v6, 0x1
+
+    aput-object v1, v5, v6
+
+    invoke-virtual {v3, v5}, Ljava/lang/Class;->getConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+
+    move-result-object v1
+
+    new-array v3, v4, [Ljava/lang/Object;
+
+    aput-object v0, v3, v7
+
+    aput-object v2, v3, v6
+
+    invoke-virtual {v1, v3}, Ljava/lang/reflect/Constructor;->newInstance([Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v0
+
+    const-string v1, "com.facebook.drawee.generic.GenericDraweeHierarchyBuilder"
+
+    invoke-static {v1}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v1
+
+    new-array v2, v6, [Ljava/lang/Class;
+
+    const-class v3, Landroid/content/res/Resources;
+
+    aput-object v3, v2, v7
+
+    invoke-virtual {v1, v2}, Ljava/lang/Class;->getConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+
+    move-result-object v2
+
+    invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;
+
+    move-result-object v3
+
+    new-array v4, v6, [Ljava/lang/Object;
+
+    aput-object v3, v4, v7
+
+    invoke-virtual {v2, v4}, Ljava/lang/reflect/Constructor;->newInstance([Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    new-instance v3, Ljava/util/ArrayList;
+
+    invoke-direct {v3}, Ljava/util/ArrayList;-><init>()V
+
+    invoke-interface {v3, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    const-string v0, "n"
+
+    invoke-virtual {v1, v0}, Ljava/lang/Class;->getField(Ljava/lang/String;)Ljava/lang/reflect/Field;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v2, v3}, Ljava/lang/reflect/Field;->set(Ljava/lang/Object;Ljava/lang/Object;)V
+
+    const-string v0, "a"
+
+    new-array v3, v7, [Ljava/lang/Class;
+
+    invoke-virtual {v1, v0, v3}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v0
+
+    new-array v1, v7, [Ljava/lang/Object;
+
+    invoke-virtual {v0, v2, v1}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+
+    move-result-object v1
+
+    const-string v2, "com.facebook.drawee.interfaces.DraweeHierarchy"
+
+    invoke-static {v2}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v2
+
+    new-array v3, v6, [Ljava/lang/Class;
+
+    aput-object v2, v3, v7
+
+    const-string v2, "setHierarchy"
+
+    invoke-virtual {v1, v2, v3}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v1
+
+    new-array v2, v6, [Ljava/lang/Object;
+
+    aput-object v0, v2, v7
+
+    invoke-virtual {v1, p0, v2}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+
     return-void
 .end method
 
@@ -721,22 +925,20 @@
 
     invoke-virtual {p0, p1}, Landroid/widget/TextView;->setTextColor(I)V
 
-    const-string p0, "ic_btn_play"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/AccountUi;->nativeResume(Landroid/view/View;)V
+    :try_end_36
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_36} :catch_37
 
-    invoke-static {v0, p0}, Lcom/shabakaty/cinemana/local/AccountUi;->drawIcon(Landroid/view/View;Ljava/lang/String;)V
-    :try_end_38
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_38} :catch_39
+    goto :goto_3d
 
-    goto :goto_3f
-
-    :catch_39
+    :catch_37
     move-exception p0
 
     const-string p1, "resume_overlay"
 
     invoke-static {p1, p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    :goto_3f
+    :goto_3d
     return-void
 .end method
 

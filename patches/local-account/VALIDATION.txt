@@ -1,15 +1,15 @@
-PATCH268 local-account validation, 2026-10-28
-Base: 44f0cdcf0aacbad5674430542f3135a04cd61303 (PATCH267)
+PATCH269 validation, 2026-10-28
+Base: 4632f39da999a6cb70f0d4491e36e238b0d4858f (PATCH268)
 Branch: feature/local-account
-PASS host storage, physical progress deletion/reopen, state replacement pruning, relocation preserving baseline, 100-item inbox cap, restored baseline detects only additional episode IDs.
-PASS large Arabic/emoji/escaped preference storage and ZIP round-trip; missing and duplicate chunks rejected; artwork-less category filtering; previous API routing and response contract tests.
-PASS 1821 helper member references against actual native classes, including rebuilt ContinueActions262; package-private declarations included.
-PASS native watched/resume binding fields, Continue106 deletion/persistence hooks and HomeActivity avatar refresh; existing response, HTTP, poster, profile and job contracts.
-PASS existing recovery linkage check and 8 existing recovery/reference regression tests.
-PASS full Apktool assembly; aligned APK; apksigner v1/v2/v3 verification.
-NOT RUN physical Android visual QA, image chooser provider behavior, actual SAF export/import, uninstall/reinstall, or a notification for a newly released episode.
-Observed in user's PATCH267 logs: anonymous episode HTTP200 and two baseline reconciliations without old-episode alerts. This is not proof of future background delivery.
-Canonical account path when writable: /storage/emulated/0/Cinemana/work/data/local-account/account.bin; private fallback is shown explicitly in editor.
-No raw user logs, media files, download database or OAuth credentials committed.
-Unsigned SHA-256: 1bfeb05360ad74654b0b161f5422ac88d0aded1d54e552150d12276393cae8e7
-Signed SHA-256: d12ddb580a900c09626cf3cc1a941cbb24a07c99f54df8db02ad8f2e335d37ea
+PASS all existing storage/ZIP/baseline/API tests.
+PASS rich/blank metadata merge and metadata refresh preserving progress and deleted membership; specified placeholder category exclusion.
+PASS expiry parsing and signed-URL identity/quality candidate selection, excluding stale URLs and other qualities/hosts.
+PASS real localhost HTTP range probes: 206 MP4 accepted, 200 HTML and 403 rejected.
+PASS 2005 generated helper references checked against native classes; original continue renderer and metadata/retry bridge contracts.
+PASS original recovery linkage and 8 recovery/reference regression tests.
+PASS full Apktool build, 11 DEX files, APK content check, zipalign, apksigner v1/v2/v3 verification with the existing signing certificate.
+Observed user evidence: episode 145 retried an expired URL with HTTP403; re-adding obtained a fresh signature for the same media path and completed. Uploaded account state contains blank compatibility metadata from the prior upgrade.
+NOT RUN Android visual UI, real metadata refill, public catalogue refresh from user network, or real automatic download requeue. Nonempty partial downloads are preserved and logged for separate verified-resume work.
+No raw logs, user account binary, images, signed media URLs or OAuth credentials committed.
+Unsigned SHA-256: 254b6a65fb869b452f0a294d351a6f4d194ca831c2fcc8370324ca33d220123e
+Signed SHA-256: 11afcaf5abc6965b22374ee53a80c3f6a855aef67e9897a579d84b2aa15d150b

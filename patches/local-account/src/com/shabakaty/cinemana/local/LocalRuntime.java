@@ -11,18 +11,19 @@ import com.shabakaty.cinemana.local.LocalAccountStore.*;
 public final class LocalRuntime {
  public static final ScheduledExecutorService IO=Executors.newSingleThreadScheduledExecutor();
  static volatile Context app;static volatile LocalAccountStore store;static volatile Object api;
+ static final ExecutorService METADATA=Executors.newSingleThreadExecutor();
  static final ExecutorService NETWORK=Executors.newSingleThreadExecutor();
  private static final java.util.concurrent.atomic.AtomicBoolean scanning=new java.util.concurrent.atomic.AtomicBoolean();
  private static final Set<String> mutedProgress=Collections.newSetFromMap(new ConcurrentHashMap<String,Boolean>());
  private static final ConcurrentHashMap<String,Long> pendingProgress=new ConcurrentHashMap<>();
  private static final java.util.concurrent.atomic.AtomicBoolean progressScheduled=new java.util.concurrent.atomic.AtomicBoolean();
  private static final lr1 JSON=new lr1();
- private static final LinkedHashMap<String,String> cache=new LinkedHashMap<>();
+ static final LinkedHashMap<String,String> cache=new LinkedHashMap<>();
  private static final String MODELS="com.shabakaty.cinemana.domain.models.remote.";
  static volatile boolean scanCancelled;private static volatile long lastMigrationAttempt;private static long storageProbe,lastStateSnapshot;private static volatile boolean stateDirty;
  static final long INTERVAL=6*60*60*1000L;
  public static synchronized void init(Context context){
-  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH268");
+  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH269");
   IO.execute(new Runnable(){public void run(){try{data();ensureLegacy();try{if(!data().config("upgrade268","0").equals("1")){snapshotLegacy(true);data().setConfig("upgrade268","1");log("account_upgrade268_complete");}}catch(Exception upgrade){failure("account_upgrade268",upgrade);}schedule();requestScan(false);}catch(Exception e){failure("init",e);}}});
  }
  static File sharedDirectory(){return new File(Environment.getExternalStorageDirectory(),"Cinemana/work/data/local-account");}
@@ -71,7 +72,7 @@ public final class LocalRuntime {
     IO.execute(new Runnable(){public void run(){try{data().setConfig(setting,value);}catch(Exception e){failure("settings",e);}}});
     return Class.forName("com.shabakaty.downloader.qv4").getField("a").get(null);
    }
-   if(Arrays.asList("a","d","e","t","p","q","v","y","s","B","C","E","f","r","x","l").contains(key))return new LocalSingle(new Callable<Object>(){public Object call()throws Exception{return local(key,args);}});
+   if(Arrays.asList("a","d","e","t","p","q","v","y","s","B","C","E","f","r","x","l").contains(key))return new LocalSingle(new Callable<Object>(){public Object call()throws Exception{return local(key,args);}},key.equals("e")||key.equals("p")?METADATA:IO);
    try{
     Object value=method.invoke(remote,args);
     if(key.equals("D")&&value instanceof f74)return new CategorySingle((f74)value);
@@ -115,7 +116,7 @@ public final class LocalRuntime {
   }
   if(op.equals("e")){
    int page=Integer.parseInt(String.valueOf(a[0]));List<Item> items=s.list(kind(String.valueOf(a[2])));Collections.reverse(items);
-   JSONArray array=new JSONArray();if(page<0||page>100000)throw new IOException("invalid page");int start=page*30;for(int i=start;i<Math.min(start+30,items.size());i++)array.put(model(items.get(i)));
+   if(page==0)Metadata269.hydrate(items.subList(0,Math.min(30,items.size())));JSONArray array=new JSONArray();if(page<0||page>100000)throw new IOException("invalid page");int start=page*30;for(int i=start;i<Math.min(start+30,items.size());i++)array.put(model(items.get(i)));
    return dto("user.UserListApi",new JSONObject().put("data",array).put("status","success").toString());
   }
   if(op.equals("p")){JSONArray array=new JSONArray();for(Item i:s.list(ListKind.SUBSCRIPTION))array.put(model(i));return dtoArray(array);}
@@ -126,7 +127,7 @@ public final class LocalRuntime {
   return new JSONObject(); // legacy device registration/logout suppressed, no tokens sent
  }
  static List<Object> dtoArray(JSONArray array)throws Exception{List<Object> list=new ArrayList<>();for(int i=0;i<array.length();i++)list.add(dto("VideoModelApi",array.getJSONObject(i).toString()));return list;}
- static JSONObject model(Item i)throws JSONException{return i.payload.length()>0?new JSONObject(i.payload):new JSONObject().put("nb",i.id).put("en_title",i.title).put("ar_title",i.title).put("kind","1");}
+ static JSONObject model(Item i)throws Exception{return Metadata269.enrich(i);}
  static Item item(String id)throws Exception{
   String json; synchronized(cache){json=cache.get(id);}if(json==null)for(ListKind k:ListKind.values()){Item i=data().find(k,id);if(i!=null&&i.payload.length()>0)return i;}
   if(json==null)return new Item(id,"عمل "+id,0);
@@ -223,7 +224,7 @@ public final class LocalRuntime {
      String title="عمل "+id;JSONObject meta=new JSONObject().put("nb",id).put("en_title",title).put("kind","1");
      android.database.Cursor model=db.rawQuery("SELECT nb,arTitle,enTitle,kind,rootSeries,season,episodeNummer,imgObjUrl,imgThumbObjUrl,imgMediumThumbObjUrl FROM video_model WHERE nb=?",new String[]{id});
      try{if(model.moveToFirst()){String[] fields={"nb","ar_title","en_title","kind","rootSeries","season","episodeNummer","imgObjUrl","imgThumbObjUrl","imgMediumThumbObjUrl"};for(int i=0;i<fields.length;i++)if(!model.isNull(i))meta.put(fields[i],model.getString(i));title=meta.optString("ar_title");if(title.isEmpty())title=meta.optString("en_title",id);}}finally{model.close();}
-     long position=cursor.getLong(cursor.getColumnIndexOrThrow("videoProgress"));Item item=new Item(id,title,position,meta.toString());
+     meta=Metadata269.merge(Metadata269.local(id),meta);title=Metadata269.title(meta,"عمل "+id);long position=cursor.getLong(cursor.getColumnIndexOrThrow("videoProgress"));Item item=new Item(id,title,position,meta.toString());
      if(position>0&&app.getSharedPreferences("ca1_continue106",0).contains(id))records.get(ListKind.PROGRESS).add(item);
      if(seed){if(cursor.getInt(cursor.getColumnIndexOrThrow("favorite"))!=0)records.get(ListKind.FAVORITE).add(item);if(cursor.getInt(cursor.getColumnIndexOrThrow("watched"))!=0)records.get(ListKind.WATCHED).add(item);if("1".equals(cursor.getString(cursor.getColumnIndexOrThrow("watchLater"))))records.get(ListKind.WATCH_LATER).add(item);}
     }}finally{cursor.close();}
@@ -286,10 +287,10 @@ public final class LocalRuntime {
  }
  static final class Cancel implements mu0 {volatile boolean cancelled;public void h(){cancelled=true;}public boolean n(){return cancelled;}}
  static final class LocalSingle extends f74 {
-  final Callable<Object> call;LocalSingle(Callable<Object> c){call=c;}
-  public void l(final y74 observer){final Cancel cancel=new Cancel();observer.c(cancel);IO.execute(new Runnable(){public void run(){if(cancel.cancelled)return;try{Object result=call.call();if(!cancel.cancelled)observer.onSuccess(result);}catch(Exception e){failure("local_operation",e);if(!cancel.cancelled)observer.b(e);}}});}
+  final Callable<Object> call;final Executor executor;LocalSingle(Callable<Object> c){this(c,IO);}LocalSingle(Callable<Object> c,Executor e){call=c;executor=e;}
+  public void l(final y74 observer){final Cancel cancel=new Cancel();observer.c(cancel);executor.execute(new Runnable(){public void run(){if(cancel.cancelled)return;try{Object result=call.call();if(!cancel.cancelled)observer.onSuccess(result);}catch(Exception e){failure("local_operation",e);if(!cancel.cancelled)observer.b(e);}}});}
  }
- static Object categories(Object value){if(!(value instanceof List))return value;List<Object> result=new ArrayList<>();for(Object item:(List<?>)value){if(item==null)continue;boolean artwork=false;for(String field:new String[]{"imgObjUrl","imgMediumThumbObjUrl","imgThumbObjUrl"})try{Object image=item.getClass().getField(field).get(item);if(image instanceof String&&(((String)image).startsWith("https://")||((String)image).startsWith("http://"))){artwork=true;break;}}catch(Exception ignored){}if(artwork)result.add(item);}log("categories_filtered kept="+result.size()+" total="+((List)value).size());return result;}
+ static Object categories(Object value){if(!(value instanceof List))return value;List<Object> result=new ArrayList<>();for(Object item:(List<?>)value)if(item!=null&&Metadata269.category(item))result.add(item);log("categories_filtered kept="+result.size()+" total="+((List)value).size());return result;}
  static final class CategorySingle extends f74 {final f74 source;CategorySingle(f74 s){source=s;}public void l(y74 o){source.a(new y74(){public void c(mu0 d){o.c(d);}public void b(Throwable e){o.b(e);}public void onSuccess(Object value){o.onSuccess(categories(value));}});}}
  static String requestLabel(Object request)throws Exception {
   Object url=request.getClass().getField("b").get(request);String path=new java.net.URI(url.toString()).getPath();

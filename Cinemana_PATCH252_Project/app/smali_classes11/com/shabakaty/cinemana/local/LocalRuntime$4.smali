@@ -140,7 +140,7 @@
 
     move-result v4
 
-    if-nez v4, :cond_ee
+    if-nez v4, :cond_104
 
     const-string v4, "m"
 
@@ -150,7 +150,7 @@
 
     if-eqz v4, :cond_5e
 
-    goto/16 :goto_ee
+    goto/16 :goto_104
 
     :cond_5e
     const-string v20, "x"
@@ -197,7 +197,7 @@
 
     move-result v3
 
-    if-eqz v3, :cond_97
+    if-eqz v3, :cond_ad
 
     new-instance v3, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;
 
@@ -205,12 +205,40 @@
 
     invoke-direct {v4, v1, v2, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime$4$2;-><init>(Lcom/shabakaty/cinemana/local/LocalRuntime$4;Ljava/lang/String;[Ljava/lang/Object;)V
 
-    invoke-direct {v3, v4}, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;-><init>(Ljava/util/concurrent/Callable;)V
+    const-string v0, "e"
+
+    invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v0
+
+    if-nez v0, :cond_a7
+
+    const-string v0, "p"
+
+    invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v0
+
+    if-eqz v0, :cond_a4
+
+    goto :goto_a7
+
+    :cond_a4
+    sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->IO:Ljava/util/concurrent/ScheduledExecutorService;
+
+    goto :goto_a9
+
+    :cond_a7
+    :goto_a7
+    sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->METADATA:Ljava/util/concurrent/ExecutorService;
+
+    :goto_a9
+    invoke-direct {v3, v4, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;-><init>(Ljava/util/concurrent/Callable;Ljava/util/concurrent/Executor;)V
 
     return-object v3
 
-    :cond_97
-    :try_start_97
+    :cond_ad
+    :try_start_ad
     iget-object v3, v1, Lcom/shabakaty/cinemana/local/LocalRuntime$4;->val$remote:Ljava/lang/Object;
 
     move-object/from16 v4, p2
@@ -225,11 +253,11 @@
 
     move-result v4
 
-    if-eqz v4, :cond_b3
+    if-eqz v4, :cond_c9
 
     instance-of v4, v3, Lcom/shabakaty/downloader/f74;
 
-    if-eqz v4, :cond_b3
+    if-eqz v4, :cond_c9
 
     new-instance v0, Lcom/shabakaty/cinemana/local/LocalRuntime$CategorySingle;
 
@@ -239,18 +267,18 @@
 
     return-object v0
 
-    :cond_b3
+    :cond_c9
     const-string v4, "A"
 
     invoke-virtual {v2, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v4
 
-    if-eqz v4, :cond_cd
+    if-eqz v4, :cond_e3
 
     instance-of v4, v3, Lcom/shabakaty/downloader/f74;
 
-    if-eqz v4, :cond_cd
+    if-eqz v4, :cond_e3
 
     new-instance v2, Lcom/shabakaty/cinemana/local/LocalRuntime$CaptureSingle;
 
@@ -266,18 +294,18 @@
 
     return-object v2
 
-    :cond_cd
+    :cond_e3
     const-string v4, "b"
 
     invoke-virtual {v2, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v2
 
-    if-eqz v2, :cond_e7
+    if-eqz v2, :cond_fd
 
     instance-of v2, v3, Lcom/shabakaty/downloader/qf1;
 
-    if-eqz v2, :cond_e7
+    if-eqz v2, :cond_fd
 
     new-instance v2, Lcom/shabakaty/cinemana/local/LocalRuntime$EpisodeFlow;
 
@@ -290,15 +318,15 @@
     move-result-object v0
 
     invoke-direct {v2, v3, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime$EpisodeFlow;-><init>(Lcom/shabakaty/downloader/qf1;Ljava/lang/String;)V
-    :try_end_e6
-    .catch Ljava/lang/reflect/InvocationTargetException; {:try_start_97 .. :try_end_e6} :catch_e8
+    :try_end_fc
+    .catch Ljava/lang/reflect/InvocationTargetException; {:try_start_ad .. :try_end_fc} :catch_fe
 
     return-object v2
 
-    :cond_e7
+    :cond_fd
     return-object v3
 
-    :catch_e8
+    :catch_fe
     move-exception v0
 
     invoke-virtual {v0}, Ljava/lang/reflect/InvocationTargetException;->getCause()Ljava/lang/Throwable;
@@ -307,22 +335,22 @@
 
     throw v0
 
-    :cond_ee
-    :goto_ee
+    :cond_104
+    :goto_104
     invoke-virtual {v2, v3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v2
 
-    if-eqz v2, :cond_f7
+    if-eqz v2, :cond_10d
 
     const-string v2, "parental"
 
-    goto :goto_f9
+    goto :goto_10f
 
-    :cond_f7
+    :cond_10d
     const-string v2, "translation"
 
-    :goto_f9
+    :goto_10f
     aget-object v0, v0, v5
 
     invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;

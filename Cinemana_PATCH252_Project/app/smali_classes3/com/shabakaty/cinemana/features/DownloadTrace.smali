@@ -685,6 +685,8 @@
 .method public static task(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Throwable;)V
     .locals 9
 
+    invoke-static {p0, p2, p3}, Lcom/shabakaty/cinemana/local/ExpiredLink269;->failed(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/Throwable;)V
+
     .line 47
     const-string v0, "STATE="
 

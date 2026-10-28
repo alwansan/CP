@@ -1,6 +1,6 @@
-# PATCH268 — الحساب المحلي وإصلاحات التكامل
+# PATCH269 — الحساب المحلي وإصلاحات التكامل
 
-تفاصيل المراجعة الحالية في [PATCH268_AR.md](PATCH268_AR.md).
+تفاصيل المراجعة الحالية في [PATCH269_AR.md](PATCH269_AR.md)، والمراجعة السابقة في [PATCH268_AR.md](PATCH268_AR.md).
 
 الفرع `feature/local-account` مشتق من `fix/download-mkv-self-repair` عند `06ec99add982ace4b35898f763b31ec532a5a7e5` (PATCH265). هذا تنفيذ تجريبي قابل للبناء؛ اكتمال ربط المصدر لا يعني إثبات التشغيل على هاتف Android.
 

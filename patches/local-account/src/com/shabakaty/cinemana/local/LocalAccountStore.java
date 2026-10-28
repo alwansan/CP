@@ -72,6 +72,7 @@ public final class LocalAccountStore {
     public synchronized void put(ListKind kind,Item item)throws IOException {
         State next=copy();next.lists.get(kind).put(item.id,item);commit(next);event("list_saved",1);
     }
+    public synchronized void refreshMetadata(Item metadata)throws IOException {State next=copy();boolean changed=false;for(ListKind kind:ListKind.values())if(kind!=ListKind.STATE){Item old=next.lists.get(kind).get(metadata.id);if(old!=null){next.lists.get(kind).put(old.id,new Item(old.id,metadata.title,old.positionMs,metadata.payload));changed=true;}}if(changed)commit(next);}
     public synchronized void remove(ListKind kind,String id)throws IOException {
         State next=copy();next.lists.get(kind).remove(id);
         if(kind==ListKind.SUBSCRIPTION)next.known.remove(id);

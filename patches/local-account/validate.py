@@ -59,3 +59,15 @@ for owner,field in [('Lcom/shabakaty/downloader/g42;','W:Lcom/facebook/drawee/vi
 assert 'getSmallPicture()Ljava/lang/String;' in classes['Lcom/shabakaty/usermanagement/UserManagement;'][1]
 assert 'H0(Ljava/lang/String;)V' in classes['Lcom/shabakaty/downloader/hx2;'][1]
 print('PASS PATCH268 continue deletion/persistence, resume/watched overlays, avatar refresh and native field contracts')
+
+assert 'ExpiredLink269;->beforeRetry' in classes['Lcom/shabakaty/downloader/ey0;'][1]
+assert 'ExpiredLink269;->failed' in classes['Lcom/shabakaty/cinemana/features/DownloadTrace;'][1]
+assert '.field public v:Ljava/lang/String;' in classes['Lcom/shabakaty/downloader/pw0;'][1]
+assert '.method public final m(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;)Lcom/shabakaty/downloader/a90;' in classes['Lcom/shabakaty/downloader/ey0;'][1]
+assert '.method public final q(Lcom/shabakaty/downloader/a90;Z)V' in classes['Lcom/shabakaty/downloader/ey0;'][1]
+assert '.method static isPaused(I)Z' in classes['Lcom/shabakaty/cinemana/ca1/Queue110;'][1]
+assert '.field public n:Ljava/util/List;' in classes['Lcom/facebook/drawee/generic/GenericDraweeHierarchyBuilder;'][1]
+source=root.parents[1]/'patches/local-account/src/com/shabakaty/cinemana/local'
+ui=(source/'AccountUi.java').read_text();assert '"ic_continue"' in ui and 'drawIcon(icon,"ic_btn_play")' not in ui
+assert 'Metadata269.merge(Metadata269.local(id),meta)' in (source/'LocalRuntime.java').read_text()
+print('PASS PATCH269 original continue renderer, non-downgrading metadata snapshot, stale-URL recovery native contracts')

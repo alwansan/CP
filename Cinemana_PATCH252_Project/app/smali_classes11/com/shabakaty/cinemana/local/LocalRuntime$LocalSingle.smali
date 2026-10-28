@@ -25,10 +25,12 @@
     .end annotation
 .end field
 
+.field final executor:Ljava/util/concurrent/Executor;
+
 
 # direct methods
 .method constructor <init>(Ljava/util/concurrent/Callable;)V
-    .locals 0
+    .locals 1
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "(",
@@ -38,9 +40,31 @@
         }
     .end annotation
 
+    sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->IO:Ljava/util/concurrent/ScheduledExecutorService;
+
+    invoke-direct {p0, p1, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;-><init>(Ljava/util/concurrent/Callable;Ljava/util/concurrent/Executor;)V
+
+    return-void
+.end method
+
+.method constructor <init>(Ljava/util/concurrent/Callable;Ljava/util/concurrent/Executor;)V
+    .locals 0
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/util/concurrent/Callable<",
+            "Ljava/lang/Object;",
+            ">;",
+            "Ljava/util/concurrent/Executor;",
+            ")V"
+        }
+    .end annotation
+
     invoke-direct {p0}, Lcom/shabakaty/downloader/f74;-><init>()V
 
     iput-object p1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;->call:Ljava/util/concurrent/Callable;
+
+    iput-object p2, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;->executor:Ljava/util/concurrent/Executor;
 
     return-void
 .end method
@@ -56,13 +80,13 @@
 
     invoke-interface {p1, v0}, Lcom/shabakaty/downloader/y74;->c(Lcom/shabakaty/downloader/mu0;)V
 
-    sget-object v1, Lcom/shabakaty/cinemana/local/LocalRuntime;->IO:Ljava/util/concurrent/ScheduledExecutorService;
+    iget-object v1, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;->executor:Ljava/util/concurrent/Executor;
 
     new-instance v2, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle$1;
 
     invoke-direct {v2, p0, v0, p1}, Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle$1;-><init>(Lcom/shabakaty/cinemana/local/LocalRuntime$LocalSingle;Lcom/shabakaty/cinemana/local/LocalRuntime$Cancel;Lcom/shabakaty/downloader/y74;)V
 
-    invoke-interface {v1, v2}, Ljava/util/concurrent/ScheduledExecutorService;->execute(Ljava/lang/Runnable;)V
+    invoke-interface {v1, v2}, Ljava/util/concurrent/Executor;->execute(Ljava/lang/Runnable;)V
 
     return-void
 .end method
