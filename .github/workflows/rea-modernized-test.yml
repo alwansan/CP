@@ -7,6 +7,7 @@ on:
     paths:
       - 'recovery/modernized/**'
       - 'recovery/scripts/verify_original_room_schema.py'
+      - 'recovery/scripts/verify_original_room_database_names.py'
       - '.github/workflows/rea-modernized-test.yml'
 
 permissions:
@@ -25,6 +26,9 @@ jobs:
       - name: Verify original Room schema SQL and composite key match Smali
         shell: bash
         run: python3 recovery/scripts/verify_original_room_schema.py
+      - name: Verify Dagger-provided original Room database file naming
+        shell: bash
+        run: python3 recovery/scripts/verify_original_room_database_names.py
       - name: Compile and test recovered Downloads identity resolver with JDK
         shell: bash
         run: |
