@@ -36,14 +36,13 @@
 |---|---:|
 | `decompiler_errors` | 0 |
 | `decompiler_warnings` | 0 |
-| `unreconstructed_method` | 2 |
+| `unreconstructed_method` | 0 |
 | `synthetic_dependencies_on_other_R` | 10 |
 
 ## Representative source files needing inspection
 
 ### unreconstructed_method
-- `com/shabakaty/cinemana/features/RenameAssets.java`
-- `com/shabakaty/cinemana/mod/SubtitlePreviewTask.java`
+- No matches under this marker
 
 ### decompiler_errors
 - No matches under this marker
