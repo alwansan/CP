@@ -66,6 +66,14 @@
 
 وجود `PASS (3 original Room tables, 2 subtitle rows)` داخل APK التشخيصي يثبت نجاح هذا الاختبار على Android SQLite فقط؛ **لا يعني** نسخ قاعدة بيانات المستخدم أو ربط DAO الحقيقي. ويجب التحقق من النتيجة على محاكي Android داخل GitHub Actions قبل إعلان نجاح الاختبار.
 
+## موائم تجريبي بين MkvPromotionCoordinator ومخططات Room الأصلية
+
+يوجد الآن `OriginalRoomDiagnosticPort` الذي يطبق `MkvPromotionCoordinator.Port` على قاعدتي SQLite مؤقتتين لديهما جداول `Downloads` و`CinemanaDownloadItem` و`SubtitleDb` **بنفس CREATE TABLE المصدر الأصلي**. يتعامل مع المفتاح المركب `(task_id,external_id)`، ويحفظ `size_bytes` و`sizeMB` قبل التعديل، كما يلتقط جميع هويات ومسارات `SubtitleDb` للعنصر المحدد ويحدّثها في معاملة SQLite واحدة مع التحقق من `id,parentId,downloadTaskId,file`.
+
+تجربة `OriginalRoomCoordinatorProbe` تتحقق من ثلاث حالات: نجاح الترقية لصف محدد مع بقاء تنزيل مجاور لا يتغير؛ حقن خطأ بعد تحديث أول ترجمة داخل المعاملة وإثبات تعويض قواعد البيانات وإرجاع المسارات والأحجام؛ ورفض مفتاح تنزيل خاطئ دون أي تعديل على الصف المجاور. تُعرض النتيجة في APK التشخيصي ضمن `Original Room coordinator: PASS (3 Room coordinator scenarios)`.
+
+**مهم:** هذا موائم تشخيصي يقتصر على نماذج اختبار في الذاكرة. لا يستخدم Room runtime أو DAO الأصلية، ولا يفتح قواعد بيانات المستخدم ولا يوفر وحده Journal دائماً للتعويض بعد انقطاع العملية. قاعدة تسمية الترجمات التجريبية `Episode.en.srt → Episode.mkv.en.srt` افتراضية للاختبارات ولا تثبت سياسة تسمية سينمانا الفعلية.
+
 ## الخطوات المطلوبة للترحيل الكامل بأمان
 
 - تحديد أسماء SQLite والـDAO الأصلية ومخططات الجداول وإصدارات schema من Smali، بدلاً من استنتاجها من أسماء DTO.
