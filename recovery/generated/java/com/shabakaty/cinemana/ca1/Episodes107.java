@@ -309,222 +309,87 @@ public final class Episodes107 {
         return arrayList;
     }
 
-    /* JADX WARN: Code duplicated, block: B:106:? A[SYNTHETIC] */
-    /* JADX WARN: Code duplicated, block: B:68:0x0187  */
-    /* JADX WARN: Code duplicated, block: B:74:0x0192  */
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r19v0 */
-    /* JADX WARN: Type inference failed for: r19v1 */
-    /* JADX WARN: Type inference failed for: r19v2 */
-    /* JADX WARN: Type inference failed for: r19v3 */
-    /* JADX WARN: Type inference failed for: r19v4 */
-    /* JADX WARN: Type inference failed for: r1v0, types: [java.lang.Object] */
-    /* JADX WARN: Type inference failed for: r1v10 */
-    /* JADX WARN: Type inference failed for: r1v11 */
-    /* JADX WARN: Type inference failed for: r1v12 */
-    /* JADX WARN: Type inference failed for: r1v13 */
-    /* JADX WARN: Type inference failed for: r1v15 */
-    /* JADX WARN: Type inference failed for: r1v18 */
-    /* JADX WARN: Type inference failed for: r1v19 */
-    /* JADX WARN: Type inference failed for: r1v2 */
-    /* JADX WARN: Type inference failed for: r1v20 */
-    /* JADX WARN: Type inference failed for: r1v21 */
-    /* JADX WARN: Type inference failed for: r1v4 */
-    /* JADX WARN: Type inference failed for: r1v5 */
-    /* JADX WARN: Type inference failed for: r1v6, types: [java.lang.String] */
-    /* JADX WARN: Type inference failed for: r1v7, types: [java.lang.String] */
-    /* JADX WARN: Type inference failed for: r1v9 */
-    /* JADX WARN: Type inference failed for: r9v0 */
-    /* JADX WARN: Type inference failed for: r9v1 */
-    /* JADX WARN: Type inference failed for: r9v10 */
-    /* JADX WARN: Type inference failed for: r9v11 */
-    /* JADX WARN: Type inference failed for: r9v12 */
-    /* JADX WARN: Type inference failed for: r9v13 */
-    /* JADX WARN: Type inference failed for: r9v15 */
-    /* JADX WARN: Type inference failed for: r9v16 */
-    /* JADX WARN: Type inference failed for: r9v17 */
-    /* JADX WARN: Type inference failed for: r9v18 */
-    /* JADX WARN: Type inference failed for: r9v2, types: [java.util.List<java.lang.Object>] */
-    /* JADX WARN: Type inference failed for: r9v24, types: [java.util.List] */
-    /* JADX WARN: Type inference failed for: r9v27 */
-    /* JADX WARN: Type inference failed for: r9v28 */
-    /* JADX WARN: Type inference failed for: r9v3 */
-    /* JADX WARN: Type inference failed for: r9v4 */
-    /* JADX WARN: Type inference failed for: r9v5 */
-    /* JADX WARN: Type inference failed for: r9v6 */
-    /* JADX WARN: Type inference failed for: r9v9 */
-    static List<Object> remote(Object obj, Object obj2) throws Throwable {
-        Object obj3;
-        Throwable th;
-        ?? r1;
-        ?? r2 = obj2;
-        ArrayList arrayList = new ArrayList();
-        ?? r9 = 0;
-        Object objCall = null;
+    /**
+     * Reconstructed from smali_classes6/Episodes107.remote.
+     *
+     * The asynchronous callback contract is intentionally unchanged: request
+     * work, wait at most 25 seconds, map/filter episodes, and always dispose
+     * the network subscription. Exceptions are logged and preserve partial
+     * results rather than crashing playback's Continue Watching screen.
+     */
+    static List<Object> remote(Object repository, Object currentVideo) throws Throwable {
+        List<Object> matched = new ArrayList<>();
+        Object subscription = null;
         try {
-            try {
-                try {
-                    Object objCall2 = Continue106.call(Continue106.get(obj, "a"), "b", field(r2, "nb"), "cacheable-for-authorized, max-age=900");
-                    final CountDownLatch countDownLatch = new CountDownLatch(1);
-                    final List listSynchronizedList = Collections.synchronizedList(new ArrayList());
-                    final Throwable[] thArr = {null};
-                    Class<?> cls = Class.forName("com.shabakaty.downloader.xc0");
-                    Class<?> cls2 = Class.forName("com.shabakaty.downloader.j2");
-                    try {
-                        try {
-                            ?? r19 = arrayList;
-                            try {
-                                String str = "a";
-                                r9 = 1;
-                                objCall = Continue106.call(objCall2, "g", callback(cls, new Sink() { // from class: com.shabakaty.cinemana.ca1.Episodes107$$ExternalSyntheticLambda7
-                                    @Override // com.shabakaty.cinemana.ca1.Episodes107.Sink
-                                    public final void take(Object obj4) {
-                                        Episodes107.lambda$remote$5(listSynchronizedList, obj4);
-                                    }
-                                }), callback(cls, new Sink() { // from class: com.shabakaty.cinemana.ca1.Episodes107$$ExternalSyntheticLambda8
-                                    @Override // com.shabakaty.cinemana.ca1.Episodes107.Sink
-                                    public final void take(Object obj4) {
-                                        Episodes107.lambda$remote$6(thArr, countDownLatch, obj4);
-                                    }
-                                }), callback(cls2, new Sink() { // from class: com.shabakaty.cinemana.ca1.Episodes107$$ExternalSyntheticLambda9
-                                    @Override // com.shabakaty.cinemana.ca1.Episodes107.Sink
-                                    public final void take(Object obj4) {
-                                        countDownLatch.countDown();
-                                    }
-                                }), callback(cls, new Sink() { // from class: com.shabakaty.cinemana.ca1.Episodes107$$ExternalSyntheticLambda10
-                                    @Override // com.shabakaty.cinemana.ca1.Episodes107.Sink
-                                    public final void take(Object obj4) {
-                                        Episodes107.lambda$remote$8(obj4);
-                                    }
-                                }));
-                                try {
-                                    try {
-                                        try {
-                                            if (!countDownLatch.await(25L, TimeUnit.SECONDS)) {
-                                                throw new IOException("episode context timeout");
-                                            }
-                                            if (thArr[0] != null) {
-                                                r2 = "h";
-                                                r9 = r19;
-                                                throw new IOException("episode context request failed", thArr[0]);
-                                            }
-                                            Object obj4 = Continue106.get(obj, "d");
-                                            Object obj5 = Continue106.get(obj4, "c");
-                                            Object obj6 = Continue106.get(obj, "b");
-                                            Iterator it = listSynchronizedList.iterator();
-                                            while (it.hasNext()) {
-                                                try {
-                                                    try {
-                                                        Object objCall3 = Continue106.call(obj5, "mapDtoToDomain", it.next());
-                                                        String strField = field(objCall3, "rootSeries");
-                                                        if (episodic(objCall3) && (strField.isEmpty() || "0".equals(strField))) {
-                                                            Continue106.set(objCall3, "rootSeries", field(r2, "rootSeries"));
-                                                        }
-                                                        if (sameWork(r2, objCall3)) {
-                                                            String str2 = str;
-                                                            Continue106.call(objCall3, "p", obj4, Continue106.call(obj6, str2, field(objCall3, "nb")));
-                                                            Continue106.set(objCall3, "episodeDesc", Continue106.call(Continue106.get(obj4, "d"), str2, objCall3));
-                                                            r9 = r19;
-                                                            try {
-                                                                r9.add(objCall3);
-                                                                r19 = r9;
-                                                                str = str2;
-                                                            } catch (Exception e) {
-                                                                e = e;
-                                                                r2 = "h";
-                                                                Continue106.log("continue_context_remote107", e);
-                                                                if (objCall != null) {
-                                                                    Continue106.call(objCall, r2, new Object[0]);
-                                                                    r9 = r9;
-                                                                }
-                                                                return r9;
-                                                            }
-                                                        }
-                                                    } catch (Exception e2) {
-                                                        e = e2;
-                                                        r9 = r19;
-                                                    }
-                                                } catch (Throwable th2) {
-                                                    th = th2;
-                                                    r1 = "h";
-                                                    if (objCall == null) {
-                                                        throw th;
-                                                    }
-                                                    try {
-                                                        Continue106.call(objCall, r1, new Object[0]);
-                                                        throw th;
-                                                    } catch (Exception e3) {
-                                                        throw th;
-                                                    }
-                                                }
-                                            }
-                                            r9 = r19;
-                                            if (objCall != null) {
-                                                Continue106.call(objCall, "h", new Object[0]);
-                                                r9 = r9;
-                                            }
-                                            return r9;
-                                        } catch (Exception e4) {
-                                            e = e4;
-                                        }
-                                    } catch (Exception e5) {
-                                        e = e5;
-                                        r2 = "h";
-                                        r9 = r19;
-                                    }
-                                } catch (Throwable th3) {
-                                    th = th3;
-                                    r2 = "h";
-                                    th = th;
-                                    r1 = r2;
-                                    if (objCall == null) {
-                                        throw th;
-                                    }
-                                    Continue106.call(objCall, r1, new Object[0]);
-                                    throw th;
-                                }
-                            } catch (Exception e6) {
-                                e = e6;
-                                r2 = "h";
-                                r9 = r19;
-                                objCall = null;
-                            }
-                        } catch (Exception e7) {
-                            e = e7;
-                            r9 = arrayList;
-                            r2 = "h";
+            Object service = Continue106.get(repository, "a");
+            Object request = Continue106.call(service, "b", field(currentVideo, "nb"),
+                    "cacheable-for-authorized, max-age=900");
+
+            final CountDownLatch completed = new CountDownLatch(1);
+            final List received = Collections.synchronizedList(new ArrayList());
+            final Throwable[] failure = {null};
+            Class<?> consumerType = Class.forName("com.shabakaty.downloader.xc0");
+            Class<?> actionType = Class.forName("com.shabakaty.downloader.j2");
+            subscription = Continue106.call(request, "g",
+                    callback(consumerType, new Sink() {
+                        @Override public void take(Object data) {
+                            lambda$remote$5(received, data);
                         }
-                    } catch (Throwable th4) {
-                        th = th4;
-                        obj3 = "h";
-                        th = th;
-                        objCall = null;
-                        r1 = obj3;
-                        if (objCall == null) {
-                            throw th;
+                    }),
+                    callback(consumerType, new Sink() {
+                        @Override public void take(Object error) {
+                            lambda$remote$6(failure, completed, error);
                         }
-                        Continue106.call(objCall, r1, new Object[0]);
-                        throw th;
-                    }
-                } catch (Throwable th5) {
-                    th = th5;
+                    }),
+                    callback(actionType, new Sink() {
+                        @Override public void take(Object ignored) {
+                            completed.countDown();
+                        }
+                    }),
+                    callback(consumerType, new Sink() {
+                        @Override public void take(Object ignored) {
+                            lambda$remote$8(ignored);
+                        }
+                    }));
+
+            if (!completed.await(25L, TimeUnit.SECONDS)) {
+                throw new IOException("episode context timeout");
+            }
+            if (failure[0] != null) {
+                throw new IOException("episode context request failed", failure[0]);
+            }
+
+            Object downloads = Continue106.get(repository, "d");
+            Object mapper = Continue106.get(downloads, "c");
+            Object videoService = Continue106.get(repository, "b");
+            for (Object dto : received) {
+                Object episode = Continue106.call(mapper, "mapDtoToDomain", dto);
+                String rootSeries = field(episode, "rootSeries");
+                if (episodic(episode) &&
+                        (rootSeries.isEmpty() || "0".equals(rootSeries))) {
+                    Continue106.set(episode, "rootSeries", field(currentVideo, "rootSeries"));
                 }
-            } catch (Exception e8) {
-                e = e8;
-                r2 = "h";
-                r9 = arrayList;
-            } catch (Throwable th6) {
-                th = th6;
-                obj3 = "h";
+                if (!sameWork(currentVideo, episode)) {
+                    continue;
+                }
+                Continue106.call(episode, "p", downloads,
+                        Continue106.call(videoService, "a", field(episode, "nb")));
+                Continue106.set(episode, "episodeDesc",
+                        Continue106.call(Continue106.get(downloads, "d"), "a", episode));
+                matched.add(episode);
             }
-            Continue106.log("continue_context_remote107", e);
-            if (objCall != null) {
-                Continue106.call(objCall, r2, new Object[0]);
-                r9 = r9;
+        } catch (Exception error) {
+            Continue106.log("continue_context_remote107", error);
+        } finally {
+            if (subscription != null) {
+                try {
+                    Continue106.call(subscription, "h", new Object[0]);
+                } catch (Exception ignored) {
+                    // Disposal is best effort, identical to the original Smali.
+                }
             }
-        } catch (Exception e9) {
         }
-        return r9;
+        return matched;
     }
 
     static /* synthetic */ void lambda$remote$5(List list, Object obj) {
