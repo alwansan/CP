@@ -36,3 +36,65 @@ grep -q 'Media3 High 10 adapter: PASS' "$report/window.xml"
 adb shell pidof "$package" | tee "$report/process.txt"
 test -s "$report/process.txt"
 echo "EMULATOR_PASS: source-first diagnostic APK installed, launched and displayed expected Media3 result"
+
+
+# Interact with the new source-first search controller, not the original app.
+# All data is a local fixture: no Cinemana API, user account, or real database.
+ui_dump() {
+    adb shell uiautomator dump /sdcard/cinemana_recovery_window.xml > "$report/uiautomator.txt" 2>&1 || true
+    adb pull /sdcard/cinemana_recovery_window.xml "$report/window.xml" >/dev/null 2>&1 || true
+}
+screen_has() {
+    local wanted="$1"
+    for attempt in 1 2 3 4 5; do
+        ui_dump
+        if test -s "$report/window.xml" && grep -Fq "$wanted" "$report/window.xml"; then
+            return 0
+        fi
+        sleep 2
+    done
+    echo "ANDROID_UI_MISSING: $wanted"
+    return 1
+}
+tap_label() {
+    local label="$1"
+    local coordinates=""
+    for attempt in 1 2 3 4 5; do
+        ui_dump
+        coordinates="$(python3 - "$report/window.xml" "$label" <<'PY'
+import re, sys, xml.etree.ElementTree as ET
+try:
+    root=ET.parse(sys.argv[1]).getroot()
+    for node in root.iter("node"):
+        if node.get("text") == sys.argv[2]:
+            coords=list(map(int,re.findall(r"\d+",node.get("bounds", ""))))
+            if len(coords)==4:
+                print((coords[0]+coords[2])//2,(coords[1]+coords[3])//2)
+                break
+except (OSError,ValueError,ET.ParseError):
+    pass
+PY
+)"
+        if test -n "$coordinates"; then
+            adb shell input tap $coordinates
+            sleep 2
+            return 0
+        fi
+        adb shell input swipe 160 720 160 260 250
+        sleep 1
+    done
+    echo "ANDROID_UI_CLICK_TARGET_MISSING: $label"
+    return 1
+}
+adb shell am start -W -n "$package/.SearchFlowActivity" | tee "$report/search-activity-start.txt"
+sleep 3
+screen_has 'Search state: RECENT'
+tap_label 'Submit sample search'
+screen_has 'Search state: RESULTS'
+screen_has 'count=3'
+tap_label 'Filter fixture'
+screen_has 'Filter events: 1'
+tap_label 'Clear sample search'
+screen_has 'Search state: RECENT'
+adb exec-out screencap -p > "$report/search-screenshot.png" || true
+echo "SEARCH_FLOW_PASS: source-first LiveData binding, fixture submission, filter and clear verified on Android"
