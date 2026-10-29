@@ -30,10 +30,11 @@ def main():
     original = (SMALI / "jt2.smali").read_text(encoding="utf-8")
     source = JAVA.read_text(encoding="utf-8")
 
+    # jt2 stores the "title" register before entering its cursor loop.
     ordered(original, [
+        'const-string v11, "title"',
         'const-string v2, "videoFile"',
         'Lcom/shabakaty/downloader/ea2;->b(Ljava/lang/String;)',
-        'const-string v11, "title"',
         'const-string v3, "videoModel"',
         'const-string v3, "kind"',
         'const-string v3, "2"',
