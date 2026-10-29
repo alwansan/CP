@@ -1,9 +1,9 @@
-name: Build local account test APK
+name: Build UI performance test APK
 on:
   workflow_dispatch:
   push:
-    branches: [feature/local-account]
-    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/local-account.yml', 'patches/patch262/**', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py']
+    branches: [feature/ui-performance-optimization]
+    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/local-account.yml', 'patches/patch262/**', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py', 'scripts/check_ui_performance.py']
 permissions:
   contents: write
 concurrency:
@@ -38,6 +38,7 @@ jobs:
           python3 patches/local-account/run_tests.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --gson-jar "$RUNNER_TEMP/local-tools/gson.jar"
           python3 patches/local-account/build.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --r8-jar "$RUNNER_TEMP/local-tools/r8.jar"
           python3 patches/local-account/validate.py
+          python3 scripts/check_ui_performance.py
           python3 scripts/validate_recovery.py
           python3 scripts/test_reference_guards.py
           python3 scripts/test_recovery_flow.py
@@ -53,31 +54,31 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH275_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH275_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH275_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH275_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH275_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-Local-Account-PATCH274
+          name: Cinemana-UI-Performance-PATCH275
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH275_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: local-account-PATCH274-${{ github.run_number }}
+          tag_name: ui-performance-PATCH275-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana Local Account PATCH274 #${{ github.run_number }}"
+          name: "Cinemana UI Performance PATCH275 #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            Local account test build. Foreground episode scan and higher resolution notification artwork with thumbnail fallback.
+            Independent UI performance test build based on feature/local-account: bounded scroll viewports, shorter poster fades, no recurring text marquee, and off-thread episode JSON parsing. No merge to main.
             Install the APK directly as an update; preserve app data.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH275_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           fail_on_unmatched_files: true
