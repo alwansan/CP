@@ -1,0 +1,61 @@
+name: REA recover failed Java methods
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/scripts/recover_failed_methods.py'
+      - '.github/workflows/rea-method-recovery.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  recover-failed-methods:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.2'
+      - name: Install pinned REA and engine
+        run: |
+          set -euo pipefail
+          npm install -g rea-agents@6.8.0
+          curl -fL --retry 3 https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar -o "$RUNNER_TEMP/jadx-headless-mcp.jar"
+          echo "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75  $RUNNER_TEMP/jadx-headless-mcp.jar" | sha256sum -c -
+          echo "REA_JADX_MCP_JAR=$RUNNER_TEMP/jadx-headless-mcp.jar" >> "$GITHUB_ENV"
+      - name: Rebuild reference APK without modifying Smali
+        run: bash Cinemana_PATCH252_Project/build.sh
+      - name: Recover seven failed JADX methods
+        run: |
+          python3 recovery/scripts/recover_failed_methods.py \
+            --apk Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk \
+            --out recovery/method-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: REA-failed-method-evidence
+          retention-days: 14
+          if-no-files-found: warn
+          path: recovery/method-evidence/
+      - name: Commit only the limited method-level report
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "experiment/rea-source-recovery"
+          mkdir -p recovery/reports
+          cp recovery/method-evidence/RESULTS.md recovery/reports/METHOD_RECOVERY.md
+          cp recovery/method-evidence/results.json recovery/reports/method_recovery.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add recovery/reports/METHOD_RECOVERY.md recovery/reports/method_recovery.json
+          if ! git diff --cached --quiet; then
+            git commit -m "recovery: assess seven broken JADX methods with REA"
+            git push origin HEAD:refs/heads/experiment/rea-source-recovery
+          fi
