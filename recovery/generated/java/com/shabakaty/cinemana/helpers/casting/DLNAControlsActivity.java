@@ -301,8 +301,8 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
             public final void onClick(View view) {
                 List<Quality> list;
                 int i2 = 0;
-                ?? arrayList = 0;
-                arrayList = 0;
+                java.util.List arrayList = null;
+                arrayList = null;
                 switch (this.r) {
                     case 0:
                         DLNAControlsActivity dLNAControlsActivity = this.s;
@@ -381,7 +381,7 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
                                 arrayList.add(new pl4(null, str3, new fi0(dLNAControlsActivity6, quality), BuildConfig.FLAVOR, false));
                             }
                         }
-                        if (arrayList == 0) {
+                        if (arrayList == null) {
                             arrayList = w21.r;
                         }
                         on onVar = new on();
@@ -428,8 +428,8 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
             public final void onClick(View view) {
                 List<Quality> list;
                 int i3 = 0;
-                ?? arrayList = 0;
-                arrayList = 0;
+                java.util.List arrayList = null;
+                arrayList = null;
                 switch (this.r) {
                     case 0:
                         DLNAControlsActivity dLNAControlsActivity = this.s;
@@ -508,7 +508,7 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
                                 arrayList.add(new pl4(null, str3, new fi0(dLNAControlsActivity6, quality), BuildConfig.FLAVOR, false));
                             }
                         }
-                        if (arrayList == 0) {
+                        if (arrayList == null) {
                             arrayList = w21.r;
                         }
                         on onVar = new on();
@@ -555,8 +555,8 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
             public final void onClick(View view) {
                 List<Quality> list;
                 int i4 = 0;
-                ?? arrayList = 0;
-                arrayList = 0;
+                java.util.List arrayList = null;
+                arrayList = null;
                 switch (this.r) {
                     case 0:
                         DLNAControlsActivity dLNAControlsActivity = this.s;
@@ -635,7 +635,7 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
                                 arrayList.add(new pl4(null, str3, new fi0(dLNAControlsActivity6, quality), BuildConfig.FLAVOR, false));
                             }
                         }
-                        if (arrayList == 0) {
+                        if (arrayList == null) {
                             arrayList = w21.r;
                         }
                         on onVar = new on();
@@ -682,8 +682,8 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
             public final void onClick(View view) {
                 List<Quality> list;
                 int i5 = 0;
-                ?? arrayList = 0;
-                arrayList = 0;
+                java.util.List arrayList = null;
+                arrayList = null;
                 switch (this.r) {
                     case 0:
                         DLNAControlsActivity dLNAControlsActivity = this.s;
@@ -762,7 +762,7 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
                                 arrayList.add(new pl4(null, str3, new fi0(dLNAControlsActivity6, quality), BuildConfig.FLAVOR, false));
                             }
                         }
-                        if (arrayList == 0) {
+                        if (arrayList == null) {
                             arrayList = w21.r;
                         }
                         on onVar = new on();
@@ -810,8 +810,8 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
             public final void onClick(View view) {
                 List<Quality> list;
                 int i6 = 0;
-                ?? arrayList = 0;
-                arrayList = 0;
+                java.util.List arrayList = null;
+                arrayList = null;
                 switch (this.r) {
                     case 0:
                         DLNAControlsActivity dLNAControlsActivity = this.s;
@@ -890,7 +890,7 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
                                 arrayList.add(new pl4(null, str3, new fi0(dLNAControlsActivity6, quality), BuildConfig.FLAVOR, false));
                             }
                         }
-                        if (arrayList == 0) {
+                        if (arrayList == null) {
                             arrayList = w21.r;
                         }
                         on onVar = new on();
@@ -937,8 +937,8 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
             public final void onClick(View view) {
                 List<Quality> list;
                 int i7 = 0;
-                ?? arrayList = 0;
-                arrayList = 0;
+                java.util.List arrayList = null;
+                arrayList = null;
                 switch (this.r) {
                     case 0:
                         DLNAControlsActivity dLNAControlsActivity = this.s;
@@ -1017,7 +1017,7 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
                                 arrayList.add(new pl4(null, str3, new fi0(dLNAControlsActivity6, quality), BuildConfig.FLAVOR, false));
                             }
                         }
-                        if (arrayList == 0) {
+                        if (arrayList == null) {
                             arrayList = w21.r;
                         }
                         on onVar = new on();
@@ -1064,8 +1064,8 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
             public final void onClick(View view) {
                 List<Quality> list;
                 int i8 = 0;
-                ?? arrayList = 0;
-                arrayList = 0;
+                java.util.List arrayList = null;
+                arrayList = null;
                 switch (this.r) {
                     case 0:
                         DLNAControlsActivity dLNAControlsActivity = this.s;
@@ -1144,7 +1144,7 @@ public final class DLNAControlsActivity extends xi<u2, vj, xk<vj>> implements vj
                                 arrayList.add(new pl4(null, str3, new fi0(dLNAControlsActivity6, quality), BuildConfig.FLAVOR, false));
                             }
                         }
-                        if (arrayList == 0) {
+                        if (arrayList == null) {
                             arrayList = w21.r;
                         }
                         on onVar = new on();
