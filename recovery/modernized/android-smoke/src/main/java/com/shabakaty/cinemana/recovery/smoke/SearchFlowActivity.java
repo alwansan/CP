@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.activity.ComponentActivity;
 import androidx.appcompat.widget.SearchView;
@@ -35,7 +36,9 @@ public final class SearchFlowActivity extends ComponentActivity {
         LinearLayout column = new LinearLayout(this);
         column.setOrientation(LinearLayout.VERTICAL);
         column.setPadding(24,24,24,24);
-        root.addView(column);
+        ScrollView scroll = new ScrollView(this);
+        root.addView(scroll);
+        scroll.addView(column);
 
         TextView header = label("Search migration diagnostic (local fixtures)");
         column.addView(header);
