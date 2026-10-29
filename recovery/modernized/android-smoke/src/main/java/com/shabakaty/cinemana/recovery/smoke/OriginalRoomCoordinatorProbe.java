@@ -30,7 +30,7 @@ public final class OriginalRoomCoordinatorProbe {
         return v;
     }
 
-    private static void fill(SQLiteDatabase downloads, SQLiteDatabase cine) {
+    static void fill(SQLiteDatabase downloads, SQLiteDatabase cine) {
         downloads.execSQL(OriginalRoomSchemaProbe.CREATE_DOWNLOADS);
         cine.execSQL(OriginalRoomSchemaProbe.CREATE_CINEMANA);
         cine.execSQL(OriginalRoomSchemaProbe.CREATE_SUBTITLES);

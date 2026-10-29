@@ -195,3 +195,45 @@ for phase in 1 2 3; do
 done
 echo "MULTIDB_PROCESS_RESTART_PASS: three independently committed SQLite stages recovered after force-stop" |
     tee "$report/multidb-result.txt"
+
+# Exact original Room CREATE TABLE SQL in separate disposable files with
+# durable, independent journal: force-stop after each partial write.
+for phase in 1 2 3; do
+    adb shell am force-stop "$package"
+    sleep 1
+    adb shell am start -W -n "$package/.OriginalRoomCrashProcessActivity" \
+        --es mode prepare --ei phase "$phase" |
+        tee "$report/original-room-phase-${phase}-prepare.txt"
+    screen_has "Room schema restart: PREPARED stage=$phase"
+    adb shell pidof "$package" > "$report/original-room-phase-${phase}-pid-before.txt"
+    test -s "$report/original-room-phase-${phase}-pid-before.txt"
+    adb shell am force-stop "$package"
+    sleep 2
+    if adb shell pidof "$package" | grep -Eq '[0-9]'; then
+        echo "ORIGINAL_ROOM_FORCE_STOP_FAILED phase=$phase"
+        exit 1
+    fi
+    if [ "$phase" = 3 ]; then
+        adb shell am start -W -n "$package/.OriginalRoomCrashProcessActivity" \
+            --es mode partial-recover --ei phase "$phase" |
+            tee "$report/original-room-phase-${phase}-partial.txt"
+        screen_has "Room schema restart: PARTIAL_REPLAY stage=$phase"
+        adb shell pidof "$package" > "$report/original-room-phase-${phase}-partial-pid.txt"
+        test -s "$report/original-room-phase-${phase}-partial-pid.txt"
+        adb shell am force-stop "$package"
+        sleep 2
+        if adb shell pidof "$package" | grep -Eq '[0-9]'; then
+            echo "ORIGINAL_ROOM_MID_COMPENSATION_FORCE_STOP_FAILED"
+            exit 1
+        fi
+    fi
+    adb shell am start -W -n "$package/.OriginalRoomCrashProcessActivity" \
+        --es mode recover --ei phase "$phase" |
+        tee "$report/original-room-phase-${phase}-recover.txt"
+    screen_has "Room schema restart: RECOVERED stage=$phase"
+    adb shell pidof "$package" > "$report/original-room-phase-${phase}-pid-after.txt"
+    test -s "$report/original-room-phase-${phase}-pid-after.txt"
+    adb exec-out screencap -p > "$report/original-room-phase-${phase}-recovered.png" || true
+done
+echo "ORIGINAL_ROOM_CRASH_JOURNAL_PASS: three real-schema SQLite phases and mid-compensation process kill recovered" |
+    tee "$report/original-room-crash-result.txt"

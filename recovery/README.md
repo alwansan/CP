@@ -35,6 +35,8 @@ This directory is an independent reverse-engineering workspace originating from
 
 - `modernized/android-smoke/OriginalRoomDiagnosticPort` connects the source-first `MkvPromotionCoordinator` to exact-schema **in-memory test tables** and checks four regression cases: successful scoped promotion, compensation after a partially attempted subtitle update, refusal of a wrong composite Downloads identity, and rejection of an item/task mismatch. These are not production DAO adapters or persistent crash journals.
 
+- `modernized/android-smoke/OriginalRoomCrashJournalProbe` and `OriginalRoomCrashProcessActivity`: verify crash-recovery using exact original Room SQL schemas in two disposable on-disk DB files and an independently committed compensation journal, with force-stop after separate writes and mid-compensation. Only diagnostic data; not production DAO or globally atomic transactions.
+
 ## Source files and reports
 
 - `generated/java/`: staged reconstructed Java, including obfuscated dependency layer
