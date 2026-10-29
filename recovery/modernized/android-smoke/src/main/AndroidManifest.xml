@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application android:label="Cinemana Recovery Diagnostics" android:allowBackup="false">
         <activity android:name=".SearchFlowActivity" android:exported="true"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
         <activity android:name=".RecoverySmokeActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
