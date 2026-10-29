@@ -2,7 +2,7 @@
 
 > The reconstructed Java is **not yet compilable** as a complete Android app. This report identifies preparation work for safe Gradle migration.
 
-- First-party Java files analyzed: **293**
+- First-party Java files analyzed: **851**
 - Complete JADX Java snapshot: **10381** files from **11** DEX files.
 - Obfuscated `com/shabakaty/downloader` package: **7770** Java files in the full ZIP, **not** duplicated in the staged subset.
 
@@ -10,25 +10,35 @@
 
 | Family | Unique imported types | Source files using it |
 |---|---:|---:|
-| `java` | 102 | 158 |
-| `com.shabakaty.downloader` | 541 | 157 |
-| `android` | 129 | 155 |
-| `com.liulishuo` | 5 | 145 |
-| `com.shabakaty.cinemana` | 106 | 143 |
-| `kotlin` | 2 | 118 |
-| `androidx` | 27 | 50 |
-| `com.connectsdk` | 17 | 48 |
-| `com.cinemana` | 3 | 32 |
-| `zendesk` | 7 | 16 |
-| `com.facebook` | 23 | 11 |
-| `com.google` | 8 | 11 |
-| `org.json` | 3 | 8 |
-| `com.shabakaty` | 3 | 5 |
-| `com.onesignal` | 2 | 2 |
+| `android` | 237 | 451 |
+| `java` | 147 | 398 |
+| `com.shabakaty.cinemana` | 161 | 332 |
+| `androidx` | 48 | 232 |
+| `com.liulishuo` | 8 | 209 |
+| `com.cinemana` | 3 | 183 |
+| `com.shabakaty.downloader` | 546 | 171 |
+| `kotlin` | 3 | 136 |
+| `com.google` | 25 | 98 |
+| `com.connectsdk` | 30 | 89 |
+| `com.facebook` | 24 | 57 |
+| `zendesk` | 9 | 39 |
+| `com.shabakaty` | 23 | 18 |
+| `org.json` | 3 | 16 |
+| `com.onesignal` | 2 | 4 |
+| `com.google.android.gms` | 8 | 4 |
+| `com.skydoves` | 2 | 4 |
+| `com.rd` | 1 | 2 |
+| `com.google.firebase` | 1 | 2 |
+| `kotlinx.coroutines` | 2 | 2 |
+| `io.reactivex` | 2 | 2 |
 | `androidx.media3` | 1 | 1 |
 | `io.github.anilbeesetti` | 2 | 1 |
-| `com.rd` | 1 | 1 |
-| `com.google.firebase` | 1 | 1 |
+| `org.checkerframework` | 1 | 1 |
+| `org.xmlpull` | 1 | 1 |
+| `dalvik.system` | 1 | 1 |
+| `javax` | 3 | 1 |
+| `org.w3c` | 4 | 1 |
+| `org.xml` | 1 | 1 |
 
 ## Recoverability signals
 
@@ -36,19 +46,23 @@
 |---|---:|
 | `decompiler_errors` | 0 |
 | `decompiler_warnings` | 0 |
-| `unreconstructed_method` | 7 |
-| `synthetic_dependencies_on_other_R` | 10 |
+| `unreconstructed_method` | 11 |
+| `synthetic_dependencies_on_other_R` | 24 |
 
 ## Representative source files needing inspection
 
 ### unreconstructed_method
 - `com/shabakaty/cinemana/ca1/BatchLog.java`
 - `com/shabakaty/cinemana/ca1/Enhancements.java`
-- `com/shabakaty/cinemana/ca1/WorkFolders104.java`
 - `com/shabakaty/cinemana/features/DownloadTrace.java`
 - `com/shabakaty/cinemana/features/RenameAssets.java`
 - `com/shabakaty/cinemana/mod/SubtitlePreviewTask.java`
 - `com/shabakaty/cinemana/utils/extensions/ObserverWhileStartedImpl.java`
+- `com/shabakaty/downloader/ez4.java`
+- `com/shabakaty/downloader/l92.java`
+- `com/shabakaty/downloader/n00.java`
+- `com/shabakaty/downloader/pe0.java`
+- `com/shabakaty/downloader/zy.java`
 
 ### decompiler_errors
 - No matches under this marker
@@ -64,6 +78,12 @@
 - `com/shabakaty/cinemana/mod/PlayerEnhancements.java`
 - `com/shabakaty/cinemana/player/H26410SoftwareRenderer.java`
 - `com/shabakaty/cinemana/utils/extensions/ObserverWhileStartedImpl.java`
+- `com/shabakaty/downloader/ac1.java`
+- `com/shabakaty/downloader/cp6.java`
+- `com/shabakaty/downloader/dv0.java`
+- `com/shabakaty/downloader/f73.java`
+- `com/shabakaty/downloader/fv0.java`
+- ... and 9 other files
 
 ## Bundled dependency version evidence (from original APK)
 
