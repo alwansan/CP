@@ -36,13 +36,12 @@
 |---|---:|
 | `decompiler_errors` | 0 |
 | `decompiler_warnings` | 0 |
-| `unreconstructed_method` | 6 |
+| `unreconstructed_method` | 5 |
 | `synthetic_dependencies_on_other_R` | 10 |
 
 ## Representative source files needing inspection
 
 ### unreconstructed_method
-- `com/shabakaty/cinemana/ca1/BatchLog.java`
 - `com/shabakaty/cinemana/ca1/Enhancements.java`
 - `com/shabakaty/cinemana/features/DownloadTrace.java`
 - `com/shabakaty/cinemana/features/RenameAssets.java`
