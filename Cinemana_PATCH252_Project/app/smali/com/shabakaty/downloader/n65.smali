@@ -72,6 +72,10 @@
     .line 1
     invoke-super {p0, p1, p2, p3}, Landroidx/recyclerview/widget/RecyclerView$r;->onScrolled(Landroidx/recyclerview/widget/RecyclerView;II)V
 
+    const/4 v0, 0x3
+
+    invoke-static {v0, p3}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->scroll(II)V
+
     .line 2
     invoke-virtual {p1}, Landroidx/recyclerview/widget/RecyclerView;->getLayoutManager()Landroidx/recyclerview/widget/RecyclerView$m;
 
