@@ -15,3 +15,9 @@ android {
         file("../../../Cinemana_PATCH252_Project/app/assets")
     )
 }
+
+dependencies {
+    implementation(project(":core-search"))
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.8.7")
+}
