@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "cinemana-source-recovery"
-include(":core-video", ":android-bridge", ":legacy-native")
+include(":core-video", ":android-bridge", ":legacy-native", ":legacy-resources")
