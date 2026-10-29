@@ -16,7 +16,9 @@ public final class MkvPromotionCoordinatorTest {
         String download = "Episode.mp4";
         String item = "Episode.mp4";
         String subtitle = "Episode.mp4";
-        long size = 5000L;
+        long size = 4200L;
+        boolean silentRestore;
+        boolean failRestoreReadback;
         String fail;
         String restoreFail;
         boolean readback = true;
@@ -31,7 +33,7 @@ public final class MkvPromotionCoordinatorTest {
 
         @Override public DownloadRow readDownload() throws Exception {
             step("readDownload");
-            return new DownloadRow(wrongIdentity ? 18 : 17, "external1", download);
+            return new DownloadRow(wrongIdentity ? 18 : 17, "external1", download, size);
         }
 
         @Override public CinemanaRow readCinemanaItem() throws Exception {
@@ -81,7 +83,20 @@ public final class MkvPromotionCoordinatorTest {
         @Override public void restoreDownload(DownloadRow previous) throws Exception {
             calls.add("restoreDownload");
             if ("restoreDownload".equals(restoreFail)) throw new Exception("rollback refused");
-            download = previous.path;
+            if (!silentRestore) {
+                download = previous.path;
+                size = previous.originalBytes;
+            }
+        }
+
+        @Override public boolean verifyRestored(DownloadRow previousDownload,
+                CinemanaRow previousCinemana, Object previousSubtitles) throws Exception {
+            calls.add("verifyRestored");
+            if (failRestoreReadback) throw new Exception("readback unavailable");
+            return download.equals(previousDownload.path)
+                    && size == previousDownload.originalBytes
+                    && item.equals(previousCinemana.path)
+                    && subtitle.equals(previousSubtitles);
         }
     }
 
@@ -92,6 +107,7 @@ public final class MkvPromotionCoordinatorTest {
 
     private static void restored(FakePort port) {
         ok("Episode.mp4".equals(port.download), "download restored");
+        ok(port.size == 4200L, "original download byte count restored");
         ok("Episode.mp4".equals(port.item), "Cinemana item restored");
         ok("Episode.mp4".equals(port.subtitle), "subtitles restored");
     }
@@ -160,6 +176,29 @@ public final class MkvPromotionCoordinatorTest {
         ok(port.calls.indexOf("restoreCinemana") < port.calls.indexOf("restoreDownload"),
                 "reverse order compensation");
         ok(!port.calls.contains("restoreSubtitles"), "no need to restore untouched subtitles");
+
+        port = new FakePort();
+        port.fail = "verify";
+        port.silentRestore = true;
+        result = promote(REQUEST, port);
+        ok(result.status == Status.ROLLBACK_FAILED, "silently ignored DAO restore must be failure");
+        ok(result.rollbackErrors.contains("readback:restored_state_mismatch"),
+                "detected silent persisted rollback mismatch");
+        ok(port.calls.contains("verifyRestored"), "rollback verified via readback");
+
+        port = new FakePort();
+        port.fail = "verify";
+        port.failRestoreReadback = true;
+        result = promote(REQUEST, port);
+        ok(result.status == Status.ROLLBACK_FAILED, "failed readback never reports rollback success");
+        ok(result.rollbackErrors.contains("readback:Exception"), "readback exception recorded");
+
+        port = new FakePort();
+        port.size = -1L;
+        result = promote(REQUEST, port);
+        ok(result.status == Status.REJECTED && "download_size_snapshot".equals(result.phase),
+                "incomplete byte count snapshot rejected before writes");
+        ok(!port.calls.contains("writeDownload"), "incomplete download snapshot never mutates DB");
 
         System.out.println("PASS: " + tests
                 + " MKV promotion coordinator rollback, isolation, verification and failure-injection checks");
