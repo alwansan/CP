@@ -31,7 +31,7 @@ jobs:
         working-directory: recovery/modernized
         run: |
           set -euo pipefail
-          gradle --no-daemon :core-video:check :android-bridge:assembleDebug :legacy-native:assembleDebug --stacktrace
+          gradle --no-daemon :core-video:check :core-json-gson:check :android-bridge:assembleDebug :legacy-native:assembleDebug :android-smoke:assembleDebug --stacktrace
           test -s android-bridge/build/outputs/aar/android-bridge-debug.aar
           test -s legacy-native/build/outputs/aar/legacy-native-debug.aar
           python3 - <<'PY'
