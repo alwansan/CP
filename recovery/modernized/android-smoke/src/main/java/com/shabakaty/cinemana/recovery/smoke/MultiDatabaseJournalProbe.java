@@ -24,6 +24,8 @@ public final class MultiDatabaseJournalProbe {
 
     private static final String OLD = "Episode.mp4";
     private static final String NEW = "Episode.mkv";
+    private static final String OLD_AR = "Episode.ar.srt";
+    private static final String NEW_AR = "Episode.mkv.ar.srt";
     private static final long OLD_BYTES = 4200L;
     private static final long NEW_BYTES = 5000L;
 
@@ -81,7 +83,24 @@ public final class MultiDatabaseJournalProbe {
         return readText(db, "SELECT path FROM diag_cinemana WHERE item_id='item1'");
     }
     private static String subtitlePath(SQLiteDatabase db) {
-        return readText(db, "SELECT path FROM diag_subtitles WHERE item_id='item1'");
+        return readText(db, "SELECT file FROM diag_subtitles WHERE id='sub-en'");
+    }
+    private static String arabicSubtitlePath(SQLiteDatabase db) {
+        return readText(db, "SELECT file FROM diag_subtitles WHERE id='sub-ar'");
+    }
+    private static void setSubtitleFiles(SQLiteDatabase db, String en, String ar) {
+        ContentValues english = new ContentValues();
+        english.put("file", en);
+        ContentValues arabic = new ContentValues();
+        arabic.put("file", ar);
+        if (db.update("diag_subtitles", english,
+                "id=? AND parent_id=? AND task_id=?",
+                new String[]{"sub-en", "item1", "17"}) != 1
+                || db.update("diag_subtitles", arabic,
+                "id=? AND parent_id=? AND task_id=?",
+                new String[]{"sub-ar", "item1", "17"}) != 1) {
+            throw new IllegalStateException("subtitle identity mismatch");
+        }
     }
 
     private static void setPath(SQLiteDatabase db, String table, String where,
@@ -103,15 +122,16 @@ public final class MultiDatabaseJournalProbe {
             dl.execSQL("INSERT INTO diag_downloads VALUES(17,'external1','Episode.mp4',4200)");
             cine.execSQL("CREATE TABLE diag_cinemana(item_id TEXT PRIMARY KEY,"
                     + " task_id INTEGER NOT NULL, path TEXT NOT NULL)");
-            cine.execSQL("CREATE TABLE diag_subtitles(item_id TEXT PRIMARY KEY,"
-                    + " path TEXT NOT NULL)");
+            cine.execSQL("CREATE TABLE diag_subtitles(id TEXT PRIMARY KEY,"
+                    + " parent_id TEXT NOT NULL, task_id INTEGER NOT NULL, file TEXT NOT NULL)");
             cine.execSQL("INSERT INTO diag_cinemana VALUES('item1',17,'Episode.mp4')");
-            cine.execSQL("INSERT INTO diag_subtitles VALUES('item1','Episode.mp4')");
+            cine.execSQL("INSERT INTO diag_subtitles VALUES('sub-en','item1',17,'Episode.mp4')");
+            cine.execSQL("INSERT INTO diag_subtitles VALUES('sub-ar','item1',17,'Episode.ar.srt')");
             journal.execSQL("CREATE TABLE intents(id INTEGER PRIMARY KEY, phase INTEGER NOT NULL,"
                     + " task_id INTEGER NOT NULL, external_id TEXT NOT NULL,"
                     + " item_id TEXT NOT NULL, old_download TEXT NOT NULL,"
                     + " old_bytes INTEGER NOT NULL, old_cinemana TEXT NOT NULL,"
-                    + " old_subtitle TEXT NOT NULL)");
+                    + " old_subtitle TEXT NOT NULL, old_subtitle_ar TEXT NOT NULL)");
         }
     }
 
@@ -145,13 +165,15 @@ public final class MultiDatabaseJournalProbe {
                     new MkvPromotionPreflight.CinemanaRow("item1",
                             (int)readLong(cine, "SELECT task_id FROM diag_cinemana WHERE item_id='item1'"),
                             itemPath(cine)));
-            if (!decision.ready() || !OLD.equals(subtitlePath(cine)))
+            if (!decision.ready() || !OLD.equals(subtitlePath(cine))
+                    || !OLD_AR.equals(arabicSubtitlePath(cine)))
                 throw new IllegalStateException("invalid source snapshot");
             journal.beginTransaction();
             try {
-                journal.execSQL("INSERT INTO intents VALUES(1,?,?,?,?,?,?,?,?)",
+                journal.execSQL("INSERT INTO intents VALUES(1,?,?,?,?,?,?,?,?,?)",
                         new Object[]{phase, 17, "external1", "item1", dlPath(dl),
-                                dlBytes(dl), itemPath(cine), subtitlePath(cine)});
+                                dlBytes(dl), itemPath(cine), subtitlePath(cine),
+                                arabicSubtitlePath(cine)});
                 journal.setTransactionSuccessful();
             } finally {
                 journal.endTransaction();
@@ -174,7 +196,13 @@ public final class MultiDatabaseJournalProbe {
         }
         if (phase >= 3) {
             try (SQLiteDatabase cine = open(files.cinemana)) {
-                setPath(cine, "diag_subtitles", "item_id='item1'", NEW, false);
+                cine.beginTransaction();
+                try {
+                    setSubtitleFiles(cine, NEW, NEW_AR);
+                    cine.setTransactionSuccessful();
+                } finally {
+                    cine.endTransaction();
+                }
             }
         }
         try (SQLiteDatabase dl = open(files.downloads);
@@ -183,15 +211,16 @@ public final class MultiDatabaseJournalProbe {
             if (!journalPending(journal)
                     || !NEW.equals(dlPath(dl)) || dlBytes(dl) != NEW_BYTES
                     || !(phase >= 2 ? NEW : OLD).equals(itemPath(cine))
-                    || !(phase >= 3 ? NEW : OLD).equals(subtitlePath(cine))) {
+                    || !(phase >= 3 ? NEW : OLD).equals(subtitlePath(cine))
+                    || !(phase >= 3 ? NEW_AR : OLD_AR).equals(arabicSubtitlePath(cine))) {
                 throw new IllegalStateException("partial multi-db state not persisted");
             }
         }
         return "PREPARED stage=" + phase;
     }
 
-    private static boolean oneOf(String path, String oldValue) {
-        return oldValue.equals(path) || NEW.equals(path);
+    private static boolean oneOf(String path, String oldValue, String newValue) {
+        return oldValue.equals(path) || newValue.equals(path);
     }
 
     private static void verifyBeforeCompensation(
@@ -204,7 +233,10 @@ public final class MultiDatabaseJournalProbe {
                     "SELECT item_id FROM intents WHERE id=1")))
                 || readLong(dl, "SELECT COUNT(*) FROM diag_downloads") != 1
                 || readLong(cine, "SELECT COUNT(*) FROM diag_cinemana") != 1
-                || readLong(cine, "SELECT COUNT(*) FROM diag_subtitles") != 1
+                || readLong(cine, "SELECT COUNT(*) FROM diag_subtitles") != 2
+                || readLong(cine, "SELECT COUNT(*) FROM diag_subtitles WHERE "
+                        + "parent_id='item1' AND task_id=17 AND "
+                        + "(id='sub-en' OR id='sub-ar')") != 2
                 || !("external1".equals(readText(dl,
                     "SELECT external_id FROM diag_downloads WHERE task_id=17")))
                 || readLong(cine, "SELECT task_id FROM diag_cinemana WHERE item_id='item1'") != 17) {
@@ -213,12 +245,14 @@ public final class MultiDatabaseJournalProbe {
         String beforeDl = readText(journal, "SELECT old_download FROM intents WHERE id=1");
         String beforeCine = readText(journal, "SELECT old_cinemana FROM intents WHERE id=1");
         String beforeSub = readText(journal, "SELECT old_subtitle FROM intents WHERE id=1");
+        String beforeAr = readText(journal, "SELECT old_subtitle_ar FROM intents WHERE id=1");
         long beforeBytes = readLong(journal, "SELECT old_bytes FROM intents WHERE id=1");
         if (!OLD.equals(beforeDl) || !OLD.equals(beforeCine) || !OLD.equals(beforeSub)
-                || beforeBytes != OLD_BYTES
-                || !oneOf(dlPath(dl), beforeDl)
-                || !oneOf(itemPath(cine), beforeCine)
-                || !oneOf(subtitlePath(cine), beforeSub)
+                || !OLD_AR.equals(beforeAr) || beforeBytes != OLD_BYTES
+                || !oneOf(dlPath(dl), beforeDl, NEW)
+                || !oneOf(itemPath(cine), beforeCine, NEW)
+                || !oneOf(subtitlePath(cine), beforeSub, NEW)
+                || !oneOf(arabicSubtitlePath(cine), beforeAr, NEW_AR)
                 || !(OLD.equals(dlPath(dl)) ? dlBytes(dl) == beforeBytes
                                            : dlBytes(dl) == NEW_BYTES)) {
             throw new IllegalStateException("unexpected third-party changes; fail closed");
@@ -227,7 +261,8 @@ public final class MultiDatabaseJournalProbe {
 
     private static boolean allRestored(SQLiteDatabase dl, SQLiteDatabase cine) {
         return OLD.equals(dlPath(dl)) && dlBytes(dl) == OLD_BYTES
-                && OLD.equals(itemPath(cine)) && OLD.equals(subtitlePath(cine));
+                && OLD.equals(itemPath(cine)) && OLD.equals(subtitlePath(cine))
+                && OLD_AR.equals(arabicSubtitlePath(cine));
     }
 
     /**
@@ -247,7 +282,7 @@ public final class MultiDatabaseJournalProbe {
                 throw new IllegalStateException("download not in expected partial state");
             cine.beginTransaction();
             try {
-                setPath(cine, "diag_subtitles", "item_id='item1'", OLD, false);
+                setSubtitleFiles(cine, OLD, OLD_AR);
                 setPath(cine, "diag_cinemana", "item_id='item1'", OLD, false);
                 cine.setTransactionSuccessful();
             } finally {
@@ -277,7 +312,7 @@ public final class MultiDatabaseJournalProbe {
             // Separate DB transaction: Cinemana + subtitles are restored together.
             cine.beginTransaction();
             try {
-                setPath(cine, "diag_subtitles", "item_id='item1'", OLD, false);
+                setSubtitleFiles(cine, OLD, OLD_AR);
                 setPath(cine, "diag_cinemana", "item_id='item1'", OLD, false);
                 cine.setTransactionSuccessful();
             } finally {
