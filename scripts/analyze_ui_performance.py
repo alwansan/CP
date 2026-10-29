@@ -101,7 +101,7 @@ def aggregate(records):
 def markdown(report, invalid):
     o = report["overall"]
     lines = [
-        "# Cinemana PATCH277 UI trace",
+        "# Cinemana PATCH277 / PATCH278 UI trace",
         f"Sessions: {len(report['sessions'])} · Metrics windows: {o['windows']} · Invalid/skipped records: {invalid}",
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",
