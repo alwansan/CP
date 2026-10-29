@@ -56,7 +56,7 @@ public final /* data */ class RecommendationsRequest {
     public int hashCode() {
         int iA = ik4.a(this.movieName, this.movieId.hashCode() * 31, 31);
         boolean z = this.reprocessIfExpired;
-        ?? r1 = z;
+        int r1 = z ? 1 : 0;
         if (z) {
             r1 = 1;
         }
