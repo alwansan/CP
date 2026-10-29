@@ -31,11 +31,27 @@ jobs:
         working-directory: recovery/modernized
         run: |
           set -euo pipefail
-          gradle --no-daemon :core-video:check :android-bridge:assembleDebug --stacktrace
+          gradle --no-daemon :core-video:check :android-bridge:assembleDebug :legacy-native:assembleDebug --stacktrace
           test -s android-bridge/build/outputs/aar/android-bridge-debug.aar
+          test -s legacy-native/build/outputs/aar/legacy-native-debug.aar
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          root = Path("../../Cinemana_PATCH252_Project/app/lib")
+          aar = Path("legacy-native/build/outputs/aar/legacy-native-debug.aar")
+          with ZipFile(aar) as z:
+              packed = {x for x in z.namelist() if x.startswith("jni/") and x.endswith(".so")}
+              expected = {"jni/" + p.relative_to(root).as_posix() for p in root.glob("*/*.so")}
+              assert packed == expected, {"missing":sorted(expected - packed), "unexpected":sorted(packed - expected)}
+              print("Native shared libraries preserved in AAR:",len(packed))
+              for abi in sorted({name.split("/")[1] for name in packed}):
+                  print("ABI",abi,"=>",sum(name.startswith("jni/"+abi+"/") for name in packed),"files")
+          PY
       - uses: actions/upload-artifact@v4
         with:
-          name: recovered-android-bridge-aar
+          name: recovered-android-modules-aars
           if-no-files-found: error
           retention-days: 14
-          path: recovery/modernized/android-bridge/build/outputs/aar/android-bridge-debug.aar
+          path: |
+            recovery/modernized/android-bridge/build/outputs/aar/android-bridge-debug.aar
+            recovery/modernized/legacy-native/build/outputs/aar/legacy-native-debug.aar
