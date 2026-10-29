@@ -86,6 +86,36 @@ public final class SearchStateMachineTest {
         machine.changed(" One Piece ");
         check(events.size() == before, "unchanged trimmed query is idempotent");
         check(machine.snapshot().selectedTab == 0, "tab remains consistent");
+        // A response for Movies must not populate Series after a tab switch.
+        machine.tabs(2);
+        machine.changed("Tab-specific query");
+        long movies = machine.submitted();
+        machine.selectTab(1);
+        mode(machine, Mode.EDITING);
+        check(machine.snapshot().selectedTab == 1, "new tab is active");
+        check(machine.snapshot().resultCount == 0, "tab change clears old result count");
+        check(!machine.received(movies, 40), "response for previous tab rejected");
+        long series = machine.submitted();
+        check(series > movies, "new tab request obtains a newer token");
+        check(machine.received(series, 6), "new tab response accepted");
+        mode(machine, Mode.RESULTS);
+        check(machine.snapshot().resultCount == 6, "new tab shows only its own results");
+
+        // Tabs may shrink asynchronously when available categories change.
+        machine.tabs(1);
+        mode(machine, Mode.EDITING);
+        check(machine.snapshot().selectedTab == 0, "tab clamp chooses valid tab");
+        check(machine.snapshot().resultCount == 0, "tab clamp invalidates old results");
+        check(!machine.received(series, 100), "old result rejected after tab clamp");
+        long reloaded = machine.submitted();
+        check(machine.received(reloaded, 2), "clamped tab accepts fresh response");
+        check(machine.snapshot().resultCount == 2, "clamped tab has fresh result count");
+        machine.changed("");
+        machine.tabs(2);
+        machine.selectTab(1);
+        mode(machine, Mode.RECENT);
+        check(machine.snapshot().resultCount == 0, "blank query remains recent on tab switch");
+
         System.out.println("PASS: " + checks + " source-first search UI state and stale-request tests");
     }
 }
