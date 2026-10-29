@@ -1,0 +1,272 @@
+package com.shabakaty.cinemana.local;
+
+import android.app.Activity;
+import android.app.Application;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Debug;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.SystemClock;
+import android.view.FrameMetrics;
+import android.view.Window;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Lightweight, opt-in-by-build UI diagnostics. No title, account, ID, URL, request body,
+ * stack trace, gesture coordinate, or screen content is ever included.
+ * FrameMetrics callbacks and file IO run off the UI thread.
+ */
+public final class UiPerfDiag {
+    private static final String TAG = "CinemanaUITrace";
+    private static final String BUILD = "PATCH277";
+    private static final long LOG_LIMIT_BYTES = 1536 * 1024;
+    private static final Object LOCK = new Object();
+    private static volatile boolean installed;
+    private static volatile boolean visible;
+    private static Application application;
+    private static Activity foreground;
+    private static HandlerThread metricsThread;
+    private static Handler metricsHandler;
+    private static ScheduledExecutorService writer;
+    private static Window measuredWindow;
+    private static Window.OnFrameMetricsAvailableListener metricsListener;
+    private static long session;
+    private static long lastCpuMs;
+    private static long lastWallMs;
+    private static long frames, frameTotalNs, frameMaxNs, missed, overBudget, over32, over50, over100, over200;
+    private static long layoutNs, drawNs, syncNs, commandNs;
+    private static long homeScrollEvents, homeScrollAbs, horizontalScrollEvents, horizontalScrollAbs;
+    private static long verticalScrollEvents, verticalScrollAbs;
+    private static long diffCount, diffTotalNs, diffMaxNs, diffSkipped, diffOver16, diffOver32;
+    private static long pageEnds, lifecycleEvents;
+    private static String screen = "unknown";
+    private static long lastFlushMs;
+
+    private UiPerfDiag() {}
+
+    public static void install(Activity activity) {
+        if (installed || activity == null) return;
+        synchronized (LOCK) {
+            if (installed) return;
+            try {
+                application = activity.getApplication();
+                metricsThread = new HandlerThread("cinemana-ui-metrics", android.os.Process.THREAD_PRIORITY_BACKGROUND);
+                metricsThread.start();
+                metricsHandler = new Handler(metricsThread.getLooper());
+                session = System.currentTimeMillis();
+                writer = Executors.newSingleThreadScheduledExecutor(r -> {
+                    Thread t = new Thread(r, "cinemana-ui-log-writer");
+                    t.setDaemon(true);
+                    t.setPriority(Thread.MIN_PRIORITY);
+                    return t;
+                });
+                application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+                    @Override public void onActivityCreated(Activity a, Bundle b) { mark("activity_create"); }
+                    @Override public void onActivityStarted(Activity a) { mark("activity_start"); }
+                    @Override public void onActivityResumed(Activity a) { resume(a); }
+                    @Override public void onActivityPaused(Activity a) { pause(a); }
+                    @Override public void onActivityStopped(Activity a) { mark("activity_stop"); }
+                    @Override public void onActivitySaveInstanceState(Activity a, Bundle b) {}
+                    @Override public void onActivityDestroyed(Activity a) { mark("activity_destroy"); }
+                });
+                installed = true;
+                lastWallMs = SystemClock.elapsedRealtime();
+                lastCpuMs = android.os.Process.getElapsedCpuTime();
+                writer.scheduleAtFixedRate(() -> flush(false), 10, 10, TimeUnit.SECONDS);
+                writer.execute(() -> append("{\"schema\":1,\"build\":\""+BUILD+"\",\"event\":\"session_start\",\"session\":"+session+",\"utc_ms\":"+System.currentTimeMillis()+",\"sdk\":"+Build.VERSION.SDK_INT+"}"));
+            } catch (Throwable error) {
+                Log.w(TAG, "init_failed type=" + error.getClass().getSimpleName());
+            }
+        }
+    }
+
+    private static void resume(Activity activity) {
+        if (!installed) return;
+        foreground = activity;
+        visible = true;
+        synchronized (LOCK) {
+            screen = activity.getClass().getSimpleName().replaceAll("[^A-Za-z0-9_]", "");
+            lifecycleEvents++;
+        }
+        if (Build.VERSION.SDK_INT >= 24) attachMetrics(activity.getWindow());
+        mark("activity_resume");
+    }
+
+    private static void pause(Activity activity) {
+        if (foreground != activity) return;
+        mark("activity_pause");
+        if (Build.VERSION.SDK_INT >= 24) detachMetrics();
+        visible = false;
+        foreground = null;
+        // Persist the last foreground interval without waiting for a new active interval.
+        if (writer != null) writer.execute(() -> flush(true));
+    }
+
+    @android.annotation.TargetApi(24)
+    private static void attachMetrics(Window window) {
+        if (window == null || metricsHandler == null) return;
+        detachMetrics();
+        try {
+            metricsListener = (win, metrics, dropped) -> {
+                if (!visible) return;
+                long duration = metrics.getMetric(FrameMetrics.TOTAL_DURATION);
+                if (duration <= 0 || duration > TimeUnit.SECONDS.toNanos(5)) return;
+                long layout = metrics.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION);
+                long draw = metrics.getMetric(FrameMetrics.DRAW_DURATION);
+                long sync = metrics.getMetric(FrameMetrics.SYNC_DURATION);
+                long command = metrics.getMetric(FrameMetrics.COMMAND_ISSUE_DURATION);
+                synchronized (LOCK) {
+                    frames++;
+                    frameTotalNs += duration;
+                    if (duration > frameMaxNs) frameMaxNs = duration;
+                    missed += Math.max(0, dropped);
+                    if (duration > 24_000_000L) overBudget++;
+                    if (duration > 32_000_000L) over32++;
+                    if (duration > 50_000_000L) over50++;
+                    if (duration > 100_000_000L) over100++;
+                    if (duration > 200_000_000L) over200++;
+                    layoutNs += Math.max(0, layout);
+                    drawNs += Math.max(0, draw);
+                    syncNs += Math.max(0, sync);
+                    commandNs += Math.max(0, command);
+                }
+            };
+            measuredWindow = window;
+            window.addOnFrameMetricsAvailableListener(metricsListener, metricsHandler);
+        } catch (Throwable error) {
+            measuredWindow = null;
+            metricsListener = null;
+            Log.w(TAG, "frame_metrics_unavailable type=" + error.getClass().getSimpleName());
+        }
+    }
+
+    @android.annotation.TargetApi(24)
+    private static void detachMetrics() {
+        Window w = measuredWindow;
+        Window.OnFrameMetricsAvailableListener l = metricsListener;
+        measuredWindow = null;
+        metricsListener = null;
+        if (w != null && l != null) {
+            try { w.removeOnFrameMetricsAvailableListener(l); }
+            catch (Throwable ignored) {}
+        }
+    }
+
+    /** Calls from UI scroll listeners: counters only, no per-scroll strings or file IO. */
+    public static void scroll(int area, int delta) {
+        if (!installed || !visible || delta == 0) return;
+        long magnitude = Math.abs((long) delta);
+        synchronized (LOCK) {
+            if (area == 1) { homeScrollEvents++; homeScrollAbs += magnitude; }
+            else if (area == 2) { horizontalScrollEvents++; horizontalScrollAbs += magnitude; }
+            else if (area == 3) { verticalScrollEvents++; verticalScrollAbs += magnitude; }
+        }
+    }
+
+    public static void mark(String event) {
+        if (!installed || event == null) return;
+        synchronized (LOCK) {
+            lifecycleEvents++;
+            if ("home_visible".equals(event)) screen = "home";
+            else if ("detail_visible".equals(event)) screen = "details";
+            else if ("home_destroy_view".equals(event)) screen = "transition";
+            else if ("pagination".equals(event)) pageEnds++;
+        }
+        // No file IO or string serialization on the caller thread.
+    }
+
+    public static long begin() { return installed ? SystemClock.elapsedRealtimeNanos() : 0L; }
+
+    public static void diff(long startedNanos) {
+        if (!installed || startedNanos <= 0) return;
+        long ns = Math.max(0L, SystemClock.elapsedRealtimeNanos() - startedNanos);
+        synchronized (LOCK) {
+            diffCount++;
+            diffTotalNs += ns;
+            if (ns > diffMaxNs) diffMaxNs = ns;
+            if (ns >= 16_000_000L) diffOver16++;
+            if (ns >= 32_000_000L) diffOver32++;
+        }
+    }
+
+    public static void skippedDiff() {
+        if (!installed) return;
+        synchronized (LOCK) { diffSkipped++; }
+    }
+
+    private static void flush(boolean force) {
+        if (!installed) return;
+        try {
+            long now = SystemClock.elapsedRealtime();
+            if (!force && now - lastFlushMs < 7000) return;
+            lastFlushMs = now;
+            long wallDelta = Math.max(1, now - lastWallMs);
+            long cpuNow = android.os.Process.getElapsedCpuTime();
+            long cpuDelta = Math.max(0, cpuNow - lastCpuMs);
+            lastCpuMs = cpuNow; lastWallMs = now;
+            String snapshot;
+            synchronized (LOCK) {
+                long count = frames;
+                long total = frameTotalNs;
+                snapshot = String.format(Locale.US,
+                    "{\"schema\":1,\"build\":\"%s\",\"session\":%d,\"utc_ms\":%d,\"elapsed_ms\":%d,\"visible\":%b,\"screen\":\"%s\",\"window_ms\":%d,\"frames\":%d,\"frame_avg_ms\":%.2f,\"frame_max_ms\":%.2f,\"over_24ms\":%d,\"over_32ms\":%d,\"over_50ms\":%d,\"over_100ms\":%d,\"over_200ms\":%d,\"dropped_reported\":%d,\"layout_sum_ms\":%.1f,\"draw_sum_ms\":%.1f,\"sync_sum_ms\":%.1f,\"command_sum_ms\":%.1f,\"scroll_home\":%d,\"scroll_home_px\":%d,\"scroll_horizontal\":%d,\"scroll_horizontal_px\":%d,\"scroll_vertical\":%d,\"scroll_vertical_px\":%d,\"diff_count\":%d,\"diff_avg_ms\":%.2f,\"diff_max_ms\":%.2f,\"diff_over_16\":%d,\"diff_over_32\":%d,\"diff_skipped\":%d,\"pagination\":%d,\"lifecycle\":%d,\"process_cpu_ms\":%d,\"java_heap_used_kb\":%d,\"native_heap_used_kb\":%d,\"threads_approx\":%d}",
+                    BUILD, session, System.currentTimeMillis(), now, visible, screen, wallDelta,
+                    count, count==0?0.0:total/1e6/count, frameMaxNs/1e6, overBudget, over32, over50, over100, over200, missed,
+                    layoutNs/1e6, drawNs/1e6, syncNs/1e6, commandNs/1e6,
+                    homeScrollEvents, homeScrollAbs, horizontalScrollEvents, horizontalScrollAbs, verticalScrollEvents, verticalScrollAbs,
+                    diffCount, diffCount==0?0.0:diffTotalNs/1e6/diffCount, diffMaxNs/1e6, diffOver16, diffOver32, diffSkipped,
+                    pageEnds, lifecycleEvents, cpuDelta,
+                    (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024,
+                    Debug.getNativeHeapAllocatedSize()/1024, Thread.activeCount());
+                frames=frameTotalNs=frameMaxNs=missed=overBudget=over32=over50=over100=over200=0;
+                layoutNs=drawNs=syncNs=commandNs=0;
+                homeScrollEvents=homeScrollAbs=horizontalScrollEvents=horizontalScrollAbs=0;
+                verticalScrollEvents=verticalScrollAbs=0;
+                diffCount=diffTotalNs=diffMaxNs=diffSkipped=diffOver16=diffOver32=0;
+                pageEnds=lifecycleEvents=0;
+            }
+            append(snapshot);
+        } catch (Throwable error) {
+            Log.w(TAG, "flush_failed type=" + error.getClass().getSimpleName());
+        }
+    }
+
+    private static void append(String line) {
+        File destination = null;
+        try {
+            File shared = new File(Environment.getExternalStorageDirectory(), "Cinemana/work/log");
+            if ((shared.isDirectory() || shared.mkdirs()) && shared.canWrite()) destination = shared;
+        } catch (Throwable ignored) {}
+        if (destination == null && application != null) {
+            destination = new File(application.getFilesDir(), "log");
+            destination.mkdirs();
+        }
+        if (destination == null) return;
+        try {
+            File log = new File(destination, "ui_performance.jsonl");
+            if (log.length() >= LOG_LIMIT_BYTES) {
+                File old = new File(destination, "ui_performance.previous.jsonl");
+                if (old.exists()) old.delete();
+                if (!log.renameTo(old)) log.delete();
+            }
+            try (FileOutputStream out = new FileOutputStream(log, true)) {
+                out.write((line + "\n").getBytes(StandardCharsets.UTF_8));
+            }
+            // Logcat provides a backup if shared storage is inaccessible; numeric summaries only.
+            Log.i(TAG, line);
+        } catch (Throwable error) {
+            Log.w(TAG, "write_failed type=" + error.getClass().getSimpleName());
+            Log.i(TAG, line);
+        }
+    }
+}
