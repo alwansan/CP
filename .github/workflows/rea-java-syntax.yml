@@ -33,10 +33,17 @@ jobs:
           mkdir -p "$RUNNER_TEMP/syntax"
           javac -encoding UTF-8 -d "$RUNNER_TEMP/syntax" recovery/scripts/SourceSyntaxCheck.java
           java -Xmx3g -cp "$RUNNER_TEMP/syntax" SourceSyntaxCheck recovery/generated/java | tee "$RUNNER_TEMP/syntax-report.txt"
-          grep '^SYNTAX_SUMMARY ' "$RUNNER_TEMP/syntax-report.txt"
+          summary="$(grep '^SYNTAX_SUMMARY ' "$RUNNER_TEMP/syntax-report.txt" | tail -1)"
+          echo "$summary"
+          failures="$(printf '%s\n' "$summary" | sed -n 's/.*files_with_syntax_errors=\\([0-9][0-9]*\\).*/\\1/p')"
+          first_party="$(grep -c '^SYNTAX_FILE|.*/com/shabakaty/cinemana/' "$RUNNER_TEMP/syntax-report.txt" || true)"
+          echo "Source syntax regression gate: files=$failures (allowed <=3), first_party=$first_party (allowed <=1)"
+          test -n "$failures"
+          test "$failures" -le 3
+          test "$first_party" -le 1
       - uses: actions/upload-artifact@v4
         with:
           name: source-java-syntax-audit
           retention-days: 14
           path: |
-            \${{ runner.temp }}/syntax-report.txt
+            ${{ runner.temp }}/syntax-report.txt
