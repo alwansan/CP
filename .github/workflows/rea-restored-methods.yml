@@ -9,6 +9,8 @@ on:
       - 'recovery/tests/coroutine/**'
       - 'recovery/tests/renameassets/**'
       - 'recovery/tests/subtitlepreview/**'
+      - 'recovery/tests/renderer/**'
+      - 'recovery/generated/java/com/shabakaty/cinemana/player/H26410SoftwareRenderer.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/features/RenameAssets.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/mod/SubtitlePreviewTask.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/utils/extensions/ObserverWhileStartedImpl.java'
@@ -35,3 +37,4 @@ jobs:
           python3 recovery/tests/coroutine/test_observer.py
           python3 recovery/tests/renameassets/test_rename.py
           python3 recovery/tests/subtitlepreview/test_preview.py
+          python3 recovery/tests/renderer/test_ready.py
