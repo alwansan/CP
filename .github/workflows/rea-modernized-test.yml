@@ -9,6 +9,7 @@ on:
       - 'recovery/scripts/verify_original_room_schema.py'
       - 'recovery/scripts/verify_original_room_database_names.py'
       - 'recovery/scripts/verify_original_room_migration_graph.py'
+      - 'recovery/scripts/verify_original_room_json_projection.py'
       - 'recovery/scripts/test_original_room_migration_sql.py'
       - 'recovery/scripts/test_original_room_3_to_4.py'
       - 'recovery/scripts/test_original_room_2_to_3_sql.py'
@@ -36,6 +37,9 @@ jobs:
       - name: Check original Room migration version graph without touching user data
         shell: bash
         run: python3 recovery/scripts/verify_original_room_migration_graph.py
+      - name: Guard original Room JSON projection field and Kotlin operation parity
+        shell: bash
+        run: python3 recovery/scripts/verify_original_room_json_projection.py
       - name: Run original Room migration SQL in disposable in-memory SQLite
         shell: bash
         run: python3 recovery/scripts/test_original_room_migration_sql.py
