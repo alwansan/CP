@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [feature/nuvio-home-rebuild]
-    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/nuvio-home.yml', 'patches/patch262/**', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py']
+    paths: ['Cinemana_PATCH252_Project/**', 'patches/nuvio-home/**', 'patches/local-account/**', '.github/workflows/nuvio-home.yml', 'patches/patch262/**', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py']
 permissions:
   contents: write
 concurrency:
@@ -42,6 +42,7 @@ jobs:
           python3 scripts/test_reference_guards.py
           python3 scripts/test_recovery_flow.py
           python3 scripts/test_apk_dex.py
+          python3 patches/nuvio-home/test_home_ui.py
           bash Cinemana_PATCH252_Project/build.sh
       - name: Align, sign and verify test APK
         shell: bash
