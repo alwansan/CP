@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="nuvio_home_background">#17191F</color>
-    <color name="nuvio_home_surface">#24282F</color>
+    <color name="nuvio_home_background">#202124</color>
+    <color name="nuvio_home_surface">#2D2F33</color>
 </resources>
