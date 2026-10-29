@@ -168,8 +168,11 @@ public final class LocalRuntime {
  public static void decorate(android.view.View root){
   final Context context=root.getContext();android.view.View row=root.findViewWithTag("local_account266");
   if(row!=null)row.setVisibility(android.view.View.GONE);
+  // Resolve IDs once; doing resource name lookups during every layout pass adds UI-thread work.
   final String[] hidden={"profile_logout_item","profile_login_linear","login_qr_button"};
-  android.view.View.OnLayoutChangeListener hide=(view,l,t,r,b,ol,ot,oright,ob)->{for(String id:hidden){int n=context.getResources().getIdentifier(id,"id",context.getPackageName());android.view.View v=root.findViewById(n);if(v!=null&&v.getVisibility()!=android.view.View.GONE)v.setVisibility(android.view.View.GONE);}};
+  final int[] hiddenIds=new int[hidden.length];
+  for(int i=0;i<hidden.length;i++)hiddenIds[i]=context.getResources().getIdentifier(hidden[i],"id",context.getPackageName());
+  android.view.View.OnLayoutChangeListener hide=(view,l,t,r,b,ol,ot,oright,ob)->{for(int n:hiddenIds){if(n==0)continue;android.view.View v=root.findViewById(n);if(v!=null&&v.getVisibility()!=android.view.View.GONE)v.setVisibility(android.view.View.GONE);}};
   root.addOnLayoutChangeListener(hide);root.post(()->hide.onLayoutChange(root,0,0,0,0,0,0,0,0));
  }
  public static void profileState(Object viewModel){
