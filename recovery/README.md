@@ -41,6 +41,8 @@ This directory is an independent reverse-engineering workspace originating from
 
 - `modernized/core-downloads/LegacyDownloadIdentityResolver`: a buildable Java recovery of the legacy Downloads candidate-selection responsibility. Unlike the original decompiled fuzzy score, it only authorizes a unique composite identity plus exact full source path; never silently rewrites task IDs. Java regression tests are attached to `core-downloads:check`. Android Room diagnostic port now runs the resolver across all Downloads rows and rejects shared-path collisions; full production DAO integration is still outstanding.
 
+- Source-first `LegacyRoomV2EpisodeMetadata` now projects selected `kind="2"` episode metadata from an already decoded JSON Map, normalizes titles, handles `rootSeries="0"`, and groups unique collection roots. The new Java regression suite and original `jt2.smali` projection parity guard pass in `rea-modernized-test`. A separate Android diagnostic converts **synthetic** raw JSON using `org.json` and requires 8 fixture cases on emulator; this adapter is NOT the original relocated Gson parser, nor a full Room 2->3 migration or production DAO.
+
 ## Source files and reports
 
 - `generated/java/`: staged reconstructed Java, including obfuscated dependency layer
