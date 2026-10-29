@@ -11,6 +11,7 @@ on:
       - 'recovery/scripts/verify_original_room_migration_graph.py'
       - 'recovery/scripts/verify_original_room_json_projection.py'
       - 'recovery/scripts/verify_original_room_json_sql_guard.py'
+      - 'recovery/scripts/verify_modernized_gradle_tasks.py'
       - 'recovery/scripts/test_original_room_migration_sql.py'
       - 'recovery/scripts/test_original_room_3_to_4.py'
       - 'recovery/scripts/test_original_room_2_to_3_sql.py'
@@ -29,6 +30,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Guard Kotlin Gradle JavaExec task declarations before javac tests
+        shell: bash
+        run: python3 recovery/scripts/verify_modernized_gradle_tasks.py
       - name: Verify original Room schema SQL and composite key match Smali
         shell: bash
         run: python3 recovery/scripts/verify_original_room_schema.py
