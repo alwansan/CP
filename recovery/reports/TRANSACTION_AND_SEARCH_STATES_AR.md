@@ -48,6 +48,14 @@ https://github.com/alwansan/CP/actions/runs/40927158916
 
 اختبار واجهة Android التفاعلية منفصل، وقد تأكد فتح شاشة `SearchFlowActivity` وظهور عناصرها في ملفات UIAutomator. عدم نجاح أول اختبار ضغط كان نتيجة تحويل Android للنص إلى أحرف كبيرة، فتم تصحيح مطابقة أسماء الأزرار.
 
+## التحقق من بناء تطبيق التشخيص التفاعلي
+
+نجح بناء APK بتاريخ 29 أكتوبر 2026 بعد ربط `SearchLiveDataBridge` و`SearchScreenController` و`SearchFlowActivity`، مع موارد APKTool الأصلية بعد معالجة تكرار ثلاث خصائص خط في نسخة Gradle المرحلية.
+
+https://github.com/alwansan/CP/actions/runs/40928163260
+
+تمت إضافة فحص على محاكي Android للتحقق من فتح النشاط الجديد، إرسال بحث وهمي، استقبال ثلاث نتائج، استخدام زر الفلترة ومسح البحث. واجهة `SearchFlowActivity` تستخدم Android SDK widgets بدلاً من AppCompat/Material الأصليين فقط لحين استرجاع الإصدارات المتوافقة؛ لذلك الاختبار لا يعني تكافؤ واجهة البحث الأصلية.
+
 ## أحدث فحوص مكتملة
 
 - نموذج تحديثات التنزيل واسترجاعها + حالات البحث + مطابقة XML: https://github.com/alwansan/CP/actions/runs/40923843681
