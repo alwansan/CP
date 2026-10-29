@@ -25,7 +25,9 @@ with tempfile.TemporaryDirectory() as tmp:
     assert report["overall"]["over_32ms"] == 3
     assert report["overall"]["diff_count"] == 2
     assert report["overall"]["diff_skipped"] == 7
-    assert report["overall"]["poster_failed"] == 1\n    assert report["overall"]["main_over_100ms"] == 2\n    assert report["screens"]["details"]["main_max_ms"] == 309
+    assert report["overall"]["poster_failed"] == 1
+    assert report["overall"]["main_over_100ms"] == 2
+    assert report["screens"]["details"]["main_max_ms"] == 309
     assert report["screens"]["home"]["scroll_events"] == 9
     assert report["events"]["detail_visible"] == 1
     assert report["worst_windows"][0]["screen"] == "home"
