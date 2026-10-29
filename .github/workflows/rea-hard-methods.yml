@@ -81,4 +81,4 @@ jobs:
           name: rea-complex-method-evidence
           retention-days: 14
           path: |
-            \${{ runner.temp }}/method-check/
+            ${{ runner.temp }}/method-check/
