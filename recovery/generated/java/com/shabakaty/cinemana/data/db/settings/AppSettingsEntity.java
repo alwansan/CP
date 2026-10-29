@@ -49,7 +49,7 @@ public final /* data */ class AppSettingsEntity {
     public int hashCode() {
         int iHashCode = (((this.theme.hashCode() + (this.language.hashCode() * 31)) * 31) + this.seekPeriod) * 31;
         boolean z = this.showSubtitles;
-        ?? r0 = z;
+        int r0 = z ? 1 : 0;
         if (z) {
             r0 = 1;
         }
