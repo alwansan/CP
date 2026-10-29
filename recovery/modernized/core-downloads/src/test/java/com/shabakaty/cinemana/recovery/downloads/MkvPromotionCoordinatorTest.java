@@ -24,6 +24,8 @@ public final class MkvPromotionCoordinatorTest {
         boolean readback = true;
         boolean noSubtitles;
         boolean wrongIdentity;
+        boolean wrongDownloadDirectory;
+        boolean wrongCinemanaDirectory;
         final List<String> calls = new ArrayList<>();
 
         void step(String name) throws Exception {
@@ -33,12 +35,14 @@ public final class MkvPromotionCoordinatorTest {
 
         @Override public DownloadRow readDownload() throws Exception {
             step("readDownload");
-            return new DownloadRow(wrongIdentity ? 18 : 17, "external1", download, size);
+            return new DownloadRow(wrongIdentity ? 18 : 17, "external1",
+                    wrongDownloadDirectory ? "/sdcard/Other/work/Episode.mp4" : download, size);
         }
 
         @Override public CinemanaRow readCinemanaItem() throws Exception {
             step("readCinemana");
-            return new CinemanaRow("item1", 17, item);
+            return new CinemanaRow("item1", 17,
+                    wrongCinemanaDirectory ? "/sdcard/Other/work/Episode.mp4" : item);
         }
 
         @Override public Object snapshotSubtitles() throws Exception {
@@ -157,6 +161,18 @@ public final class MkvPromotionCoordinatorTest {
         ok(result.status == Status.REJECTED, "wrong identity rejected");
         ok(result.preflightReason == Reason.DOWNLOAD_IDENTITY_MISMATCH, "reason reported");
         ok(!port.calls.contains("writeDownload"), "wrong identity no write");
+
+        for (boolean wrongDownload : new boolean[]{true, false}) {
+            port = new FakePort();
+            port.wrongDownloadDirectory = wrongDownload;
+            port.wrongCinemanaDirectory = !wrongDownload;
+            result = promote(REQUEST, port);
+            ok(result.status == Status.REJECTED, "cross-directory source rejected");
+            ok(result.preflightReason == Reason.AMBIGUOUS_SOURCE_PATH,
+                    "preflight reports cross-directory conflict");
+            ok(!port.calls.contains("writeDownload") && !port.calls.contains("writeCinemana"),
+                    "no database writes after cross-directory source conflict");
+        }
 
         result = promote(REQUEST, null);
         ok(result.status == Status.REJECTED, "null adapter rejected");
