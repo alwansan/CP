@@ -51,13 +51,13 @@ public final /* data */ class FilterSettingsEntity {
     public int hashCode() {
         int iHashCode = this.parentalLevel.hashCode() * 31;
         boolean z = this.skipInAppropriateScenes;
-        ?? r1 = z;
+        int r1 = z ? 1 : 0;
         if (z) {
             r1 = 1;
         }
         int i = (iHashCode + r1) * 31;
         boolean z2 = this.showContentWithNoSubtitle;
-        return i + (z2 ? 1 : z2);
+        return i + (z2 ? 1 : 0);
     }
 
     public String toString() {
