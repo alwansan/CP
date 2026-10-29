@@ -21,6 +21,8 @@ public final class MultiDatabaseProcessActivity extends Activity {
                 result = MultiDatabaseJournalProbe.prepare(this, phase);
             } else if ("recover".equals(mode)) {
                 result = MultiDatabaseJournalProbe.recover(this, phase);
+            } else if ("partial-recover".equals(mode)) {
+                result = MultiDatabaseJournalProbe.partiallyRecover(this, phase);
             } else {
                 throw new IllegalArgumentException("missing multi-db diagnostic mode");
             }
