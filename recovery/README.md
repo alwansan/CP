@@ -39,6 +39,8 @@ This directory is an independent reverse-engineering workspace originating from
 
 - `scripts/verify_original_room_schema.py`: standard-library CI guard comparing the three diagnostic Room CREATE TABLE statements verbatim against the recovered Smali and checking the composite Downloads key and unique index; runs in the modernized Java workflow.
 
+- `modernized/core-downloads/LegacyDownloadIdentityResolver`: a buildable Java recovery of the legacy Downloads candidate-selection responsibility. Unlike the original decompiled fuzzy score, it only authorizes a unique composite identity plus exact full source path; never silently rewrites task IDs. Java regression tests are attached to `core-downloads:check`. Android Room diagnostic port now runs the resolver across all Downloads rows and rejects shared-path collisions; full production DAO integration is still outstanding.
+
 ## Source files and reports
 
 - `generated/java/`: staged reconstructed Java, including obfuscated dependency layer
