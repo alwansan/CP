@@ -156,98 +156,62 @@ public final class SubtitlePreviewTask implements Runnable {
         }
     }
 
-    /* JADX WARN: Code restructure failed: missing block: B:34:0x0094, code lost:
-    
-        if (r4.trim().length() > 0) goto L35;
+    /**
+     * Rebuilt from smali_classes2 SubtitlePreviewTask.run, preserving the
+     * main-thread result dispatch and error fallback for preview failures.
      */
-    @Override // java.lang.Runnable
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
+    @Override
     public void run() {
-        /*
-            r15 = this;
-            android.content.Context r0 = r15.context
-            java.lang.String r1 = r15.inputPath
-            if (r0 == 0) goto Lab
-            if (r1 == 0) goto Lab
-            java.lang.String r2 = "embedded://mkv/"
-            boolean r3 = r1.startsWith(r2)     // Catch: java.lang.Exception -> Laa
-            if (r3 != 0) goto L21
-            java.lang.String r4 = readRemoteText(r1)     // Catch: java.lang.Exception -> Laa
-            if (r4 == 0) goto Lab
-            java.lang.String r5 = r4.trim()     // Catch: java.lang.Exception -> Laa
-            int r6 = r5.length()     // Catch: java.lang.Exception -> Laa
-            if (r6 <= 0) goto Lab
-            goto L96
-        L21:
-            r3 = 15
-            java.lang.String r7 = r1.substring(r3)     // Catch: java.lang.Exception -> Laa
-            com.shabakaty.cinemana.player.CinemanaPlayerControllerView r8 = r15.controller     // Catch: java.lang.Exception -> Laa
-            if (r8 == 0) goto Lab
-            com.shabakaty.cinemana.domain.models.local.VideoModel r8 = r8.getVideoModel()     // Catch: java.lang.Exception -> Laa
-            if (r8 == 0) goto Lab
-            android.content.Context r9 = r15.context     // Catch: java.lang.Exception -> Laa
-            java.lang.String r9 = com.shabakaty.cinemana.features.LocalMkvResolver.resolve(r9, r8)     // Catch: java.lang.Exception -> Laa
-            if (r9 == 0) goto Lab
-            java.lang.String r10 = "file:"
-            boolean r10 = r9.startsWith(r10)     // Catch: java.lang.Exception -> Laa
-            if (r10 == 0) goto L49
-            android.net.Uri r10 = android.net.Uri.parse(r9)     // Catch: java.lang.Exception -> Laa
-            java.lang.String r9 = r10.getPath()     // Catch: java.lang.Exception -> Laa
-        L49:
-            java.io.File r10 = new java.io.File     // Catch: java.lang.Exception -> Laa
-            r10.<init>(r9)     // Catch: java.lang.Exception -> Laa
-            boolean r11 = r10.exists()     // Catch: java.lang.Exception -> Laa
-            if (r11 == 0) goto Lab
-            long r11 = r10.length()     // Catch: java.lang.Exception -> Laa
-            r13 = 0
-            int r11 = (r11 > r13 ? 1 : (r11 == r13 ? 0 : -1))
-            if (r11 <= 0) goto Lab
-            android.content.Context r11 = r15.context     // Catch: java.lang.Exception -> Laa
-            java.io.File r11 = getFfmpeg(r11)     // Catch: java.lang.Exception -> Laa
-            if (r11 == 0) goto Lab
-            boolean r12 = r11.exists()     // Catch: java.lang.Exception -> Laa
-            if (r12 == 0) goto Lab
-            android.content.Context r12 = r15.context     // Catch: java.lang.Exception -> Laa
-            java.io.File r12 = r12.getCacheDir()     // Catch: java.lang.Exception -> Laa
-            java.lang.String r13 = "cinemana_subtitle_preview.srt"
-            java.io.File r10 = new java.io.File     // Catch: java.lang.Exception -> Laa
-            r10.<init>(r12, r13)     // Catch: java.lang.Exception -> Laa
-            r10.delete()     // Catch: java.lang.Exception -> Laa
-            boolean r11 = extractEmbedded(r11, r9, r7, r10)     // Catch: java.lang.Exception -> Laa
-            if (r11 == 0) goto Lab
-            java.lang.String r4 = readText(r10)     // Catch: java.lang.Exception -> Laa
-            r10.delete()     // Catch: java.lang.Exception -> Laa
-            if (r4 == 0) goto Lab
-            r5 = r4
-            java.lang.String r5 = r5.trim()     // Catch: java.lang.Exception -> Laa
-            int r6 = r5.length()     // Catch: java.lang.Exception -> Laa
-            if (r6 <= 0) goto Lab
-        L96:
-            android.os.Handler r2 = new android.os.Handler     // Catch: java.lang.Exception -> Laa
-            android.os.Looper r3 = android.os.Looper.getMainLooper()     // Catch: java.lang.Exception -> Laa
-            r2.<init>(r3)     // Catch: java.lang.Exception -> Laa
-            com.shabakaty.cinemana.mod.SubtitlePreviewResult r3 = new com.shabakaty.cinemana.mod.SubtitlePreviewResult     // Catch: java.lang.Exception -> Laa
-            com.shabakaty.cinemana.player.CinemanaPlayerControllerView r6 = r15.controller     // Catch: java.lang.Exception -> Laa
-            r3.<init>(r0, r4, r6)     // Catch: java.lang.Exception -> Laa
-            r2.post(r3)     // Catch: java.lang.Exception -> Laa
-            return
-        Laa:
-            goto Lab
-        Lab:
-            android.os.Handler r2 = new android.os.Handler
-            android.os.Looper r3 = android.os.Looper.getMainLooper()
-            r2.<init>(r3)
-            com.shabakaty.cinemana.mod.SubtitlePreviewResult r3 = new com.shabakaty.cinemana.mod.SubtitlePreviewResult
-            java.lang.String r4 = "تعذر تحميل أو قراءة ملف الترجمة للمعاينة."
-            java.lang.String r4 = com.shabakaty.cinemana.ca1.I18n161.t(r4)
-            com.shabakaty.cinemana.player.CinemanaPlayerControllerView r5 = r15.controller
-            r3.<init>(r0, r4, r5)
-            r2.post(r3)
-            return
-        */
-        throw new UnsupportedOperationException("Method not decompiled: com.shabakaty.cinemana.mod.SubtitlePreviewTask.run():void");
+        Context ctx = this.context;
+        String source = this.inputPath;
+        if (ctx != null && source != null) {
+            try {
+                String text;
+                if (!source.startsWith("embedded://mkv/")) {
+                    text = readRemoteText(source);
+                } else {
+                    String stream = source.substring(15);
+                    if (this.controller == null || this.controller.getVideoModel() == null) {
+                        text = null;
+                    } else {
+                        String video = com.shabakaty.cinemana.features.LocalMkvResolver.resolve(
+                                ctx, this.controller.getVideoModel());
+                        if (video != null && video.startsWith("file:")) {
+                            video = Uri.parse(video).getPath();
+                        }
+                        File videoFile = video == null ? null : new File(video);
+                        if (videoFile == null || !videoFile.exists() || videoFile.length() <= 0) {
+                            text = null;
+                        } else {
+                            File ffmpeg = getFfmpeg(ctx);
+                            if (ffmpeg == null || !ffmpeg.exists()) {
+                                text = null;
+                            } else {
+                                File output = new File(ctx.getCacheDir(), "cinemana_subtitle_preview.srt");
+                                output.delete();
+                                if (extractEmbedded(ffmpeg, video, stream, output)) {
+                                    text = readText(output);
+                                    output.delete();
+                                } else {
+                                    text = null;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (text != null && !text.trim().isEmpty()) {
+                    new android.os.Handler(android.os.Looper.getMainLooper()).post(
+                            new SubtitlePreviewResult(ctx, text, this.controller));
+                    return;
+                }
+            } catch (Exception ignored) {
+                // Original Smali directs exceptions to the error preview UI.
+            }
+        }
+        new android.os.Handler(android.os.Looper.getMainLooper()).post(
+                new SubtitlePreviewResult(ctx,
+                        com.shabakaty.cinemana.ca1.I18n161.t(
+                                "تعذر تحميل أو قراءة ملف الترجمة للمعاينة."),
+                        this.controller));
     }
 }
