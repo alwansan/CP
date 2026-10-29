@@ -8,6 +8,8 @@ import android.os.Debug;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
+import java.util.concurrent.atomic.AtomicBoolean;
 import android.os.SystemClock;
 import android.view.FrameMetrics;
 import android.view.Window;
@@ -28,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH277";
+    private static final String BUILD = "PATCH278";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -52,6 +54,65 @@ public final class UiPerfDiag {
     private static long posterStarted, posterReady, posterFailed, posterFallback;
     private static String screen = "unknown";
     private static long lastFlushMs;
+    private static long lastCaptureMs;
+    private static final Handler MAIN = new Handler(Looper.getMainLooper());
+    private static final AtomicBoolean probePending = new AtomicBoolean();
+    private static long mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs;
+
+    private static final class Snapshot {
+        final String screen;
+        final long timestamp, elapsedMs, durationMs;
+        final long[] v;
+        Snapshot(String label, long utc, long elapsed, long duration, long[] data) {
+            screen=label; timestamp=utc; elapsedMs=elapsed; durationMs=duration; v=data;
+        }
+        boolean hasData() {
+            return v[0]>0 || v[13]>0 || v[15]>0 || v[17]>0 ||
+                v[19]>0 || v[24]>0 || v[25]>0 || v[26]>0 ||
+                v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0;
+        }
+    }
+
+    // Called under LOCK. Freeze all counters and screen attribution before navigation.
+    private static Snapshot captureLocked(long now) {
+        long[] v={frames, frameTotalNs, frameMaxNs, missed, overBudget, over32,
+            over50, over100, over200, layoutNs, drawNs, syncNs, commandNs,
+            homeScrollEvents, homeScrollAbs, horizontalScrollEvents, horizontalScrollAbs,
+            verticalScrollEvents, verticalScrollAbs, diffCount, diffTotalNs, diffMaxNs,
+            diffOver16, diffOver32, diffSkipped, pageEnds, lifecycleEvents,
+            posterStarted, posterReady, posterFailed, posterFallback,
+            mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs};
+        Snapshot snap=new Snapshot(screen, System.currentTimeMillis(), now,
+            Math.max(1,now-lastCaptureMs),v);
+        lastCaptureMs=now;
+        frames=frameTotalNs=frameMaxNs=missed=overBudget=over32=over50=over100=over200=0;
+        layoutNs=drawNs=syncNs=commandNs=0;
+        homeScrollEvents=homeScrollAbs=horizontalScrollEvents=horizontalScrollAbs=0;
+        verticalScrollEvents=verticalScrollAbs=0;
+        diffCount=diffTotalNs=diffMaxNs=diffSkipped=diffOver16=diffOver32=0;
+        pageEnds=lifecycleEvents=0;
+        posterStarted=posterReady=posterFailed=posterFallback=0;
+        mainProbes=mainOver50=mainOver100=mainOver250=mainMaxNs=0;
+        return snap;
+    }
+
+    /** A 1Hz main-thread heartbeat separates UI blocking from slow rendering. */
+    private static void probeMainThread() {
+        if (!visible || !probePending.compareAndSet(false,true)) return;
+        final long started=SystemClock.elapsedRealtimeNanos();
+        if (!MAIN.post(()->{
+            long delay=Math.max(0,SystemClock.elapsedRealtimeNanos()-started);
+            synchronized (LOCK) {
+                mainProbes++;
+                if(delay>mainMaxNs)mainMaxNs=delay;
+                if(delay>50_000_000L)mainOver50++;
+                if(delay>100_000_000L)mainOver100++;
+                if(delay>250_000_000L)mainOver250++;
+            }
+            probePending.set(false);
+        })) probePending.set(false);
+    }
+
 
     private UiPerfDiag() {}
 
@@ -82,8 +143,10 @@ public final class UiPerfDiag {
                 });
                 installed = true;
                 lastWallMs = SystemClock.elapsedRealtime();
+                lastCaptureMs = lastWallMs;
                 lastCpuMs = android.os.Process.getElapsedCpuTime();
                 writer.scheduleAtFixedRate(() -> flush(false), 10, 10, TimeUnit.SECONDS);
+                writer.scheduleAtFixedRate(UiPerfDiag::probeMainThread, 1, 1, TimeUnit.SECONDS);
                 writer.execute(() -> append("{\"schema\":1,\"build\":\""+BUILD+"\",\"event\":\"session_start\",\"session\":"+session+",\"utc_ms\":"+System.currentTimeMillis()+",\"sdk\":"+Build.VERSION.SDK_INT+"}"));
             } catch (Throwable error) {
                 Log.w(TAG, "init_failed type=" + error.getClass().getSimpleName());
