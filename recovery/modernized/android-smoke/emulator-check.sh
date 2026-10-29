@@ -19,7 +19,9 @@ sleep 4
 for attempt in 1 2 3; do
     adb shell uiautomator dump /sdcard/cinemana_recovery_window.xml > "$report/uiautomator.txt" 2>&1 || true
     adb pull /sdcard/cinemana_recovery_window.xml "$report/window.xml" >/dev/null 2>&1 || true
-    if test -f "$report/window.xml" && grep -q 'Media3 High 10 adapter: PASS' "$report/window.xml"; then
+    if test -f "$report/window.xml" && grep -q 'Media3 High 10 adapter: PASS' "$report/window.xml"
+grep -q 'MKV promotion preflight: PASS' "$report/window.xml"
+grep -q 'Original search layout: PASS' "$report/window.xml"; then
         break
     fi
     sleep 2
