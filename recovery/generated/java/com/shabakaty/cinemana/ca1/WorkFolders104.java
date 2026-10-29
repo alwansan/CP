@@ -70,19 +70,58 @@ public final class WorkFolders104 {
         return false;
     }
 
-    /* JADX WARN: Code restructure failed: missing block: B:37:0x008f, code lost:
-    
-        throw r12;
+    /**
+     * Faithful Java reconstruction from the original
+     * smali_classes6/ca1/WorkFolders104.smali name(Object,String).
+     * Cache-first, single-flight recovery with a 20-second retry throttle.
      */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public static java.lang.String name(java.lang.Object r12, java.lang.String r13) {
-        /*
-            Method dump skipped, instruction units count: 208
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: com.shabakaty.cinemana.ca1.WorkFolders104.name(java.lang.Object, java.lang.String):java.lang.String");
+    public static String name(Object episode, String fallback) {
+        try {
+            String root = (String) Continue106.call(cls(), "str", episode, "rootEpisode");
+            if (root.isEmpty() || "0".equals(root)) {
+                return fallback;
+            }
+            String result = cached(root);
+            if (!result.isEmpty()) {
+                return result;
+            }
+            long now = System.currentTimeMillis();
+            boolean shouldResolve = false;
+            synchronized (WorkFolders104.class) {
+                Long previous = attempted.get(root);
+                if (!resolving.contains(root)
+                        && (previous == null || now - previous.longValue() >= 20_000L)) {
+                    resolving.add(root);
+                    attempted.put(root, now);
+                    shouldResolve = true;
+                }
+            }
+            if (shouldResolve) {
+                try {
+                    boolean found;
+                    try {
+                        found = details(root);
+                    } catch (Exception ignored) {
+                        found = false;
+                    }
+                    if (!found) {
+                        Continue106.call(cls(), "lambda$resolveName$13", (Object) null, root);
+                    }
+                } finally {
+                    synchronized (WorkFolders104.class) {
+                        resolving.remove(root);
+                    }
+                }
+            }
+            result = cached(root);
+            if (!result.isEmpty()) {
+                return result;
+            }
+            throw new IllegalStateException("WORK_TITLE_PENDING root=" + root);
+        } catch (RuntimeException runtime) {
+            throw runtime;
+        } catch (Exception checked) {
+            throw new IllegalStateException("WORK_TITLE_RECOVERY_ERROR", checked);
+        }
     }
 }
