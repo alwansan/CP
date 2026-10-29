@@ -34,7 +34,7 @@ public final class k41 {
     public int hashCode() {
         int iHashCode = (this.b.hashCode() + (this.a.hashCode() * 31)) * 31;
         boolean z = this.c;
-        ?? r0 = z;
+        int r0 = z ? 1 : 0;
         if (z) {
             r0 = 1;
         }
