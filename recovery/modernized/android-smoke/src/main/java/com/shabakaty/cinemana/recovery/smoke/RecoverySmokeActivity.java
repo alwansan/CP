@@ -48,7 +48,7 @@ public final class RecoverySmokeActivity extends Activity {
                 + "Media3 High 10 adapter: " + (high10 ? "PASS" : "FAIL") + "\n"
                 + "MKV promotion preflight: " + (preflight ? "PASS" : "FAIL") + "\n"
                 + "Original search layout: " + (searchXml ? "PASS" : "FAIL") + "\n"
-                + "SQLite persisted rollback: " + sqliteCheck + "\n"
+                + "SQLite rollback readback: " + sqliteCheck + "\n"
                 + "This APK is NOT the original Cinemana application.");
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
