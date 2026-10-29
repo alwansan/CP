@@ -23,4 +23,5 @@ dependencies {
     implementation(project(":core-downloads"))
     implementation(project(":core-search"))
     implementation("androidx.media3:media3-common:1.6.1")
+    implementation("androidx.activity:activity:1.9.3")
 }
