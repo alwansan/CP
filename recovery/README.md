@@ -12,12 +12,15 @@ This directory is an independent reverse-engineering workspace originating from
 - `WorkFolders104.name` rebuilt from the Smali control flow and tested in 19 cases.
 - `BatchLog.lambda$init$1` rebuilt from Smali and tested in 10 cases.
 - All seven methods formerly marked `Method not decompiled` within the 293-file first-party package have now been reconstructed from Smali/REA.
-- The latest source audit reports **zero such unresolved method markers**, but still **two first-party files with Java syntax failures** (`Episodes107` and `MkvExporter`).
-- Latest JDK syntax audit: **849/851 staged Java files parse successfully; 2 still have syntax errors** (`MkvExporter`, DataBinding `gk1`).
-- The latest 8-method regression workflow passes **112 tests**: enhancements (15), coroutine (12), subtitle renaming (14), subtitle preview (11), H264 readiness (14), episode retrieval (17), MKV video watcher (14), and MLKit/GMS SQLite schema validation (15).
+- The latest source audit reports **zero unresolved method markers** in first-party Java; the remaining first-party Java syntax blocker is **MkvExporter.promoteDatabase**. The second remaining syntax blocker (`gk1`) is generated Data Binding source.
+- Latest JDK syntax audit: **849/851 staged Java files parse successfully; 2 still have syntax errors** (`MkvExporter`, generated Data Binding `gk1`).
+- The 8-method regression workflow passes **112 tests**: enhancements (15), coroutine (12), subtitle renaming (14), subtitle preview (11), H264 readiness (14), episode retrieval (17), MKV video watcher (14), and MLKit/GMS SQLite schema validation (15).
+- New `modernized/core-downloads` has a **fail-closed, read-only** preflight for MKV database promotion with **19 passing JDK tests**; this does not overwrite the legacy transaction. (Run 40920074702)
+- New `SearchScreenRefs` in `legacy-resources` maps eight original search view IDs; **34 XML/gk1 structural checks pass**, and the Android module compiles. The complete LiveData/DataBinding bridge is not yet reconstructed. (Run 40920074702)
 - Actual Android Gradle Library `modernized/android-bridge` with Media3 compiles.
 - `modernized/legacy-resources` builds original APKTool `res` and `assets` into an Android AAR (verified by GitHub Actions run 40911283952).
 - `modernized/android-smoke` now builds a **diagnostic-only** signed Android APK under `com.shabakaty.cinemana.recovery.smoke` with Media3, the original 49 native shared libraries, and bundled `res`/`assets` including `ffmpeg`. Verified full integration: run 40911943683. This is not Cinemana or a substitute for its UI/account/download/player behavior. The Android 10 x86_64 emulator installation passed in run 40914736533: APK installed and launched, and the UI displayed Media3 High 10 adapter: PASS.
+- The updated diagnostic Android app ran successfully on Android 10 emulator with **Media3 High 10 adapter: PASS**, **MKV promotion preflight: PASS** and **Original search layout: PASS** (run 40919940462). These are diagnostic subsystem checks, not original Cinemana app functionality.
 - Native and resource AAR compilation does not imply original Cinemana app functionality.
 - `modernized/legacy-native` packages 49 shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
@@ -29,6 +32,7 @@ This directory is an independent reverse-engineering workspace originating from
 - `reports/SOURCE_DEPENDENCY_AUDIT.md`: remaining decompiler problems and import boundaries
 - `reports/REMAINING_BLOCKERS_AR.md`: syntax blocker classification and next steps
 - `reports/REA_INDEPENDENT_DECOMPILATION_AR.md`: REA results, unresolved type placeholders, and Data Binding caveats
+- `reports/SAFE_MIGRATION_AND_SEARCH_BINDING_AR.md`: non-mutating MKV DB preflight and original search UI structure
 - `tests/episodes/`, `tests/mkvwatcher/`, `tests/sqliteschema/`: real-body Java regressions for episode network handling, completed-video export readiness, and SQLite schema verification
 - `modernized/`: distinct Gradle modules, separately compiled and tested
 - `tests/workfolders/`: actual Java source with test doubles for reflection-based callers
@@ -58,5 +62,5 @@ bash Cinemana_PATCH252_Project/build.sh
 Build the reconstructed Gradle libraries:
 ```sh
 cd recovery/modernized
-gradle --no-daemon :core-video:check :android-bridge:assembleDebug :legacy-native:assembleDebug :legacy-resources:assembleDebug :android-smoke:assembleDebug
+gradle --no-daemon :core-video:check :core-downloads:check :android-bridge:assembleDebug :legacy-native:assembleDebug :legacy-resources:assembleDebug :android-smoke:assembleDebug
 ```
