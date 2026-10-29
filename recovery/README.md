@@ -33,7 +33,7 @@ This directory is an independent reverse-engineering workspace originating from
 
 - `modernized/android-smoke/OriginalRoomSchemaProbe` uses the exact CREATE TABLE SQL extracted from original Room Smali for `Downloads`, `CinemanaDownloadItem` and `SubtitleDb`, testing the compound Downloads key and two identity-scoped subtitle rows in **disposable in-memory databases**; emulator confirmation is required. This never opens production data.
 
-- `modernized/android-smoke/OriginalRoomDiagnosticPort` connects the source-first `MkvPromotionCoordinator` to exact-schema **in-memory test tables** and checks three regression cases: successful scoped promotion, compensation after a partially attempted subtitle update, and refusal of a wrong composite Downloads identity. These are not production DAO adapters or persistent crash journals.
+- `modernized/android-smoke/OriginalRoomDiagnosticPort` connects the source-first `MkvPromotionCoordinator` to exact-schema **in-memory test tables** and checks four regression cases: successful scoped promotion, compensation after a partially attempted subtitle update, refusal of a wrong composite Downloads identity, and rejection of an item/task mismatch. These are not production DAO adapters or persistent crash journals.
 
 ## Source files and reports
 
