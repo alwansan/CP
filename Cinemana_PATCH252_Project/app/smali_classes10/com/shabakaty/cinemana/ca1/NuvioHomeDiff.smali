@@ -82,3 +82,10 @@
     :done
     return-void
 .end method
+
+# Reuse the existing two-worker executor for poster-diff requests.
+.method public static executor()Ljava/util/concurrent/Executor;
+    .locals 1
+    sget-object v0, Lcom/shabakaty/cinemana/ca1/NuvioHomeDiff;->a:Ljava/util/concurrent/Executor;
+    return-object v0
+.end method

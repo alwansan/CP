@@ -92,7 +92,7 @@ class HomeOverlayTests(unittest.TestCase):
         detached = code.split(".method public onDetachedFromWindow()V", 1)[1].split(".end method", 1)[0]
         self.assertIn("iput-boolean v0, p0,", detached)
         parent_adapter = (ROOT / "smali_classes10/com/shabakaty/downloader/yt1.smali").read_text()
-        child_adapter = (ROOT / "smali/com/shabakaty/downloader/jj.smali").read_text()
+        child_adapter = (ROOT / "smali_classes10/com/shabakaty/downloader/jj.smali").read_text()
         self.assertIn("const p1, 0x7f0d008f", child_adapter)
         self.assertIn("const/4 p1, 0x4", parent_adapter)
 
@@ -125,6 +125,39 @@ class HomeOverlayTests(unittest.TestCase):
             self.assertLess(section.index("->sync()V"), section.index("->notifyItem"))
         self.assertIn("HomeItem$Horizontal;", compare)
         self.assertIn("Lcom/shabakaty/downloader/j32;->a(", compare)
+
+
+    def test_only_video_adapters_use_off_thread_poster_diffs(self):
+        secondary = ROOT / "smali_classes10"
+        poster = secondary / "com/shabakaty/downloader/jj.smali"
+        code = poster.read_text()
+        helper_dir = secondary / "com/shabakaty/cinemana/ca1"
+        bridge = (helper_dir / "NuvioPosterDiff.smali").read_text()
+        compare = (helper_dir / "NuvioPosterItemCallback.smali").read_text()
+        updates = (helper_dir / "NuvioPosterUpdateCallback.smali").read_text()
+        completion = (helper_dir / "NuvioPosterCommit.smali").read_text()
+        base = (ROOT / "smali/com/shabakaty/downloader/ej.smali").read_text()
+        self.assertIn("NuvioPosterDiff;->init(", code)
+        self.assertIn("NuvioPosterDiff;->submit(", code)
+        self.assertIn("Enhancements;->transform(", code)
+        self.assertIn(".field public d:Landroidx/recyclerview/widget/e;", code)
+        self.assertIn("Landroidx/recyclerview/widget/d;-><init>", bridge)
+        self.assertIn("invoke-direct/range {v8 .. v13}", bridge)
+        self.assertIn("NuvioPosterCommit;-><init>", bridge)
+        self.assertIn("NuvioHomeDiff;->executor()", bridge)
+        self.assertIn("->g:I", bridge)
+        self.assertIn("->unmodifiableList(", bridge)
+        self.assertIn("->notifyItemRangeInserted(II)V", bridge)
+        self.assertIn("->notifyItemRangeRemoved(II)V", bridge)
+        self.assertIn("Lcom/shabakaty/downloader/ej;->a:Ljava/util/List;", completion)
+        self.assertIn("Lcom/shabakaty/downloader/ej;->g(", compare)
+        self.assertIn("Lcom/shabakaty/downloader/ej;->f(", compare)
+        for callback in ("onChanged", "onInserted", "onMoved", "onRemoved"):
+            section = updates.split(".method public " + callback + "(", 1)[1].split(".end method", 1)[0]
+            self.assertLess(section.index("->sync()V"), section.index("->notifyItem"))
+        # Unrelated ej subclasses remain on the old path (do not globally rewrite).
+        self.assertIn("invoke-static {v0, v1}, Landroidx/recyclerview/widget/j;->b(", base)
+        self.assertIn("->e(Ljava/util/List;)V", (ROOT / "smali/com/shabakaty/downloader/fo3.smali").read_text())
 
 
 if __name__ == "__main__":
