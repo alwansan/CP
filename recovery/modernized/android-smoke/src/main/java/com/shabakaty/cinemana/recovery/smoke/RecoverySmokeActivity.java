@@ -39,8 +39,15 @@ public final class RecoverySmokeActivity extends Activity {
         try {
             sqliteCheck = SqlitePromotionProbe.run();
         } catch (Throwable failure) {
-            android.util.Log.e("CinemanaRecoverySmoke", "Ephemeral SQLite probe failed", failure);
+            android.util.Log.e("CinemanaRecoverySmoke", "In-memory SQLite probe failed", failure);
             sqliteCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
+        }
+        String sqliteDiskCheck;
+        try {
+            sqliteDiskCheck = SqlitePromotionProbe.runDiskBacked(this);
+        } catch (Throwable failure) {
+            android.util.Log.e("CinemanaRecoverySmoke", "File-backed SQLite probe failed", failure);
+            sqliteDiskCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
         }
         TextView message = new TextView(this);
         message.setPadding(48, 64, 48, 64);
@@ -49,6 +56,7 @@ public final class RecoverySmokeActivity extends Activity {
                 + "MKV promotion preflight: " + (preflight ? "PASS" : "FAIL") + "\n"
                 + "Original search layout: " + (searchXml ? "PASS" : "FAIL") + "\n"
                 + "SQLite rollback readback: " + sqliteCheck + "\n"
+                + "SQLite file reopen probe: " + sqliteDiskCheck + "\n"
                 + "This APK is NOT the original Cinemana application.");
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
