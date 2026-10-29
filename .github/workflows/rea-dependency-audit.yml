@@ -1,0 +1,41 @@
+name: Audit recovered Java dependency boundaries
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/scripts/analyze_recovered.py'
+      - 'recovery/generated/java/**'
+      - '.github/workflows/rea-dependency-audit.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rea-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Analyze checked-in first-party Java
+        run: |
+          set -euo pipefail
+          python3 -m py_compile recovery/scripts/analyze_recovered.py
+          python3 recovery/scripts/analyze_recovered.py
+          test -s recovery/reports/SOURCE_DEPENDENCY_AUDIT.md
+      - name: Commit audit report to isolated branch only
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = experiment/rea-source-recovery
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add recovery/reports/SOURCE_DEPENDENCY_AUDIT.md recovery/reports/dependency_audit.json
+          if ! git diff --cached --quiet; then
+            git commit -m "recovery: audit generated source imports and quality"
+            git push origin HEAD:refs/heads/experiment/rea-source-recovery
+          fi
