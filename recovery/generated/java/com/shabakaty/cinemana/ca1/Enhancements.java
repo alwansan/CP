@@ -512,26 +512,27 @@ public final class Enhancements {
     /* JADX WARN: Type inference failed for: r4v15 */
     /* JADX WARN: Type inference failed for: r4v8 */
     /* JADX WARN: Type inference failed for: r7v1, types: [java.lang.String] */
+    /**
+     * Restore selection-grid season grouping from the original Smali.
+     * Null is the initial season marker, and each visual row contains at most five episodes.
+     */
     static void grid(final Object obj, boolean z) {
-        ?? r4;
         Context context = (Context) get(obj, "context");
         ArrayList arrayList = new ArrayList();
-        ?? r5 = 0;
+        String previousSeason = null;
         ArrayList arrayList2 = null;
-        for (Object obj2 : scope(obj)) {
-            ?? Str = str(obj2, "season");
-            if (!Str.equals(r5)) {
-                r4 = r5;
-                arrayList.add(I18n161.t("الموسم ") + Str);
+        for (Object episode : scope(obj)) {
+            String season = str(episode, "season");
+            if (!season.equals(previousSeason)) {
+                arrayList.add(I18n161.t("الموسم ") + season);
                 arrayList2 = null;
-                r4 = Str;
+                previousSeason = season;
             }
             if (arrayList2 == null || arrayList2.size() == 5) {
                 arrayList2 = new ArrayList();
                 arrayList.add(arrayList2);
             }
-            arrayList2.add(obj2);
-            r5 = r4;
+            arrayList2.add(episode);
         }
         DragList dragList = new DragList(context);
         dragList.setAdapter((ListAdapter) new AnonymousClass1(arrayList, context, obj, z));
