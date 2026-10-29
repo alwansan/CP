@@ -93,6 +93,7 @@ for path in ("com/shabakaty/downloader/ej.smali", "com/shabakaty/downloader/gv1.
 
 # Phase 3: instrumentation must be explicitly wired, built and bounded.
 diag = (root / "patches/local-account/src/com/shabakaty/cinemana/local/UiPerfDiag.java").read_text()
+assert 'home_refresh_count' in diag and 'home_setup_count' in diag
 assert 'main_over_250ms' in diag and 'captureLocked' in diag
 assert 'probeMainThread' in diag and 'MAIN.post' in diag
 assert 'if (snap.hasData()) writeSample(snap,cpuDelta);' in diag
@@ -103,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH278"' in diag
+assert 'BUILD = "PATCH279"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -112,6 +113,11 @@ assert 'UiPerfDiag;->install(Landroid/app/Activity;)V' in home_activity
 home_fragment = source("com/shabakaty/downloader/vt1.smali")
 assert 'HomeScrollPerfListener;-><init>()V' in home_fragment
 assert 'home_visible' in home_fragment and 'home_destroy_view' in home_fragment
+resume=smali_method(home_fragment, '.method public onResume()V')
+created=smali_method(home_fragment, '.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V')
+assert resume.count('Continue106;->refresh(Ljava/lang/Object;)V')==1, 'home resume refresh absent'
+assert 'Continue106;->refresh(Ljava/lang/Object;)V' not in created, 'redundant full home refresh on view creation'
+assert 'UiPerfDiag;->homeRefresh(J)V' in resume and 'UiPerfDiag;->homeSetup(J)V' in created
 details_fragment = source("com/shabakaty/downloader/d15.smali")
 assert 'detail_visible' in details_fragment and 'detail_view_created' in details_fragment
 assert 'UiPerfDiag;->diff(J)V' in adapter and 'UiPerfDiag;->skippedDiff()V' in adapter
