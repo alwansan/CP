@@ -104,14 +104,26 @@ public final class SearchStateMachine {
 
     public void tabs(int count) {
         availableTabs = Math.max(1, count);
-        selectedTab = Math.min(selectedTab, availableTabs - 1);
+        int clamped = Math.min(selectedTab, availableTabs - 1);
+        if (clamped != selectedTab) {
+            selectedTab = clamped;
+            invalidateForTabChange();
+        }
         publish();
     }
 
     public void selectTab(int tab) {
         if (tab < 0 || tab >= availableTabs || selectedTab == tab) return;
         selectedTab = tab;
+        invalidateForTabChange();
         publish();
+    }
+
+    /** A response belongs to BOTH the submitted query and selected tab. */
+    private void invalidateForTabChange() {
+        resultCount = 0;
+        activeToken = ++nextToken;
+        mode = query.isEmpty() ? Mode.RECENT : Mode.EDITING;
     }
 
     private void publish() { listener.onStateChanged(snapshot()); }
