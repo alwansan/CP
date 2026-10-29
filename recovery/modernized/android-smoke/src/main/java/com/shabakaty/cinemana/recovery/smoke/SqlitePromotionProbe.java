@@ -24,7 +24,7 @@ public final class SqlitePromotionProbe {
             new MkvPromotionPreflight.Request("item1", 17, "external1",
                     "/diagnostic/Episode.mp4", "/diagnostic/Episode.mkv", 5000L);
 
-    private static final class SqlitePort implements MkvPromotionCoordinator.Port {
+    static final class SqlitePort implements MkvPromotionCoordinator.Port {
         final SQLiteDatabase db;
         String failStep;
         boolean noopRestore;
@@ -130,7 +130,7 @@ public final class SqlitePromotionProbe {
         return db;
     }
 
-    private static void seed(SQLiteDatabase db) {
+    static void seed(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE diag_downloads(task_id INTEGER PRIMARY KEY,"
                 + " external_id TEXT, path TEXT, bytes INTEGER)");
         db.execSQL("CREATE TABLE diag_cinemana(item_id TEXT PRIMARY KEY,"
