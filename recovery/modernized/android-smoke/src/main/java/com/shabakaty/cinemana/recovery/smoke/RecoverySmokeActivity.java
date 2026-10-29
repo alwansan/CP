@@ -49,6 +49,13 @@ public final class RecoverySmokeActivity extends Activity {
             android.util.Log.e("CinemanaRecoverySmoke", "File-backed SQLite probe failed", failure);
             sqliteDiskCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
         }
+        String journalCheck;
+        try {
+            journalCheck = SqliteJournalProbe.run(this);
+        } catch (Throwable failure) {
+            android.util.Log.e("CinemanaRecoverySmoke", "Diagnostic journal restart probe failed", failure);
+            journalCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
+        }
         TextView message = new TextView(this);
         message.setPadding(48, 64, 48, 64);
         message.setText("Cinemana source recovery diagnostic host\n"
@@ -57,6 +64,7 @@ public final class RecoverySmokeActivity extends Activity {
                 + "Original search layout: " + (searchXml ? "PASS" : "FAIL") + "\n"
                 + "SQLite rollback readback: " + sqliteCheck + "\n"
                 + "SQLite file reopen probe: " + sqliteDiskCheck + "\n"
+                + "SQLite journal restart probe: " + journalCheck + "\n"
                 + "This APK is NOT the original Cinemana application.");
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
