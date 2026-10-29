@@ -1,0 +1,47 @@
+name: Source-first Android smoke APK (not Cinemana production)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/modernized/android-smoke/**'
+      - '.github/workflows/rea-android-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build standalone source-first smoke APK
+        working-directory: recovery/modernized
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :core-video:check :android-smoke:assembleDebug --stacktrace
+          apk=android-smoke/build/outputs/apk/debug/android-smoke-debug.apk
+          test -s "$apk"
+          test "$(unzip -Z1 "$apk" | grep '^lib/.*\.so$' | wc -l)" -eq 49
+          test -n "$(unzip -Z1 "$apk" | grep -E '^classes([0-9]+)?\.dex$' | head -1)"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$apk" | grep "^package: name='com.shabakaty.cinemana.recovery.smoke'"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$apk"
+          echo "Android smoke APK: build and package validation PASS (this is not Cinemana)."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery-smoke-apk-not-cinemana
+          retention-days: 14
+          if-no-files-found: error
+          path: recovery/modernized/android-smoke/build/outputs/apk/debug/android-smoke-debug.apk
