@@ -1,41 +1,36 @@
-# حالة استرجاع سينمانا — 29 أكتوبر 2026
+# تقرير استرجاع سينمانا — 29 أكتوبر 2026
 
-## الملخص المعتمد على اختبارات GitHub Actions
+## النتائج المثبتة باختبارات GitHub Actions
 
-- ملفات Java المسترجعة بواسطة JADX من 11 ملف DEX: **10,381** (أرشيف المصدر الكامل في Release).
-- ملفات Java المختارة على الفرع: **851** (293 من حزمة Cinemana و558 من الطبقة المشوّهة Downloader).
-- فحص تركيب Java (JDK JavacTask.parse): **846 ملفاً دون أخطاء صياغة، 5 ملفات تحتوي 48 خطأ تشخيصياً**.
-- عدد ملفات حزمة `com.shabakaty.cinemana` التي تحتوي العلامة `Method not decompiled`: **صفر** بعد استرجاع 7 دوال ومراجعتها.
-- اختبارات مستقلة لأجسام الدوال الأربعة الأخيرة: **52 ناجحة** (15+12+14+11).
-- اختبار سلوك جاهزية مشغل High 10 الأصلي بعد تصحيح الأنواع: **14 ناجحاً**.
-- تجميع Android Gradle لمكتبة Media3 وتنفيذ اختبارات Java: **نجح**.
-- تغليف **49** مكتبة `.so` أصلية داخل AAR والتحقق من تطابقها مع الملفات الأصلية: **نجح**.
+- **10,381** ملف Java استخرجت من 11 ملف DEX؛ جميعها موجودة في أرشيف JADX الكامل.
+- **851** ملف Java مرحّل داخل GitHub: 293 من حزمة `com.shabakaty.cinemana` و558 من `com.shabakaty.downloader`.
+- **849/851 ملفاً** يجتاز التحليل النحوي الفعلي بواسطة JDK. ملفان فيهما **12 تشخيصاً** متعلقاً بصياغة Java. هذا لا يثبت صحة الأنواع والاعتماديات.
+- علامات `Method not decompiled` في الملفات الأساسية الـ293: **صفر** بعد استرجاع سبع دوال.
+- **112 اختبار Java ناجح** للدوال المسترجعة، وتشمل الفرز (15)، Coroutine (12)، تغيير أسماء الترجمات (14)، معاينة الترجمات (11)، جاهزية H.264 (14)، جلب الحلقات (17)، مراقبة MP4/MKV (14)، وفحص جداول SQLite (15).
+- تجميع Gradle لكل من Media3 وموارد وأصول سينمانا والمكتبات الأصلية: **نجح**.
+- **49** ملف `.so` أصلي مُضمّن في AAR، ثم في APK التشخيصي.
+- APK تشخيصي مستقل جرى **بناؤه وتوقيعه وتثبيته وتشغيله على Android 10 (API 29، x86_64)**. تأكدنا من ظهور `Media3 High 10 adapter: PASS` عبر واجهة الجهاز وUIAutomator.
 
-### الملفات الخمسة الباقية التي لم تجتز فحص الصياغة
+## آخر ملفين لا يجتازان تحليل صياغة Java
 
-| الملف | التصنيف وفق سورس JADX | المسار الآمن |
+| الملف | سبب التأخير | الموقف الحالي |
 |---|---|---|
-| `ca1/Episodes107.java` | منطق استرجاع الحلقات وعمل الطلبات | مراجعة Smali/REA بدقة واختبار التدفق الشبكي |
-| `features/MkvExporter.java` | تصدير الفيديو وترقية سجلات التنزيل | إعادة بناء الدوال بالاعتماد على Smali، واختبار الملفات وقاعدة البيانات |
-| `downloader/b35.java` | `VideosLayoutBindingImpl.java` مولّد من Data Binding | إعادة توليد الأصناف باستخدام AGP وملفات layout الأصلية |
-| `downloader/gk1.java` | `FragmentSearchBindingImpl.java` مولّد من Data Binding | إعادة توليده باستخدام AndroidX Data Binding |
-| `downloader/kf5.java` | مصدر متداخل يحمل وسم `com.google.mlkit:common@@17.1.1` | تحديد أصل كل وظيفة والتوافق قبل الاستبدال بمكتبات Maven |
+| `features/MkvExporter.java` | جسم `promoteDatabase` كبير جداً، وفيه متغيرات أنواع مكسورة وتدفق استثناءات معقد من JADX | تم استرجاع `waitForCompletedVideoAndExport` واختبار 14 حالة؛ لا يُستبدل `promoteDatabase` قبل اختبارات استرجاع قواعد البيانات والذرية |
+| `downloader/gk1.java` | `FragmentSearchBindingImpl` أصلاً كود Data Binding مولّد من XML/Kotlin؛ ناتج JADX يكرر المسارات ويخلط `Fragment` مع قوائم البيانات | يجب إعادة توليد Binding أو إعادة بناء تعريفاته ثم مقارنة الشاشات؛ مجرد تغيير `??` إلى نوع Java لا يضمن الصواب |
 
-**تحذير مهم:** فحص الصياغة لا يفحص الربط مع Android SDK ولا يحل مشكلة ازدواج أصناف المكتبات أو سلامة التشغيل. لا يُعتبر هذا مشروع APK صالحاً من سورس Java حتى ينجح بناء Android Application وتوقيعه واختباره على الجهاز.
+## القيود الضرورية
 
-### الإجراءات المؤكدة التالية
+1. فحص JDK `parse()` لا يعني أن ملفات Java الـ849 تتجمع سويةً. يعتمد ذلك على حل كل مراجع AndroidX والكود المشوّه وباقي التوابع.
+2. APK التشخيصي يحمل package `com.shabakaty.cinemana.recovery.smoke` **وليس سينمانا**. واجهة سينمانا الأصلية ونظام الحساب والتنزيلات ما زالا غير مربوطين جميعاً في مشروع Android Gradle.
+3. تشغيل APK التشخيصي على محاكي Android دليل تكامل الوحدات المُختبرة، وليس اختبار سينمانا كاملاً.
+4. لا تعدّل المصدر المفكك الأصلي أو `main` أو `feature/local-account` حتى نجاح البناء الكامل واختبارات الجهاز.
 
-1. استعادة الطرق عالية الخطورة في `Episodes107` و`MkvExporter` مع اختبارات مقارنة بالسلوك الأصلي.
-2. تفعيل توليد AndroidX Data Binding في مشروع Android Gradle من ملفات XML الأصلية بدلاً من النسخ المشوّهة.
-3. تحديد مكونات `downloader` التي تمثل مكتبات خارجية، ثم تنزيل نسخ Maven المتوافقة بدلاً من استنساخ الكود.
-4. إضافة وحدات Android Application وملفات Manifest وres وassets، وحل أخطاء الأنواع والاعتماديات بطريقة مرحلية.
-5. اختبار APK نهائي على Android مع عدم تبديل مسار بناء النسخة الحالية حتى نجاح الاختبارات.
+## الأدلة
 
-## روابط التحقق
+- 849 Java parse, 2 syntax blockers: https://github.com/alwansan/CP/actions/runs/40914976820
+- 112 Java tests: https://github.com/alwansan/CP/actions/runs/40915084735
+- Native/media resources APK build: https://github.com/alwansan/CP/actions/runs/40911943683
+- Actual Android 10 emulator installation and screen verification: https://github.com/alwansan/CP/actions/runs/40914736533
+- REA complex method details and Data Binding caveats: https://github.com/alwansan/CP/blob/experiment/rea-source-recovery/recovery/reports/REA_INDEPENDENT_DECOMPILATION_AR.md
 
-- Source syntax 5 blockers: https://github.com/alwansan/CP/actions/runs/40910036551
-- Restored Java methods: https://github.com/alwansan/CP/actions/runs/40908433364
-- Renderer state regression: https://github.com/alwansan/CP/actions/runs/40909488249
-- Native / Android Gradle build: https://github.com/alwansan/CP/actions/runs/40906164948
-
-كل الملفات والتعديلات تخص `experiment/rea-source-recovery` فقط، ولا يوجد دمج مع `main` أو تغيير بالفرع الأصلي `feature/local-account`.
+تقتصر جميع تغييرات الاسترجاع على فرع `experiment/rea-source-recovery`.
