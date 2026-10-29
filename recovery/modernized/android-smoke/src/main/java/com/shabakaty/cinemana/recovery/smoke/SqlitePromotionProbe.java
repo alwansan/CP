@@ -169,6 +169,6 @@ public final class SqlitePromotionProbe {
             }
             checks++;
         }
-        return "PASS (" + checks + " persisted SQLite cases)";
+        return "PASS (" + checks + " in-memory SQLite cases)";
     }
 }
