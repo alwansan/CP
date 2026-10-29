@@ -72,6 +72,14 @@ public class RenameAssets {
 """ + method + "\n}\n", "utf-8")
         (p/"RenameTest.java").write_text(r"""public class RenameTest {
     static int checks;
+    static void invoke(Object subtitleDb,Object downloadStore,String parent,String base) {
+        try {
+            java.lang.reflect.Method method=RenameAssets.class.getDeclaredMethod(
+                "renameSubtitlesFor",Object.class,Object.class,String.class,String.class);
+            method.setAccessible(true);
+            method.invoke(null,subtitleDb,downloadStore,parent,base);
+        } catch (Exception e) {throw new AssertionError("reflection invocation failed", e);}
+    }
     static void check(boolean value,String label) {
         checks++; if(!value)throw new AssertionError(label);
     }
@@ -82,7 +90,7 @@ public class RenameAssets {
     public static void main(String[] args) {
         RenameAssets.Database subs=new RenameAssets.Database(),downloads=new RenameAssets.Database();
         RenameAssets.rawQueries=0;
-        RenameAssets.renameSubtitlesFor(subs,downloads,null,"Video");
+        invoke(subs,downloads,null,"Video");
         check(RenameAssets.rawQueries==0,"null parent returns without query");
 
         subs.cursor=new RenameAssets.Cursor();
