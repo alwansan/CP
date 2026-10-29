@@ -8,10 +8,13 @@
 
 .field public final synthetic b:Landroidx/recyclerview/widget/LinearLayoutManager;
 
+# Last end-of-list position already delivered to the pagination callback.
+.field private c:I
+
 
 # direct methods
 .method public constructor <init>(Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;Landroidx/recyclerview/widget/LinearLayoutManager;)V
-    .locals 0
+    .locals 1
 
     iput-object p1, p0, Lcom/shabakaty/downloader/gv1;->a:Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
 
@@ -20,94 +23,70 @@
     .line 1
     invoke-direct {p0}, Landroidx/recyclerview/widget/RecyclerView$r;-><init>()V
 
+    const/4 v0, -0x1
+
+    iput v0, p0, Lcom/shabakaty/downloader/gv1;->c:I
+
     return-void
 .end method
 
 
 # virtual methods
 .method public onScrolled(Landroidx/recyclerview/widget/RecyclerView;II)V
-    .locals 0
+    .locals 2
 
-    const-string p2, "recyclerView"
+    const-string v0, "recyclerView"
 
-    invoke-static {p1, p2}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
+    invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
 
-    .line 1
-    iget-object p1, p0, Lcom/shabakaty/downloader/gv1;->a:Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
-
-    invoke-static {p1}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->t(Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;)Lcom/shabakaty/downloader/cv1;
-
-    move-result-object p1
-
-    iget-object p1, p1, Lcom/shabakaty/downloader/cv1;->N:Landroidx/recyclerview/widget/RecyclerView;
-
+    # Avoid allocating boxed integers and firing pagination on every pixel at the edge.
     invoke-virtual {p1}, Landroidx/recyclerview/widget/RecyclerView;->getAdapter()Landroidx/recyclerview/widget/RecyclerView$e;
 
-    move-result-object p1
+    move-result-object v0
 
-    if-nez p1, :cond_0
+    if-eqz v0, :perf_done
 
-    const/4 p1, 0x0
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$e;->getItemCount()I
 
-    goto :goto_0
+    move-result v0
 
-    :cond_0
-    invoke-virtual {p1}, Landroidx/recyclerview/widget/RecyclerView$e;->getItemCount()I
+    if-lez v0, :perf_done
 
-    move-result p1
+    add-int/lit8 v0, v0, -0x1
 
-    invoke-static {p1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    iget-object v1, p0, Lcom/shabakaty/downloader/gv1;->b:Landroidx/recyclerview/widget/LinearLayoutManager;
 
-    move-result-object p1
+    if-eqz v1, :perf_done
 
-    :goto_0
-    const/4 p2, 0x0
+    invoke-virtual {v1}, Landroidx/recyclerview/widget/LinearLayoutManager;->k1()I
 
-    if-nez p1, :cond_1
+    move-result v1
 
-    const/4 p1, 0x0
+    if-ne v1, v0, :perf_reset
 
-    goto :goto_1
+    iget v1, p0, Lcom/shabakaty/downloader/gv1;->c:I
 
-    .line 2
-    :cond_1
-    invoke-virtual {p1}, Ljava/lang/Integer;->intValue()I
+    if-eq v1, v0, :perf_done
 
-    move-result p1
+    iget-object v1, p0, Lcom/shabakaty/downloader/gv1;->a:Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
 
-    add-int/lit8 p1, p1, -0x1
+    invoke-virtual {v1}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getOnScrolledToEnd()Lcom/shabakaty/downloader/rm1;
 
-    .line 3
-    :goto_1
-    iget-object p3, p0, Lcom/shabakaty/downloader/gv1;->b:Landroidx/recyclerview/widget/LinearLayoutManager;
+    move-result-object v1
 
-    if-nez p3, :cond_2
+    if-eqz v1, :perf_done
 
-    goto :goto_2
+    iput v0, p0, Lcom/shabakaty/downloader/gv1;->c:I
 
-    :cond_2
-    invoke-virtual {p3}, Landroidx/recyclerview/widget/LinearLayoutManager;->k1()I
+    invoke-interface {v1}, Lcom/shabakaty/downloader/rm1;->invoke()Ljava/lang/Object;
 
-    move-result p2
+    goto :perf_done
 
-    :goto_2
-    if-ne p2, p1, :cond_4
+    :perf_reset
+    const/4 v0, -0x1
 
-    .line 4
-    iget-object p1, p0, Lcom/shabakaty/downloader/gv1;->a:Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
+    iput v0, p0, Lcom/shabakaty/downloader/gv1;->c:I
 
-    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getOnScrolledToEnd()Lcom/shabakaty/downloader/rm1;
-
-    move-result-object p1
-
-    if-nez p1, :cond_3
-
-    goto :goto_3
-
-    :cond_3
-    invoke-interface {p1}, Lcom/shabakaty/downloader/rm1;->invoke()Ljava/lang/Object;
-
-    :cond_4
-    :goto_3
+    :perf_done
     return-void
 .end method
