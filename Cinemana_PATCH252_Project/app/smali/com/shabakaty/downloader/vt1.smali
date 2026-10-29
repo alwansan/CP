@@ -534,7 +534,12 @@
 
     invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
+    move-result-wide v0
+
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->refresh(Ljava/lang/Object;)V
+
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->homeRefresh(J)V
 
     .line 2
     invoke-virtual {p0, p0}, Lcom/shabakaty/downloader/hj;->b2(Landroidx/fragment/app/Fragment;)Z
@@ -590,7 +595,7 @@
 .end method
 
 .method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
-    .locals 1
+    .locals 3
 
     const-string v0, "view"
 
@@ -602,6 +607,9 @@
     const-string v0, "home_view_created"
 
     invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
+    move-result-wide v1
 
     .line 2
     iget-object p1, p0, Lcom/shabakaty/downloader/hj;->t:Landroidx/databinding/ViewDataBinding;
@@ -692,7 +700,9 @@
 
     invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->j(Landroidx/recyclerview/widget/RecyclerView$r;)V
 
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->refresh(Ljava/lang/Object;)V
+    # Home onResume is the authoritative refresh; do not reload the same
+    # continue-watching data and notifyDataSetChanged twice on initial display.
+    invoke-static {v1, v2}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->homeSetup(J)V
 
     return-void
 .end method
