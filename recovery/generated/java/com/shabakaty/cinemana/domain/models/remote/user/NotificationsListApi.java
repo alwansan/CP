@@ -15,7 +15,8 @@ import kotlin.Metadata;
 public final /* data */ class NotificationsListApi {
 
     @c14("new")
-    public String new;
+    // Kotlin property `new` conflicts with Java keyword; keep serialized API name via annotation.
+    public String newValue;
 
     @c14("notifications")
     public List<VideoModelApi> notifications;
@@ -24,7 +25,7 @@ public final /* data */ class NotificationsListApi {
         w21 w21Var = w21.r;
         j32.e(BuildConfig.FLAVOR, "new");
         j32.e(w21Var, "notifications");
-        this.new = BuildConfig.FLAVOR;
+        this.newValue = BuildConfig.FLAVOR;
         this.notifications = w21Var;
     }
 
@@ -36,16 +37,16 @@ public final /* data */ class NotificationsListApi {
             return false;
         }
         NotificationsListApi notificationsListApi = (NotificationsListApi) obj;
-        return j32.a(this.new, notificationsListApi.new) && j32.a(this.notifications, notificationsListApi.notifications);
+        return j32.a(this.newValue, notificationsListApi.newValue) && j32.a(this.notifications, notificationsListApi.notifications);
     }
 
     public int hashCode() {
-        return this.notifications.hashCode() + (this.new.hashCode() * 31);
+        return this.notifications.hashCode() + (this.newValue.hashCode() * 31);
     }
 
     public String toString() {
         StringBuilder sbA = um3.a("NotificationsListApi(new=");
-        sbA.append(this.new);
+        sbA.append(this.newValue);
         sbA.append(", notifications=");
         sbA.append(this.notifications);
         sbA.append(')');
