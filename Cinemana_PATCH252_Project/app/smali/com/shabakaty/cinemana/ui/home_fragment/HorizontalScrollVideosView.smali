@@ -212,6 +212,10 @@
 
     invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setAdapter(Landroidx/recyclerview/widget/RecyclerView$e;)V
 
+    const/4 p2, 0x0
+
+    invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setItemAnimator(Landroidx/recyclerview/widget/RecyclerView$j;)V
+
     .line 8
     invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
 
