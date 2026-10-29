@@ -16,11 +16,14 @@ This directory is an independent reverse-engineering workspace originating from
 - Latest JDK syntax audit: **849/851 staged Java files parse successfully; 2 still have syntax errors** (`MkvExporter`, generated Data Binding `gk1`).
 - The 8-method regression workflow passes **112 tests**: enhancements (15), coroutine (12), subtitle renaming (14), subtitle preview (11), H264 readiness (14), episode retrieval (17), MKV video watcher (14), and MLKit/GMS SQLite schema validation (15).
 - New `modernized/core-downloads` has a **fail-closed, read-only** preflight for MKV database promotion with **19 passing JDK tests**; this does not overwrite the legacy transaction. (Run 40920074702)
+- New `modernized/core-downloads/MkvPromotionCoordinator` models three-store compensating rollback, readback verification and explicit `ROLLBACK_FAILED` reporting; **60 Java assertions pass** using failure-injected fake stores. No production DAO connected; crash safety still requires a durable journal. (Run 40923843681)
 - New `SearchScreenRefs` in `legacy-resources` maps eight original search view IDs; **34 XML/gk1 structural checks pass**, and the Android module compiles. The complete LiveData/DataBinding bridge is not yet reconstructed. (Run 40920074702)
+- New `modernized/core-search` implements `RECENT/EDITING/LOADING/RESULTS/EMPTY`, stale-response rejection and tab state with **41 Java assertions** (run 40923843681). `SearchLiveDataBridge` and port-based `SearchScreenController` wire it to AndroidX Lifecycle and original stable search IDs; AppCompat/Material adapters remain a future integration boundary.
 - Actual Android Gradle Library `modernized/android-bridge` with Media3 compiles.
 - `modernized/legacy-resources` builds original APKTool `res` and `assets` into an Android AAR (verified by GitHub Actions run 40911283952).
 - `modernized/android-smoke` now builds a **diagnostic-only** signed Android APK under `com.shabakaty.cinemana.recovery.smoke` with Media3, the original 49 native shared libraries, and bundled `res`/`assets` including `ffmpeg`. Verified full integration: run 40911943683. This is not Cinemana or a substitute for its UI/account/download/player behavior. The Android 10 x86_64 emulator installation passed in run 40914736533: APK installed and launched, and the UI displayed Media3 High 10 adapter: PASS.
 - The updated diagnostic Android app ran successfully on Android 10 emulator with **Media3 High 10 adapter: PASS**, **MKV promotion preflight: PASS** and **Original search layout: PASS** (run 40919940462). These are diagnostic subsystem checks, not original Cinemana app functionality.
+- The `legacy-resources` Gradle module stages a copy of the APKTool res folder and removes only 3 overlapping font attributes already provided by AndroidX Core. Source APKTool files stay byte-for-byte unmodified; this avoids AndroidX resource-merging collisions during diagnostic APK builds.
 - Native and resource AAR compilation does not imply original Cinemana app functionality.
 - `modernized/legacy-native` packages 49 shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
@@ -33,6 +36,7 @@ This directory is an independent reverse-engineering workspace originating from
 - `reports/REMAINING_BLOCKERS_AR.md`: syntax blocker classification and next steps
 - `reports/REA_INDEPENDENT_DECOMPILATION_AR.md`: REA results, unresolved type placeholders, and Data Binding caveats
 - `reports/SAFE_MIGRATION_AND_SEARCH_BINDING_AR.md`: non-mutating MKV DB preflight and original search UI structure
+- `reports/TRANSACTION_AND_SEARCH_STATES_AR.md`: rollback failure injection, LiveData state and resource integration caveats
 - `tests/episodes/`, `tests/mkvwatcher/`, `tests/sqliteschema/`: real-body Java regressions for episode network handling, completed-video export readiness, and SQLite schema verification
 - `modernized/`: distinct Gradle modules, separately compiled and tested
 - `tests/workfolders/`: actual Java source with test doubles for reflection-based callers
@@ -62,5 +66,5 @@ bash Cinemana_PATCH252_Project/build.sh
 Build the reconstructed Gradle libraries:
 ```sh
 cd recovery/modernized
-gradle --no-daemon :core-video:check :core-downloads:check :android-bridge:assembleDebug :legacy-native:assembleDebug :legacy-resources:assembleDebug :android-smoke:assembleDebug
+gradle --no-daemon :core-video:check :core-downloads:check :core-search:check :android-bridge:assembleDebug :legacy-native:assembleDebug :legacy-resources:assembleDebug :android-smoke:assembleDebug
 ```
