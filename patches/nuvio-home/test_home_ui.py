@@ -101,9 +101,10 @@ class HomeOverlayTests(unittest.TestCase):
         smali = ROOT / "smali"
         binding = (smali / "com/shabakaty/downloader/rj1.smali").read_text()
         adapter = (smali / "com/shabakaty/downloader/yt1.smali").read_text()
-        bridge = (smali / "com/shabakaty/cinemana/ca1/NuvioHomeDiff.smali").read_text()
-        update = (smali / "com/shabakaty/cinemana/ca1/NuvioHomeUpdateCallback.smali").read_text()
-        compare = (smali / "com/shabakaty/cinemana/ca1/NuvioHomeItemCallback.smali").read_text()
+        helpers = ROOT / "smali_classes10/com/shabakaty/cinemana/ca1"
+        bridge = (helpers / "NuvioHomeDiff.smali").read_text()
+        update = (helpers / "NuvioHomeUpdateCallback.smali").read_text()
+        compare = (helpers / "NuvioHomeItemCallback.smali").read_text()
         self.assertIn("NuvioHomeDiff;->submit(", binding)
         self.assertNotIn("invoke-static {v0}, Landroidx/recyclerview/widget/j;->a(", binding)
         self.assertIn("NuvioHomeDiff;->init(", adapter)
@@ -112,7 +113,7 @@ class HomeOverlayTests(unittest.TestCase):
         self.assertIn("Landroidx/recyclerview/widget/d;-><init>", bridge)
         self.assertIn("->execute(Ljava/lang/Runnable;)V", bridge)
         self.assertIn("NuvioHomeCommit;-><init>", bridge)
-        complete = (smali / "com/shabakaty/cinemana/ca1/NuvioHomeCommit.smali").read_text()
+        complete = (helpers / "NuvioHomeCommit.smali").read_text()
         self.assertIn("Landroidx/recyclerview/widget/e;->f:Ljava/util/List;", complete)
         self.assertIn("Lcom/shabakaty/downloader/yt1;->c:Ljava/util/List;", complete)
         self.assertIn("->g:I", bridge)
