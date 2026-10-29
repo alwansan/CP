@@ -35,12 +35,20 @@ public final class RecoverySmokeActivity extends Activity {
                 new MkvPromotionPreflight.DownloadRow(12, "diagnostic-external", "Sample.mp4"),
                 new MkvPromotionPreflight.CinemanaRow("diagnostic-item", 12, "Sample.mp4")).ready();
         boolean searchXml = verifyOriginalSearchXml();
+        String sqliteCheck;
+        try {
+            sqliteCheck = SqlitePromotionProbe.run();
+        } catch (Throwable failure) {
+            android.util.Log.e("CinemanaRecoverySmoke", "Ephemeral SQLite probe failed", failure);
+            sqliteCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
+        }
         TextView message = new TextView(this);
         message.setPadding(48, 64, 48, 64);
         message.setText("Cinemana source recovery diagnostic host\n"
                 + "Media3 High 10 adapter: " + (high10 ? "PASS" : "FAIL") + "\n"
                 + "MKV promotion preflight: " + (preflight ? "PASS" : "FAIL") + "\n"
                 + "Original search layout: " + (searchXml ? "PASS" : "FAIL") + "\n"
+                + "SQLite persisted rollback: " + sqliteCheck + "\n"
                 + "This APK is NOT the original Cinemana application.");
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
