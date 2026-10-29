@@ -208,6 +208,26 @@ class HomeOverlayTests(unittest.TestCase):
         self.assertIn("setHasFixedSize(Z)V",policy)
         self.assertIn("setItemViewCacheSize(I)V",policy)
 
+    def test_skips_identical_poster_and_section_lists_without_worker_job(self):
+        helpers = ROOT / "smali_classes10/com/shabakaty/cinemana/ca1"
+        snapshot = (helpers / "NuvioDiffSnapshots.smali").read_text()
+        guard = (helpers / "NuvioGuardedDiffTask.smali").read_text()
+        for name in ("NuvioPosterDiff.smali", "NuvioHomeDiff.smali"):
+            with self.subTest(adapter=name):
+                code = (helpers / name).read_text()
+                self.assertIn("NuvioDiffSnapshots;->sameReferences(", code)
+                self.assertIn(":nuvio_snapshot", code)
+                self.assertIn("NuvioGuardedDiffTask;-><init>", code)
+                self.assertIn("invoke-interface {v7, v6}", code)
+                self.assertLess(code.index("->sameReferences("), code.index("Ljava/util/ArrayList;"))
+                self.assertIn("->g:I", code)
+        self.assertIn("if-ne v3, v4, :different", snapshot)
+        self.assertIn("Landroidx/recyclerview/widget/e;->g:I", guard)
+        self.assertIn("if-ne v0, v1, :done", guard)
+        # The root list's dimensions are viewport-fixed across data changes.
+        fragment = (ROOT / "smali/com/shabakaty/downloader/vt1.smali").read_text()
+        self.assertIn("->setHasFixedSize(Z)V", fragment)
+
 
 if __name__ == "__main__":
     unittest.main()

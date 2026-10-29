@@ -41,6 +41,18 @@
     .locals 14
     if-eqz p1, :done
     iget-object v0, p0, Lcom/shabakaty/downloader/jj;->d:Landroidx/recyclerview/widget/e;
+    # No-op if the new list holds the same items in the same positions.
+    # Still cancel any queued older diff generation before returning.
+    iget-object v2, v0, Landroidx/recyclerview/widget/e;->e:Ljava/util/List;
+    invoke-static {p1, v2}, Lcom/shabakaty/cinemana/ca1/NuvioDiffSnapshots;->sameReferences(Ljava/util/List;Ljava/util/List;)Z
+    move-result v3
+    if-eqz v3, :nuvio_snapshot
+    iget v3, v0, Landroidx/recyclerview/widget/e;->g:I
+    add-int/lit8 v3, v3, 0x1
+    iput v3, v0, Landroidx/recyclerview/widget/e;->g:I
+    return-void
+
+    :nuvio_snapshot
     new-instance v1, Ljava/util/ArrayList;
     invoke-direct {v1, p1}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
 
@@ -69,7 +81,9 @@
     invoke-direct/range {v8 .. v13}, Landroidx/recyclerview/widget/d;-><init>(Landroidx/recyclerview/widget/e;Ljava/util/List;Ljava/util/List;ILjava/lang/Runnable;)V
     iget-object v7, v0, Landroidx/recyclerview/widget/e;->b:Landroidx/recyclerview/widget/c;
     iget-object v7, v7, Landroidx/recyclerview/widget/c;->a:Ljava/util/concurrent/Executor;
-    invoke-interface {v7, v8}, Ljava/util/concurrent/Executor;->execute(Ljava/lang/Runnable;)V
+    new-instance v6, Lcom/shabakaty/cinemana/ca1/NuvioGuardedDiffTask;
+    invoke-direct {v6, v0, v3, v8}, Lcom/shabakaty/cinemana/ca1/NuvioGuardedDiffTask;-><init>(Landroidx/recyclerview/widget/e;ILjava/lang/Runnable;)V
+    invoke-interface {v7, v6}, Ljava/util/concurrent/Executor;->execute(Ljava/lang/Runnable;)V
     return-void
 
     # Immediate initial/empty-list path with matching range notifications.

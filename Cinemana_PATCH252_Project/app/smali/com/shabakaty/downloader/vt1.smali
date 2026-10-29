@@ -675,6 +675,11 @@
     const/4 v0, 0x0
     invoke-virtual {p1, v0}, Landroidx/recyclerview/widget/RecyclerView;->setItemAnimator(Landroidx/recyclerview/widget/RecyclerView$j;)V
 
+    # The root list fills the full viewport; section updates must not trigger
+    # unnecessary parent measurement while home content is being refreshed.
+    const/4 v0, 0x1
+    invoke-virtual {p1, v0}, Landroidx/recyclerview/widget/RecyclerView;->setHasFixedSize(Z)V
+
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->refresh(Ljava/lang/Object;)V
 
     return-void
