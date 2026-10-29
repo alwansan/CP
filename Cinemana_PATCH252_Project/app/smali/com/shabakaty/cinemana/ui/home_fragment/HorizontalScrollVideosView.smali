@@ -375,8 +375,12 @@
     if-nez v1, :nuvio_pool_check
     const/4 v1, 0x0
     invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView;->setItemAnimator(Landroidx/recyclerview/widget/RecyclerView$j;)V
+    # Poster cards share the same dimensions. Avoid remeasuring and retain
+    # two previously bound poster holders for seamless reverse scrolling.
     const/4 v1, 0x1
-    invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView;->setItemViewCacheSize(I)V
+    invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView;->setHasFixedSize(Z)V
+    const/4 v2, 0x2
+    invoke-virtual {v0, v2}, Landroidx/recyclerview/widget/RecyclerView;->setItemViewCacheSize(I)V
     iput-boolean v1, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->T:Z
 
     :nuvio_pool_check
