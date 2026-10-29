@@ -67,6 +67,12 @@ This directory is an independent reverse-engineering workspace originating from
 - `tests/enhancements/`, `tests/renameassets/`, `tests/coroutine/`, `tests/subtitlepreview/`, `tests/renderer/`: tests extracting the real restored method bodies
 - `scripts/`: repeatable recovery and audit tools
 
+## Recovered Room 2-to-3 collection handling (diagnostic)
+
+The source-first `LegacyRoomV2CollectionPlanner` reuses the recovered JSON episode projection and the original `jt2.smali` root grouping/title behavior, but **rejects ambiguous or occupied numeric collection IDs**. This intentionally differs from the legacy `CONFLICT_IGNORE` insert behavior for malformed and colliding records. The isolated Android `LegacyRoomV2CollectionSqliteProbe` executes the original `it2$b` collection table CREATE and `it2$l` old collection INSERT SELECT SQL using in-memory fixtures; it verifies that existing collection names and cover paths survive, new roots are inserted exactly once, reruns cannot duplicate them and aborted transactions roll back.
+
+`recovery/scripts/verify_original_room_json_sql_guard.py` checks that the embedded SQL remains identical to original Smali. `recovery/scripts/verify_modernized_gradle_tasks.py` guards Gradle JavaExec task registration and check dependencies against syntax drift, in addition to the Android Gradle workflows. None of this writes to user databases, and production Room v2 migration parity remains incomplete.
+
 ## Key rules
 
 1. The original APKTool/Smali tree is still the reference build. No change has been made to it here.
