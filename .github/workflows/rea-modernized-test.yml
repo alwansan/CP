@@ -84,6 +84,17 @@ jobs:
             recovery/modernized/core-downloads/src/test/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2RowWriteGuardTest.java
           java -cp recovery/modernized/build/test-room-guard \
             com.shabakaty.cinemana.recovery.downloads.LegacyRoomV2RowWriteGuardTest
+      - name: Verify Room 2-to-3 collection planner (JDK)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovery/modernized/build/test-room-collections
+          javac -encoding UTF-8 -d recovery/modernized/build/test-room-collections \
+            recovery/modernized/core-downloads/src/main/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2EpisodeMetadata.java \
+            recovery/modernized/core-downloads/src/main/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2CollectionPlanner.java \
+            recovery/modernized/core-downloads/src/test/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2CollectionPlannerTest.java
+          java -cp recovery/modernized/build/test-room-collections \
+            com.shabakaty.cinemana.recovery.downloads.LegacyRoomV2CollectionPlannerTest
       - name: Compile and test clean High10 Java module
         shell: bash
         run: |
