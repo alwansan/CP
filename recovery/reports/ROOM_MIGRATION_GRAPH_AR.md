@@ -33,7 +33,7 @@
 4. `recovery/scripts/test_original_room_migration_sql.py`: يشغّل SQL الأصلي لتحويل Downloads 1→2 وإعادة تسمية الترجمات 4→5، ويحاكي مقاطعة العملية وrollback عبر SQLite داخل الذاكرة.
 5. `recovery/scripts/test_original_room_3_to_4.py`: يشغّل أوامر `kt2` الأصلية في SQLite مؤقت مع قيم وهمية لقياس الحفاظ على المفاتيح والحقول بعد إعادة البناء، ويختبر rollback.
 
-جميع الأمثلة **بيانات مصطنعة**؛ تتوافق مع الأعمدة اللازمة للاختبار ولا تشكل نسخاً حقيقية من مخططات Room v1–v4 التاريخية. لا يُشغّل ترحيل JSON 2→3 (الاختبار 2→3 يقتصر على SQL)، ولا اختبارات ORM/SQLite على قواعد الإنتاج، ولا يتحقق من الهوية الفعلية للملفات على القرص.
+جميع الأمثلة **بيانات مصطنعة**؛ تتوافق مع الأعمدة اللازمة للاختبار ولا تشكل نسخاً حقيقية من مخططات Room v1–v4 التاريخية. لم يُنقل تنفيذ ترحيل JSON 2→3 الكامل؛ أضيفت وحدة Java لعرض بيانات الحلقة واختبار Android للنص JSON، بينما يظل اختبار قاعدة البيانات 2→3 مقتصراً على SQL، ولا اختبارات ORM/SQLite على قواعد الإنتاج، ولا يتحقق من الهوية الفعلية للملفات على القرص.
 
 لتشغيل فحوص المصادر:
 
@@ -44,6 +44,23 @@ python3 recovery/scripts/test_original_room_2_to_3_sql.py
 python3 recovery/scripts/test_original_room_migration_sql.py
 python3 recovery/scripts/test_original_room_3_to_4.py
 ```
+
+## استرجاع جزء JSON من ترحيل 2→3 — 30 أكتوبر 2026
+
+جرى تحليل تعليمات `jt2.smali` التي تمر على `SELECT * FROM DownloadItem` وتقرأ `videoFile`. مصدر JSON الأصلي هو `ea2.b` مع نموذج عناصر Gson المشوشة `ca2/z92`. الكود يختار `videoModel.kind == "2"`، ثم يستخرج:
+- `nb` → معرف العنصر، و`episodeNummer` → رقم الحلقة، و`season`.
+- `rootSeries` → `rootEpisode`، باستثناء القيمة الحرفية `"0"`، فيُستخدم `nb` بدلاً منها.
+- `title` بعد تحويل سطر جديد إلى مسافة، واستبدال `" , "` و`" ، "` بمسافة.
+- `vd5.B(rootEpisode)` يحاول تحويل الهوية إلى عدد صحيح، ويرجع صفراً عند عدم القدرة على التحويل.
+- عند تجميع المجموعات يستعمل `distinctBy(rootEpisode)` و`split(" ")` ثم `dropLast(4)`، وليس اختيار أول أربع كلمات كما قد يُفهم بالخطأ.
+
+تم حفظ جزء **مقروء وقابل للتجميع من Java** في `modernized/core-downloads/src/main/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2EpisodeMetadata.java`؛ يستقبل Map ناتجة عن JSON محلّل مسبقاً، ويعيد `Projection` دون كتابة على SQLite. يجتاز اختبارات `LegacyRoomV2EpisodeMetadataTest` (حالات missing keys، صيغة عنوان عربي/إنجليزي، numeric kind، rootSeries 0، int overflow، تكرار الجذر، ومرفوضات الأنواع).
+
+كما أضيف:
+- `scripts/verify_original_room_json_projection.py` لحماية ترتيب المفاتيح وتعليمات Smali من الانحراف أثناء إعادة البناء.
+- `android-smoke/LegacyRoomJsonProbe.java` للتجربة على Android: يقرأ **JSON نصياً** عبر `org.json` ثم يمرر الكائن إلى Java المسترجعة. يختبر ثماني حالات مستقلة ويظهر `Legacy Room JSON projection: PASS (8 Android JSON fixture scenarios)` على شاشة التشخيص عندما ينجح الاختبار على المحاكي.
+
+**حدود التكافؤ:** `org.json` ليس Gson الأصلي، ونموذج Map يتعمّد رفض أنواع غير متوقعة بدلاً من محاكاة كل استثناء في المصدر. الاختبار لا ينفّذ SQL + JSON + كتابة النتائج داخل Room ضمن معاملة واحدة، ولا يستبدل `jt2` أو `MkvExporter`. كذلك فإن SQL القديم ينسخ `DownloadItem WHERE finished = 1` في خطوة منفصلة عن المرور على JSON؛ يجب مطابقة السلوك إذا لم يكن العنصر ضمن مجموعة النتائج المستهدفة، ومنع تحديث صف مجاور بالخطأ. قاعدة البيانات الحقيقية وملفات المستخدم لم تُفتح.
 
 ## منع الترحيل الخاطئ أثناء إعادة بناء السورس
 
