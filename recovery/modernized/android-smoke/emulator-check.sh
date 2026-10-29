@@ -46,12 +46,17 @@ ui_dump() {
 }
 screen_has() {
     local wanted="$1"
-    for attempt in 1 2 3 4 5; do
+    for attempt in 1 2 3 4 5 6 7 8; do
         ui_dump
         if test -s "$report/window.xml" && grep -Fq "$wanted" "$report/window.xml"; then
             return 0
         fi
-        sleep 2
+        if (( attempt % 2 == 0 )); then
+            adb shell input swipe 160 260 160 720 250
+        else
+            adb shell input swipe 160 720 160 260 250
+        fi
+        sleep 1
     done
     echo "ANDROID_UI_MISSING: $wanted"
     return 1
@@ -59,7 +64,7 @@ screen_has() {
 tap_label() {
     local label="$1"
     local coordinates=""
-    for attempt in 1 2 3 4 5; do
+    for attempt in 1 2 3 4 5 6 7 8; do
         ui_dump
         coordinates="$(python3 - "$report/window.xml" "$label" <<'PY'
 import re, sys, xml.etree.ElementTree as ET
@@ -80,7 +85,11 @@ PY
             sleep 2
             return 0
         fi
-        adb shell input swipe 160 720 160 260 250
+        if (( attempt % 2 == 0 )); then
+            adb shell input swipe 160 260 160 720 250
+        else
+            adb shell input swipe 160 720 160 260 250
+        fi
         sleep 1
     done
     echo "ANDROID_UI_CLICK_TARGET_MISSING: $label"
