@@ -150,6 +150,11 @@ echo "JOURNAL_PROCESS_RESTART_PASS: pending on-disk diagnostic journal recovered
 # After each of three partial-write points, force-stop the Android process.
 # A fresh process must reopen and compensate BOTH databases from the journal.
 for phase in 1 2 3; do
+    # After a successful recovery, the old Activity can still be top-most.
+    # Without force-stop here, "am start" may deliver an intent to the same
+    # instance WITHOUT rerunning onCreate; this caused CI phase 2 to time out.
+    adb shell am force-stop "$package"
+    sleep 1
     adb shell am start -W -n "$package/.MultiDatabaseProcessActivity" \
         --es mode prepare --ei phase "$phase" |
         tee "$report/multidb-phase-${phase}-prepare.txt"
