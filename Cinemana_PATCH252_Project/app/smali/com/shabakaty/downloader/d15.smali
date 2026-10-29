@@ -2304,6 +2304,10 @@
     invoke-virtual {v0, v1}, Lcom/google/android/material/appbar/AppBarLayout;->d(Lcom/google/android/material/appbar/AppBarLayout$c;)V
 
     .line 5
+    const-string v0, "detail_destroy_view"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
     invoke-super {p0}, Lcom/shabakaty/downloader/hj;->onDestroyView()V
 
     return-void
@@ -2314,6 +2318,10 @@
 
     .line 1
     invoke-super {p0}, Landroidx/fragment/app/Fragment;->onResume()V
+
+    const-string v0, "detail_visible"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     .line 2
     invoke-virtual {p0}, Lcom/shabakaty/downloader/hj;->c2()Lcom/shabakaty/downloader/xk;
@@ -2360,6 +2368,10 @@
 
     .line 1
     invoke-super {p0, p1, p2}, Lcom/shabakaty/downloader/hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+
+    const-string v0, "detail_view_created"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Enhancements;->install(Ljava/lang/Object;Landroid/view/View;)V
 
