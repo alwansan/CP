@@ -185,89 +185,72 @@ public class kf5 implements pr2 {
         return (int) (((long) Integer.rotateLeft((int) (((long) i) * (-862048943)), 15)) * 461845907);
     }
 
-    /* JADX WARN: Code duplicated, block: B:49:0x00f6  */
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r13v0 */
-    /* JADX WARN: Type inference failed for: r13v1, types: [android.database.Cursor] */
-    /* JADX WARN: Type inference failed for: r13v2 */
-    public static void p(com.google.android.gms.measurement.internal.b bVar, SQLiteDatabase sQLiteDatabase, String str, String str2, String str3, String[] strArr) throws Throwable {
-        Cursor cursorQuery;
-        if (bVar == null) {
+    /**
+     * Reconstructed from com/shabakaty/downloader/kf5.p Smali. This method
+     * audits an existing SQLite table and creates it (or adds optional columns)
+     * when required. Keep the MLKit/GMS monitor logging and cursor lifecycle.
+     */
+    public static void p(com.google.android.gms.measurement.internal.b monitor,
+            SQLiteDatabase database, String table, String createSql,
+            String requiredColumns, String[] extraColumnSql) throws Throwable {
+        if (monitor == null) {
             throw new IllegalArgumentException("Monitor must not be null");
         }
-        ?? r13 = 0;
+
+        Cursor existing = null;
         try {
+            boolean found;
             try {
-                cursorQuery = sQLiteDatabase.query("SQLITE_MASTER", new String[]{"name"}, "name=?", new String[]{str}, null, null, null);
-                try {
-                    boolean zMoveToFirst = cursorQuery.moveToFirst();
-                    cursorQuery.close();
-                    if (!zMoveToFirst) {
-                        sQLiteDatabase.execSQL(str2);
-                    }
-                } catch (SQLiteException e) {
-                    e = e;
-                    bVar.i.e("Error querying for table", str, e);
-                    if (cursorQuery != null) {
-                        cursorQuery.close();
-                    }
+                existing = database.query("SQLITE_MASTER", new String[]{"name"},
+                        "name=?", new String[]{table}, null, null, null);
+                found = existing.moveToFirst();
+                existing.close();
+                existing = null;
+            } catch (SQLiteException error) {
+                monitor.i.e("Error querying for table", table, error);
+                if (existing != null) {
+                    existing.close();
+                    existing = null;
                 }
-            } catch (Throwable th) {
-                th = th;
-                r13 = str2;
-                if (r13 != 0) {
-                    r13.close();
-                }
-                throw th;
+                found = false;
             }
-        } catch (SQLiteException e2) {
-            e = e2;
-            cursorQuery = null;
-        } catch (Throwable th2) {
-            th = th2;
-            if (r13 != 0) {
-                r13.close();
+            if (!found) {
+                database.execSQL(createSql);
             }
-            throw th;
+        } finally {
+            if (existing != null) {
+                existing.close();
+            }
         }
+
         try {
-            HashSet hashSet = new HashSet();
-            StringBuilder sb = new StringBuilder(str.length() + 22);
-            sb.append("SELECT * FROM ");
-            sb.append(str);
-            sb.append(" LIMIT 0");
-            Cursor cursorRawQuery = sQLiteDatabase.rawQuery(sb.toString(), null);
+            HashSet<String> present = new HashSet<>();
+            Cursor columns = database.rawQuery("SELECT * FROM " + table + " LIMIT 0", null);
             try {
-                Collections.addAll(hashSet, cursorRawQuery.getColumnNames());
-                cursorRawQuery.close();
-                for (String str4 : str3.split(",")) {
-                    if (!hashSet.remove(str4)) {
-                        StringBuilder sb2 = new StringBuilder(str.length() + 35 + String.valueOf(str4).length());
-                        sb2.append("Table ");
-                        sb2.append(str);
-                        sb2.append(" is missing required column: ");
-                        sb2.append(str4);
-                        throw new SQLiteException(sb2.toString());
-                    }
-                }
-                if (strArr != null) {
-                    for (int i = 0; i < strArr.length; i += 2) {
-                        if (!hashSet.remove(strArr[i])) {
-                            sQLiteDatabase.execSQL(strArr[i + 1]);
-                        }
-                    }
-                }
-                if (hashSet.isEmpty()) {
-                    return;
-                }
-                bVar.i.e("Table has extra columns. table, columns", str, TextUtils.join(", ", hashSet));
-            } catch (Throwable th3) {
-                cursorRawQuery.close();
-                throw th3;
+                Collections.addAll(present, columns.getColumnNames());
+            } finally {
+                columns.close();
             }
-        } catch (SQLiteException e3) {
-            bVar.f.d("Failed to verify columns on table that was just created", str);
-            throw e3;
+            for (String required : requiredColumns.split(",")) {
+                if (!present.remove(required)) {
+                    throw new SQLiteException("Table " + table
+                            + " is missing required column: " + required);
+                }
+            }
+            if (extraColumnSql != null) {
+                for (int i = 0; i < extraColumnSql.length; i += 2) {
+                    if (!present.remove(extraColumnSql[i])) {
+                        database.execSQL(extraColumnSql[i + 1]);
+                    }
+                }
+            }
+            if (!present.isEmpty()) {
+                monitor.i.e("Table has extra columns. table, columns",
+                        table, TextUtils.join(", ", present));
+            }
+        } catch (SQLiteException error) {
+            monitor.f.d("Failed to verify columns on table that was just created", table);
+            throw error;
         }
     }
 
