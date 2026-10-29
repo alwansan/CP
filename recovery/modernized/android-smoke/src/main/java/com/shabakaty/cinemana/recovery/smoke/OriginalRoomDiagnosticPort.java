@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.shabakaty.cinemana.recovery.downloads.MkvPromotionCoordinator;
 import com.shabakaty.cinemana.recovery.downloads.MkvPromotionPreflight;
+import com.shabakaty.cinemana.recovery.downloads.LegacyDownloadIdentityResolver;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -116,6 +117,22 @@ final class OriginalRoomDiagnosticPort implements MkvPromotionCoordinator.Port {
         List<String[]> rows = downloadRows();
         need(rows.size() == 1, "Downloads composite key missing/duplicated");
         String[] row = rows.get(0);
+        // The legacy exporter scans all Downloads, and sometimes rewrites
+        // task IDs using a fuzzy best-score match. A full row snapshot lets
+        // the modernized adapter reject identical paths across other keys.
+        List<String[]> all = query(downloads,
+                "SELECT task_id,external_id,path,title,size_bytes FROM Downloads",
+                null, 5);
+        List<LegacyDownloadIdentityResolver.Candidate> candidates = new ArrayList<>();
+        for (String[] candidate : all) {
+            candidates.add(new LegacyDownloadIdentityResolver.Candidate(
+                    Integer.parseInt(candidate[0]), candidate[1], candidate[2],
+                    candidate[3], Long.parseLong(candidate[4])));
+        }
+        LegacyDownloadIdentityResolver.Selection selection =
+                LegacyDownloadIdentityResolver.resolve(
+                        request.downloadTaskId, request.externalId, row[2], candidates);
+        need(selection.canWrite(), "Downloads identity rejected: " + selection.reason);
         if (oldDownloadPath == null) {
             oldDownloadPath = row[2];
             oldBytes = Long.parseLong(row[3]);

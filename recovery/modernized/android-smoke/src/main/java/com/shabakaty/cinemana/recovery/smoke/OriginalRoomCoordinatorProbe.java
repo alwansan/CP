@@ -118,7 +118,7 @@ public final class OriginalRoomCoordinatorProbe {
 
     public static String run() {
         int cases = 0;
-        for (int scenario = 0; scenario < 4; scenario++) {
+        for (int scenario = 0; scenario < 5; scenario++) {
             try (SQLiteDatabase dl = SQLiteDatabase.create(null);
                  SQLiteDatabase cine = SQLiteDatabase.create(null)) {
                 fill(dl, cine);
@@ -131,11 +131,31 @@ public final class OriginalRoomCoordinatorProbe {
                             "id=?", new String[]{"item1"}) == 1,
                             "fixture task identity changed");
                 }
+                if (scenario == 4) {
+                    ContentValues collision = new ContentValues();
+                    collision.put("path", "Episode.mp4");
+                    check(dl.update("Downloads", collision,
+                            "task_id=? AND external_id=?",
+                            new String[]{"17", "other-download"}) == 1,
+                            "fixture Downloads path collision");
+                }
                 OriginalRoomDiagnosticPort port =
                         new OriginalRoomDiagnosticPort(dl, cine, REQUEST, scenario == 1);
                 MkvPromotionCoordinator.Result result =
                         MkvPromotionCoordinator.promote(REQUEST, port);
-                if (scenario == 0) {
+                if (scenario == 4) {
+                    check(result.status == MkvPromotionCoordinator.Status.REJECTED,
+                            "shared source path rejects selection");
+                    check("Episode.mp4".equals(scalar(dl,
+                            "SELECT path FROM Downloads WHERE task_id=17 AND external_id='external1'")),
+                            "original download unchanged");
+                    check("Episode.mp4".equals(scalar(dl,
+                            "SELECT path FROM Downloads WHERE task_id=17 AND external_id='other-download'")),
+                            "colliding neighbor unchanged");
+                    check("Episode.mp4".equals(scalar(cine,
+                            "SELECT path FROM CinemanaDownloadItem WHERE id='item1'")),
+                            "Cinemana unchanged after collision");
+                } else if (scenario == 0) {
                     check(result.status == MkvPromotionCoordinator.Status.SUCCESS,
                             "two-database coordinator success");
                     checkRows(dl, cine, true);
