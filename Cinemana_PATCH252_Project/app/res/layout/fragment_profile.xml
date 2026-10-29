@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:tag="layout/fragment_profile_0" android:layout_width="fill_parent" android:layout_height="fill_parent" android:importantForAccessibility="no"
+<FrameLayout android:background="@color/nuvio_home_background" android:tag="layout/fragment_profile_0" android:layout_width="fill_parent" android:layout_height="fill_parent" android:importantForAccessibility="no"
   xmlns:android="http://schemas.android.com/apk/res/android" xmlns:acc="http://schemas.android.com/apk/res-auto" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:debounce="http://schemas.android.com/apk/res-auto" xmlns:drawee="http://schemas.android.com/apk/res-auto">
     <androidx.core.widget.NestedScrollView android:orientation="vertical" android:id="@id/profile_scroll_view" android:paddingBottom="112dp" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:accessibilityLiveRegion="assertive">
         <androidx.constraintlayout.widget.ConstraintLayout android:tag="binding_1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:importantForAccessibility="no">
