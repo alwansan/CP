@@ -43,6 +43,8 @@ This directory is an independent reverse-engineering workspace originating from
 
 - Source-first `LegacyRoomV2EpisodeMetadata` now projects selected `kind="2"` episode metadata from an already decoded JSON Map, normalizes titles, handles `rootSeries="0"`, and groups unique collection roots. The new Java regression suite and original `jt2.smali` projection parity guard pass in `rea-modernized-test`. A separate Android diagnostic converts **synthetic** raw JSON using `org.json` and requires 8 fixture cases on emulator; this adapter is NOT the original relocated Gson parser, nor a full Room 2->3 migration or production DAO.
 
+- The Room 2->3 JSON/SQLite diagnostic now combines the **exact original** `it2$c` CREATE and `it2$m` finished-only INSERT SQL with a fail-closed `LegacyRoomV2RowWriteGuard`. The Android fixture compares source ID, projected `videoModel.nb`, target ID and `downloadTaskId` before any update and tests rollback, unfinished rows, cross-row aliases and SQL-safe quoted IDs. `recovery/scripts/verify_original_room_json_sql_guard.py` checks the embedded SQL against Smali. Only synthetic, in-memory data are used; historical Room migration parity is still incomplete.
+
 ## Source files and reports
 
 - `generated/java/`: staged reconstructed Java, including obfuscated dependency layer
