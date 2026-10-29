@@ -31,6 +31,8 @@
 .end field
 
 .field public final d:Lcom/shabakaty/downloader/et0;
+
+.field public e:Landroidx/recyclerview/widget/e;
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "Lcom/shabakaty/downloader/et0<",
@@ -79,6 +81,8 @@
 
     .line 9
     invoke-virtual {p0, p1}, Landroidx/recyclerview/widget/RecyclerView$e;->setHasStableIds(Z)V
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/NuvioHomeDiff;->init(Lcom/shabakaty/downloader/yt1;)V
 
     return-void
 .end method

@@ -527,44 +527,8 @@
     .line 36
     invoke-static {v6, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
 
-    .line 37
-    iget-object v0, v9, Lcom/shabakaty/downloader/yt1;->d:Lcom/shabakaty/downloader/et0;
-
-    iget-object v1, v9, Lcom/shabakaty/downloader/yt1;->c:Ljava/util/List;
-
-    invoke-static {v0}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;
-
-    const-string v2, "oldList"
-
-    .line 38
-    invoke-static {v1, v2}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    const-string v2, "newList"
-
-    invoke-static {v6, v2}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 39
-    iput-object v1, v0, Lcom/shabakaty/downloader/et0;->a:Ljava/util/List;
-
-    .line 40
-    iput-object v6, v0, Lcom/shabakaty/downloader/et0;->b:Ljava/util/List;
-
-    .line 41
-    iget-object v0, v0, Lcom/shabakaty/downloader/et0;->c:Lcom/shabakaty/downloader/et0$c;
-
-    invoke-static {v0}, Landroidx/recyclerview/widget/j;->a(Landroidx/recyclerview/widget/j$b;)Landroidx/recyclerview/widget/j$d;
-
-    move-result-object v0
-
-    .line 42
-    iput-object v6, v9, Lcom/shabakaty/downloader/yt1;->c:Ljava/util/List;
-
-    .line 43
-    new-instance v1, Landroidx/recyclerview/widget/b;
-
-    invoke-direct {v1, v9}, Landroidx/recyclerview/widget/b;-><init>(Landroidx/recyclerview/widget/RecyclerView$e;)V
-
-    invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/j$d;->a(Lcom/shabakaty/downloader/ni2;)V
+    # Nonblocking home section diff with generation-safe commits.
+    invoke-static {v9, v6}, Lcom/shabakaty/cinemana/ca1/NuvioHomeDiff;->submit(Lcom/shabakaty/downloader/yt1;Ljava/util/List;)V
 
     :cond_19
     :goto_12
