@@ -165,8 +165,11 @@ public final class MkvPromotionCoordinatorTest {
             port = new FakePort();port.fail = "verify";port.restoreFail = failing;
             result = promote(REQUEST, port);
             ok(result.status == Status.ROLLBACK_FAILED, "rollback failure surfaced: " + failing);
-            ok(result.rollbackErrors.size()==1 && result.rollbackErrors.get(0).startsWith(failing.substring("restore".length()).toLowerCase() + ":"),
+            ok(result.rollbackErrors.stream().anyMatch(e ->
+                    e.startsWith(failing.substring("restore".length()).toLowerCase() + ":")),
                     "specific rollback failure reported " + failing);
+            ok(result.rollbackErrors.contains("readback:restored_state_mismatch"),
+                    "incomplete rollback also flagged by persisted readback " + failing);
             ok(port.calls.contains("restoreSubtitles") && port.calls.contains("restoreCinemana")
                     && port.calls.contains("restoreDownload"), "all compensations attempted even after failure");
         }
