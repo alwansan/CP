@@ -96,6 +96,25 @@ jobs:
           python3 -m json.tool "$RUNNER_TEMP/rea-class-search.json" >/dev/null
           echo "Class search: PASS"
 
+      - name: Decompile a real Cinemana method with REA
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$GITHUB_WORKSPACE/Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
+          timeout 360 rea inspect-android-method "$apk" \
+            com.shabakaty.cinemana.player.H26410SoftwareRenderer isHigh10 --format json \
+            > "$RUNNER_TEMP/rea-method.json" 2> "$RUNNER_TEMP/rea-method-stderr.txt"
+          python3 - <<'PY'
+          import json, os
+          path = os.environ['RUNNER_TEMP'] + '/rea-method.json'
+          with open(path, encoding='utf-8') as f:
+              result = json.load(f)
+          n = result.get('normalized_result', {})
+          print('REA method decompilation: JSON PASS')
+          print('Method result keys:', list(n)[:30])
+          print('Method excerpt:', json.dumps(n, ensure_ascii=False)[:2000])
+          PY
+
       - name: Upload limited test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -109,3 +128,5 @@ jobs:
             ${{ runner.temp }}/rea-inspect-stderr.txt
             ${{ runner.temp }}/rea-class-search.json
             ${{ runner.temp }}/rea-class-search-stderr.txt
+            ${{ runner.temp }}/rea-method.json
+            ${{ runner.temp }}/rea-method-stderr.txt
