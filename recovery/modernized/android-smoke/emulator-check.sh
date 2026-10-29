@@ -105,5 +105,7 @@ tap_label 'Filter fixture'
 screen_has 'Filter events: 1'
 tap_label 'Clear sample search'
 screen_has 'Search state: RECENT'
+tap_label 'Select Series tab'
+screen_has 'tab=1'
 adb exec-out screencap -p > "$report/search-screenshot.png" || true
 echo "SEARCH_FLOW_PASS: source-first LiveData binding, fixture submission, filter and clear verified on Android"
