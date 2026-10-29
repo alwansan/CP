@@ -19,7 +19,7 @@ for file in helpers:
   if signature.startswith('('):
    if name in ('onCreate','onPause','onStartJob','onStopJob','clone'):continue
    assert re.search(r'^\.method (?:[^\n]* )?'+re.escape(name+signature)+r'$',target,re.M) or re.search(r'^\.super Landroid/',target,re.M),(file,owner,name,signature)
-  else:assert re.search(r'^\.field[^\n]* '+re.escape(name+signature)+r'
+  else:assert re.search(r'^\.field[^\n]* '+re.escape(name+signature)+r'$',target,re.M),(file,owner,name,signature,[line for line in target.splitlines() if line.lstrip().startswith('.field')][:35])
   checked+=1
 # The API factory and all personal route consumers share the wrapped interface.
 assert 'LocalRuntime;->wrap' in classes['Lcom/shabakaty/downloader/t55;'][1]
