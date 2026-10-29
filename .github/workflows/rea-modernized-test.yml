@@ -11,6 +11,7 @@ on:
       - 'recovery/scripts/verify_original_room_migration_graph.py'
       - 'recovery/scripts/test_original_room_migration_sql.py'
       - 'recovery/scripts/test_original_room_3_to_4.py'
+      - 'recovery/scripts/test_original_room_2_to_3_sql.py'
       - '.github/workflows/rea-modernized-test.yml'
 
 permissions:
@@ -38,6 +39,9 @@ jobs:
       - name: Run original Room migration SQL in disposable in-memory SQLite
         shell: bash
         run: python3 recovery/scripts/test_original_room_migration_sql.py
+      - name: Test SQL-only 2-to-3 Room copy and rollback
+        shell: bash
+        run: python3 recovery/scripts/test_original_room_2_to_3_sql.py
       - name: Test 3-to-4 Room remaps on synthetic, disposable SQLite
         shell: bash
         run: python3 recovery/scripts/test_original_room_3_to_4.py
