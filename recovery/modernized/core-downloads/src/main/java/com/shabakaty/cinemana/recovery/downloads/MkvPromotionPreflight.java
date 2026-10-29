@@ -48,11 +48,19 @@ public final class MkvPromotionPreflight {
         public final int taskId;
         public final String externalId;
         public final String path;
+        // Original size is required for lossless rollback of Downloads.
+        // -1 indicates that the legacy adapter did not capture it.
+        public final long originalBytes;
 
         public DownloadRow(int taskId, String externalId, String path) {
+            this(taskId, externalId, path, -1L);
+        }
+
+        public DownloadRow(int taskId, String externalId, String path, long originalBytes) {
             this.taskId = taskId;
             this.externalId = externalId;
             this.path = path;
+            this.originalBytes = originalBytes;
         }
     }
 
