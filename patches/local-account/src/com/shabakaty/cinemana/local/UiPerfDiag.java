@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH279";
+    private static final String BUILD = "PATCH280";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -60,6 +60,9 @@ public final class UiPerfDiag {
     private static long mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs;
     private static long homeRefreshCount, homeRefreshNs, homeRefreshMaxNs;
     private static long homeSetupCount, homeSetupNs, homeSetupMaxNs;
+    private static long homeInflateCount, homeInflateNs, homeInflateMaxNs;
+    private static long detailInflateCount, detailInflateNs, detailInflateMaxNs;
+    private static long layoutMaxNs, drawMaxNs;
 
     private static final class Snapshot {
         final String screen;
@@ -72,7 +75,7 @@ public final class UiPerfDiag {
         boolean hasData() {
             return v[0]>0 || v[13]>0 || v[15]>0 || v[17]>0 ||
                 v[19]>0 || v[24]>0 || v[25]>0 || v[26]>0 ||
-                v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0;
+                v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0 || v[42]>0 || v[45]>0;
         }
     }
 
@@ -86,7 +89,10 @@ public final class UiPerfDiag {
             posterStarted, posterReady, posterFailed, posterFallback,
             mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs,
             homeRefreshCount, homeRefreshNs, homeRefreshMaxNs,
-            homeSetupCount, homeSetupNs, homeSetupMaxNs};
+            homeSetupCount, homeSetupNs, homeSetupMaxNs,
+            homeInflateCount, homeInflateNs, homeInflateMaxNs,
+            detailInflateCount, detailInflateNs, detailInflateMaxNs,
+            layoutMaxNs, drawMaxNs};
         Snapshot snap=new Snapshot(screen, System.currentTimeMillis(), now,
             Math.max(1,now-lastCaptureMs),v);
         lastCaptureMs=now;
@@ -100,6 +106,9 @@ public final class UiPerfDiag {
         mainProbes=mainOver50=mainOver100=mainOver250=mainMaxNs=0;
         homeRefreshCount=homeRefreshNs=homeRefreshMaxNs=0;
         homeSetupCount=homeSetupNs=homeSetupMaxNs=0;
+        homeInflateCount=homeInflateNs=homeInflateMaxNs=0;
+        detailInflateCount=detailInflateNs=detailInflateMaxNs=0;
+        layoutMaxNs=drawMaxNs=0;
         return snap;
     }
 
@@ -210,6 +219,8 @@ public final class UiPerfDiag {
                     drawNs += Math.max(0, draw);
                     syncNs += Math.max(0, sync);
                     commandNs += Math.max(0, command);
+                    if (layout > layoutMaxNs) layoutMaxNs = layout;
+                    if (draw > drawMaxNs) drawMaxNs = draw;
                 }
             };
             measuredWindow = window;
@@ -303,6 +314,21 @@ public final class UiPerfDiag {
     }
 
 
+    /** Wall time of the fragment's DataBinding inflate, not its first GPU-presented frame. */
+    public static void inflate(int area, long startedNanos) {
+        if (!installed || startedNanos <= 0) return;
+        long ns=Math.max(0,SystemClock.elapsedRealtimeNanos()-startedNanos);
+        synchronized (LOCK) {
+            if (area == 1) {
+                homeInflateCount++; homeInflateNs+=ns;
+                if (ns > homeInflateMaxNs) homeInflateMaxNs=ns;
+            } else if (area == 2) {
+                detailInflateCount++; detailInflateNs+=ns;
+                if (ns > detailInflateMaxNs) detailInflateMaxNs=ns;
+            }
+        }
+    }
+
     public static void diff(long startedNanos) {
         if (!installed || startedNanos <= 0) return;
         long ns = Math.max(0L, SystemClock.elapsedRealtimeNanos() - startedNanos);
@@ -353,7 +379,7 @@ public final class UiPerfDiag {
         try {
             long[] v=snap.v;
             String snapshot=String.format(Locale.US,
-                "{\"schema\":1,\"build\":\"%s\",\"session\":%d,\"utc_ms\":%d,\"elapsed_ms\":%d,\"visible\":%b,\"screen\":\"%s\",\"window_ms\":%d,\"frames\":%d,\"frame_avg_ms\":%.2f,\"frame_max_ms\":%.2f,\"over_24ms\":%d,\"over_32ms\":%d,\"over_50ms\":%d,\"over_100ms\":%d,\"over_200ms\":%d,\"dropped_reported\":%d,\"layout_sum_ms\":%.1f,\"draw_sum_ms\":%.1f,\"sync_sum_ms\":%.1f,\"command_sum_ms\":%.1f,\"scroll_home\":%d,\"scroll_home_px\":%d,\"scroll_horizontal\":%d,\"scroll_horizontal_px\":%d,\"scroll_vertical\":%d,\"scroll_vertical_px\":%d,\"diff_count\":%d,\"diff_avg_ms\":%.2f,\"diff_max_ms\":%.2f,\"diff_over_16\":%d,\"diff_over_32\":%d,\"diff_skipped\":%d,\"pagination\":%d,\"lifecycle\":%d,\"poster_start\":%d,\"poster_success\":%d,\"poster_failed\":%d,\"poster_fallback\":%d,\"main_probes\":%d,\"main_over_50ms\":%d,\"main_over_100ms\":%d,\"main_over_250ms\":%d,\"main_max_ms\":%.2f,\"home_refresh_count\":%d,\"home_refresh_avg_ms\":%.2f,\"home_refresh_max_ms\":%.2f,\"home_setup_count\":%d,\"home_setup_avg_ms\":%.2f,\"home_setup_max_ms\":%.2f,\"process_cpu_ms\":%d,\"java_heap_used_kb\":%d,\"native_heap_used_kb\":%d,\"threads_approx\":%d}",
+                "{\"schema\":1,\"build\":\"%s\",\"session\":%d,\"utc_ms\":%d,\"elapsed_ms\":%d,\"visible\":%b,\"screen\":\"%s\",\"window_ms\":%d,\"frames\":%d,\"frame_avg_ms\":%.2f,\"frame_max_ms\":%.2f,\"over_24ms\":%d,\"over_32ms\":%d,\"over_50ms\":%d,\"over_100ms\":%d,\"over_200ms\":%d,\"dropped_reported\":%d,\"layout_sum_ms\":%.1f,\"draw_sum_ms\":%.1f,\"sync_sum_ms\":%.1f,\"command_sum_ms\":%.1f,\"scroll_home\":%d,\"scroll_home_px\":%d,\"scroll_horizontal\":%d,\"scroll_horizontal_px\":%d,\"scroll_vertical\":%d,\"scroll_vertical_px\":%d,\"diff_count\":%d,\"diff_avg_ms\":%.2f,\"diff_max_ms\":%.2f,\"diff_over_16\":%d,\"diff_over_32\":%d,\"diff_skipped\":%d,\"pagination\":%d,\"lifecycle\":%d,\"poster_start\":%d,\"poster_success\":%d,\"poster_failed\":%d,\"poster_fallback\":%d,\"main_probes\":%d,\"main_over_50ms\":%d,\"main_over_100ms\":%d,\"main_over_250ms\":%d,\"main_max_ms\":%.2f,\"home_refresh_count\":%d,\"home_refresh_avg_ms\":%.2f,\"home_refresh_max_ms\":%.2f,\"home_setup_count\":%d,\"home_setup_avg_ms\":%.2f,\"home_setup_max_ms\":%.2f,\"home_inflate_count\":%d,\"home_inflate_avg_ms\":%.2f,\"home_inflate_max_ms\":%.2f,\"detail_inflate_count\":%d,\"detail_inflate_avg_ms\":%.2f,\"detail_inflate_max_ms\":%.2f,\"layout_max_ms\":%.2f,\"draw_max_ms\":%.2f,\"process_cpu_ms\":%d,\"java_heap_used_kb\":%d,\"native_heap_used_kb\":%d,\"threads_approx\":%d}",
                 BUILD,session,snap.timestamp,snap.elapsedMs,snap.foreground,snap.screen,snap.durationMs,
                 v[0],v[0]==0?0.0:v[1]/1e6/v[0],v[2]/1e6,v[4],v[5],v[6],v[7],v[8],v[3],
                 v[9]/1e6,v[10]/1e6,v[11]/1e6,v[12]/1e6,
@@ -362,7 +388,10 @@ public final class UiPerfDiag {
                 v[25],v[26],v[27],v[28],v[29],v[30],
                 v[31],v[32],v[33],v[34],v[35]/1e6,
                 v[36],v[36]==0?0.0:v[37]/1e6/v[36],v[38]/1e6,
-                v[39],v[39]==0?0.0:v[40]/1e6/v[39],v[41]/1e6,cpuDelta,
+                v[39],v[39]==0?0.0:v[40]/1e6/v[39],v[41]/1e6,
+                v[42],v[42]==0?0.0:v[43]/1e6/v[42],v[44]/1e6,
+                v[45],v[45]==0?0.0:v[46]/1e6/v[45],v[47]/1e6,
+                v[48]/1e6,v[49]/1e6,cpuDelta,
                 (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024,
                 Debug.getNativeHeapAllocatedSize()/1024,Thread.activeCount());
             append(snapshot);
