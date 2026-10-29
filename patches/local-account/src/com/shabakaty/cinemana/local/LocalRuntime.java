@@ -23,7 +23,7 @@ public final class LocalRuntime {
  static volatile boolean scanCancelled;private static volatile long lastMigrationAttempt;private static long storageProbe,lastStateSnapshot;private static volatile boolean stateDirty;
  static final long INTERVAL=60*60*1000L;
  public static synchronized void init(Context context){
-  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH269");
+  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH273");
   IO.execute(new Runnable(){public void run(){try{data();ensureLegacy();try{if(!data().config("upgrade268","0").equals("1")){snapshotLegacy(true);data().setConfig("upgrade268","1");log("account_upgrade268_complete");}}catch(Exception upgrade){failure("account_upgrade268",upgrade);}schedule();requestScan(false);}catch(Exception e){failure("init",e);}}});
  }
  static File sharedDirectory(){return new File(Environment.getExternalStorageDirectory(),"Cinemana/work/data/local-account");}
@@ -333,6 +333,7 @@ public final class LocalRuntime {
  }catch(Exception e){failure("schedule",e);}}
  static void requestBaseline(final String id){NETWORK.execute(()->{try{LocalAccountStore account=data();if(account.find(ListKind.SUBSCRIPTION,id)==null||account.hasBaseline(id))return;JSONArray fetched=episodes(id);List<Item> items=episodeItems(item(id),fetched);if(!items.isEmpty()){account=data();account.reconcile(id,items);log("subscription_baseline id="+safeId(id)+" count="+account.baselineSize(id));}}catch(Exception e){failure("subscription_baseline",e);}});}
  static List<Item> episodeItems(Item show,JSONArray episodes)throws Exception {List<Item> items=new ArrayList<>();for(int n=0;n<episodes.length();n++){JSONObject o=episodes.getJSONObject(n);String id=o.optString("nb");if(!id.matches("[A-Za-z0-9_-]{1,100}"))throw new IOException("invalid episode id");JSONObject compact=new JSONObject();for(String key:new String[]{"nb","kind","rootSeries","season","episodeNummer","ar_title","en_title","imgObjUrl","imgThumbObjUrl","imgMediumThumbObjUrl","publishDate","duration"})if(o.has(key))compact.put(key,o.get(key));items.add(new Item(id,show.title+" — "+o.optString("season","")+":"+o.optString("episodeNummer",""),0,compact.toString()));}return items;}
+ public static void foreground(Context context){init(context);log("foreground_episode_scan_requested");requestScan(true);}
  public static void requestScan(final boolean force){if(app==null||!scanning.compareAndSet(false,true))return;NETWORK.execute(new Runnable(){public void run(){try{scanCancelled=false;scan(force);}catch(Exception e){failure("scan",e);}finally{scanning.set(false);}}});}
  static void scan(boolean force)throws Exception{
   LocalAccountStore s=data();long now=System.currentTimeMillis(),last=Long.parseLong(s.config("last_scan","0"));

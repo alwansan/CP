@@ -2097,6 +2097,8 @@
     .line 1
     invoke-super {p0}, Lcom/shabakaty/downloader/r9;->onStart()V
 
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->foreground(Landroid/content/Context;)V
+
     .line 2
     invoke-static {}, Lcom/shabakaty/downloader/j51;->b()Lcom/shabakaty/downloader/j51;
 

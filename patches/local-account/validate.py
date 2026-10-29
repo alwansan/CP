@@ -71,3 +71,12 @@ source=root.parents[1]/'patches/local-account/src/com/shabakaty/cinemana/local'
 ui=(source/'AccountUi.java').read_text();assert '"ic_continue"' in ui and 'drawIcon(icon,"ic_btn_play")' not in ui
 assert 'Metadata269.merge(Metadata269.local(id),meta)' in (source/'LocalRuntime.java').read_text()
 print('PASS PATCH269 original continue renderer, non-downgrading metadata snapshot, stale-URL recovery native contracts')
+
+# Final image failure is callback c; f is only an intermediate-image failure.
+poster=(root.parents[1]/'patches/local-account/src/com/shabakaty/cinemana/local/PosterFallback.java').read_text()
+assert 'if(name.equals("c"))' in poster and 'if(name.equals("f"))' not in poster
+controller=classes['Lcom/facebook/drawee/controller/AbstractDraweeController;'][1]
+assert 'final_failed @ onFailure' in controller and 'ControllerListener;->c(Ljava/lang/String;Ljava/lang/Throwable;)V' in controller
+home=classes['Lcom/shabakaty/cinemana/ui/home_activity/HomeActivity;'][1]
+assert 'LocalRuntime;->foreground(Landroid/content/Context;)V' in home.split('.method public onStart()V')[1].split('.end method')[0]
+print('PASS PATCH273 foreground entry and native final-image-failure callback contract')

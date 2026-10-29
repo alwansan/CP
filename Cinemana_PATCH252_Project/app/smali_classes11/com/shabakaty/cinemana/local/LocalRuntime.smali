@@ -2538,6 +2538,22 @@
     return-void
 .end method
 
+.method public static foreground(Landroid/content/Context;)V
+    .locals 0
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->init(Landroid/content/Context;)V
+
+    const-string p0, "foreground_episode_scan_requested"
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
+
+    const/4 p0, 0x1
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->requestScan(Z)V
+
+    return-void
+.end method
+
 .method private static hex([B)Ljava/lang/String;
     .locals 7
 
@@ -3105,7 +3121,7 @@
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/LocalAccountLog;->init(Landroid/content/Context;)V
 
-    const-string p0, "build=PATCH269"
+    const-string p0, "build=PATCH273"
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
 

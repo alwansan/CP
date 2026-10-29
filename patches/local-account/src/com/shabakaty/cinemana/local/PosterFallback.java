@@ -8,7 +8,7 @@ public final class PosterFallback {
  private static boolean valid(String url){try{java.net.URI uri=new java.net.URI(url);return ("https".equals(uri.getScheme())||"http".equals(uri.getScheme()))&&uri.getHost()!=null;}catch(Exception e){return false;}}
  public static String source(View view,String primary,String thumbnail){
   try{String resource=view.getResources().getResourceEntryName(view.getId());if(!"video_info_poster".equals(resource)&&!"simpleDraweeView2".equals(resource))return primary;
-   String p=primary==null?"":primary,t=thumbnail==null?"":thumbnail;if(!valid(p)&&valid(t))p=t;
+   String p=primary==null?"":primary,t=thumbnail==null?"":thumbnail;if("simpleDraweeView2".equals(resource)&&valid(t)){String original=p;p=t;t=original;}if(!valid(p)&&valid(t))p=t;
    State state=new State(p,t);states.put(view,state);LocalRuntime.log("poster_begin key="+state.key+" source="+valid(p)+" thumbnail="+valid(t));return p.isEmpty()?null:p;
   }catch(Exception ignored){return primary;}
  }
@@ -18,7 +18,7 @@ public final class PosterFallback {
    Object callback=Proxy.newProxyInstance(listener.getClassLoader(),new Class[]{listener},(proxy,method,args)->{
     String name=method.getName();if(method.getDeclaringClass()==Object.class){if(name.equals("hashCode"))return System.identityHashCode(proxy);if(name.equals("equals"))return proxy==args[0];return "LocalPosterListener";}
     if(name.equals("b"))LocalRuntime.log("poster_ready key="+state.key);
-    if(name.equals("f")){LocalRuntime.log("poster_failed key="+state.key+" type="+(args!=null&&args.length>1&&args[1] instanceof Throwable?LocalRuntime.causeTypes((Throwable)args[1]):"unknown"));
+    if(name.equals("c")){LocalRuntime.log("poster_failed key="+state.key+" type="+(args!=null&&args.length>1&&args[1] instanceof Throwable?LocalRuntime.causeTypes((Throwable)args[1]):"unknown"));
      View target=weak.get();if(target!=null)target.post(()->{View current=weak.get();if(current==null||states.get(current)!=state||state.attempted||!valid(state.thumbnail)||state.primary.equals(state.thumbnail))return;
       try{Object active=current.getClass().getMethod("getController").invoke(current);if(active!=controller)return;state.attempted=true;LocalRuntime.log("poster_thumbnail_fallback key="+state.key);current.getClass().getMethod("setImageURI",String.class).invoke(current,state.thumbnail);}catch(Exception e){LocalRuntime.failure("poster_fallback",e);}
      });
