@@ -14,7 +14,7 @@ PORT = ROOT / "recovery/modernized/legacy-resources/src/main/java/com/shabakaty/
 ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 EXPECTED = {
-    "search_root_coordinator": ("androidx.coordinatorlayout.widget.CoordinatorLayout", None),
+    "search_root_coordinator": ("androidx.coordinatorlayout.widget.CoordinatorLayout", "layout/fragment_search_0"),
     "search_app_bar_layout": ("com.google.android.material.appbar.AppBarLayout", None),
     "searchView": ("androidx.appcompat.widget.SearchView", "binding_1"),
     "imageView5": ("androidx.appcompat.widget.AppCompatImageView", None),
