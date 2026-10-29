@@ -430,7 +430,7 @@ public class b35 extends a35 {
         boolean z10;
         long j9;
         boolean z11;
-        ?? r10;
+        int r10;
         int iIntValue2;
         long j10;
         boolean zIsEmpty2;
@@ -734,7 +734,7 @@ public class b35 extends a35 {
                 } else if (!z4) {
                     iIntValue = num.intValue();
                 }
-                r10 = z11;
+                r10 = z11 ? 1 : 0;
                 if ((j & 8224) != 0) {
                     r10 = 0;
                 } else if (z5) {
@@ -1332,7 +1332,7 @@ public class b35 extends a35 {
             } else if (!z4) {
                 iIntValue = num.intValue();
             }
-            r10 = z11;
+            r10 = z11 ? 1 : 0;
             if ((j & 8224) != 0) {
                 r10 = 0;
             } else if (z5) {
@@ -2014,7 +2014,7 @@ public class b35 extends a35 {
             } else if (!z4) {
                 iIntValue = num.intValue();
             }
-            r10 = z11;
+            r10 = z11 ? 1 : 0;
             if ((j & 8224) != 0) {
                 r10 = 0;
             } else if (z5) {
@@ -2613,7 +2613,7 @@ public class b35 extends a35 {
         } else if (!z4) {
             iIntValue = num.intValue();
         }
-        r10 = z11;
+        r10 = z11 ? 1 : 0;
         if ((j & 8224) != 0) {
             r10 = 0;
         } else if (z5) {
