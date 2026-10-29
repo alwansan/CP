@@ -67,31 +67,31 @@ public final class r25 {
     /* JADX WARN: Type inference failed for: r2v9 */
     public int hashCode() {
         boolean z = this.a;
-        ?? r0 = z;
+        int r0 = z ? 1 : 0;
         if (z) {
             r0 = 1;
         }
         int i = r0 * 31;
         boolean z2 = this.b;
-        ?? r2 = z2;
+        int r2 = z2 ? 1 : 0;
         if (z2) {
             r2 = 1;
         }
         int i2 = (i + r2) * 31;
         boolean z3 = this.c;
-        ?? r3 = z3;
+        int r3 = z3 ? 1 : 0;
         if (z3) {
             r3 = 1;
         }
         int i3 = (i2 + r3) * 31;
         boolean z4 = this.d;
-        ?? r4 = z4;
+        int r4 = z4 ? 1 : 0;
         if (z4) {
             r4 = 1;
         }
         int i4 = (i3 + r4) * 31;
         boolean z5 = this.e;
-        return this.f.hashCode() + ((i4 + (z5 ? 1 : z5)) * 31);
+        return this.f.hashCode() + ((i4 + (z5 ? 1 : 0)) * 31);
     }
 
     public String toString() {
