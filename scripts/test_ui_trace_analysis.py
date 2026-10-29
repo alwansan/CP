@@ -13,9 +13,9 @@ with tempfile.TemporaryDirectory() as tmp:
          "over_32ms":3, "over_50ms":1, "over_100ms":0,
          "scroll_home":9, "diff_count":2, "diff_max_ms":14, "diff_skipped":7},
         {"schema":1, "build":"PATCH277", "session":42, "utc_ms":1200, "event":"detail_visible"},
-        {"schema":1, "build":"PATCH277", "session":42, "utc_ms":2000,
+        {"schema":1, "build":"PATCH278", "session":42, "utc_ms":2000,
          "screen":"details", "frames":10, "frame_avg_ms":10, "frame_max_ms":19,
-         "over_32ms":0, "over_50ms":0, "over_100ms":0, "poster_failed":1},
+         "over_32ms":0, "over_50ms":0, "over_100ms":0, "poster_failed":1, "main_probes":4, "main_over_100ms":2, "main_max_ms":309},
     ]
     target.write_text("\n".join(json.dumps(x) for x in sample) + "\ncorrupt\n", encoding="utf-8")
     records, bad = read_records([target])
@@ -25,7 +25,7 @@ with tempfile.TemporaryDirectory() as tmp:
     assert report["overall"]["over_32ms"] == 3
     assert report["overall"]["diff_count"] == 2
     assert report["overall"]["diff_skipped"] == 7
-    assert report["overall"]["poster_failed"] == 1
+    assert report["overall"]["poster_failed"] == 1\n    assert report["overall"]["main_over_100ms"] == 2\n    assert report["screens"]["details"]["main_max_ms"] == 309
     assert report["screens"]["home"]["scroll_events"] == 9
     assert report["events"]["detail_visible"] == 1
     assert report["worst_windows"][0]["screen"] == "home"
