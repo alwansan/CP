@@ -437,108 +437,76 @@ public final class MkvExporter {
         return nonEmpty(strNormalizeKey) ? "media:" + strNormalizeKey + "|s=" + digitsOnly(str2) + "|e=" + digitsOnly(str3) : "path:" + normalizeKey(str4);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r0v1 */
-    /* JADX WARN: Type inference failed for: r0v11 */
-    /* JADX WARN: Type inference failed for: r0v12 */
-    /* JADX WARN: Type inference failed for: r0v2, types: [java.lang.Object] */
-    /* JADX WARN: Type inference failed for: r0v36 */
-    /* JADX WARN: Type inference failed for: r0v37 */
-    /* JADX WARN: Type inference failed for: r0v38 */
-    /* JADX WARN: Type inference failed for: r0v4 */
-    /* JADX WARN: Type inference failed for: r11v10 */
-    /* JADX WARN: Type inference failed for: r11v12 */
-    /* JADX WARN: Type inference failed for: r11v13 */
-    /* JADX WARN: Type inference failed for: r11v14 */
-    /* JADX WARN: Type inference failed for: r11v15 */
-    /* JADX WARN: Type inference failed for: r11v3, types: [java.io.File] */
-    /* JADX WARN: Type inference failed for: r11v6, types: [java.io.File] */
-    /* JADX WARN: Type inference failed for: r11v7 */
-    /* JADX WARN: Type inference failed for: r11v8 */
-    /* JADX WARN: Type inference failed for: r11v9, types: [java.io.File] */
-    /* JADX WARN: Type inference failed for: r3v5, types: [java.io.File] */
-    public static void waitForCompletedVideoAndExport(Context context, String str, String str2, String str3, String str4, Object obj) throws Exception {
-        ?? r11;
-        File fileLocateVideoForItem;
-        long jCurrentTimeMillis = System.currentTimeMillis();
+    /**
+     * Original source recovered from the watcher in smali_classes3/MkvExporter.smali.
+     *
+     * Never export a partially written MP4. Require the same file and size to
+     * remain unchanged for QUIET_MS; prefer a fresh MP4 sibling over any
+     * already-exported MKV. Source and download-model changes are best effort.
+     */
+    private static void waitForCompletedVideoAndExport(Context context, String collection,
+            String title, String season, String episode, Object downloadModel) throws Exception {
+        long startedAt = System.currentTimeMillis();
         appendExternalLog(context, "watcher started; waiting for final video filename (not .temp)");
-        ?? r0 = 0;
-        long j = -1;
-        long j2 = 0;
-        long jCurrentTimeMillis2 = 0;
-        while (System.currentTimeMillis() - jCurrentTimeMillis < 120000) {
-            ?? LocateVideoForItem = locateVideoForItem(context, str, str2, str3, str4, obj);
-            if (LocateVideoForItem != 0 && LocateVideoForItem.exists() && LocateVideoForItem.isFile()) {
-                long length = LocateVideoForItem.length();
-                if (!LocateVideoForItem.equals(r0)) {
-                    appendExternalLog(context, "candidate video observed: " + LocateVideoForItem.getAbsolutePath() + " size=" + length);
-                    jCurrentTimeMillis2 = j2;
-                    r0 = LocateVideoForItem;
-                } else if (length != j || length < 1024) {
-                    jCurrentTimeMillis2 = j2;
-                    r0 = r0;
+        File previousFile = null;
+        long previousSize = -1L;
+        long unchangedSince = 0L;
+        while (System.currentTimeMillis() - startedAt < 120000L) {
+            File candidate = locateVideoForItem(context, collection, title, season, episode, downloadModel);
+            if (candidate != null && candidate.exists() && candidate.isFile()) {
+                long length = candidate.length();
+                if (!candidate.equals(previousFile)) {
+                    appendExternalLog(context, "candidate video observed: "
+                            + candidate.getAbsolutePath() + " size=" + length);
+                    unchangedSince = 0L;
+                    previousFile = candidate;
+                } else if (length != previousSize || length < 1024L) {
+                    unchangedSince = 0L;
                 } else {
-                    if (jCurrentTimeMillis2 == j2) {
-                        jCurrentTimeMillis2 = System.currentTimeMillis();
+                    if (unchangedSince == 0L) {
+                        unchangedSince = System.currentTimeMillis();
                     }
-                    r0 = r0;
-                    if (System.currentTimeMillis() - jCurrentTimeMillis2 >= QUIET_MS) {
-                        appendExternalLog(context, "final video stable: " + LocateVideoForItem.getAbsolutePath() + " size=" + length);
-                        boolean zExists = LocateVideoForItem.exists();
-                        ?? r12 = LocateVideoForItem;
-                        if (!zExists) {
-                            fileLocateVideoForItem = locateVideoForItem(context, str, str2, str3, str4, obj);
-                        }
-                        if (r12 == 0 || !r12.exists()) {
-                            r12 = fileLocateVideoForItem;
-                            r12 = fileLocateVideoForItem;
+                    if (System.currentTimeMillis() - unchangedSince >= QUIET_MS) {
+                        appendExternalLog(context, "final video stable: "
+                                + candidate.getAbsolutePath() + " size=" + length);
+                        File ready = candidate.exists() ? candidate
+                                : locateVideoForItem(context, collection, title, season, episode, downloadModel);
+                        if (ready == null || !ready.exists()) {
                             appendExternalLog(context, "SKIP_STALE_CALLBACK: completed source no longer exists");
                             return;
                         }
-                        if (r12.getName().toLowerCase(Locale.US).endsWith(".mkv")) {
-                            File file = new File(r12.getParentFile(), stripExtension(r12.getName()) + ".mp4");
-                            if (!file.exists() || file.length() < 1024) {
-                                r12 = fileLocateVideoForItem;
-                                r11 = r12;
-                                r12 = fileLocateVideoForItem;
-                                r11 = r12;
-                                appendExternalLog(context, "SKIP_EXISTING_MKV: no fresh MP4 sibling for " + r12.getAbsolutePath());
+                        if (ready.getName().toLowerCase(Locale.US).endsWith(".mkv")) {
+                            File sibling = new File(ready.getParentFile(), stripExtension(ready.getName()) + ".mp4");
+                            if (!sibling.exists() || sibling.length() < 1024L) {
+                                appendExternalLog(context,
+                                        "SKIP_EXISTING_MKV: no fresh MP4 sibling for " + ready.getAbsolutePath());
                                 return;
                             }
-                            r12 = fileLocateVideoForItem;
-                            r11 = r12;
-                            r11 = file;
+                            ready = sibling;
                         }
-                        r12 = fileLocateVideoForItem;
-                        r11 = r12;
-                        ?? r3 = r11;
-                        ?? r13 = r11;
-                        if (r3 != 0) {
-                            try {
-                                setField(obj, FileDownloadModel.PATH, r3.getName());
-                            } catch (Throwable th) {
-                            }
-                            appendExternalLog(context, "VIDEO_READY_FOR_MKV path=" + r3.getAbsolutePath());
-                            r13 = r3;
+                        try {
+                            setField(downloadModel, "path", ready.getName());
+                        } catch (Throwable ignored) {
+                            // The original app must still export if the metadata field is unavailable.
                         }
-                        waitAndExport(context, r13, obj);
+                        appendExternalLog(context, "VIDEO_READY_FOR_MKV path=" + ready.getAbsolutePath());
+                        waitAndExport(context, ready, downloadModel);
                         return;
                     }
                 }
-                j = length;
+                previousSize = length;
             } else {
-                String strBuildExpectedBase = buildExpectedBase(str2, str3, str4);
-                if (nonEmpty(strBuildExpectedBase)) {
-                    File file2 = new File(new File(Environment.getExternalStorageDirectory(), ROOT), strBuildExpectedBase + ".mp4.temp");
-                    if (file2.exists()) {
-                        appendExternalLog(context, "temporary video still downloading: " + file2.getName() + " size=" + file2.length());
+                String expected = buildExpectedBase(title, season, episode);
+                if (nonEmpty(expected)) {
+                    File temporary = new File(new File(Environment.getExternalStorageDirectory(), ROOT),
+                            expected + ".mp4.temp");
+                    if (temporary.exists()) {
+                        appendExternalLog(context, "temporary video still downloading: "
+                                + temporary.getName() + " size=" + temporary.length());
                     }
                 }
             }
             Thread.sleep(POLL_MS);
-            j2 = 0;
-            r0 = r0;
         }
         appendExternalLog(context, "TIMEOUT: final video file was not stable within 2 minutes");
     }
