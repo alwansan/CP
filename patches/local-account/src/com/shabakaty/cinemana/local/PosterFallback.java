@@ -8,7 +8,7 @@ public final class PosterFallback {
  private static boolean valid(String url){try{java.net.URI uri=new java.net.URI(url);return ("https".equals(uri.getScheme())||"http".equals(uri.getScheme()))&&uri.getHost()!=null;}catch(Exception e){return false;}}
  public static String source(View view,String primary,String thumbnail){
   try{String resource=view.getResources().getResourceEntryName(view.getId());if(!"video_info_poster".equals(resource)&&!"simpleDraweeView2".equals(resource))return primary;
-   String p=primary==null?"":primary,t=thumbnail==null?"":thumbnail;if("simpleDraweeView2".equals(resource)&&valid(t)){String original=p;p=t;t=original;}if(!valid(p)&&valid(t))p=t;
+   String p=primary==null?"":primary,t=thumbnail==null?"":thumbnail;if(!valid(p)&&valid(t))p=t;
    State state=new State(p,t);states.put(view,state);LocalRuntime.log("poster_begin key="+state.key+" source="+valid(p)+" thumbnail="+valid(t));return p.isEmpty()?null:p;
   }catch(Exception ignored){return primary;}
  }

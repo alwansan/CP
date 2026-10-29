@@ -53,31 +53,31 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH273_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH273_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH273_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH273_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH273_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-Local-Account-PATCH273
+          name: Cinemana-Local-Account-PATCH274
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH273_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: local-account-PATCH273-${{ github.run_number }}
+          tag_name: local-account-PATCH274-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana Local Account PATCH273 #${{ github.run_number }}"
+          name: "Cinemana Local Account PATCH274 #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            Local account test build. Foreground episode scan and stable notification thumbnail loading.
+            Local account test build. Foreground episode scan and higher resolution notification artwork with thumbnail fallback.
             Install the APK directly as an update; preserve app data.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH273_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Local_Account_PATCH274_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           fail_on_unmatched_files: true

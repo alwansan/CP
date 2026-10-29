@@ -3121,7 +3121,7 @@
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/LocalAccountLog;->init(Landroid/content/Context;)V
 
-    const-string p0, "build=PATCH273"
+    const-string p0, "build=PATCH274"
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
 

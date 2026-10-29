@@ -80,3 +80,10 @@ assert 'final_failed @ onFailure' in controller and 'ControllerListener;->c(Ljav
 home=classes['Lcom/shabakaty/cinemana/ui/home_activity/HomeActivity;'][1]
 assert 'LocalRuntime;->foreground(Landroid/content/Context;)V' in home.split('.method public onStart()V')[1].split('.end method')[0]
 print('PASS PATCH273 foreground entry and native final-image-failure callback contract')
+
+notification=classes['Lcom/shabakaty/downloader/j52;'][1]
+assert 'VideoModel;->imgMediumThumbObjUrl:Ljava/lang/String;' in notification
+assert 'VideoModel;->imgThumbObjUrl:Ljava/lang/String;' in notification
+assert 'notification274_small' in notification
+assert 'simpleDraweeView2".equals(resource)&&valid(t)' not in poster
+print('PASS PATCH274 medium artwork selection and small-thumbnail fallback contract')

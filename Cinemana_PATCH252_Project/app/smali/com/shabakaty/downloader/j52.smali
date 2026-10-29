@@ -525,6 +525,17 @@
 
     if-eqz v12, :notification272_thumbnail
 
+    iget-object v14, v12, Lcom/shabakaty/cinemana/domain/models/local/VideoModel;->imgMediumThumbObjUrl:Ljava/lang/String;
+
+    if-eqz v14, :notification274_small
+
+    invoke-virtual {v14}, Ljava/lang/String;->length()I
+    move-result v13
+    if-lez v13, :notification274_small
+
+    move-object v11, v14
+
+    :notification274_small
     iget-object v14, v12, Lcom/shabakaty/cinemana/domain/models/local/VideoModel;->imgThumbObjUrl:Ljava/lang/String;
 
     :notification272_thumbnail

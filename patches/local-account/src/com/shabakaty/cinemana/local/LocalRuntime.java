@@ -23,7 +23,7 @@ public final class LocalRuntime {
  static volatile boolean scanCancelled;private static volatile long lastMigrationAttempt;private static long storageProbe,lastStateSnapshot;private static volatile boolean stateDirty;
  static final long INTERVAL=60*60*1000L;
  public static synchronized void init(Context context){
-  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH273");
+  if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH274");
   IO.execute(new Runnable(){public void run(){try{data();ensureLegacy();try{if(!data().config("upgrade268","0").equals("1")){snapshotLegacy(true);data().setConfig("upgrade268","1");log("account_upgrade268_complete");}}catch(Exception upgrade){failure("account_upgrade268",upgrade);}schedule();requestScan(false);}catch(Exception e){failure("init",e);}}});
  }
  static File sharedDirectory(){return new File(Environment.getExternalStorageDirectory(),"Cinemana/work/data/local-account");}
