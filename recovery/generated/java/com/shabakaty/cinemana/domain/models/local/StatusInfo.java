@@ -94,19 +94,19 @@ public final /* data */ class StatusInfo {
         public int hashCode() {
             int iA = ik4.a(this.description, ik4.a(this.createdAt, this.components.hashCode() * 31, 31), 31);
             boolean z = this.group;
-            ?? r1 = z;
+            int r1 = z ? 1 : 0;
             if (z) {
                 r1 = 1;
             }
             int iA2 = ik4.a(this.name, ik4.a(this.id, ik4.a(this.groupId, (iA + r1) * 31, 31), 31), 31);
             boolean z2 = this.onlyShowIfDegraded;
-            ?? r2 = z2;
+            int r2 = z2 ? 1 : 0;
             if (z2) {
                 r2 = 1;
             }
             int iA3 = (ik4.a(this.pageId, (iA2 + r2) * 31, 31) + this.position) * 31;
             boolean z3 = this.showcase;
-            return this.updatedAt.hashCode() + ik4.a(this.status, (this.serviceStatus.hashCode() + ik4.a(this.startDate, (iA3 + (z3 ? 1 : z3)) * 31, 31)) * 31, 31);
+            return this.updatedAt.hashCode() + ik4.a(this.status, (this.serviceStatus.hashCode() + ik4.a(this.startDate, (iA3 + (z3 ? 1 : 0)) * 31, 31)) * 31, 31);
         }
 
         public String toString() {
