@@ -45,74 +45,35 @@ public final class DownloadTrace {
     private DownloadTrace() {
     }
 
-    /* JADX WARN: Bottom block not found for handler: all -> 0x0074 */
-    /* JADX WARN: Code restructure failed: missing block: B:20:0x0076, code lost:
-    
-        return;
+    /**
+     * Recovered as Java by REA/JADX-headless, then cross-checked against
+     * smali_classes3/DownloadTrace.smali. Keeps the original synchronized
+     * append and diagnostic journal operations.
      */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public static void log(android.content.Context r5, java.lang.String r6) {
-        /*
-            boolean r0 = com.shabakaty.cinemana.ca1.Log94.enabled()
-            if (r0 != 0) goto L7
-            return
-        L7:
-            if (r5 != 0) goto La
-            return
-        La:
-            java.io.File r5 = new java.io.File     // Catch: java.lang.Throwable -> L74
-            java.io.File r0 = android.os.Environment.getExternalStorageDirectory()     // Catch: java.lang.Throwable -> L74
-            java.lang.String r1 = "Cinemana/work"
-            r5.<init>(r0, r1)     // Catch: java.lang.Throwable -> L74
-            java.io.File r0 = new java.io.File     // Catch: java.lang.Throwable -> L74
-            java.lang.String r1 = "log"
-            r0.<init>(r5, r1)     // Catch: java.lang.Throwable -> L74
-            boolean r5 = r0.exists()     // Catch: java.lang.Throwable -> L74
-            if (r5 != 0) goto L25
-            r0.mkdirs()     // Catch: java.lang.Throwable -> L74
-        L25:
-            java.io.File r5 = new java.io.File     // Catch: java.lang.Throwable -> L74
-            java.lang.String r1 = "downloads.log"
-            r5.<init>(r0, r1)     // Catch: java.lang.Throwable -> L74
-            long r0 = java.lang.System.currentTimeMillis()     // Catch: java.lang.Throwable -> L74
-            java.lang.String r0 = java.lang.String.valueOf(r0)     // Catch: java.lang.Throwable -> L74
-            java.lang.Object r1 = com.shabakaty.cinemana.features.DownloadTrace.LOCK     // Catch: java.lang.Throwable -> L74
-            monitor-enter(r1)     // Catch: java.lang.Throwable -> L74
-            java.io.FileOutputStream r2 = new java.io.FileOutputStream     // Catch: java.lang.Throwable -> L71
-            r3 = 1
-            r2.<init>(r5, r3)     // Catch: java.lang.Throwable -> L71
-            java.io.BufferedWriter r5 = new java.io.BufferedWriter     // Catch: java.lang.Throwable -> L71
-            java.io.OutputStreamWriter r3 = new java.io.OutputStreamWriter     // Catch: java.lang.Throwable -> L71
-            java.lang.String r4 = "UTF-8"
-            r3.<init>(r2, r4)     // Catch: java.lang.Throwable -> L71
-            r5.<init>(r3)     // Catch: java.lang.Throwable -> L71
-            java.lang.StringBuilder r2 = new java.lang.StringBuilder     // Catch: java.lang.Throwable -> L71
-            r2.<init>()     // Catch: java.lang.Throwable -> L71
-            java.lang.StringBuilder r0 = r2.append(r0)     // Catch: java.lang.Throwable -> L71
-            java.lang.String r2 = " "
-            java.lang.StringBuilder r0 = r0.append(r2)     // Catch: java.lang.Throwable -> L71
-            java.lang.StringBuilder r6 = r0.append(r6)     // Catch: java.lang.Throwable -> L71
-            java.lang.String r6 = r6.toString()     // Catch: java.lang.Throwable -> L71
-            r5.write(r6)     // Catch: java.lang.Throwable -> L71
-            r5.newLine()     // Catch: java.lang.Throwable -> L71
-            r5.flush()     // Catch: java.lang.Throwable -> L71
-            r5.close()     // Catch: java.lang.Throwable -> L71
-            diagnosticLocked(r6)     // Catch: java.lang.Throwable -> L71
-            monitor-exit(r1)     // Catch: java.lang.Throwable -> L71
-            goto L75
-        L71:
-            r5 = move-exception
-            monitor-exit(r1)     // Catch: java.lang.Throwable -> L71
-            throw r5     // Catch: java.lang.Throwable -> L74
-        L74:
-            r5 = move-exception
-        L75:
-            return
-        */
-        throw new UnsupportedOperationException("Method not decompiled: com.shabakaty.cinemana.features.DownloadTrace.log(android.content.Context, java.lang.String):void");
+    public static void log(Context context, String message) {
+        if (!com.shabakaty.cinemana.ca1.Log94.enabled() || context == null) {
+            return;
+        }
+        try {
+            File logDir = new File(new File(Environment.getExternalStorageDirectory(), ROOT), DIR);
+            if (!logDir.exists()) {
+                logDir.mkdirs();
+            }
+            File file = new File(logDir, FILE);
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            synchronized (LOCK) {
+                BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
+                String line = timestamp + " " + message;
+                writer.write(line);
+                writer.newLine();
+                writer.flush();
+                writer.close();
+                diagnosticLocked(line);
+            }
+        } catch (Throwable ignored) {
+            // Logging is intentionally best-effort as in the original Smali.
+        }
     }
 
     public static void task(Context context, String str, Object obj, Throwable th) {
