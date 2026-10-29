@@ -118,10 +118,19 @@ public final class OriginalRoomCoordinatorProbe {
 
     public static String run() {
         int cases = 0;
-        for (int scenario = 0; scenario < 3; scenario++) {
+        for (int scenario = 0; scenario < 4; scenario++) {
             try (SQLiteDatabase dl = SQLiteDatabase.create(null);
                  SQLiteDatabase cine = SQLiteDatabase.create(null)) {
                 fill(dl, cine);
+                if (scenario == 3) {
+                    // An item row moved to a different task must not be
+                    // overwritten, even if the item id and filenames match.
+                    ContentValues foreignTask = new ContentValues();
+                    foreignTask.put("downloadTaskId", 99);
+                    check(cine.update("CinemanaDownloadItem", foreignTask,
+                            "id=?", new String[]{"item1"}) == 1,
+                            "fixture task identity changed");
+                }
                 OriginalRoomDiagnosticPort port =
                         new OriginalRoomDiagnosticPort(dl, cine, REQUEST, scenario == 1);
                 MkvPromotionCoordinator.Result result =
@@ -134,6 +143,18 @@ public final class OriginalRoomCoordinatorProbe {
                     check(result.status == MkvPromotionCoordinator.Status.ROLLED_BACK,
                             "subtitle write failure compensated across databases");
                     checkRows(dl, cine, false);
+                } else if (scenario == 3) {
+                    check(result.status == MkvPromotionCoordinator.Status.REJECTED,
+                            "wrong Cinemana task identity rejected");
+                    check("Episode.mp4".equals(scalar(dl,
+                            "SELECT path FROM Downloads WHERE task_id=17 AND external_id='external1'")),
+                            "Downloads row untouched after Cinemana mismatch");
+                    check("Episode.mp4".equals(scalar(cine,
+                            "SELECT path FROM CinemanaDownloadItem WHERE id='item1'")),
+                            "Cinemana path untouched after task mismatch");
+                    check("99".equals(scalar(cine,
+                            "SELECT downloadTaskId FROM CinemanaDownloadItem WHERE id='item1'")),
+                            "third-party task identity not clobbered");
                 } else {
                     // Scenario 2 uses a mutated request's identity, so no write
                     // can be accepted against a different composite-key row.
