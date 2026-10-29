@@ -160,7 +160,7 @@ public abstract class ShowMorePageDataType implements Parcelable {
             public int hashCode() {
                 int iA = ik4.a(this.id, this.title.hashCode() * 31, 31);
                 boolean z = this.hasPagination;
-                ?? r1 = z;
+                int r1 = z ? 1 : 0;
                 if (z) {
                     r1 = 1;
                 }
