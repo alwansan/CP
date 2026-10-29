@@ -597,6 +597,10 @@
 .method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
     .locals 3
 
+    const-string v0, "home_inflate_begin"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
     invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
 
     move-result-wide v0
