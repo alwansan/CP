@@ -46,3 +46,13 @@
 - REA complex method details and Data Binding caveats: https://github.com/alwansan/CP/blob/experiment/rea-source-recovery/recovery/reports/REA_INDEPENDENT_DECOMPILATION_AR.md
 
 تقتصر جميع تغييرات الاسترجاع على فرع `experiment/rea-source-recovery`.
+
+## تقدم 30 أكتوبر 2026 — ترحيل JSON للإصدار 2→3
+
+- أُعيد استخراج جزء اختيار الحلقات وتحويل metadata من `jt2.smali` إلى `LegacyRoomV2EpisodeMetadata.java`، وهو Java مستقل قابل للتجميع من دون Android، ويحتفظ بتمييز `kind="2"`، والحقول `nb/episodeNummer/season/rootSeries`، وتنظيف العنوان، و`rootSeries="0"`، وتجميع جذور الحلقات المميزة.
+- أُضيفت اختبارات Java للحقول الناقصة وأنواع JSON الغريبة ومعرفات المجموعات والتكرارات؛ وتم التحقق منها بنجاح في CI. وأُضيف `verify_original_room_json_projection.py` لفحص ثوابت وتعليمات Smali الأصلية.
+- تمت إضافة `LegacyRoomJsonProbe.java` لتجربة JSON نصي في تطبيق Android التشخيصي باستخدام `org.json` و8 حالات محلية، وفحص Emulator ينتظر `Legacy Room JSON projection: PASS (8 Android JSON fixture scenarios)`.
+- **الحد الحالي:** هذا ليس بديلاً لـ`jt2` الأصلي؛ ما زال تفسير `ea2/ca2/z92` (Gson المشوّش)، وطريقة كتابة الحقول إلى DAO، وتحويلات أسماء المجموعات، ومطابقة قواعد Room التاريخية، واختبار حالات البيانات التالفة الحقيقية كلها غير منقولة بصورة كاملة. تجارب `org.json` تقارب فقط parsing الخاص بالحالات النموذجية وليست إثباتاً لتكافؤ Gson.
+- بالإضافة إلى ذلك كشف فحص المصدر أن SQL ينقل `DownloadItem WHERE finished = 1` لكن حلقة فحص `videoFile` تمر على **كل** الصفوف. لذلك يجب اختبار نتائج محاولة تحديث ID لم يدخل إلى `CinemanaDownloadItem`، ومنع احتمال خلط هويات متشابهة قبل الترحيل الإنتاجي.
+
+لم يُجر أي تعديل على مصدر Smali الأصلي، أو بيانات قاعدة مستخدم حقيقية، أو فرعي `main` و`feature/local-account`.
