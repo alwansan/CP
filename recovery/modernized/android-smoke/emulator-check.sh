@@ -71,7 +71,7 @@ import re, sys, xml.etree.ElementTree as ET
 try:
     root=ET.parse(sys.argv[1]).getroot()
     for node in root.iter("node"):
-        if node.get("text") == sys.argv[2]:
+        if node.get("text", "").casefold() == sys.argv[2].casefold():
             coords=list(map(int,re.findall(r"\d+",node.get("bounds", ""))))
             if len(coords)==4:
                 print((coords[0]+coords[2])//2,(coords[1]+coords[3])//2)
