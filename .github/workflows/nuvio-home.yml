@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: local-account-${{ github.ref }}
+  group: nuvio-home-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   verify-build:
@@ -54,31 +54,31 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase3_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase3_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase3_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase3_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase3_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-Nuvio-Home-Phase1
+          name: Cinemana-Nuvio-Home-Phase3
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase3_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: nuvio-home-phase1-${{ github.run_number }}
+          tag_name: nuvio-home-phase3-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana Nuvio Home phase 1 #${{ github.run_number }}"
+          name: "Cinemana Nuvio Home phase 3 #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            Nuvio-inspired home visual rebuild phase 1. Retains existing catalogue and local-account behavior; performance profiling on device still required.
+            Nuvio-inspired home phases 1-3: scroll-behind floating glass-like navigation, neutral graphite theme and safe RecyclerView optimizations. Native scrolling, catalogue, and local-account behavior retained; real device FPS/blur validation is still required.
             Install the APK directly as an update; preserve app data.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase3_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           fail_on_unmatched_files: true
