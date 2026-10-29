@@ -91,7 +91,7 @@ class HomeOverlayTests(unittest.TestCase):
         self.assertEqual(section.count("setRecycledViewPool("), 1)
         detached = code.split(".method public onDetachedFromWindow()V", 1)[1].split(".end method", 1)[0]
         self.assertIn("iput-boolean v0, p0,", detached)
-        parent_adapter = (ROOT / "smali/com/shabakaty/downloader/yt1.smali").read_text()
+        parent_adapter = (ROOT / "smali_classes10/com/shabakaty/downloader/yt1.smali").read_text()
         child_adapter = (ROOT / "smali/com/shabakaty/downloader/jj.smali").read_text()
         self.assertIn("const p1, 0x7f0d008f", child_adapter)
         self.assertIn("const/4 p1, 0x4", parent_adapter)
@@ -100,7 +100,7 @@ class HomeOverlayTests(unittest.TestCase):
     def test_home_section_diffs_are_async_and_generation_safe(self):
         smali = ROOT / "smali"
         binding = (smali / "com/shabakaty/downloader/rj1.smali").read_text()
-        adapter = (smali / "com/shabakaty/downloader/yt1.smali").read_text()
+        adapter = (ROOT / "smali_classes10/com/shabakaty/downloader/yt1.smali").read_text()
         helpers = ROOT / "smali_classes10/com/shabakaty/cinemana/ca1"
         bridge = (helpers / "NuvioHomeDiff.smali").read_text()
         update = (helpers / "NuvioHomeUpdateCallback.smali").read_text()
