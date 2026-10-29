@@ -477,10 +477,10 @@ public final class H26410SoftwareRenderer extends bk {
                 }
                 this.input.K();
                 VideoDecoderOutputBuffer videoDecoderOutputBufferDecode = this.decoder.decode(this.input.t, this.input.v, this.outputStartUs);
-                ?? r9 = videoDecoderOutputBufferDecode != null ? 1 : 0;
+                int r9 = videoDecoderOutputBufferDecode != null ? 1 : 0;
                 if (r9 != this.lastLoggedDecodeOutputState) {
                     this.lastLoggedDecodeOutputState = r9;
-                    PlayerDiagnosticLog.value("renderer_decode_output_available", Boolean.valueOf((boolean) r9));
+                    PlayerDiagnosticLog.value("renderer_decode_output_available", Boolean.valueOf(r9 != 0));
                 }
                 if (videoDecoderOutputBufferDecode != null) {
                     this.noOutputSamples = 0;
@@ -492,10 +492,10 @@ public final class H26410SoftwareRenderer extends bk {
                     VideoDecoderOutputBuffer videoDecoderOutputBuffer2 = this.pending;
                     this.pending = null;
                     boolean zRender2 = this.decoder.render(videoDecoderOutputBuffer2, this.surface);
-                    ?? r3 = zRender2 ? 1 : 0;
+                    int r3 = zRender2 ? 1 : 0;
                     if (r3 != this.lastLoggedRenderResult) {
                         this.lastLoggedRenderResult = r3;
-                        PlayerDiagnosticLog.value("renderer_surface_render_success", Boolean.valueOf((boolean) r3));
+                        PlayerDiagnosticLog.value("renderer_surface_render_success", Boolean.valueOf(r3 != 0));
                     }
                     if (zRender2) {
                         this.forceHigh10AfterRefresh = false;
@@ -547,13 +547,13 @@ public final class H26410SoftwareRenderer extends bk {
     /* JADX WARN: Type inference failed for: r0v4 */
     @Override // com.shabakaty.downloader.lr3
     public boolean b() {
-        ?? r0 = (this.surface == null || !this.configured) ? 0 : 1;
+        int r0 = (this.surface == null || !this.configured) ? 0 : 1;
         if (r0 != this.lastLoggedReadyState) {
             this.lastLoggedReadyState = r0;
-            PlayerDiagnosticLog.value("renderer_is_ready", Boolean.valueOf((boolean) r0));
+            PlayerDiagnosticLog.value("renderer_is_ready", Boolean.valueOf(r0 != 0));
             logSurfaceState(r0 != 0 ? "isReady_true" : "isReady_false");
         }
-        return r0;
+        return r0 != 0;
     }
 
     @Override // com.shabakaty.downloader.lr3
