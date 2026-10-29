@@ -17,7 +17,7 @@ This directory is an independent reverse-engineering workspace originating from
 - The four recently repaired methods passed **52 actual-Java unit tests**, and the H26410 readiness method passed **14** more.
 - Actual Android Gradle Library `modernized/android-bridge` with Media3 compiles.
 - `modernized/legacy-resources` builds original APKTool `res` and `assets` into an Android AAR (verified by GitHub Actions run 40911283952).
-- `modernized/android-smoke` builds a **diagnostic-only** installable Android APK under `com.shabakaty.cinemana.recovery.smoke`, a different package ID from Cinemana. An initial smoke build with Media3 and native libs passed run 40911639300; integration of original resources and assets is being tested separately.
+- `modernized/android-smoke` now builds a **diagnostic-only** signed Android APK under `com.shabakaty.cinemana.recovery.smoke` with Media3, the original 49 native shared libraries, and bundled `res`/`assets` including `ffmpeg`. Verified full integration: run 40911943683. This is not Cinemana or a substitute for its UI/account/download/player behavior.
 - Native and resource AAR compilation does not imply original Cinemana app functionality.
 - `modernized/legacy-native` packages 49 shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
