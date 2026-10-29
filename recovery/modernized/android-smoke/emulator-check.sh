@@ -162,6 +162,22 @@ for phase in 1 2 3; do
         echo "MULTIDB_FORCE_STOP_FAILED: phase=$phase"
         exit 1
     fi
+    if [ "$phase" = 3 ]; then
+        # A second process restores Cinemana but intentionally leaves the
+        # Downloads DB and durable journal pending. Kill it before completion.
+        adb shell am start -W -n "$package/.MultiDatabaseProcessActivity" \
+            --es mode partial-recover --ei phase "$phase" |
+            tee "$report/multidb-phase-${phase}-partial-recover.txt"
+        screen_has "Cross-DB restart: PARTIAL_REPLAY stage=$phase"
+        adb shell pidof "$package" > "$report/multidb-phase-${phase}-partial-pid.txt"
+        test -s "$report/multidb-phase-${phase}-partial-pid.txt"
+        adb shell am force-stop "$package"
+        sleep 2
+        if adb shell pidof "$package" | grep -Eq '[0-9]'; then
+            echo "MULTIDB_MID_RECOVERY_STOP_FAILED"
+            exit 1
+        fi
+    fi
     adb shell am start -W -n "$package/.MultiDatabaseProcessActivity" \
         --es mode recover --ei phase "$phase" |
         tee "$report/multidb-phase-${phase}-recover.txt"
