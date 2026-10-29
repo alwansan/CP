@@ -92,6 +92,21 @@
 
     move-result-object p1
 
+    # Skip the synchronous DiffUtil calculation when transformed content is unchanged.
+    # List equality is linear, whereas the full diff and dispatch can be substantially heavier.
+    iget-object v0, p0, Lcom/shabakaty/downloader/ej;->a:Ljava/util/List;
+
+    if-eq v0, p1, :perf_no_change
+
+    if-eqz v0, :perf_calculate_diff
+
+    invoke-interface {v0, p1}, Ljava/util/List;->equals(Ljava/lang/Object;)Z
+
+    move-result v1
+
+    if-nez v1, :perf_no_change
+
+    :perf_calculate_diff
     .line 1
     new-instance v0, Lcom/shabakaty/downloader/ej$c;
 
@@ -114,6 +129,7 @@
 
     invoke-virtual {v0, p1}, Landroidx/recyclerview/widget/j$d;->a(Lcom/shabakaty/downloader/ni2;)V
 
+    :perf_no_change
     return-void
 .end method
 
