@@ -34,6 +34,13 @@ public class LocalAccountStoreTest {
   List<Item> many=new ArrayList<>();for(int n=1;n<=220;n++)many.add(e(String.valueOf(n)));check(migrated.reconcile("new_series",many).size()==219);check(migrated.inbox().size()==100);check(migrated.baselineSize("new_series")==220);check(migrated.reconcile("new_series",many).isEmpty());
   LocalAccountStore moved=migrated.relocate(Files.createTempDirectory("account-shared2").toFile());check(moved.hasBaseline("new_series")&&moved.baselineSize("new_series")==220&&moved.inbox().size()==100);
   moved.replace(ListKind.STATE,Arrays.asList(new Item("stale","",0)));moved.replace(ListKind.STATE,Collections.<Item>emptyList());check(new LocalAccountStore(moved.directory(),null).list(ListKind.STATE).isEmpty());
+  LocalAccountStore batch=new LocalAccountStore(Files.createTempDirectory("episode-batch").toFile(),null);
+  batch.put(ListKind.SUBSCRIPTION,e("batch"));batch.reconcile("batch",Arrays.asList(e("1"),e("2"),e("3")));
+  List<Item> releases=new ArrayList<>();for(int n=1;n<=10;n++)releases.add(e(String.valueOf(n)));
+  check(batch.reconcile("batch",releases).size()==7);check(batch.inbox().size()==7);
+  ByteArrayOutputStream batchZip=new ByteArrayOutputStream();batch.exportZip(batchZip);
+  LocalAccountStore batchRestored=new LocalAccountStore(Files.createTempDirectory("episode-batch-restored").toFile(),null);batchRestored.importZip(new ByteArrayInputStream(batchZip.toByteArray()));
+  check(batchRestored.inbox().size()==7&&batchRestored.baselineSize("batch")==10);check(batchRestored.reconcile("batch",releases).isEmpty());
   System.out.println("PASS physical progress removal, relocation with baseline preservation, bounded inbox and state pruning; persistence, ZIP round-trip, rejected traversal, unchanged state on invalid import, first baseline, deduplication, disappearance/reappearance, unsubscribe, restored baseline only alerts on new IDs");
  }
 }

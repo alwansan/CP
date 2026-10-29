@@ -21,7 +21,7 @@ public final class LocalRuntime {
  static final LinkedHashMap<String,String> cache=new LinkedHashMap<>();
  private static final String MODELS="com.shabakaty.cinemana.domain.models.remote.";
  static volatile boolean scanCancelled;private static volatile long lastMigrationAttempt;private static long storageProbe,lastStateSnapshot;private static volatile boolean stateDirty;
- static final long INTERVAL=15*60*1000L;
+ static final long INTERVAL=60*60*1000L;
  public static synchronized void init(Context context){
   if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH269");
   IO.execute(new Runnable(){public void run(){try{data();ensureLegacy();try{if(!data().config("upgrade268","0").equals("1")){snapshotLegacy(true);data().setConfig("upgrade268","1");log("account_upgrade268_complete");}}catch(Exception upgrade){failure("account_upgrade268",upgrade);}schedule();requestScan(false);}catch(Exception e){failure("init",e);}}});
@@ -340,7 +340,7 @@ public final class LocalRuntime {
   android.net.ConnectivityManager cm=(android.net.ConnectivityManager)app.getSystemService(Context.CONNECTIVITY_SERVICE);
   android.net.NetworkInfo info=cm.getActiveNetworkInfo();if(info==null||!info.isConnected())return;
   List<Item> subscriptions=s.list(ListKind.SUBSCRIPTION);if(subscriptions.isEmpty())return;
-  int cursor=Integer.parseInt(s.config("scan_cursor","0"));int count=Math.min(force?30:5,subscriptions.size());
+  int cursor=Integer.parseInt(s.config("scan_cursor","0"));int count=Math.min(200,subscriptions.size());
   long end=android.os.SystemClock.elapsedRealtime()+45000;int done=0;
   for(;done<count&&!scanCancelled&&android.os.SystemClock.elapsedRealtime()<end;done++){
    Item show=subscriptions.get((cursor+done)%subscriptions.size());
@@ -371,7 +371,7 @@ public final class LocalRuntime {
    PendingIntent pending=PendingIntent.getActivity(app,episode.id.hashCode(),intent,PendingIntent.FLAG_UPDATE_CURRENT|(Build.VERSION.SDK_INT>=23?PendingIntent.FLAG_IMMUTABLE:0));
    Notification.Builder builder=Build.VERSION.SDK_INT>=26?new Notification.Builder(app,"local_episodes"):new Notification.Builder(app);
    builder.setSmallIcon(android.R.drawable.ic_media_play).setContentTitle("حلقة جديدة").setContentText(episode.title).setContentIntent(pending).setAutoCancel(true).setOnlyAlertOnce(true);
-   manager.notify("local_episode_"+episode.id,266,builder.build());log("notification_posted id="+safeId(episode.id));s.setConfig(key,"1");if(++shown>=5)break;
+   manager.notify("local_episode_"+episode.id,266,builder.build());log("notification_posted id="+safeId(episode.id));s.setConfig(key,"1");shown++;
   }log("notifications_delivered count="+shown);
  }
 }

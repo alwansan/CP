@@ -16,7 +16,7 @@
 
 
 # static fields
-.field static final INTERVAL:J = 0xdbba0L
+.field static final INTERVAL:J = 0x36ee80L
 
 .field public static final IO:Ljava/util/concurrent/ScheduledExecutorService;
 
@@ -1432,13 +1432,12 @@
 
     const/4 v6, 0x0
 
-    :cond_67
     :goto_67
     invoke-interface {v4}, Ljava/util/Iterator;->hasNext()Z
 
     move-result v7
 
-    if-eqz v7, :cond_13e
+    if-eqz v7, :cond_13d
 
     invoke-interface {v4}, Ljava/util/Iterator;->next()Ljava/lang/Object;
 
@@ -1639,11 +1638,9 @@
 
     add-int/lit8 v6, v6, 0x1
 
-    const/4 v7, 0x5
+    goto/16 :goto_67
 
-    if-lt v6, v7, :cond_67
-
-    :cond_13e
+    :cond_13d
     new-instance v0, Ljava/lang/StringBuilder;
 
     const-string v1, "notifications_delivered count="
@@ -7122,7 +7119,7 @@
     goto :goto_23
 
     :cond_20
-    const-wide/32 v7, 0xdbba0
+    const-wide/32 v7, 0x36ee80
 
     :goto_23
     cmp-long v9, v5, v7
@@ -7148,7 +7145,7 @@
 
     move-result-object v5
 
-    if-eqz v5, :cond_14e
+    if-eqz v5, :cond_14a
 
     invoke-virtual {v5}, Landroid/net/NetworkInfo;->isConnected()Z
 
@@ -7156,7 +7153,7 @@
 
     if-nez v5, :cond_43
 
-    goto/16 :goto_14e
+    goto/16 :goto_14a
 
     :cond_43
     sget-object v5, Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;->SUBSCRIPTION:Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;
@@ -7184,16 +7181,8 @@
 
     move-result v4
 
-    if-eqz p0, :cond_5f
+    const/16 v7, 0xc8
 
-    const/16 v7, 0x1e
-
-    goto :goto_60
-
-    :cond_5f
-    const/4 v7, 0x5
-
-    :goto_60
     invoke-interface {v5}, Ljava/util/List;->size()I
 
     move-result v8
@@ -7216,12 +7205,12 @@
 
     const/4 v11, 0x0
 
-    :goto_73
-    if-ge v11, v7, :cond_10c
+    :goto_6f
+    if-ge v11, v7, :cond_108
 
     sget-boolean v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->scanCancelled:Z
 
-    if-nez v0, :cond_10c
+    if-nez v0, :cond_108
 
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
@@ -7229,7 +7218,7 @@
 
     cmp-long v0, v12, v8
 
-    if-gez v0, :cond_10c
+    if-gez v0, :cond_108
 
     add-int v0, v4, v11
 
@@ -7245,7 +7234,7 @@
 
     check-cast v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;
 
-    :try_start_8e
+    :try_start_8a
     iget-object v12, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
 
     invoke-static {v12}, Lcom/shabakaty/cinemana/local/LocalRuntime;->episodes(Ljava/lang/String;)Lorg/json/JSONArray;
@@ -7256,13 +7245,13 @@
 
     move-result v13
 
-    if-nez v13, :cond_9d
+    if-nez v13, :cond_99
 
     move/from16 p0, v7
 
-    goto :goto_106
+    goto :goto_102
 
-    :cond_9d
+    :cond_99
     invoke-static {v0, v12}, Lcom/shabakaty/cinemana/local/LocalRuntime;->episodeItems(Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;Lorg/json/JSONArray;)Ljava/util/List;
 
     move-result-object v12
@@ -7286,12 +7275,12 @@
     new-instance v15, Ljava/lang/StringBuilder;
 
     invoke-direct {v15}, Ljava/lang/StringBuilder;-><init>()V
-    :try_end_b6
-    .catch Ljava/lang/Exception; {:try_start_8e .. :try_end_b6} :catch_fe
+    :try_end_b2
+    .catch Ljava/lang/Exception; {:try_start_8a .. :try_end_b2} :catch_fa
 
     move/from16 p0, v7
 
-    :try_start_b8
+    :try_start_b4
     const-string v7, "subscription_checked id="
 
     invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -7347,34 +7336,34 @@
     move-result-object v0
 
     invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
-    :try_end_fb
-    .catch Ljava/lang/Exception; {:try_start_b8 .. :try_end_fb} :catch_fc
+    :try_end_f7
+    .catch Ljava/lang/Exception; {:try_start_b4 .. :try_end_f7} :catch_f8
 
-    goto :goto_106
+    goto :goto_102
 
-    :catch_fc
+    :catch_f8
     move-exception v0
 
-    goto :goto_101
+    goto :goto_fd
 
-    :catch_fe
+    :catch_fa
     move-exception v0
 
     move/from16 p0, v7
 
-    :goto_101
+    :goto_fd
     const-string v7, "episode_fetch"
 
     invoke-static {v7, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    :goto_106
+    :goto_102
     add-int/lit8 v11, v11, 0x1
 
     move/from16 v7, p0
 
-    goto/16 :goto_73
+    goto/16 :goto_6f
 
-    :cond_10c
+    :cond_108
     add-int/2addr v4, v11
 
     invoke-interface {v5}, Ljava/util/List;->size()I
@@ -7433,8 +7422,8 @@
 
     invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->deliver()V
 
-    :cond_14e
-    :goto_14e
+    :cond_14a
+    :goto_14a
     return-void
 .end method
 
@@ -7493,7 +7482,7 @@
     goto :goto_14
 
     :cond_2b
-    const-wide/32 v7, 0xdbba0
+    const-wide/32 v7, 0x36ee80
 
     if-eqz v3, :cond_57
 

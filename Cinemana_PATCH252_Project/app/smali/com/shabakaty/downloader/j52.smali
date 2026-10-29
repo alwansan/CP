@@ -519,7 +519,16 @@
 
     check-cast v0, Lcom/facebook/drawee/view/SimpleDraweeView;
 
-    invoke-static {v0, v11, v7, v7, v7}, Lcom/shabakaty/downloader/oy1;->c(Lcom/facebook/drawee/view/SimpleDraweeView;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/String;)V
+    const/4 v14, 0x0
+
+    iget-object v12, p0, Lcom/shabakaty/downloader/i52;->S:Lcom/shabakaty/cinemana/domain/models/local/VideoModel;
+
+    if-eqz v12, :notification272_thumbnail
+
+    iget-object v14, v12, Lcom/shabakaty/cinemana/domain/models/local/VideoModel;->imgThumbObjUrl:Ljava/lang/String;
+
+    :notification272_thumbnail
+    invoke-static {v0, v11, v7, v7, v14}, Lcom/shabakaty/downloader/oy1;->c(Lcom/facebook/drawee/view/SimpleDraweeView;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/String;)V
 
     .line 23
     sget v0, Landroidx/databinding/ViewDataBinding;->G:I

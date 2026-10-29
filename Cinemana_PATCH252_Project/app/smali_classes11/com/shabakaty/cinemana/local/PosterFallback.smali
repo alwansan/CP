@@ -439,64 +439,72 @@
     const-string v0, "poster_begin key="
 
     :try_start_2
-    const-string v1, "video_info_poster"
-
     invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;
 
-    move-result-object v2
+    move-result-object v1
 
     invoke-virtual {p0}, Landroid/view/View;->getId()I
 
-    move-result v3
+    move-result v2
 
-    invoke-virtual {v2, v3}, Landroid/content/res/Resources;->getResourceEntryName(I)Ljava/lang/String;
+    invoke-virtual {v1, v2}, Landroid/content/res/Resources;->getResourceEntryName(I)Ljava/lang/String;
 
-    move-result-object v2
+    move-result-object v1
 
-    invoke-virtual {v1, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    const-string v2, "video_info_poster"
+
+    invoke-virtual {v2, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v2
+
+    if-nez v2, :cond_1f
+
+    const-string v2, "simpleDraweeView2"
+
+    invoke-virtual {v2, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v1
-    :try_end_14
-    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_14} :catch_69
+    :try_end_1c
+    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_1c} :catch_71
 
-    if-nez v1, :cond_17
+    if-nez v1, :cond_1f
 
     return-object p1
 
-    :cond_17
+    :cond_1f
     const-string v1, ""
 
-    if-nez p1, :cond_1d
+    if-nez p1, :cond_25
 
     move-object v2, v1
 
-    goto :goto_1e
+    goto :goto_26
 
-    :cond_1d
+    :cond_25
     move-object v2, p1
 
-    :goto_1e
-    if-nez p2, :cond_21
+    :goto_26
+    if-nez p2, :cond_29
 
     move-object p2, v1
 
-    :cond_21
-    :try_start_21
+    :cond_29
+    :try_start_29
     invoke-static {v2}, Lcom/shabakaty/cinemana/local/PosterFallback;->valid(Ljava/lang/String;)Z
 
     move-result v1
 
-    if-nez v1, :cond_2e
+    if-nez v1, :cond_36
 
     invoke-static {p2}, Lcom/shabakaty/cinemana/local/PosterFallback;->valid(Ljava/lang/String;)Z
 
     move-result v1
 
-    if-eqz v1, :cond_2e
+    if-eqz v1, :cond_36
 
     move-object v2, p2
 
-    :cond_2e
+    :cond_36
     new-instance v1, Lcom/shabakaty/cinemana/local/PosterFallback$State;
 
     invoke-direct {v1, v2, p2}, Lcom/shabakaty/cinemana/local/PosterFallback$State;-><init>(Ljava/lang/String;Ljava/lang/String;)V
@@ -542,17 +550,17 @@
     invoke-virtual {v2}, Ljava/lang/String;->isEmpty()Z
 
     move-result p0
-    :try_end_65
-    .catch Ljava/lang/Exception; {:try_start_21 .. :try_end_65} :catch_69
+    :try_end_6d
+    .catch Ljava/lang/Exception; {:try_start_29 .. :try_end_6d} :catch_71
 
-    if-eqz p0, :cond_68
+    if-eqz p0, :cond_70
 
     const/4 v2, 0x0
 
-    :cond_68
+    :cond_70
     return-object v2
 
-    :catch_69
+    :catch_71
     return-object p1
 .end method
 
