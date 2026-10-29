@@ -9,6 +9,7 @@ on:
       - 'recovery/scripts/verify_original_room_schema.py'
       - 'recovery/scripts/verify_original_room_database_names.py'
       - 'recovery/scripts/verify_original_room_migration_graph.py'
+      - 'recovery/scripts/test_original_room_migration_sql.py'
       - '.github/workflows/rea-modernized-test.yml'
 
 permissions:
@@ -33,6 +34,9 @@ jobs:
       - name: Check original Room migration version graph without touching user data
         shell: bash
         run: python3 recovery/scripts/verify_original_room_migration_graph.py
+      - name: Run original Room migration SQL in disposable in-memory SQLite
+        shell: bash
+        run: python3 recovery/scripts/test_original_room_migration_sql.py
       - name: Compile and test recovered Downloads identity resolver with JDK
         shell: bash
         run: |
