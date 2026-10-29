@@ -13,11 +13,11 @@ This directory is an independent reverse-engineering workspace originating from
 - `BatchLog.lambda$init$1` rebuilt from Smali and tested in 10 cases.
 - All seven methods formerly marked `Method not decompiled` within the 293-file first-party package have now been reconstructed from Smali/REA.
 - The latest source audit reports **zero such unresolved method markers**, but still **two first-party files with Java syntax failures** (`Episodes107` and `MkvExporter`).
-- Latest JDK syntax audit: **846/851 staged Java files parse successfully; 5 still have syntax errors**.
-- The four recently repaired methods passed **52 actual-Java unit tests**, and the H26410 readiness method passed **14** more.
+- Latest JDK syntax audit: **849/851 staged Java files parse successfully; 2 still have syntax errors** (`MkvExporter`, DataBinding `gk1`).
+- The latest 8-method regression workflow passes **112 tests**: enhancements (15), coroutine (12), subtitle renaming (14), subtitle preview (11), H264 readiness (14), episode retrieval (17), MKV video watcher (14), and MLKit/GMS SQLite schema validation (15).
 - Actual Android Gradle Library `modernized/android-bridge` with Media3 compiles.
 - `modernized/legacy-resources` builds original APKTool `res` and `assets` into an Android AAR (verified by GitHub Actions run 40911283952).
-- `modernized/android-smoke` now builds a **diagnostic-only** signed Android APK under `com.shabakaty.cinemana.recovery.smoke` with Media3, the original 49 native shared libraries, and bundled `res`/`assets` including `ffmpeg`. Verified full integration: run 40911943683. This is not Cinemana or a substitute for its UI/account/download/player behavior.
+- `modernized/android-smoke` now builds a **diagnostic-only** signed Android APK under `com.shabakaty.cinemana.recovery.smoke` with Media3, the original 49 native shared libraries, and bundled `res`/`assets` including `ffmpeg`. Verified full integration: run 40911943683. This is not Cinemana or a substitute for its UI/account/download/player behavior. The emulator-installation workflow separately verifies the diagnostic screen at runtime.
 - Native and resource AAR compilation does not imply original Cinemana app functionality.
 - `modernized/legacy-native` packages 49 shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
@@ -29,6 +29,7 @@ This directory is an independent reverse-engineering workspace originating from
 - `reports/SOURCE_DEPENDENCY_AUDIT.md`: remaining decompiler problems and import boundaries
 - `reports/REMAINING_BLOCKERS_AR.md`: syntax blocker classification and next steps
 - `reports/REA_INDEPENDENT_DECOMPILATION_AR.md`: REA results, unresolved type placeholders, and Data Binding caveats
+- `tests/episodes/`, `tests/mkvwatcher/`, `tests/sqliteschema/`: real-body Java regressions for episode network handling, completed-video export readiness, and SQLite schema verification
 - `modernized/`: distinct Gradle modules, separately compiled and tested
 - `tests/workfolders/`: actual Java source with test doubles for reflection-based callers
 - `tests/batchlog/`: actual Java source compiled with isolated Android test doubles
