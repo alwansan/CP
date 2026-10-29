@@ -324,7 +324,8 @@ public final class LocalRuntime {
  }
  static void observeEpisodes(final String id,Object value){
   if(!(value instanceof Collection)||((Collection)value).isEmpty())return;
-  try{final JSONArray fetched=new JSONArray(JSON.i(value));NETWORK.execute(()->{try{LocalAccountStore account=data();Item show=account.find(ListKind.SUBSCRIPTION,id);if(show==null)return;int before=account.baselineSize(id);List<Item> added=account.reconcile(id,episodeItems(show,fetched));log("episode_observed id="+safeId(id)+" previous="+before+" fetched="+fetched.length()+" new="+added.size());deliver();}catch(Exception e){failure("episode_observed",e);}});}catch(Exception e){failure("episode_observed_decode",e);}
+  // JSON conversion of an entire season must not block the catalogue/UI callback.
+  NETWORK.execute(()->{try{final JSONArray fetched=new JSONArray(JSON.i(value));LocalAccountStore account=data();Item show=account.find(ListKind.SUBSCRIPTION,id);if(show==null)return;int before=account.baselineSize(id);List<Item> added=account.reconcile(id,episodeItems(show,fetched));log("episode_observed id="+safeId(id)+" previous="+before+" fetched="+fetched.length()+" new="+added.size());deliver();}catch(Exception e){failure("episode_observed",e);}});
  }
  static void schedule(){try{
   JobScheduler scheduler=(JobScheduler)app.getSystemService(Context.JOB_SCHEDULER_SERVICE);boolean exists=false;for(JobInfo j:scheduler.getAllPendingJobs())if(j.getId()==26601)exists=true;
