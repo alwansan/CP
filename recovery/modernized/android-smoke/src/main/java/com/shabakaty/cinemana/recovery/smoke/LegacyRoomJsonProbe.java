@@ -53,7 +53,7 @@ public final class LegacyRoomJsonProbe {
         return value;
     }
 
-    private static Result inspect(String raw) throws JSONException {
+    static Result inspect(String raw) throws JSONException {
         Object parsed = new JSONObject(raw);
         Object converted = convert(parsed, 0);
         need(converted instanceof Map, "expected decoded JSONObject");
