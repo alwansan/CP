@@ -41,6 +41,7 @@ public final class SourceSyntaxCheck {
             }
             batches++;
         }
+        for(String file:new java.util.TreeSet<>(badFiles)) System.out.println("SYNTAX_FILE|"+file);
         System.out.println("SYNTAX_SUMMARY total_files="+paths.size()+" parsed_batches="+batches+" files_with_syntax_errors="+badFiles.size()+" syntax_error_count="+errorCount);
         // Syntax errors are recorded and reviewed separately; extraction success is not compilation.
     }
