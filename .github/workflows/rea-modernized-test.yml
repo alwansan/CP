@@ -8,6 +8,7 @@ on:
       - 'recovery/modernized/**'
       - 'recovery/scripts/verify_original_room_schema.py'
       - 'recovery/scripts/verify_original_room_database_names.py'
+      - 'recovery/scripts/verify_original_room_migration_graph.py'
       - '.github/workflows/rea-modernized-test.yml'
 
 permissions:
@@ -29,6 +30,9 @@ jobs:
       - name: Verify Dagger-provided original Room database file naming
         shell: bash
         run: python3 recovery/scripts/verify_original_room_database_names.py
+      - name: Check original Room migration version graph without touching user data
+        shell: bash
+        run: python3 recovery/scripts/verify_original_room_migration_graph.py
       - name: Compile and test recovered Downloads identity resolver with JDK
         shell: bash
         run: |
