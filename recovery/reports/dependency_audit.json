@@ -4,7 +4,7 @@
   "decompiler_issues": {
     "decompiler_errors": 0,
     "decompiler_warnings": 0,
-    "unreconstructed_method": 4,
+    "unreconstructed_method": 2,
     "synthetic_dependencies_on_other_R": 10
   },
   "import_families": {
