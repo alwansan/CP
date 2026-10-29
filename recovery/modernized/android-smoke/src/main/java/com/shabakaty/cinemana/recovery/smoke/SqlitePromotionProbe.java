@@ -1,17 +1,21 @@
 package com.shabakaty.cinemana.recovery.smoke;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.shabakaty.cinemana.recovery.downloads.MkvPromotionCoordinator;
 import com.shabakaty.cinemana.recovery.downloads.MkvPromotionPreflight;
+import java.io.File;
 
 /**
  * Real Android SQLite integration test. An anonymous, in-memory DB is created
  * anew for each fault injection. No original Cinemana DAO, production database,
  * download, account, or user files are accessed.
  *
- * This tests compensating updates only. Process death and multi-database
- * atomicity are NOT covered; a persistent journal remains required.
+ * This tests compensating updates only. The separate file-backed probe
+ * verifies values after closing and reopening a disposable diagnostic DB.
+ * Process death and multi-database atomicity are NOT covered;
+ * a persistent journal remains required.
  */
 public final class SqlitePromotionProbe {
     private SqlitePromotionProbe() {}
@@ -122,6 +126,11 @@ public final class SqlitePromotionProbe {
 
     private static SQLiteDatabase create() {
         SQLiteDatabase db = SQLiteDatabase.create(null);
+        seed(db);
+        return db;
+    }
+
+    private static void seed(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE diag_downloads(task_id INTEGER PRIMARY KEY,"
                 + " external_id TEXT, path TEXT, bytes INTEGER)");
         db.execSQL("CREATE TABLE diag_cinemana(item_id TEXT PRIMARY KEY,"
@@ -130,7 +139,6 @@ public final class SqlitePromotionProbe {
         db.execSQL("INSERT INTO diag_downloads VALUES(17, 'external1', 'Episode.mp4', 4200)");
         db.execSQL("INSERT INTO diag_cinemana VALUES('item1', 17, 'Episode.mp4')");
         db.execSQL("INSERT INTO diag_subtitles VALUES('item1', 'Episode.mp4')");
-        return db;
     }
 
     /** Throws with exact failing stage; callers display PASS only if all cases passed. */
@@ -171,4 +179,82 @@ public final class SqlitePromotionProbe {
         }
         return "PASS (" + checks + " in-memory SQLite cases)";
     }
+    /**
+     * Six file-backed, diagnostic-only SQLite cases. Each DB is freshly
+     * created inside this app's private cache directory, closed, reopened
+     * read-only, verified, and deleted. No production DB or user file is used.
+     *
+     * This confirms on-disk persistence of success and compensating outcomes,
+     * NOT survival of a process kill between writes and NOT multi-DB atomicity.
+     */
+    public static String runDiskBacked(Context context) {
+        File dir = new File(context.getCacheDir(), "sqlite-reopen-diagnostics");
+        if (!dir.isDirectory() && !dir.mkdirs()) {
+            throw new IllegalStateException("cannot create diagnostic cache directory");
+        }
+        int checks = 0;
+        String[] stages = {null, "download", "cinemana", "subtitles",
+                "readback", "silent-restore"};
+        for (int i = 0; i < stages.length; i++) {
+            String stage = stages[i];
+            File file = new File(dir, "reopen-case-" + i + ".db");
+            SQLiteDatabase.deleteDatabase(file);
+            try {
+                boolean silentRestore = "silent-restore".equals(stage);
+                String failAt = silentRestore ? "readback" : stage;
+                try (SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(file, null)) {
+                    seed(db);
+                    SqlitePort port = new SqlitePort(db, failAt, silentRestore);
+                    MkvPromotionCoordinator.Result result =
+                            MkvPromotionCoordinator.promote(REQUEST, port);
+                    MkvPromotionCoordinator.Status expected =
+                            stage == null ? MkvPromotionCoordinator.Status.SUCCESS
+                            : silentRestore ? MkvPromotionCoordinator.Status.ROLLBACK_FAILED
+                            : MkvPromotionCoordinator.Status.ROLLED_BACK;
+                    if (result.status != expected) {
+                        throw new AssertionError("unexpected SQLite status for "
+                                + stage + ": " + result.status);
+                    }
+                }
+                // Reopening a new read-only database handle is essential:
+                // checking the original handle alone would not test disk state.
+                try (SQLiteDatabase reopened = SQLiteDatabase.openDatabase(
+                        file.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY)) {
+                    SqlitePort port = new SqlitePort(reopened, null, false);
+                    boolean correct;
+                    if (stage == null) {
+                        correct = port.verify("Episode.mkv", 5000L);
+                    } else if (silentRestore) {
+                        // A deliberately ignored Downloads compensation must
+                        // remain DETECTABLY inconsistent after database reopen.
+                        correct = "Episode.mkv".equals(
+                                     port.selectText("diag_downloads", "path"))
+                                && port.selectLong("diag_downloads", "bytes") == 5000L
+                                && "Episode.mp4".equals(
+                                     port.selectText("diag_cinemana", "path"))
+                                && "Episode.mp4".equals(
+                                     port.selectText("diag_subtitles", "path"));
+                    } else {
+                        correct = port.verifyRestored(
+                                new MkvPromotionPreflight.DownloadRow(
+                                        17, "external1", "Episode.mp4", 4200L),
+                                new MkvPromotionPreflight.CinemanaRow(
+                                        "item1", 17, "Episode.mp4"),
+                                "Episode.mp4");
+                    }
+                    if (!correct) {
+                        throw new AssertionError("persisted readback mismatch: " + stage);
+                    }
+                }
+                checks++;
+            } catch (Exception error) {
+                throw new IllegalStateException(
+                        "file-backed SQLite diagnostic error: " + stage, error);
+            } finally {
+                SQLiteDatabase.deleteDatabase(file);
+            }
+        }
+        return "PASS (" + checks + " file-backed reopen cases)";
+    }
+
 }
