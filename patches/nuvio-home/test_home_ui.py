@@ -97,5 +97,30 @@ class HomeOverlayTests(unittest.TestCase):
         self.assertIn("const/4 p1, 0x4", parent_adapter)
 
 
+    def test_home_section_diffs_are_async_and_generation_safe(self):
+        smali = ROOT / "smali"
+        binding = (smali / "com/shabakaty/downloader/rj1.smali").read_text()
+        adapter = (smali / "com/shabakaty/downloader/yt1.smali").read_text()
+        bridge = (smali / "com/shabakaty/cinemana/ca1/NuvioHomeDiff.smali").read_text()
+        update = (smali / "com/shabakaty/cinemana/ca1/NuvioHomeUpdateCallback.smali").read_text()
+        compare = (smali / "com/shabakaty/cinemana/ca1/NuvioHomeItemCallback.smali").read_text()
+        self.assertIn("NuvioHomeDiff;->submit(", binding)
+        self.assertNotIn("invoke-static {v0}, Landroidx/recyclerview/widget/j;->a(", binding)
+        self.assertIn("NuvioHomeDiff;->init(", adapter)
+        self.assertIn(".field public e:Landroidx/recyclerview/widget/e;", adapter)
+        self.assertIn("->newFixedThreadPool(I)", bridge)
+        self.assertIn("Landroidx/recyclerview/widget/d;-><init>", bridge)
+        self.assertIn("->execute(Ljava/lang/Runnable;)V", bridge)
+        self.assertIn("->g:I", bridge)
+        self.assertIn("->unmodifiableList(Ljava/util/List;)Ljava/util/List;", bridge)
+        self.assertIn("->notifyItemRangeInserted(II)V", bridge)
+        self.assertIn("->notifyItemRangeRemoved(II)V", bridge)
+        for callback in ("onChanged", "onInserted", "onMoved", "onRemoved"):
+            section = update.split(".method public " + callback + "(", 1)[1].split(".end method", 1)[0]
+            self.assertLess(section.index("->sync()V"), section.index("->notifyItem"))
+        self.assertIn("HomeItem$Horizontal;", compare)
+        self.assertIn("Lcom/shabakaty/downloader/j32;->a(", compare)
+
+
 if __name__ == "__main__":
     unittest.main()
