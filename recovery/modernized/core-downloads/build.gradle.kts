@@ -30,7 +30,7 @@ tasks.register<JavaExec>("testLegacyRoomV2EpisodeMetadata") {
     classpath = sourceSets["test"].runtimeClasspath
     mainClass.set("com.shabakaty.cinemana.recovery.downloads.LegacyRoomV2EpisodeMetadataTest")
 }
-tasks.register<JavaExec>("testLegacyRoomV2RowWriteGuard", "testLegacyRoomV2CollectionPlanner") {
+tasks.register<JavaExec>("testLegacyRoomV2RowWriteGuard") {
     group = "verification"
     dependsOn(tasks.named("testClasses"))
     classpath = sourceSets["test"].runtimeClasspath
@@ -43,5 +43,5 @@ tasks.register<JavaExec>("testLegacyRoomV2CollectionPlanner") {
     mainClass.set("com.shabakaty.cinemana.recovery.downloads.LegacyRoomV2CollectionPlannerTest")
 }
 tasks.named("check") {
-    dependsOn("testMkvPreflight", "testMkvCoordinator", "testLegacyDownloadResolver", "testLegacyRoomV2EpisodeMetadata", "testLegacyRoomV2RowWriteGuard")
+    dependsOn("testMkvPreflight", "testMkvCoordinator", "testLegacyDownloadResolver", "testLegacyRoomV2EpisodeMetadata", "testLegacyRoomV2RowWriteGuard", "testLegacyRoomV2CollectionPlanner")
 }
