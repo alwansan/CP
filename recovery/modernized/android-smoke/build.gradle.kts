@@ -20,5 +20,6 @@ dependencies {
     implementation(project(":android-bridge"))
     implementation(project(":legacy-native"))
     implementation(project(":legacy-resources"))
+    implementation(project(":core-downloads"))
     implementation("androidx.media3:media3-common:1.6.1")
 }
