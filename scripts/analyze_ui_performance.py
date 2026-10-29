@@ -18,7 +18,7 @@ def read_records(paths):
                 for line in file:
                     try:
                         obj = json.loads(line)
-                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278"):
+                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279"):
                             records.append(obj)
                         else:
                             invalid += 1
@@ -72,6 +72,10 @@ def aggregate(records):
             "main_over_100ms": sum(int(r.get("main_over_100ms", 0)) for r in rows),
             "main_over_250ms": sum(int(r.get("main_over_250ms", 0)) for r in rows),
             "main_max_ms": round(max((float(r.get("main_max_ms", 0)) for r in rows), default=0), 2),
+            "home_refresh_count": sum(int(r.get("home_refresh_count", 0)) for r in rows),
+            "home_refresh_max_ms": round(max((float(r.get("home_refresh_max_ms", 0)) for r in rows), default=0), 2),
+            "home_setup_count": sum(int(r.get("home_setup_count", 0)) for r in rows),
+            "home_setup_max_ms": round(max((float(r.get("home_setup_max_ms", 0)) for r in rows), default=0), 2),
             "process_cpu_ms": sum(int(r.get("process_cpu_ms", 0)) for r in rows),
         }
 
@@ -101,13 +105,14 @@ def aggregate(records):
 def markdown(report, invalid):
     o = report["overall"]
     lines = [
-        "# Cinemana PATCH277 / PATCH278 UI trace",
+        "# Cinemana PATCH277–PATCH279 UI trace",
         f"Sessions: {len(report['sessions'])} · Metrics windows: {o['windows']} · Invalid/skipped records: {invalid}",
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",
         f"DiffUtil calls: {o['diff_count']} · Diff skipped: {o['diff_skipped']} · Worst diff: {o['diff_max_ms']} ms",
         f"Scroll events: {o['scroll_events']} · Pagination events: {o['pagination']} · Poster failures: {o['poster_failed']}",
         f"Main-loop checks: {o['main_probes']} · >100 ms: {o['main_over_100ms']} · >250 ms: {o['main_over_250ms']} · Max response: {o['main_max_ms']} ms",
+        f"Home refresh: {o['home_refresh_count']} · Worst: {o['home_refresh_max_ms']} ms · Home setup: {o['home_setup_count']} · Worst: {o['home_setup_max_ms']} ms",
         "",
         "## By screen",
         "| Screen | Frames | Avg ms | Max ms | >32 ms | >50 ms | >100 ms | Scroll callbacks |",
