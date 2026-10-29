@@ -1,0 +1,26 @@
+name: Verify DownloadTrace Java recovery
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/tests/downloadtrace/**'
+      - 'recovery/generated/java/com/shabakaty/cinemana/features/DownloadTrace.java'
+      - '.github/workflows/rea-downloadtrace-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  downloadtrace:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Test recovered Java method against filesystem and logging checks
+        run: bash recovery/tests/downloadtrace/test.sh
