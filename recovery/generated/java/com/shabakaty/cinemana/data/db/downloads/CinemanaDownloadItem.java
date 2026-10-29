@@ -262,7 +262,7 @@ public final /* data */ class CinemanaDownloadItem implements Parcelable {
         videoModel.k(this.imgThumbObjUrl);
         SkippingDurationsDB skippingDurationsDB = this.skippingDurations;
         videoModel.q(new SkippingDurations(skippingDurationsDB.start, skippingDurationsDB.end));
-        ?? arrayList = 0;
+        java.util.List arrayList = null;
         if (list == null) {
             listZ0 = null;
         } else {
@@ -290,7 +290,7 @@ public final /* data */ class CinemanaDownloadItem implements Parcelable {
                 arrayList.add(new o84(p84Var.t, p84Var.u, p84Var.v));
             }
         }
-        if (arrayList == 0) {
+        if (arrayList == null) {
             arrayList = w21.r;
         }
         videoModel.skippableScenes = arrayList;
@@ -321,7 +321,7 @@ public final /* data */ class CinemanaDownloadItem implements Parcelable {
     public int hashCode() {
         int iA = ik4.a(this.rootEpisode, ik4.a(this.qualityName, (this.skippingDurations.hashCode() + ik4.a(this.imgThumbObjUrl, (ik4.a(this.parentSkipping, ik4.a(this.useParentImg, ik4.a(this.special, ik4.a(this.episodeNumber, ik4.a(this.path, ik4.a(this.tvShowRating, ik4.a(this.filmRating, ik4.a(this.imgObjUrl, ik4.a(this.season, (ik4.a(this.kind, ik4.a(this.stars, ik4.a(this.title, ((this.id.hashCode() * 31) + this.downloadTaskId) * 31, 31), 31), 31) + this.sizeMB) * 31, 31), 31), 31), 31), 31), 31), 31), 31), 31) + this.collectionID) * 31, 31)) * 31, 31), 31);
         boolean z = this.hasIntroSkipping;
-        ?? r1 = z;
+        int r1 = z ? 1 : 0;
         if (z) {
             r1 = 1;
         }
