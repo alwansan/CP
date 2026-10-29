@@ -1,0 +1,54 @@
+name: Stage direct obfuscated source dependencies
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/scripts/stage_obfuscated.py'
+      - '.github/workflows/rea-stage-obfuscated.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  stage-dependencies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch and verify full reconstructed Java snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/alwansan/CP/releases/download/cinemana-source-recovery-2/Cinemana_RECOVERED_JAVA_ALL.zip -o "$RUNNER_TEMP/recovered.zip"
+          echo "8ad86b8a55b2339e1ba09ea1de07efa0633948c9dc4fd3de4276db16434fff9d  $RUNNER_TEMP/recovered.zip" | sha256sum -c -
+      - name: Test staged dependency recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile recovery/scripts/stage_obfuscated.py
+          python3 recovery/scripts/stage_obfuscated.py --zip "$RUNNER_TEMP/recovered.zip"
+          test -s recovery/reports/OBFUSCATED_DEPENDENCIES.md
+          test -s recovery/reports/obfuscated_dependencies.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: staged-obfuscated-dependency-inventory
+          retention-days: 14
+          path: |
+            recovery/reports/OBFUSCATED_DEPENDENCIES.md
+            recovery/reports/obfuscated_dependencies.json
+      - name: Commit only to isolated experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "experiment/rea-source-recovery"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add recovery/generated/java/com/shabakaty/downloader recovery/reports/OBFUSCATED_DEPENDENCIES.md recovery/reports/obfuscated_dependencies.json
+          if ! git diff --cached --quiet; then
+            git commit -m "recovery: stage directly used obfuscated Java classes"
+            git fetch origin experiment/rea-source-recovery
+            git rebase origin/experiment/rea-source-recovery
+            git push origin HEAD:refs/heads/experiment/rea-source-recovery
+          fi
