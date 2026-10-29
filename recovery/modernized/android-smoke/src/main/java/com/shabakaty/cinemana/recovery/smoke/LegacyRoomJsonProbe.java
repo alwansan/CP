@@ -35,7 +35,9 @@ public final class LegacyRoomJsonProbe {
         if (value instanceof JSONObject) {
             JSONObject obj = (JSONObject) value;
             Map<String, Object> result = new LinkedHashMap<>();
-            for (String key : obj.keySet()) {
+            java.util.Iterator<String> keys = obj.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
                 result.put(key, convert(obj.get(key), depth + 1));
             }
             return result;
