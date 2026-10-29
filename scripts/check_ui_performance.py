@@ -93,13 +93,17 @@ for path in ("com/shabakaty/downloader/ej.smali", "com/shabakaty/downloader/gv1.
 
 # Phase 3: instrumentation must be explicitly wired, built and bounded.
 diag = (root / "patches/local-account/src/com/shabakaty/cinemana/local/UiPerfDiag.java").read_text()
+assert 'main_over_250ms' in diag and 'captureLocked' in diag
+assert 'probeMainThread' in diag and 'MAIN.post' in diag
+assert 'if (snap.hasData()) writeSample(snap,cpuDelta);' in diag
+assert 'next!=null && !next.equals(screen)' in diag
 assert 'addOnFrameMetricsAvailableListener' in diag and 'removeOnFrameMetricsAvailableListener' in diag
 assert 'LAYOUT_MEASURE_DURATION' in diag and 'DRAW_DURATION' in diag
 assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in diag
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH277"' in diag
+assert 'BUILD = "PATCH278"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
