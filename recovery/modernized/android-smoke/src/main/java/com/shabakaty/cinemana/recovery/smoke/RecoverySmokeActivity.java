@@ -1,6 +1,9 @@
 package com.shabakaty.cinemana.recovery.smoke;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -39,7 +42,15 @@ public final class RecoverySmokeActivity extends Activity {
                 + "MKV promotion preflight: " + (preflight ? "PASS" : "FAIL") + "\n"
                 + "Original search layout: " + (searchXml ? "PASS" : "FAIL") + "\n"
                 + "This APK is NOT the original Cinemana application.");
-        setContentView(message);
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.addView(message);
+        Button openSearch = new Button(this);
+        openSearch.setText("Open search flow diagnostic");
+        openSearch.setOnClickListener(view ->
+                startActivity(new Intent(this, SearchFlowActivity.class)));
+        container.addView(openSearch);
+        setContentView(container);
     }
 
     private boolean verifyOriginalSearchXml() {
