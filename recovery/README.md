@@ -29,6 +29,8 @@ This directory is an independent reverse-engineering workspace originating from
 - Native and resource AAR compilation does not imply original Cinemana app functionality.
 - `modernized/legacy-native` packages 49 shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
+- The Android diagnostic now includes a separate-database restart experiment: a committed intent in `journal.db` precedes independent writes to `downloads.db` and `cinemana.db`. The emulator runs three force-stop/recover stages and deliberately force-stops again halfway through stage-three compensation. All three databases are disposable fixtures under the smoke package; this is NOT the original Cinemana DAO or full cross-database atomicity. See `reports/SQLITE_ANDROID_PROBE_AR.md`. Results must be verified on the Android emulator workflow before being counted as passed.
+
 ## Source files and reports
 
 - `generated/java/`: staged reconstructed Java, including obfuscated dependency layer
@@ -40,6 +42,7 @@ This directory is an independent reverse-engineering workspace originating from
 - `reports/SAFE_MIGRATION_AND_SEARCH_BINDING_AR.md`: non-mutating MKV DB preflight and original search UI structure
 - `reports/TRANSACTION_AND_SEARCH_STATES_AR.md`: rollback failure injection, LiveData state and resource integration caveats
 - `reports/SEARCH_BINDING_SMALI_PARITY_AR.md`: original gk1/fk1/hz3/dz3 binding-slot evidence, tab-safety fix, and remaining source-first parity requirements
+- `reports/MKV_REAL_SCHEMA_PARITY_AR.md`: verified original CinemanaDownloadItem/SubtitleDb fields and differences from the isolated multi-database crash-journal fixtures
 - `tests/episodes/`, `tests/mkvwatcher/`, `tests/sqliteschema/`: real-body Java regressions for episode network handling, completed-video export readiness, and SQLite schema verification
 - `modernized/`: distinct Gradle modules, separately compiled and tested
 - `tests/workfolders/`: actual Java source with test doubles for reflection-based callers
