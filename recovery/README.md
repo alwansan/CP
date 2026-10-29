@@ -31,6 +31,8 @@ This directory is an independent reverse-engineering workspace originating from
 
 - The Android diagnostic now includes a separate-database restart experiment: a committed intent in `journal.db` precedes independent writes to `downloads.db` and `cinemana.db`. The emulator runs three force-stop/recover stages and deliberately force-stops again halfway through stage-three compensation. All three databases are disposable fixtures under the smoke package; this is NOT the original Cinemana DAO or full cross-database atomicity. See `reports/SQLITE_ANDROID_PROBE_AR.md`. Results must be verified on the Android emulator workflow before being counted as passed.
 
+- `modernized/android-smoke/OriginalRoomSchemaProbe` uses the exact CREATE TABLE SQL extracted from original Room Smali for `Downloads`, `CinemanaDownloadItem` and `SubtitleDb`, testing the compound Downloads key and two identity-scoped subtitle rows in **disposable in-memory databases**; emulator confirmation is required. This never opens production data.
+
 ## Source files and reports
 
 - `generated/java/`: staged reconstructed Java, including obfuscated dependency layer
