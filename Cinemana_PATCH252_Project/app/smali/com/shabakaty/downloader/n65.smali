@@ -6,6 +6,9 @@
 # instance fields
 .field public final synthetic a:Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;
 
+# 0: unknown; 1: shown; 2: hidden. Avoid redundant FAB animation requests per frame.
+.field private b:I
+
 
 # direct methods
 .method public constructor <init>(Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;)V
@@ -118,6 +121,14 @@
     if-le p1, p2, :cond_2
 
     .line 5
+    iget v0, p0, Lcom/shabakaty/downloader/n65;->b:I
+
+    const/4 v1, 0x1
+
+    if-eq v0, v1, :goto_1
+
+    iput v1, p0, Lcom/shabakaty/downloader/n65;->b:I
+
     iget-object p1, p0, Lcom/shabakaty/downloader/n65;->a:Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;
 
     invoke-virtual {p1}, Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;->getBinding()Lcom/shabakaty/downloader/i65;
@@ -132,6 +143,14 @@
 
     .line 6
     :cond_2
+    iget v0, p0, Lcom/shabakaty/downloader/n65;->b:I
+
+    const/4 v1, 0x2
+
+    if-eq v0, v1, :goto_1
+
+    iput v1, p0, Lcom/shabakaty/downloader/n65;->b:I
+
     iget-object p1, p0, Lcom/shabakaty/downloader/n65;->a:Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;
 
     invoke-virtual {p1}, Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;->getBinding()Lcom/shabakaty/downloader/i65;
