@@ -428,6 +428,10 @@
 .method public onResume()V
     .locals 3
 
+    const-string v0, "profile_visible"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
     const/4 v0, 0x1
 
     const/4 v1, 0x0
@@ -456,6 +460,10 @@
 
     .line 1
     invoke-super {p0, p1, p2}, Lcom/shabakaty/downloader/hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+
+    const-string v0, "profile_view_created"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Enhancements;->profile(Landroid/view/View;)V
 
