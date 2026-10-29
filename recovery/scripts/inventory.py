@@ -16,7 +16,7 @@ import sys
 import zipfile
 
 OWNED = ("com/shabakaty/cinemana/",)
-REPORT_MARKERS = ("/* JADX ERROR:", "/* JADX WARNING:", "throw new UnsupportedOperationException("Method not decompiled:")
+REPORT_MARKERS = ("/* JADX ERROR:", "/* JADX WARNING:", "throw new UnsupportedOperationException(")
 STAGE_LIMIT_BYTES = 35 * 1024 * 1024
 STAGE_LIMIT_FILES = 1500
 
