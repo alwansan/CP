@@ -515,6 +515,10 @@
     invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView;->setAdapter(Landroidx/recyclerview/widget/RecyclerView$e;)V
 
     .line 3
+    const-string v0, "home_destroy_view"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
     invoke-super {p0}, Lcom/shabakaty/downloader/hj;->onDestroyView()V
 
     return-void
@@ -525,6 +529,10 @@
 
     .line 1
     invoke-super {p0}, Landroidx/fragment/app/Fragment;->onResume()V
+
+    const-string v0, "home_visible"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->refresh(Ljava/lang/Object;)V
 
@@ -590,6 +598,10 @@
 
     .line 1
     invoke-super {p0, p1, p2}, Lcom/shabakaty/downloader/hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+
+    const-string v0, "home_view_created"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     .line 2
     iget-object p1, p0, Lcom/shabakaty/downloader/hj;->t:Landroidx/databinding/ViewDataBinding;
@@ -674,6 +686,11 @@
     invoke-static {p1, p2}, Lcom/shabakaty/downloader/j32;->d(Ljava/lang/Object;Ljava/lang/String;)V
 
     invoke-static {p1}, Lcom/shabakaty/downloader/s45;->a(Landroidx/recyclerview/widget/RecyclerView;)V
+    new-instance p2, Lcom/shabakaty/cinemana/local/HomeScrollPerfListener;
+
+    invoke-direct {p2}, Lcom/shabakaty/cinemana/local/HomeScrollPerfListener;-><init>()V
+
+    invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->j(Landroidx/recyclerview/widget/RecyclerView$r;)V
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->refresh(Ljava/lang/Object;)V
 
