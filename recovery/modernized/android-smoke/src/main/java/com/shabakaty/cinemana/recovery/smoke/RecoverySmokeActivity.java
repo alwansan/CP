@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.media3.common.Format;
 import com.shabakaty.cinemana.recovery.bridge.Media3High10Adapter;
 import com.shabakaty.cinemana.recovery.downloads.MkvPromotionPreflight;
+import com.shabakaty.cinemana.recovery.json.LegacyRoomV2GsonAdapter;
 import com.cinemana.pro.R;
 import org.xmlpull.v1.XmlPullParser;
 
@@ -91,6 +92,23 @@ public final class RecoverySmokeActivity extends Activity {
             android.util.Log.e("CinemanaRecoverySmoke", "Legacy Room collection SQL fixture failed", failure);
             legacyCollectionCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
         }
+        String gsonCheck;
+        try {
+            LegacyRoomV2GsonAdapter.Inspection series = LegacyRoomV2GsonAdapter.inspect(
+                    "{\"title\":\"حلقة\",\"videoModel\":{\"kind\":2,\"nb\":7,\"rootSeries\":0}}");
+            LegacyRoomV2GsonAdapter.Inspection invalid = LegacyRoomV2GsonAdapter.inspect(
+                    "{\"title\":");
+            boolean validSeries = series.selected()
+                    && series.metadata.projection.collectionId == 7
+                    && "حلقة".equals(series.metadata.projection.title);
+            boolean rejectedBadJson = invalid.parseStatus
+                    == LegacyRoomV2GsonAdapter.ParseStatus.REJECTED_SYNTAX;
+            gsonCheck = validSeries && rejectedBadJson
+                    ? "PASS (Gson Maven parser)" : "FAIL (Gson projection)";
+        } catch (Throwable failure) {
+            android.util.Log.e("CinemanaRecoverySmoke", "Official Gson probe failed", failure);
+            gsonCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
+        }
         TextView message = new TextView(this);
         message.setPadding(48, 64, 48, 64);
         message.setText("Cinemana source recovery diagnostic host\n"
@@ -102,7 +120,8 @@ public final class RecoverySmokeActivity extends Activity {
                 + "SQLite journal restart probe: " + journalCheck + "\n"
                 + "Original Room schema probe: " + realRoomCheck + "\n"
                 + "Original Room coordinator: " + roomCoordinatorCheck + "\n"
-                + "Legacy Room JSON projection: " + legacyJsonCheck + "\n"                + "Legacy Room JSON SQLite identity: " + guardedJsonSqlCheck + "\n"
+                + "Legacy Room JSON projection: " + legacyJsonCheck + "\n"
+                + "Official Gson JSON adapter: " + gsonCheck + "\n"                + "Legacy Room JSON SQLite identity: " + guardedJsonSqlCheck + "\n"
                 + "Legacy Room collection SQL: " + legacyCollectionCheck + "\n"
                 + "This APK is NOT the original Cinemana application.");
         LinearLayout container = new LinearLayout(this);

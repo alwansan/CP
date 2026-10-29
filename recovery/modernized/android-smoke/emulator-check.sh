@@ -41,6 +41,7 @@ grep -q 'SQLite journal restart probe: PASS (6 journal restart cases)' "$report/
 grep -q 'Original Room schema probe: PASS (3 original Room tables, 2 subtitle rows)' "$report/window.xml"
 grep -q 'Original Room coordinator: PASS (7 Room coordinator scenarios)' "$report/window.xml"
 grep -q 'Legacy Room JSON projection: PASS (8 Android JSON fixture scenarios)' "$report/window.xml"
+grep -q 'Official Gson JSON adapter: PASS (Gson Maven parser)' "$report/window.xml"
 grep -q 'Legacy Room JSON SQLite identity: PASS (10 SQLite JSON row-identity scenarios)' "$report/window.xml"
 grep -Fq 'Legacy Room collection SQL: PASS (' "$report/window.xml"
 adb shell pidof "$package" | tee "$report/process.txt"
