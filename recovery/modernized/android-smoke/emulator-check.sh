@@ -42,6 +42,7 @@ grep -q 'Original Room schema probe: PASS (3 original Room tables, 2 subtitle ro
 grep -q 'Original Room coordinator: PASS (7 Room coordinator scenarios)' "$report/window.xml"
 grep -q 'Legacy Room JSON projection: PASS (8 Android JSON fixture scenarios)' "$report/window.xml"
 grep -q 'Legacy Room JSON SQLite identity: PASS (10 SQLite JSON row-identity scenarios)' "$report/window.xml"
+grep -Fq 'Legacy Room collection SQL: PASS (' "$report/window.xml"
 adb shell pidof "$package" | tee "$report/process.txt"
 test -s "$report/process.txt"
 echo "EMULATOR_PASS: source-first diagnostic APK installed, launched and displayed expected Media3 result"
