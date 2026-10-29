@@ -140,7 +140,6 @@ public class ky<I, O> extends io1<O> implements Runnable {
     /* JADX WARN: Type inference failed for: r0v0, types: [com.shabakaty.downloader.od<? super I, ? extends O>, com.shabakaty.downloader.pi2<? extends I>] */
     @Override // java.lang.Runnable
     public void run() {
-        ?? r0 = (od<? super I, ? extends O>) null;
         try {
             try {
                 try {
