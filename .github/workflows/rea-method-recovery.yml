@@ -57,5 +57,7 @@ jobs:
           git add recovery/reports/METHOD_RECOVERY.md recovery/reports/method_recovery.json
           if ! git diff --cached --quiet; then
             git commit -m "recovery: assess seven broken JADX methods with REA"
+            git fetch origin experiment/rea-source-recovery
+            git rebase origin/experiment/rea-source-recovery
             git push origin HEAD:refs/heads/experiment/rea-source-recovery
           fi
