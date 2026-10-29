@@ -9,15 +9,22 @@
 # 0: unknown; 1: shown; 2: hidden. Avoid redundant FAB animation requests per frame.
 .field private b:I
 
+# Last adapter size notified at the bottom; reset after leaving the bottom.
+.field private c:I
+
 
 # direct methods
 .method public constructor <init>(Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;)V
-    .locals 0
+    .locals 1
 
     iput-object p1, p0, Lcom/shabakaty/downloader/n65;->a:Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;
 
     .line 1
     invoke-direct {p0}, Landroidx/recyclerview/widget/RecyclerView$r;-><init>()V
+
+    const/4 v0, -0x1
+
+    iput v0, p0, Lcom/shabakaty/downloader/n65;->c:I
 
     return-void
 .end method
@@ -25,40 +32,54 @@
 
 # virtual methods
 .method public onScrollStateChanged(Landroidx/recyclerview/widget/RecyclerView;I)V
-    .locals 1
+    .locals 3
 
     const-string v0, "recyclerView"
 
     invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
 
-    .line 1
     invoke-super {p0, p1, p2}, Landroidx/recyclerview/widget/RecyclerView$r;->onScrollStateChanged(Landroidx/recyclerview/widget/RecyclerView;I)V
 
-    const/4 p2, 0x1
+    # Prevent multiple concurrent load-more callbacks for the same visible item count.
+    invoke-virtual {p1}, Landroidx/recyclerview/widget/RecyclerView;->getAdapter()Landroidx/recyclerview/widget/RecyclerView$e;
 
-    .line 2
-    invoke-virtual {p1, p2}, Landroid/view/ViewGroup;->canScrollVertically(I)Z
+    move-result-object v0
 
-    move-result p1
+    if-eqz v0, :perf_end
 
-    if-nez p1, :cond_1
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView$e;->getItemCount()I
 
-    .line 3
-    iget-object p1, p0, Lcom/shabakaty/downloader/n65;->a:Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;
+    move-result v0
 
-    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;->getOnScrolledToEnd()Lcom/shabakaty/downloader/rm1;
+    iget v1, p0, Lcom/shabakaty/downloader/n65;->c:I
 
-    move-result-object p1
+    if-eq v0, v1, :perf_end
 
-    if-nez p1, :cond_0
+    const/4 v2, 0x1
 
-    goto :goto_0
+    invoke-virtual {p1, v2}, Landroid/view/ViewGroup;->canScrollVertically(I)Z
 
-    :cond_0
-    invoke-interface {p1}, Lcom/shabakaty/downloader/rm1;->invoke()Ljava/lang/Object;
+    move-result v1
 
-    :cond_1
-    :goto_0
+    if-nez v1, :perf_end
+
+    iget-object v1, p0, Lcom/shabakaty/downloader/n65;->a:Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;
+
+    invoke-virtual {v1}, Lcom/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView;->getOnScrolledToEnd()Lcom/shabakaty/downloader/rm1;
+
+    move-result-object v1
+
+    if-eqz v1, :perf_end
+
+    iput v0, p0, Lcom/shabakaty/downloader/n65;->c:I
+
+    const-string v0, "pagination"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
+    invoke-interface {v1}, Lcom/shabakaty/downloader/rm1;->invoke()Ljava/lang/Object;
+
+    :perf_end
     return-void
 .end method
 
@@ -71,6 +92,21 @@
 
     .line 1
     invoke-super {p0, p1, p2, p3}, Landroidx/recyclerview/widget/RecyclerView$r;->onScrolled(Landroidx/recyclerview/widget/RecyclerView;II)V
+
+    # On leaving the end, allow a retry if a previous load did not append rows.
+    const/4 v0, 0x1
+
+    invoke-virtual {p1, v0}, Landroid/view/ViewGroup;->canScrollVertically(I)Z
+
+    move-result v0
+
+    if-eqz v0, :perf_still_at_end
+
+    const/4 v0, -0x1
+
+    iput v0, p0, Lcom/shabakaty/downloader/n65;->c:I
+
+    :perf_still_at_end
 
     const/4 v0, 0x3
 
