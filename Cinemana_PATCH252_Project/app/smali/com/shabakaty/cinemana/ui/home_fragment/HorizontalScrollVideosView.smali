@@ -140,6 +140,8 @@
 
 .field public S:I
 
+.field private T:Z
+
 
 # direct methods
 .method public constructor <init>(Landroid/content/Context;Landroid/util/AttributeSet;)V
@@ -358,20 +360,26 @@
 
 # virtual methods
 
-# Reuses poster holders in the enclosing RecyclerView screen lifecycle.
-# Deliberately no static View pool: it would hold stale Activity Contexts.
+# Apply shelf RecyclerView tuning once per view instance.
+# RecyclerView.setRecycledViewPool() detaches and reattaches even for the
+# same pool; avoid doing that on each bind of a horizontal shelf.
+# Home parent types (0..4) are disjoint from poster type (0x7f0d008f).
 .method public final applyNuvioRecyclerPolicy()V
-    .locals 4
+    .locals 5
 
     invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
     move-result-object v0
     iget-object v0, v0, Lcom/shabakaty/downloader/cv1;->N:Landroidx/recyclerview/widget/RecyclerView;
 
+    iget-boolean v1, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->T:Z
+    if-nez v1, :nuvio_pool_check
     const/4 v1, 0x0
     invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView;->setItemAnimator(Landroidx/recyclerview/widget/RecyclerView$j;)V
     const/4 v1, 0x1
     invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView;->setItemViewCacheSize(I)V
+    iput-boolean v1, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->T:Z
 
+    :nuvio_pool_check
     invoke-virtual {p0}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
     move-result-object v1
 
@@ -382,6 +390,9 @@
     check-cast v1, Landroidx/recyclerview/widget/RecyclerView;
     invoke-virtual {v1}, Landroidx/recyclerview/widget/RecyclerView;->getRecycledViewPool()Landroidx/recyclerview/widget/RecyclerView$s;
     move-result-object v3
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView;->getRecycledViewPool()Landroidx/recyclerview/widget/RecyclerView$s;
+    move-result-object v4
+    if-eq v3, v4, :nuvio_done
     invoke-virtual {v0, v3}, Landroidx/recyclerview/widget/RecyclerView;->setRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V
     goto :nuvio_done
 
@@ -396,7 +407,6 @@
     :nuvio_done
     return-void
 .end method
-
 
 .method public a(Lcom/shabakaty/cinemana/domain/models/local/VideoModel;Landroid/view/View;)V
     .locals 1
@@ -496,6 +506,9 @@
     invoke-super {p0}, Landroid/view/ViewGroup;->onDetachedFromWindow()V
 
     const/4 v0, 0x0
+
+    iput-boolean v0, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->T:Z
+
 
     .line 2
     iput-object v0, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->P:Lcom/shabakaty/downloader/pk;
