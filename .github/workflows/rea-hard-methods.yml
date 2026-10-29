@@ -1,0 +1,84 @@
+name: Analyze remaining complex Java source blockers with REA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - '.github/workflows/rea-hard-methods.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-complex:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.2'
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install the previously verified REA Android engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install -g rea-agents@6.8.0
+          curl -fL --retry 3 https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar -o "$RUNNER_TEMP/jadx-headless.jar"
+          echo "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75  $RUNNER_TEMP/jadx-headless.jar" | sha256sum -c -
+          echo "REA_JADX_MCP_JAR=$RUNNER_TEMP/jadx-headless.jar" >> "$GITHUB_ENV"
+      - name: Build source APK without changing it
+        run: bash Cinemana_PATCH252_Project/build.sh
+      - name: Attempt independent decompilation of hardest methods
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/method-check"
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"method-check"
+          apk=os.path.abspath("Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk")
+          cases=[
+              ("episodes_remote","com.shabakaty.cinemana.ca1.Episodes107","remote"),
+              ("mkv_video_export","com.shabakaty.cinemana.features.MkvExporter","waitForCompletedVideoAndExport"),
+              ("mkv_database_promotion","com.shabakaty.cinemana.features.MkvExporter","promoteDatabase"),
+              ("home_binding","com.shabakaty.downloader.gk1","i"),
+              ("media_binding","com.shabakaty.downloader.b35","i"),
+          ]
+          summaries=[]
+          for name,clazz,method in cases:
+              print("Inspecting",name,flush=True)
+              try:
+                  p=subprocess.run(["rea","inspect-android-method",apk,clazz,method,"--format","json"],
+                                   capture_output=True,text=True,timeout=180)
+                  summary={"name":name,"class":clazz,"method":method,"exit":p.returncode}
+                  (root/(name+".stderr.txt")).write_text(p.stderr[-15000:],"utf-8")
+                  if p.returncode==0:
+                      doc=json.loads(p.stdout)
+                      n=doc.get("normalized_result") or {}
+                      src=n.get("source") or {}
+                      summary.update(representation=n.get("representation"),body_status=n.get("body_status"),
+                                     source_status=src.get("status"),fell_back=n.get("fell_back"))
+                      (root/(name+".evidence.json")).write_text(json.dumps(doc,indent=2,ensure_ascii=False),"utf-8")
+                      if isinstance(src.get("text"),str):
+                          (root/(name+".source.txt")).write_text(src["text"],"utf-8")
+                  else:
+                      summary["error"]=p.stderr[-800:]
+              except (Exception,BaseException) as exc:
+                  summary={"name":name,"error":str(exc)}
+              print("RESULT",summary,flush=True)
+              summaries.append(summary)
+          (root/"summary.json").write_text(json.dumps(summaries,indent=2)+"\n","utf-8")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rea-complex-method-evidence
+          retention-days: 14
+          path: |
+            \${{ runner.temp }}/method-check/
