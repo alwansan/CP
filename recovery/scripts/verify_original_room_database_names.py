@@ -70,6 +70,35 @@ def main() -> None:
     ):
         require(required in downloads_builder,
                 f"DownloadsDatabase filename derivation changed: {required}")
+    # Verify the Kotlin List.last() implementation in the same APK Smali:
+    # m50.i0 calls iq6.h, which returns list.size() - 1.
+    last_implementation = (
+        ROOT / "Cinemana_PATCH252_Project/app/smali_classes2/"
+        "com/shabakaty/downloader/m50.smali"
+    ).read_text(encoding="utf-8")
+    last_index_implementation = (
+        ROOT / "Cinemana_PATCH252_Project/app/smali/"
+        "com/shabakaty/downloader/iq6.smali"
+    ).read_text(encoding="utf-8")
+    last = source_between(
+        last_implementation,
+        ".method public static final i0(Ljava/util/List;)Ljava/lang/Object;",
+        ".end method",
+        "Kotlin List.last()",
+    )
+    last_index = source_between(
+        last_index_implementation,
+        ".method public static final h(Ljava/util/List;)I",
+        ".end method",
+        "Kotlin List.lastIndex",
+    )
+    require("Lcom/shabakaty/downloader/iq6;->h(Ljava/util/List;)I" in last
+            and "Ljava/util/List;->get(I)Ljava/lang/Object;" in last,
+            "Downloads package segment no longer resolved using List.last()")
+    require("Ljava/util/List;->size()I" in last_index
+            and "add-int/lit8 p0, p0, -0x1" in last_index,
+            "Kotlin lastIndex no longer equals size - 1")
+
     # Method m50.i0 picks the last segment after splitting packageName on "."
     require(downloads_filename("com.shabakaty.cinemana")
             == "shabakaty.cinemana.downloads.database",
