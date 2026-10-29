@@ -219,8 +219,12 @@ final class OriginalRoomDiagnosticPort implements MkvPromotionCoordinator.Port {
     @Override public boolean verify(String mkvName, long size) {
         List<String[]> dl = downloadRows(), video = itemRows();
         return dl.size() == 1 && video.size() == 1
+                && request.downloadTaskId == Integer.parseInt(dl.get(0)[0])
+                && request.externalId.equals(dl.get(0)[1])
                 && mkvName.equals(dl.get(0)[2])
                 && Long.parseLong(dl.get(0)[3]) == size
+                && request.itemId.equals(video.get(0)[0])
+                && request.downloadTaskId == Integer.parseInt(video.get(0)[1])
                 && mkvName.equals(video.get(0)[2])
                 && Integer.parseInt(video.get(0)[3]) == newSizeMb()
                 && subtitleMatches(false);
@@ -298,8 +302,12 @@ final class OriginalRoomDiagnosticPort implements MkvPromotionCoordinator.Port {
                          MkvPromotionPreflight.CinemanaRow item, Object subtitleSnapshot) {
         List<String[]> dl = downloadRows(), video = itemRows();
         return dl.size() == 1 && video.size() == 1
+                && download.taskId == Integer.parseInt(dl.get(0)[0])
+                && download.externalId.equals(dl.get(0)[1])
                 && download.path.equals(dl.get(0)[2])
                 && Long.parseLong(dl.get(0)[3]) == download.originalBytes
+                && item.itemId.equals(video.get(0)[0])
+                && item.downloadTaskId == Integer.parseInt(video.get(0)[1])
                 && item.path.equals(video.get(0)[2])
                 && Integer.parseInt(video.get(0)[3]) == oldSizeMb
                 && subtitleSnapshot == this.subtitleSnapshot && subtitleMatches(true);
