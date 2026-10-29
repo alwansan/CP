@@ -56,7 +56,7 @@ def smali_method(data, declaration):
 adapter = smali_method(source("com/shabakaty/downloader/ej.smali"),
                        ".method public e(Ljava/util/List;)V")
 assert adapter.index("->equals(Ljava/lang/Object;)Z") < adapter.index("Landroidx/recyclerview/widget/j;->b("), "DiffUtil still always runs"
-assert adapter.count(":perf_no_change") == 2 and ":perf_calculate_diff" in adapter, "missing no-op update guard"
+assert adapter.count(":perf_no_change") == 3 and ":perf_calculate_diff" in adapter, "missing no-op update guard"
 
 horizontal = source("com/shabakaty/downloader/gv1.smali")
 callback = smali_method(horizontal,
