@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Stage original APKTool resources for Gradle without touching the source tree.
 
-Original APKTool res/values/attrs.xml includes definitions of two attributes
+Original APKTool res/values/attrs.xml includes definitions of three attributes
 also provided by androidx.core:core:1.13.0 when lifecycle/Activity is restored.
 AAPT2 rejects these duplicate definitions in the combined APK. Copy the whole
-tree and delete *only* the two redundant definitions in the staged output.
+tree and delete *only* the three redundant definitions in the staged output.
 
 Requires exactly one of each attribute; fails closed if upstream XML changes.
 """
@@ -13,7 +13,7 @@ import re
 import shutil
 import sys
 
-ATTRS = ("fontProviderFetchStrategy", "fontStyle")
+ATTRS = ("fontProviderFetchStrategy", "fontProviderFetchTimeout", "fontStyle")
 
 
 def main():
