@@ -44,6 +44,31 @@ public final class MkvPromotionPreflightTest {
         is(Reason.AMBIGUOUS_SOURCE_PATH,valid,new DownloadRow(12,"external-4","different.mp4"),v);
         is(Reason.AMBIGUOUS_SOURCE_PATH,valid,d,new CinemanaRow("item-1",12,"other.mp4"));
 
+        // A full-path Room row must never match a same-named video from a
+        // different directory. Filename-only legacy rows retain old behavior.
+        DownloadRow qualified = new DownloadRow(12, "external-4",
+                "/sdcard/Cinemana/work/Episode.mp4");
+        CinemanaRow qualifiedItem = new CinemanaRow("item-1", 12,
+                "/sdcard/Cinemana/work/Episode.mp4");
+        is(Reason.READY, valid, qualified, qualifiedItem);
+        is(Reason.READY, valid, qualified, v);
+        is(Reason.READY, valid, d, qualifiedItem);
+        is(Reason.AMBIGUOUS_SOURCE_PATH, valid,
+                new DownloadRow(12, "external-4",
+                        "/sdcard/Other/work/Episode.mp4"), qualifiedItem);
+        is(Reason.AMBIGUOUS_SOURCE_PATH, valid, qualified,
+                new CinemanaRow("item-1", 12,
+                        "/sdcard/Other/work/Episode.mp4"));
+        is(Reason.AMBIGUOUS_SOURCE_PATH, valid,
+                new DownloadRow(12, "external-4",
+                        "/sdcard/Cinemana/other/../work/Episode.mp4"), qualifiedItem);
+        is(Reason.AMBIGUOUS_SOURCE_PATH, valid,
+                new DownloadRow(12, "external-4",
+                        "work/Episode.mp4"), qualifiedItem);
+        is(Reason.AMBIGUOUS_SOURCE_PATH, valid,
+                new DownloadRow(12, "external-4",
+                        "/sdcard/Cinemana/work/episode.mp4"), qualifiedItem);
+
         Request cased=req("item-1",12,"external-4","EPISODE.MP4","episode.MKV",2048);
         is(Reason.READY,cased,d,v);
         System.out.println("PASS: "+tests+" MKV database promotion non-mutating preflight cases");
