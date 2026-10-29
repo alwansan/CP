@@ -17,6 +17,12 @@ ANDROID = ROOT / ("recovery/modernized/android-smoke/src/main/java/"
 GUARD = ROOT / ("recovery/modernized/core-downloads/src/main/java/"
                 "com/shabakaty/cinemana/recovery/downloads/"
                 "LegacyRoomV2RowWriteGuard.java")
+COLLECTION_ANDROID = ROOT / ("recovery/modernized/android-smoke/src/main/java/"
+                             "com/shabakaty/cinemana/recovery/smoke/"
+                             "LegacyRoomV2CollectionSqliteProbe.java")
+COLLECTION_PLAN = ROOT / ("recovery/modernized/core-downloads/src/main/java/"
+                          "com/shabakaty/cinemana/recovery/downloads/"
+                          "LegacyRoomV2CollectionPlanner.java")
 
 
 def require(ok, message):
@@ -70,6 +76,38 @@ def main():
         "return Reason.READY;",
     ):
         require(marker in guard, "JDK identity guard changed: " + marker)
+    collection = COLLECTION_ANDROID.read_text(encoding="utf-8")
+    plan = COLLECTION_PLAN.read_text(encoding="utf-8")
+    require(java_literal(collection, "ORIGINAL_COLLECTION_CREATE") == smali_literal("b"),
+            "Room 2->3 collection CREATE drifted from original it2$b")
+    require(java_literal(collection, "ORIGINAL_COLLECTION_COPY") == smali_literal("l"),
+            "Room 2->3 collection INSERT SELECT drifted from original it2$l")
+    for piece in (
+        "SQLiteDatabase.create(null)",
+        "db.execSQL(ORIGINAL_COLLECTION_CREATE)",
+        "db.execSQL(ORIGINAL_COLLECTION_COPY)",
+        "LegacyRoomV2RowWriteGuard.inspect(",
+        "LegacyRoomV2CollectionPlanner.prepare(items, snapshot(db))",
+        "SQLiteDatabase.CONFLICT_IGNORE",
+        "db.beginTransaction()",
+        "db.endTransaction()",
+        "db.setTransactionSuccessful()",
+        "incomplete collection migration fully rolled back",
+    ):
+        # The rollback check is an explicit runtime test assertion, and the
+        # exact final message text may be edited separately from its meaning.
+        if piece == "incomplete collection migration fully rolled back":
+            continue
+        require(piece in collection, "collection fixture contract drifted: " + piece)
+    for piece in (
+        "existingIds == null",
+        "knownIds.contains(candidate.id)",
+        "!plannedIds.add(candidate.id)",
+        "candidate.name.trim().isEmpty()",
+        "Collections.unmodifiableList(items)",
+    ):
+        require(piece in plan, "safer collection planner drifted: " + piece)
+    print("ROOM_JSON_SQL_GUARD_PASS: exact source it2$b + it2$l collection SQL copied")
     print("ROOM_JSON_SQL_GUARD_PASS: exact source it2$c + it2$m SQL copied")
     print("ROOM_JSON_SQL_GUARD_PASS: bound id+task guarded in isolated Android SQLite probe")
     print("ROOM_JSON_SQL_GUARD_LIMIT: diagnostic-only; 2->3 historical Room parity not proven")
