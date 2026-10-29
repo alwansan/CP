@@ -2099,6 +2099,8 @@
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->foreground(Landroid/content/Context;)V
 
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->install(Landroid/app/Activity;)V
+
     .line 2
     invoke-static {}, Lcom/shabakaty/downloader/j51;->b()Lcom/shabakaty/downloader/j51;
 
