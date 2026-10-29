@@ -56,6 +56,10 @@ https://github.com/alwansan/CP/actions/runs/40928163260
 
 تمت إضافة فحص على محاكي Android للتحقق من فتح النشاط الجديد، إرسال بحث وهمي، استقبال ثلاث نتائج، استخدام زر الفلترة ومسح البحث. واجهة `SearchFlowActivity` تستخدم Android SDK widgets بدلاً من AppCompat/Material الأصليين فقط لحين استرجاع الإصدارات المتوافقة؛ لذلك الاختبار لا يعني تكافؤ واجهة البحث الأصلية.
 
+تأكد التشغيل العملي على محاكي Android 10، بما في ذلك فتح شاشة البحث، إرسال بحث وهمي ورؤية عدد النتائج 3، الضغط على زر الفلترة، مسح البحث والانتقال إلى تبويب المسلسلات (رقم التبويب 1). خرج سجل الاختبار بـ`SEARCH_FLOW_PASS`، ولقطة UIAutomator تظهر `Search state: RECENT | tab=1 | count=0` مع `Filter events: 1`.
+
+- https://github.com/alwansan/CP/actions/runs/40929129643
+
 ## أحدث فحوص مكتملة
 
 - نموذج تحديثات التنزيل واسترجاعها + حالات البحث + مطابقة XML: https://github.com/alwansan/CP/actions/runs/40923843681
