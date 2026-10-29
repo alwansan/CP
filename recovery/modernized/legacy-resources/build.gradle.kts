@@ -6,6 +6,7 @@ android {
     compileSdk = 35
     defaultConfig {
         minSdk = 21
+        vectorDrawables.useSupportLibrary = true
     }
     sourceSets.getByName("main").res.srcDirs(
         file("../../../Cinemana_PATCH252_Project/app/res")
