@@ -1,0 +1,41 @@
+name: Compile recovered Android Media3 Gradle bridge
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/modernized/**'
+      - '.github/workflows/rea-android-bridge.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  android-bridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build core Java and Android library using public Media3
+        working-directory: recovery/modernized
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :core-video:check :android-bridge:assembleDebug --stacktrace
+          test -s android-bridge/build/outputs/aar/android-bridge-debug.aar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovered-android-bridge-aar
+          if-no-files-found: error
+          retention-days: 14
+          path: recovery/modernized/android-bridge/build/outputs/aar/android-bridge-debug.aar
