@@ -59,11 +59,13 @@ public final class LegacyRoomV2CollectionPlanner {
 
     public static Plan prepare(List<LegacyRoomV2EpisodeMetadata.Projection> approved,
                                Set<Integer> existingIds) {
+        if (existingIds == null) {
+            throw new IllegalArgumentException("explicit existing collection-ID snapshot required");
+        }
         if (approved == null || approved.isEmpty()) {
             return new Plan(new ArrayList<>(), 0, 0, 0, 0, 0);
         }
-        Set<Integer> knownIds = existingIds == null
-                ? Collections.emptySet() : new HashSet<>(existingIds);
+        Set<Integer> knownIds = new HashSet<>(existingIds);
         Set<String> encounteredRoots = new LinkedHashSet<>();
         Set<Integer> plannedIds = new HashSet<>();
         List<CollectionCandidate> output = new ArrayList<>();
