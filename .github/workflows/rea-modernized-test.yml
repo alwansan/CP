@@ -25,6 +25,16 @@ jobs:
       - name: Verify original Room schema SQL and composite key match Smali
         shell: bash
         run: python3 recovery/scripts/verify_original_room_schema.py
+      - name: Compile and test recovered Downloads identity resolver with JDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovery/modernized/build/test-downloads
+          javac -encoding UTF-8 -d recovery/modernized/build/test-downloads \
+            recovery/modernized/core-downloads/src/main/java/com/shabakaty/cinemana/recovery/downloads/LegacyDownloadIdentityResolver.java \
+            recovery/modernized/core-downloads/src/test/java/com/shabakaty/cinemana/recovery/downloads/LegacyDownloadIdentityResolverTest.java
+          java -cp recovery/modernized/build/test-downloads \
+            com.shabakaty.cinemana.recovery.downloads.LegacyDownloadIdentityResolverTest
       - name: Compile and test clean High10 Java module
         shell: bash
         run: |
