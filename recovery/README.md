@@ -11,7 +11,8 @@ This directory is an independent reverse-engineering workspace originating from
 - Unstaged sources are still available in the archived release snapshot.
 - `WorkFolders104.name` rebuilt from the Smali control flow and tested in 19 cases.
 - `BatchLog.lambda$init$1` rebuilt from Smali and tested in 10 cases.
-- Five first-party Java files still contain unreconstructed methods according to the current audit.
+- Three formerly unreconstructed methods restored: WorkFolders104.name (Smali), BatchLog.lambda$init$1 (Smali), DownloadTrace.log (REA Java confirmed against Smali).
+- Four first-party Java files still contain unreconstructed methods according to the current audit.
 - Actual Android Gradle Library `modernized/android-bridge` with Media3 compiles.
 - `modernized/legacy-native` packages shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
