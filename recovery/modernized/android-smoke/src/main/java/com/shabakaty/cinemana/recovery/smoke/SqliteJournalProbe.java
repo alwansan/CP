@@ -230,4 +230,63 @@ public final class SqliteJournalProbe {
         }
         return "PASS (" + checks + " journal restart cases)";
     }
+    /** Private diagnostic DB survives an OS process kill, unlike cache fixtures. */
+    private static File processRestartFile(Context context) {
+        return new File(context.getFilesDir(), "diagnostic-journal-process-restart.db");
+    }
+
+    /**
+     * First Android process: commit a before-image journal, then two separate
+     * SQLite writes, and leave the journal pending. The emulator harness will
+     * FORCE-STOP this process between prepare and recover.
+     */
+    public static String prepareProcessRestart(Context context) throws Exception {
+        File file = processRestartFile(context);
+        SQLiteDatabase.deleteDatabase(file);
+        try (SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(file, null)) {
+            SqlitePromotionProbe.seed(db);
+            createJournal(db);
+            beginPromotion(db);
+            partiallyPromote(db, 2);
+            if (!hasJournal(db) || restored(db)) {
+                throw new IllegalStateException("process-kill fixture is not partially updated");
+            }
+        }
+        // File must exist before force-stop; the second process never re-seeds.
+        if (!file.isFile() || file.length() == 0L) {
+            throw new IllegalStateException("diagnostic on-disk journal missing");
+        }
+        return "PREPARED (pending journal persisted)";
+    }
+
+    /**
+     * Second Android process: read the existing file after the harness has
+     * force-stopped the first process; restore and remove journal atomically
+     * inside one SQLite file, then independently reopen to verify.
+     *
+     * This is NOT a test of abrupt death inside a SQLite write or of a
+     * transaction that spans Cinemana's multiple production databases.
+     */
+    public static String recoverProcessRestart(Context context) throws Exception {
+        File file = processRestartFile(context);
+        if (!file.isFile()) {
+            throw new IllegalStateException("missing journal from previous Android process");
+        }
+        try (SQLiteDatabase db = SQLiteDatabase.openDatabase(
+                file.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE)) {
+            if (!hasJournal(db) || !recover(db, false)
+                    || hasJournal(db) || !restored(db)) {
+                throw new IllegalStateException("pending journal recovery did not finish");
+            }
+        }
+        try (SQLiteDatabase verify = SQLiteDatabase.openDatabase(
+                file.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY)) {
+            if (hasJournal(verify) || !restored(verify)) {
+                throw new IllegalStateException("recovered values did not persist");
+            }
+        }
+        SQLiteDatabase.deleteDatabase(file);
+        return "RECOVERED (journal replayed after force-stop)";
+    }
+
 }
