@@ -33,7 +33,7 @@ def family(name):
 def main():
     if not SRC.is_dir():
         raise SystemExit("First-party Java not yet generated; run rea-full-source.yml first.")
-    all_java = sorted(SRC.rglob("*.java"))
+    all_java = sorted((SRC / "com" / "shabakaty" / "cinemana").rglob("*.java"))
     if not all_java:
         raise SystemExit("No recovered Java found")
     files_with = collections.defaultdict(list)
