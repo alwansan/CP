@@ -54,6 +54,8 @@ This directory is an independent reverse-engineering workspace originating from
 - `reports/SEARCH_BINDING_SMALI_PARITY_AR.md`: original gk1/fk1/hz3/dz3 binding-slot evidence, tab-safety fix, and remaining source-first parity requirements
 - `reports/MKV_REAL_SCHEMA_PARITY_AR.md`: verified original CinemanaDownloadItem/SubtitleDb fields and differences from the isolated multi-database crash-journal fixtures
 - `reports/MKV_ROOM_DAO_CALLMAP_AR.md`: evidence for original AppDatabase_Impl/DownloadsDatabase_Impl DAO implementations (kw0/jw0 and lz0/kz0) and the composite-key migration hazard
+- `reports/ROOM_MIGRATION_GRAPH_AR.md`: verified original Room version chain (App v5, Downloads v2), actual database filenames, the SQL-only 2->3, 3->4, Downloads 1->2, and subtitle 4->5 disposable SQLite tests. The critical 2->3 JSON transformation remains unported.
+- `scripts/verify_original_room_migration_graph.py`, `scripts/test_original_room_2_to_3_sql.py`, `scripts/test_original_room_3_to_4.py`, and `scripts/test_original_room_migration_sql.py`: read-only Smali parity and isolated in-memory SQLite migration regression checks. These do **not** constitute real production Room migrations.
 - `tests/episodes/`, `tests/mkvwatcher/`, `tests/sqliteschema/`: real-body Java regressions for episode network handling, completed-video export readiness, and SQLite schema verification
 - `modernized/`: distinct Gradle modules, separately compiled and tested
 - `tests/workfolders/`: actual Java source with test doubles for reflection-based callers
