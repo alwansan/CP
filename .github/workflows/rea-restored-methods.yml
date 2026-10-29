@@ -1,0 +1,28 @@
+name: Verify restored Cinemana Java methods
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/tests/enhancements/**'
+      - 'recovery/generated/java/com/shabakaty/cinemana/ca1/Enhancements.java'
+      - '.github/workflows/rea-restored-methods.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  method-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Compile and test the actual restored episode filter / sort method
+        run: |
+          set -euo pipefail
+          python3 recovery/tests/enhancements/test_transform.py
