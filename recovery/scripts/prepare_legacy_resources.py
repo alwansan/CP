@@ -28,7 +28,7 @@ def main():
         raise SystemExit("original attrs.xml not found")
     text = original_attrs.read_text(encoding="utf-8")
     for attr in ATTRS:
-        pattern = r"(?m)^[ \t]*<attr name=\"" + re.escape(attr) + r"\">[ \t]*\n(?:.*\n)*?^[ \t]*</attr>[ \t]*\n"
+        pattern = r"(?m)^[ \t]*<attr name=\"" + re.escape(attr) + r"\"[^>]*>[ \t]*\n(?:.*\n)*?^[ \t]*</attr>[ \t]*\n"
         updated, count = re.subn(pattern, "", text)
         if count != 1:
             raise SystemExit(f"expected exactly one {attr} definition; found {count}")
