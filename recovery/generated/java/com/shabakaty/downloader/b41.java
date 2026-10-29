@@ -64,7 +64,7 @@ public final class b41 {
     /* JADX WARN: Type inference failed for: r0v4 */
     public int hashCode() {
         boolean z = this.a;
-        ?? r0 = z;
+        int r0 = z ? 1 : 0;
         if (z) {
             r0 = 1;
         }
