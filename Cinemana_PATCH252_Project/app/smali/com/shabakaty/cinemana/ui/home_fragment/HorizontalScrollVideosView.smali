@@ -357,6 +357,47 @@
 
 
 # virtual methods
+
+# Reuses poster holders in the enclosing RecyclerView screen lifecycle.
+# Deliberately no static View pool: it would hold stale Activity Contexts.
+.method public final applyNuvioRecyclerPolicy()V
+    .locals 4
+
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
+    move-result-object v0
+    iget-object v0, v0, Lcom/shabakaty/downloader/cv1;->N:Landroidx/recyclerview/widget/RecyclerView;
+
+    const/4 v1, 0x0
+    invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView;->setItemAnimator(Landroidx/recyclerview/widget/RecyclerView$j;)V
+    const/4 v1, 0x1
+    invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView;->setItemViewCacheSize(I)V
+
+    invoke-virtual {p0}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
+    move-result-object v1
+
+    :nuvio_walk
+    if-eqz v1, :nuvio_done
+    instance-of v2, v1, Landroidx/recyclerview/widget/RecyclerView;
+    if-eqz v2, :nuvio_up
+    check-cast v1, Landroidx/recyclerview/widget/RecyclerView;
+    invoke-virtual {v1}, Landroidx/recyclerview/widget/RecyclerView;->getRecycledViewPool()Landroidx/recyclerview/widget/RecyclerView$s;
+    move-result-object v3
+    invoke-virtual {v0, v3}, Landroidx/recyclerview/widget/RecyclerView;->setRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V
+    goto :nuvio_done
+
+    :nuvio_up
+    instance-of v2, v1, Landroid/view/View;
+    if-eqz v2, :nuvio_done
+    check-cast v1, Landroid/view/View;
+    invoke-virtual {v1}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
+    move-result-object v1
+    goto :nuvio_walk
+
+    :nuvio_done
+    return-void
+.end method
+
+
 .method public a(Lcom/shabakaty/cinemana/domain/models/local/VideoModel;Landroid/view/View;)V
     .locals 1
 

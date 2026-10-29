@@ -351,6 +351,8 @@
     .line 16
     iget-object p1, p1, Lcom/shabakaty/downloader/c52;->M:Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
 
+    invoke-virtual {p1}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->applyNuvioRecyclerPolicy()V
+
     .line 17
     iget-object v0, p0, Lcom/shabakaty/downloader/yt1;->c:Ljava/util/List;
 
