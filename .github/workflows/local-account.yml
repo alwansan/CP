@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [feature/ui-performance-optimization]
-    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/local-account.yml', 'patches/patch262/**', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py', 'scripts/check_ui_performance.py']
+    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/local-account.yml', 'patches/patch262/**', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py', 'scripts/check_ui_performance.py', 'scripts/analyze_ui_performance.py', 'scripts/test_ui_trace_analysis.py']
 permissions:
   contents: write
 concurrency:
@@ -39,6 +39,7 @@ jobs:
           python3 patches/local-account/build.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --r8-jar "$RUNNER_TEMP/local-tools/r8.jar"
           python3 patches/local-account/validate.py
           python3 scripts/check_ui_performance.py
+          python3 scripts/test_ui_trace_analysis.py
           python3 scripts/validate_recovery.py
           python3 scripts/test_reference_guards.py
           python3 scripts/test_recovery_flow.py
