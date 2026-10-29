@@ -93,7 +93,10 @@ public final class SearchFlowActivity extends ComponentActivity {
 
         final TextView filterEvent = label("Filter events: 0");
         column.addView(filterEvent);
+        final TextView requestsEvent = label("Search requests: 0 | lastTab=-1");
+        column.addView(requestsEvent);
         final int[] filters = {0};
+        final int[] requests = {0};
         setContentView(root);
 
         binding = new SearchScreenController(this, root, search,
@@ -120,6 +123,9 @@ public final class SearchFlowActivity extends ComponentActivity {
                 }, new SearchScreenController.Actions() {
                     @Override public void onSearchSubmitted(String query, long token) {
                         // Local fixture only: no real account, DB or Cinemana API.
+                        requests[0]++;
+                        requestsEvent.setText("Search requests: " + requests[0]
+                                + " | lastTab=" + search.machine().snapshot().selectedTab);
                         search.machine().received(token, 3);
                     }
 
