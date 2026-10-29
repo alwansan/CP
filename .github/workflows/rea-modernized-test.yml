@@ -69,6 +69,17 @@ jobs:
             recovery/modernized/core-downloads/src/test/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2EpisodeMetadataTest.java
           java -cp recovery/modernized/build/test-room-episode \
             com.shabakaty.cinemana.recovery.downloads.LegacyRoomV2EpisodeMetadataTest
+      - name: Verify Room 2-to-3 copied row identity guard (JDK)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovery/modernized/build/test-room-guard
+          javac -encoding UTF-8 -d recovery/modernized/build/test-room-guard \
+            recovery/modernized/core-downloads/src/main/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2EpisodeMetadata.java \
+            recovery/modernized/core-downloads/src/main/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2RowWriteGuard.java \
+            recovery/modernized/core-downloads/src/test/java/com/shabakaty/cinemana/recovery/downloads/LegacyRoomV2RowWriteGuardTest.java
+          java -cp recovery/modernized/build/test-room-guard \
+            com.shabakaty.cinemana.recovery.downloads.LegacyRoomV2RowWriteGuardTest
       - name: Compile and test clean High10 Java module
         shell: bash
         run: |
