@@ -75,15 +75,15 @@ public final class ExpandedControlsActivity extends i81 {
     @Override // com.shabakaty.downloader.r9, com.shabakaty.downloader.ji1, android.app.Activity
     public void onStart() {
         final br3 br3VarK;
-        ?? arrayList;
+        java.util.List arrayList;
         List<String> list;
         List<String> list2;
         List<String> list3;
         super.onStart();
         vd5.p(this);
         n24 n24Var = this.n0;
-        ?? arrayList2 = 0;
-        arrayList2 = 0;
+        java.util.List arrayList2 = null;
+        arrayList2 = null;
         if (n24Var == null) {
             j32.l("settings");
             throw null;
@@ -108,7 +108,7 @@ public final class ExpandedControlsActivity extends i81 {
         if (((skippingDurations == null || (list3 = skippingDurations.start) == null) ? 0 : list3.size()) > 0 && zF) {
             SkippingDurations skippingDurations2 = this.g0;
             if (skippingDurations2 == null || (list2 = skippingDurations2.start) == null) {
-                arrayList = 0;
+                arrayList = null;
             } else {
                 arrayList = new ArrayList(i50.O(list2, 10));
                 Iterator it = list2.iterator();
@@ -116,7 +116,7 @@ public final class ExpandedControlsActivity extends i81 {
                     arrayList.add(Double.valueOf(Double.parseDouble((String) it.next())));
                 }
             }
-            if (arrayList == 0) {
+            if (arrayList == null) {
                 arrayList = w21.r;
             }
             this.k0 = q0(arrayList);
@@ -128,7 +128,7 @@ public final class ExpandedControlsActivity extends i81 {
                     arrayList2.add(Double.valueOf(Double.parseDouble((String) it2.next())));
                 }
             }
-            if (arrayList2 == 0) {
+            if (arrayList2 == null) {
                 arrayList2 = w21.r;
             }
             this.l0 = q0(arrayList2);
