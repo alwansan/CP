@@ -77,44 +77,28 @@ public final class ObserverWhileStartedImpl<T> implements f {
                 return aVar;
             }
 
-            /*  JADX ERROR: JadxRuntimeException in pass: ModVisitor
-                jadx.core.utils.exceptions.JadxRuntimeException: Can't change immutable type java.lang.Object to com.shabakaty.cinemana.utils.extensions.ObserverWhileStartedImpl$b$a for r3v1 'this'  java.lang.Object
-                	at jadx.core.dex.instructions.args.SSAVar.setType(SSAVar.java:114)
-                	at jadx.core.dex.instructions.args.RegisterArg.setType(RegisterArg.java:52)
-                	at jadx.core.dex.visitors.ModVisitor.removeCheckCast(ModVisitor.java:417)
-                	at jadx.core.dex.visitors.ModVisitor.replaceStep(ModVisitor.java:152)
-                	at jadx.core.dex.visitors.ModVisitor.visit(ModVisitor.java:96)
-                */
-            @Override // com.shabakaty.downloader.bj
-            public final java.lang.Object t(java.lang.Object r4) {
-                /*
-                    r3 = this;
-                    com.shabakaty.downloader.te0 r0 = com.shabakaty.downloader.te0.COROUTINE_SUSPENDED
-                    int r1 = r3.v
-                    r2 = 1
-                    if (r1 == 0) goto L15
-                    if (r1 != r2) goto Ld
-                    com.shabakaty.downloader.j96.i(r4)
-                    goto L27
-                Ld:
-                    java.lang.IllegalStateException r4 = new java.lang.IllegalStateException
-                    java.lang.String r0 = "call to 'resume' before 'invoke' with coroutine"
-                    r4.<init>(r0)
-                    throw r4
-                L15:
-                    com.shabakaty.downloader.j96.i(r4)
-                    java.lang.Object r4 = r3.w
-                    com.shabakaty.cinemana.utils.extensions.ObserverWhileStartedImpl<T> r1 = r3.x
-                    com.shabakaty.downloader.hn1<T, com.shabakaty.downloader.ud0<? super com.shabakaty.downloader.qv4>, java.lang.Object> r1 = r1.s
-                    r3.v = r2
-                    java.lang.Object r4 = r1.o(r4, r3)
-                    if (r4 != r0) goto L27
-                    return r0
-                L27:
-                    com.shabakaty.downloader.qv4 r4 = com.shabakaty.downloader.qv4.a
-                    return r4
-                */
-                throw new UnsupportedOperationException("Method not decompiled: com.shabakaty.cinemana.utils.extensions.ObserverWhileStartedImpl.b.a.t(java.lang.Object):java.lang.Object");
+            /**
+             * Recovered from ObserverWhileStartedImpl$b$a.t Smali.
+             * Preserve coroutine suspension state and error propagation.
+             */
+            @Override
+            public final Object t(Object result) {
+                Object suspended = te0.r;
+                if (this.v == 0) {
+                    j96.i(result);
+                    Object emission = this.w;
+                    hn1 callback = this.x.s;
+                    this.v = 1;
+                    Object dispatched = callback.o(emission, this);
+                    if (dispatched == suspended) {
+                        return suspended;
+                    }
+                } else if (this.v == 1) {
+                    j96.i(result);
+                } else {
+                    throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+                }
+                return qv4.a;
             }
         }
 
