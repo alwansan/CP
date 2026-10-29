@@ -49,6 +49,7 @@ public final class UiPerfDiag {
     private static long verticalScrollEvents, verticalScrollAbs;
     private static long diffCount, diffTotalNs, diffMaxNs, diffSkipped, diffOver16, diffOver32;
     private static long pageEnds, lifecycleEvents;
+    private static long posterStarted, posterReady, posterFailed, posterFallback;
     private static String screen = "unknown";
     private static long lastFlushMs;
 
@@ -215,6 +216,17 @@ public final class UiPerfDiag {
         synchronized (LOCK) { diffSkipped++; }
     }
 
+    /** Only aggregate counters for detail poster requests; never log image URLs or IDs. */
+    public static void poster(int phase) {
+        if (!installed) return;
+        synchronized (LOCK) {
+            if (phase == 1) posterStarted++;
+            else if (phase == 2) posterReady++;
+            else if (phase == 3) posterFailed++;
+            else if (phase == 4) posterFallback++;
+        }
+    }
+
     private static void flush(boolean force) {
         if (!installed) return;
         try {
@@ -224,28 +236,38 @@ public final class UiPerfDiag {
             long wallDelta = Math.max(1, now - lastWallMs);
             long cpuNow = android.os.Process.getElapsedCpuTime();
             long cpuDelta = Math.max(0, cpuNow - lastCpuMs);
-            lastCpuMs = cpuNow; lastWallMs = now;
-            String snapshot;
+            lastCpuMs = cpuNow;
+            lastWallMs = now;
+            final long[] v;
+            final String currentScreen;
+            // Never do formatting, filesystem work or native heap inspection under the
+            // lock also used by main-thread scroll calls and FrameMetrics callbacks.
             synchronized (LOCK) {
-                long count = frames;
-                long total = frameTotalNs;
-                snapshot = String.format(Locale.US,
-                    "{\"schema\":1,\"build\":\"%s\",\"session\":%d,\"utc_ms\":%d,\"elapsed_ms\":%d,\"visible\":%b,\"screen\":\"%s\",\"window_ms\":%d,\"frames\":%d,\"frame_avg_ms\":%.2f,\"frame_max_ms\":%.2f,\"over_24ms\":%d,\"over_32ms\":%d,\"over_50ms\":%d,\"over_100ms\":%d,\"over_200ms\":%d,\"dropped_reported\":%d,\"layout_sum_ms\":%.1f,\"draw_sum_ms\":%.1f,\"sync_sum_ms\":%.1f,\"command_sum_ms\":%.1f,\"scroll_home\":%d,\"scroll_home_px\":%d,\"scroll_horizontal\":%d,\"scroll_horizontal_px\":%d,\"scroll_vertical\":%d,\"scroll_vertical_px\":%d,\"diff_count\":%d,\"diff_avg_ms\":%.2f,\"diff_max_ms\":%.2f,\"diff_over_16\":%d,\"diff_over_32\":%d,\"diff_skipped\":%d,\"pagination\":%d,\"lifecycle\":%d,\"process_cpu_ms\":%d,\"java_heap_used_kb\":%d,\"native_heap_used_kb\":%d,\"threads_approx\":%d}",
-                    BUILD, session, System.currentTimeMillis(), now, visible, screen, wallDelta,
-                    count, count==0?0.0:total/1e6/count, frameMaxNs/1e6, overBudget, over32, over50, over100, over200, missed,
-                    layoutNs/1e6, drawNs/1e6, syncNs/1e6, commandNs/1e6,
-                    homeScrollEvents, homeScrollAbs, horizontalScrollEvents, horizontalScrollAbs, verticalScrollEvents, verticalScrollAbs,
-                    diffCount, diffCount==0?0.0:diffTotalNs/1e6/diffCount, diffMaxNs/1e6, diffOver16, diffOver32, diffSkipped,
-                    pageEnds, lifecycleEvents, cpuDelta,
-                    (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024,
-                    Debug.getNativeHeapAllocatedSize()/1024, Thread.activeCount());
+                v = new long[]{frames, frameTotalNs, frameMaxNs, missed, overBudget, over32,
+                    over50, over100, over200, layoutNs, drawNs, syncNs, commandNs,
+                    homeScrollEvents, homeScrollAbs, horizontalScrollEvents, horizontalScrollAbs,
+                    verticalScrollEvents, verticalScrollAbs, diffCount, diffTotalNs, diffMaxNs,
+                    diffOver16, diffOver32, diffSkipped, pageEnds, lifecycleEvents,
+                    posterStarted, posterReady, posterFailed, posterFallback};
+                currentScreen = screen;
                 frames=frameTotalNs=frameMaxNs=missed=overBudget=over32=over50=over100=over200=0;
                 layoutNs=drawNs=syncNs=commandNs=0;
                 homeScrollEvents=homeScrollAbs=horizontalScrollEvents=horizontalScrollAbs=0;
                 verticalScrollEvents=verticalScrollAbs=0;
                 diffCount=diffTotalNs=diffMaxNs=diffSkipped=diffOver16=diffOver32=0;
                 pageEnds=lifecycleEvents=0;
+                posterStarted=posterReady=posterFailed=posterFallback=0;
             }
+            String snapshot = String.format(Locale.US,
+                "{\"schema\":1,\"build\":\"%s\",\"session\":%d,\"utc_ms\":%d,\"elapsed_ms\":%d,\"visible\":%b,\"screen\":\"%s\",\"window_ms\":%d,\"frames\":%d,\"frame_avg_ms\":%.2f,\"frame_max_ms\":%.2f,\"over_24ms\":%d,\"over_32ms\":%d,\"over_50ms\":%d,\"over_100ms\":%d,\"over_200ms\":%d,\"dropped_reported\":%d,\"layout_sum_ms\":%.1f,\"draw_sum_ms\":%.1f,\"sync_sum_ms\":%.1f,\"command_sum_ms\":%.1f,\"scroll_home\":%d,\"scroll_home_px\":%d,\"scroll_horizontal\":%d,\"scroll_horizontal_px\":%d,\"scroll_vertical\":%d,\"scroll_vertical_px\":%d,\"diff_count\":%d,\"diff_avg_ms\":%.2f,\"diff_max_ms\":%.2f,\"diff_over_16\":%d,\"diff_over_32\":%d,\"diff_skipped\":%d,\"pagination\":%d,\"lifecycle\":%d,\"poster_start\":%d,\"poster_success\":%d,\"poster_failed\":%d,\"poster_fallback\":%d,\"process_cpu_ms\":%d,\"java_heap_used_kb\":%d,\"native_heap_used_kb\":%d,\"threads_approx\":%d}",
+                BUILD, session, System.currentTimeMillis(), now, visible, currentScreen, wallDelta,
+                v[0], v[0]==0?0.0:v[1]/1e6/v[0], v[2]/1e6, v[4], v[5], v[6], v[7], v[8], v[3],
+                v[9]/1e6, v[10]/1e6, v[11]/1e6, v[12]/1e6,
+                v[13], v[14], v[15], v[16], v[17], v[18],
+                v[19], v[19]==0?0.0:v[20]/1e6/v[19], v[21]/1e6, v[22], v[23], v[24],
+                v[25], v[26], v[27], v[28], v[29], v[30], cpuDelta,
+                (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024,
+                Debug.getNativeHeapAllocatedSize()/1024, Thread.activeCount());
             append(snapshot);
         } catch (Throwable error) {
             Log.w(TAG, "flush_failed type=" + error.getClass().getSimpleName());
