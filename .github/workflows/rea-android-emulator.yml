@@ -8,6 +8,10 @@ on:
       - 'recovery/modernized/android-smoke/**'
       - '.github/workflows/rea-android-emulator.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
