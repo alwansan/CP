@@ -408,12 +408,7 @@
     check-cast p1, Lcom/shabakaty/downloader/n52;
 
     .line 22
-    iget-object p2, p1, Lcom/shabakaty/downloader/n52;->N:Lcom/rd/PageIndicatorView;
-
-    sget-object v0, Lcom/shabakaty/downloader/e8;->u:Lcom/shabakaty/downloader/e8;
-
-    invoke-virtual {p2, v0}, Lcom/rd/PageIndicatorView;->setAnimationType(Lcom/shabakaty/downloader/e8;)V
-
+    # Let the lightweight XML indicator style own its animation setting.
     .line 23
     iget-object p1, p1, Lcom/shabakaty/downloader/n52;->M:Lcom/shabakaty/cinemana/ui/home_fragment/SliderView;
 

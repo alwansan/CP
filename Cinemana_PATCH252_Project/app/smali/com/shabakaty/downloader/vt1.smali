@@ -615,7 +615,7 @@
 
     iget-object p1, p1, Lcom/shabakaty/downloader/qj1;->M:Landroidx/constraintlayout/widget/ConstraintLayout;
 
-    const/4 p2, 0x4
+    const/4 p2, 0x1
 
     invoke-virtual {p1, p2}, Landroid/view/ViewGroup;->setImportantForAccessibility(I)V
 
@@ -670,6 +670,10 @@
     invoke-static {p1, p2}, Lcom/shabakaty/downloader/j32;->d(Ljava/lang/Object;Ljava/lang/String;)V
 
     invoke-static {p1}, Lcom/shabakaty/downloader/s45;->a(Landroidx/recyclerview/widget/RecyclerView;)V
+
+    # No expensive default item-change animations during live feed updates.
+    const/4 v0, 0x0
+    invoke-virtual {p1, v0}, Landroidx/recyclerview/widget/RecyclerView;->setItemAnimator(Landroidx/recyclerview/widget/RecyclerView$j;)V
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->refresh(Ljava/lang/Object;)V
 

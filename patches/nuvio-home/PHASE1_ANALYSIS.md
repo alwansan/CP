@@ -14,7 +14,7 @@ Target: `feature/nuvio-home-rebuild`. Reference: NuvioMedia/NuvioMobile `cmp-rew
 - Main source is an APKTool-decompiled XML/Smali project. Nuvio's Kotlin Compose UI cannot safely be imported directly into this binary project.
 
 ## Important performance finding
-Previously `home_page_main_recycler` was set to `wrap_content` under a root with unconstrained bottom. That can produce unnecessarily large/expensive measurement of a feed containing nested carousels. Now it is strictly bounded by top/bottom constraints with `layout_height=0dp`. Removed live announcements from the hero carousel; disabled its interactive dot animations and prolonged 800 ms image crossfade in the hero; disabled layout-transition churn in the home activity variants. These are plausible optimizations **not measured FPS improvements**.
+Previously `home_page_main_recycler` was set to `wrap_content` under a root with unconstrained bottom. That can produce unnecessarily large/expensive measurement of a feed containing nested carousels. Now it is strictly bounded by top/bottom constraints with `layout_height=0dp`. Removed live announcements from the hero carousel; disabled dot animations in XML and removed the adapter's forced animated indicator mode and prolonged 800 ms image crossfade in the hero; disabled layout-transition churn in the home activity variants. These are plausible optimizations **not measured FPS improvements**.
 
 ## Design decisions
 - Nuvio-inspired Graphite/Arctic midnight surfaces, spacious 22dp rounded hero and high-contrast white play CTA.
@@ -28,6 +28,9 @@ Previously `home_page_main_recycler` was set to `wrap_content` under a root with
 3. Replace all legacy home-only item binders and renderers; only then remove unused `HomeItems`/legacy home classes. Never remove shared smali classes blindly.
 4. Add JankStats / Macrobenchmark (cold launch, first visible content, scroll p50/p95 frame durations, dropped frames, click-to-details, back-to-home) on real hardware. Test both 60Hz and 120Hz, cold/warm cache and RTL.
 5. Compare side by side with screenshots from `alwansan/CL/img`; validate 4 tabs, casting, login state, notifications, navigation restoration, details and playback before merging.
+
+## Native renderer follow-up
+The home fragment now disables its default RecyclerView item animator during feed updates, avoiding expensive change animation/rebind passes. The original home screen forcibly hid its entire subtree from accessibility services; that override was corrected without changing any binding IDs. The old main adapter also forced indicator animations every bind; that setting is now owned by the non-animated XML widget.
 
 ## Compatibility guards
 Do not rename: `home_bottom_nav`, `fragment_container`, `home_page_main_recycler`, `slider_item_root_constraint`, `videoThumb`, `item_slider_title`, `item_slider_description`, `item_slider_watch_now`, `home_page_slider_recycler`, `pageIndicatorView` or the `binding_N` tags. Generated data binding needs them.
