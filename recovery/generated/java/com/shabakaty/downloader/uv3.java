@@ -54,7 +54,7 @@ public final class uv3 {
             }
         };
         final int i2 = 1;
-        ?? r5 = (T) new zc0(xc0Var, new xc0() { // from class: com.shabakaty.downloader.rv3
+        zc0 r5 = new zc0(xc0Var, new xc0() { // from class: com.shabakaty.downloader.rv3
             @Override // com.shabakaty.downloader.xc0
             public final void accept(Object obj) {
                 switch (i2) {
