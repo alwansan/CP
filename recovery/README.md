@@ -17,7 +17,7 @@ This directory is an independent reverse-engineering workspace originating from
 - The latest 8-method regression workflow passes **112 tests**: enhancements (15), coroutine (12), subtitle renaming (14), subtitle preview (11), H264 readiness (14), episode retrieval (17), MKV video watcher (14), and MLKit/GMS SQLite schema validation (15).
 - Actual Android Gradle Library `modernized/android-bridge` with Media3 compiles.
 - `modernized/legacy-resources` builds original APKTool `res` and `assets` into an Android AAR (verified by GitHub Actions run 40911283952).
-- `modernized/android-smoke` now builds a **diagnostic-only** signed Android APK under `com.shabakaty.cinemana.recovery.smoke` with Media3, the original 49 native shared libraries, and bundled `res`/`assets` including `ffmpeg`. Verified full integration: run 40911943683. This is not Cinemana or a substitute for its UI/account/download/player behavior. The emulator-installation workflow separately verifies the diagnostic screen at runtime.
+- `modernized/android-smoke` now builds a **diagnostic-only** signed Android APK under `com.shabakaty.cinemana.recovery.smoke` with Media3, the original 49 native shared libraries, and bundled `res`/`assets` including `ffmpeg`. Verified full integration: run 40911943683. This is not Cinemana or a substitute for its UI/account/download/player behavior. The Android 10 x86_64 emulator installation passed in run 40914736533: APK installed and launched, and the UI displayed Media3 High 10 adapter: PASS.
 - Native and resource AAR compilation does not imply original Cinemana app functionality.
 - `modernized/legacy-native` packages 49 shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
