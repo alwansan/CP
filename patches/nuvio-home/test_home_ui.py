@@ -219,7 +219,8 @@ class HomeOverlayTests(unittest.TestCase):
                 self.assertIn(":nuvio_snapshot", code)
                 self.assertIn("NuvioGuardedDiffTask;-><init>", code)
                 self.assertIn("invoke-interface {v7, v6}", code)
-                self.assertLess(code.index("->sameReferences("), code.index("Ljava/util/ArrayList;"))
+                submit = code.split(".method public static submit(", 1)[1].split(".end method", 1)[0]
+                self.assertLess(submit.index("->sameReferences("), submit.index("Ljava/util/ArrayList;"))
                 self.assertIn("->g:I", code)
         self.assertIn("if-ne v3, v4, :different", snapshot)
         self.assertIn("Landroidx/recyclerview/widget/e;->g:I", guard)
