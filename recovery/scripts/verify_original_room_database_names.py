@@ -6,6 +6,7 @@ The Downloads filename is dynamic: it uses the last segment of the
 runtime Android package name, NOT a hard-coded 'cinemana' package.
 """
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 APP_PROVIDER = ROOT / (
@@ -77,9 +78,21 @@ def main() -> None:
             == "shabakaty.downloader.downloads.database",
             "Downloader package-name formula changed")
 
+    # The legacy APKTool manifest supplies the runtime package identity.
+    # Do not confuse the Smali class namespace with the Android app ID.
+    manifest = ROOT / "Cinemana_PATCH252_Project/app/AndroidManifest.xml"
+    package_name = ET.parse(manifest).getroot().attrib["package"]
+    require(package_name == "com.cinemana.pro",
+            "legacy APK manifest package changed; review DB migration")
+    legacy_downloads = downloads_filename(package_name)
+    require(legacy_downloads == "shabakaty.pro.downloads.database",
+            "legacy Downloads DB name changed")
+
     print("ROOM_DATABASE_NAME_PASS: AppDatabase = localDatabase.db")
     print("ROOM_DATABASE_NAME_PASS: DownloadsDatabase = "
           "shabakaty.<last_package_segment>.downloads.database")
+    print("ROOM_DATABASE_NAME_PASS: legacy package " + package_name
+          + " => " + legacy_downloads)
     print("ROOM_DATABASE_NAME_PASS: both original Dagger/Room providers verified")
 
 
