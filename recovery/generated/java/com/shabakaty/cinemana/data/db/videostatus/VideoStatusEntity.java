@@ -98,31 +98,31 @@ public final /* data */ class VideoStatusEntity implements Parcelable {
     public int hashCode() {
         int iA = ik4.a(this.videoId, this.id.hashCode() * 31, 31);
         boolean z = this.liked;
-        ?? r1 = z;
+        int r1 = z ? 1 : 0;
         if (z) {
             r1 = 1;
         }
         int i = (iA + r1) * 31;
         boolean z2 = this.watched;
-        ?? r2 = z2;
+        int r2 = z2 ? 1 : 0;
         if (z2) {
             r2 = 1;
         }
         int i2 = (i + r2) * 31;
         boolean z3 = this.annoying;
-        ?? r3 = z3;
+        int r3 = z3 ? 1 : 0;
         if (z3) {
             r3 = 1;
         }
         int i3 = (i2 + r3) * 31;
         boolean z4 = this.disLiked;
-        ?? r4 = z4;
+        int r4 = z4 ? 1 : 0;
         if (z4) {
             r4 = 1;
         }
         int i4 = (i3 + r4) * 31;
         boolean z5 = this.favorite;
-        int iA2 = ik4.a(this.watchLater, (i4 + (z5 ? 1 : z5)) * 31, 31);
+        int iA2 = ik4.a(this.watchLater, (i4 + (z5 ? 1 : 0)) * 31, 31);
         long j = this.videoProgress;
         return iA2 + ((int) (j ^ (j >>> 32)));
     }
