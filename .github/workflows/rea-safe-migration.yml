@@ -38,5 +38,5 @@ jobs:
         working-directory: recovery/modernized
         run: |
           set -euo pipefail
-          gradle --no-daemon :core-downloads:check :legacy-resources:assembleDebug --stacktrace
+          gradle --no-daemon :core-downloads:check :core-search:check :legacy-resources:assembleDebug --stacktrace
           test -s legacy-resources/build/outputs/aar/legacy-resources-debug.aar
