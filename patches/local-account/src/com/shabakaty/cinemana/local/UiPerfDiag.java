@@ -260,8 +260,8 @@ public final class UiPerfDiag {
         final Snapshot finished;
         synchronized (LOCK) {
             String next=null;
-            if ("home_visible".equals(event) || "home_view_created".equals(event)) next="home";
-            else if ("detail_visible".equals(event) || "detail_view_created".equals(event)) next="details";
+            if ("home_visible".equals(event) || "home_view_created".equals(event) || "home_inflate_begin".equals(event)) next="home";
+            else if ("detail_visible".equals(event) || "detail_view_created".equals(event) || "detail_inflate_begin".equals(event)) next="details";
             else if ("search_visible".equals(event) || "search_view_created".equals(event)) next="search";
             else if ("categories_view_created".equals(event)) next="categories";
             else if ("profile_visible".equals(event) || "profile_view_created".equals(event)) next="profile";
@@ -279,6 +279,7 @@ public final class UiPerfDiag {
         if (writer!=null &&
             ("home_visible".equals(event) || "detail_visible".equals(event) ||
              "home_view_created".equals(event) || "detail_view_created".equals(event) ||
+             "home_inflate_begin".equals(event) || "detail_inflate_begin".equals(event) ||
              "search_visible".equals(event) || "search_view_created".equals(event) ||
              "categories_view_created".equals(event) || "profile_visible".equals(event) ||
              "profile_view_created".equals(event) || "franchises_view_created".equals(event) ||
