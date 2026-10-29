@@ -144,8 +144,8 @@ public final class LegacyRoomV2SqliteIdentityProbe {
                 }
                 // This is the real SQL from it2$m: copies finished=1 only.
                 db.execSQL(ORIGINAL_V3_COPY);
-                need("2".equals(scalar(db,
-                        "SELECT count(*) FROM CinemanaDownloadItem")) || scenario == 8,
+                need(String.valueOf(scenario == 8 ? 3 : 2).equals(scalar(db,
+                        "SELECT count(*) FROM CinemanaDownloadItem")),
                         "original completed-row filter");
                 need(scalar(db, "SELECT id FROM CinemanaDownloadItem WHERE id=?",
                         "pending") == null, "unfinished source was not copied");
