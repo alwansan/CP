@@ -56,3 +56,11 @@
 - بالإضافة إلى ذلك كشف فحص المصدر أن SQL ينقل `DownloadItem WHERE finished = 1` لكن حلقة فحص `videoFile` تمر على **كل** الصفوف. لذلك يجب اختبار نتائج محاولة تحديث ID لم يدخل إلى `CinemanaDownloadItem`، ومنع احتمال خلط هويات متشابهة قبل الترحيل الإنتاجي.
 
 لم يُجر أي تعديل على مصدر Smali الأصلي، أو بيانات قاعدة مستخدم حقيقية، أو فرعي `main` و`feature/local-account`.
+
+## متابعة 30 أكتوبر 2026 — منع خلط سجلات ترحيل Room 2→3
+
+- `LegacyRoomV2RowWriteGuard` و`LegacyRoomV2RowWriteGuardTest` يرفضان تحديث المهاجر عندما تكون `DownloadItem.finished=0` أو `videoModel.nb` لا يطابق `DownloadItem.id` أو `downloadTaskId` لا يطابق الصف المنسوخ.
+- `LegacyRoomV2SqliteIdentityProbe` يستخدم `CREATE` و`INSERT SELECT` الأصلية من `it2$c` و`it2$m` مع صفوف تجريبية داخل الذاكرة ويختبر 10 سيناريوهات منها rollback واسم معرف شبيه بحقن SQL. الاستعلامات مربوطة بقيم `?`، والتحديث داخل معاملة وعلى `id=? AND downloadTaskId=?`.
+- `verify_original_room_json_sql_guard.py` يثبت مطابقة نصوص SQL لملفات Smali ووجود الشروط الأمنية في موائم Android.
+- أصلحنا كذلك خطأ تجميع `LegacyRoomJsonProbe` باستبدال `JSONObject.keySet()` غير المدعومة في واجهة Android المستعملة بـ`JSONObject.keys()`؛ استمرار الاختبار على المحاكي هو شرط منفصل عن نجاح Java.
+- العمل على هذه الوحدات **تشخيصي وليس ترحيلاً إنتاجياً**. ما زال مطلوباً تجميع سلسلة Room 2→3 كاملة مع طريقة JSON الأصلية `ea2` ومعالجة الاستثناءات و`room_master_table` و`DAO` ومطابقة سلوك جمع الترجمة والعنوان والتحقق من schema التاريخي.
