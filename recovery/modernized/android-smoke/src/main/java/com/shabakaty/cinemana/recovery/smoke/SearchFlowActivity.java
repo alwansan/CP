@@ -6,23 +6,20 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import androidx.activity.ComponentActivity;
-import androidx.appcompat.widget.SearchView;
 import com.cinemana.pro.R;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.tabs.TabLayout;
 import com.shabakaty.cinemana.recovery.bindings.SearchLiveDataBridge;
 import com.shabakaty.cinemana.recovery.bindings.SearchScreenController;
-import com.shabakaty.cinemana.recovery.search.SearchStateMachine;
 
 /**
- * Diagnostic-only interactive search screen. Exercises actual AndroidX
- * SearchView, Material tabs, Lifecycle/LiveData, and the source-first binding
- * against a view hierarchy using the IDs from fragment_search.xml.
+ * Android-only interactive fixture for the source-first search state machine,
+ * Lifecycle/LiveData events and stable IDs reconstructed from fragment_search.
  *
- * This uses local fixture results, NOT Cinemana servers, user accounts,
- * or the original gk1 FragmentSearchBindingImpl.
+ * The original app uses AppCompat SearchView and Material TabLayout, so those
+ * can be restored later with their own QueryPort adapters. This diagnostic
+ * intentionally does not bundle duplicate vendor resources or call any API.
  */
 public final class SearchFlowActivity extends ComponentActivity {
     private SearchScreenController binding;
@@ -33,16 +30,16 @@ public final class SearchFlowActivity extends ComponentActivity {
 
         FrameLayout root = new FrameLayout(this);
         root.setId(R.id.search_root_coordinator);
+        ScrollView scroller = new ScrollView(this);
+        root.addView(scroller);
         LinearLayout column = new LinearLayout(this);
         column.setOrientation(LinearLayout.VERTICAL);
-        column.setPadding(24,24,24,24);
-        ScrollView scroll = new ScrollView(this);
-        root.addView(scroll);
-        scroll.addView(column);
+        column.setPadding(24, 24, 24, 24);
+        scroller.addView(column);
 
-        TextView header = label("Search migration diagnostic (local fixtures)");
-        column.addView(header);
-        AppBarLayout appBar = new AppBarLayout(this);
+        column.addView(label("Search migration diagnostic (local fixtures)"));
+        LinearLayout appBar = new LinearLayout(this);
+        appBar.setOrientation(LinearLayout.VERTICAL);
         appBar.setId(R.id.search_app_bar_layout);
         column.addView(appBar);
 
@@ -52,10 +49,9 @@ public final class SearchFlowActivity extends ComponentActivity {
         input.setQueryHint("Search fixtures");
         appBar.addView(input);
 
-        TabLayout tabs = new TabLayout(this);
+        Button tabs = new Button(this);
+        tabs.setText("Select Series tab");
         tabs.setId(R.id.tabLayout);
-        tabs.addTab(tabs.newTab().setText("All"));
-        tabs.addTab(tabs.newTab().setText("Series"));
         appBar.addView(tabs);
 
         Button filter = new Button(this);
@@ -66,7 +62,7 @@ public final class SearchFlowActivity extends ComponentActivity {
         View searchIcon = new View(this);
         searchIcon.setId(R.id.imageView5);
         searchIcon.setVisibility(View.GONE);
-        column.addView(searchIcon, new LinearLayout.LayoutParams(1,1));
+        column.addView(searchIcon, new LinearLayout.LayoutParams(1, 1));
 
         TextView recent = label("Recent searches (fixture panel)");
         recent.setId(R.id.search_recent_searches);
@@ -100,31 +96,54 @@ public final class SearchFlowActivity extends ComponentActivity {
         final int[] filters = {0};
         setContentView(root);
 
-        binding = new SearchScreenController(this, root, search, new SearchScreenController.Actions() {
-            @Override public void onSearchSubmitted(String query, long token) {
-                // Local fixture only; no network or real Cinemana data touched.
-                search.machine().received(token, 3);
-            }
+        binding = new SearchScreenController(this, root, search,
+                new SearchScreenController.QueryPort() {
+                    @Override public void install(View field, SearchScreenController.QueryListener listener) {
+                        SearchView searchWidget = (SearchView) field;
+                        searchWidget.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                            @Override public boolean onQueryTextSubmit(String query) {
+                                listener.submitted(query);
+                                searchWidget.clearFocus();
+                                return true;
+                            }
 
-            @Override public void onFilterPressed() {
-                filters[0]++;
-                filterEvent.setText("Filter events: " + filters[0]);
-            }
-        });
+                            @Override public boolean onQueryTextChange(String query) {
+                                listener.changed(query);
+                                return true;
+                            }
+                        });
+                    }
 
+                    @Override public void uninstall(View field) {
+                        ((SearchView) field).setOnQueryTextListener(null);
+                    }
+                }, new SearchScreenController.Actions() {
+                    @Override public void onSearchSubmitted(String query, long token) {
+                        // Local fixture only: no real account, DB or Cinemana API.
+                        search.machine().received(token, 3);
+                    }
+
+                    @Override public void onFilterPressed() {
+                        filters[0]++;
+                        filterEvent.setText("Filter events: " + filters[0]);
+                    }
+                });
+
+        search.machine().tabs(2);
+        tabs.setOnClickListener(v -> binding.tabSelected(1));
         search.snapshots().observe(this, snap ->
                 status.setText("Search state: " + snap.mode
-                    + " | tab=" + snap.selectedTab + " | count=" + snap.resultCount));
+                        + " | tab=" + snap.selectedTab + " | count=" + snap.resultCount));
 
         submit.setOnClickListener(v -> input.setQuery("One Piece", true));
         clear.setOnClickListener(v -> input.setQuery("", false));
     }
 
-    private TextView label(String text) {
-        TextView v = new TextView(this);
-        v.setText(text);
-        v.setPadding(8, 12, 8, 12);
-        return v;
+    private TextView label(String value) {
+        TextView text = new TextView(this);
+        text.setText(value);
+        text.setPadding(8, 10, 8, 10);
+        return text;
     }
 
     @Override protected void onDestroy() {
