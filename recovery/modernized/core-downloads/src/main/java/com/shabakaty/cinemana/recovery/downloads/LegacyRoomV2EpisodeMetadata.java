@@ -89,11 +89,8 @@ public final class LegacyRoomV2EpisodeMetadata {
         if (jsonObject == null) {
             return result(Status.IGNORED_NOT_OBJECT, null);
         }
-        if (!scalarOrMissing(jsonObject, "title") ||
-                !scalarOrMissing(jsonObject, "videoModel")) {
-            // videoModel is checked separately below; a map is expected.
-            if (!scalarOrMissing(jsonObject, "title"))
-                return result(Status.REJECTED_SHAPE, null);
+        if (!scalarOrMissing(jsonObject, "title")) {
+            return result(Status.REJECTED_SHAPE, null);
         }
         Object model = jsonObject.get("videoModel");
         if (!(model instanceof Map<?, ?>)) {
