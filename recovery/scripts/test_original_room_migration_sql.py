@@ -8,6 +8,7 @@ without opening any persisted database.
 """
 from pathlib import Path
 import re
+import json
 import sqlite3
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -191,6 +192,149 @@ def test_subtitles(rename: str, schema: str) -> None:
             raise AssertionError("unexpected successful rename into existing SubtitleDb")
         check(conn.execute("SELECT * FROM TranslationDB ORDER BY id").fetchall() == before,
               "colliding subtitle table rejects migration without modifying source rows")
+
+
+
+def migration_3_to_4_sql() -> list[str]:
+    # Smali long SQL constants are single physical lines with escaped \t,
+    # \n and \"; json.loads decodes the same escape syntax for these strings.
+    source = (DOWNLOADER_SMALI / "kt2.smali").read_text(encoding="utf-8")
+    found = re.findall(
+        r'^\s*const-string v1, "((?:\\.|[^"\\\n])*)"\s*
+    rename, schema = read_subtitle_sql()
+    test_downloads(download_sql)
+    test_subtitles(rename, schema)
+    test_v3_to_v4(migration_3_to_4_sql())
+    print(f"ROOM_MIGRATION_SQL_PASS: {checks} assertions against original Smali SQL")
+    print("ROOM_MIGRATION_SQL_PASS: Downloads 1->2 + App 3->4 + App subtitle 4->5 SQLite fixtures")
+    print("ROOM_MIGRATION_SQL_LIMIT: in-memory fixtures, not full historical Room schemas")
+
+
+if __name__ == "__main__":
+    main()
+,
+        source, flags=re.MULTILINE,
+    )
+    sql = [json.loads('"' + value + '"') for value in found]
+    check(len(sql) == 10, "original AppDatabase 3->4 migration has ten SQL statements")
+    check(sql[0] == "ALTER TABLE CinemanaDownloadItem RENAME TO temp_cinemana_download_item",
+          "3->4 must rename legacy download item first")
+    check(sql[1].startswith("CREATE TABLE CinemanaDownloadItem"),
+          "3->4 recreated downloaded-item table changed")
+    check(sql[2].startswith("INSERT INTO CinemanaDownloadItem("),
+          "3->4 item copy changed")
+    check(sql[3] == "DROP TABLE temp_cinemana_download_item",
+          "3->4 old item cleanup changed")
+    check(sql[4] == "DROP INDEX nb",
+          "3->4 video index drop changed")
+    check(sql[5] == "ALTER TABLE video_model RENAME TO temp_video_model",
+          "3->4 old video table rename changed")
+    check(sql[6].startswith("CREATE TABLE video_model"),
+          "3->4 recreated video table changed")
+    check(sql[7].startswith("INSERT INTO video_model("),
+          "3->4 video copy changed")
+    check(sql[8] == "DROP TABLE temp_video_model",
+          "3->4 old video cleanup changed")
+    check(sql[9] == "CREATE INDEX nb ON video_model (nb)",
+          "3->4 recreated video index changed")
+    return sql
+
+
+def insert_synthetic_row(conn: sqlite3.Connection, table: str,
+                         override: dict[str, object]) -> None:
+    columns = conn.execute("PRAGMA table_info(" + table + ")").fetchall()
+    check(bool(columns), "synthetic table must have columns: " + table)
+    names = [col[1] for col in columns]
+    check(set(override).issubset(names), "synthetic fixture column mismatch: " + table)
+    values = []
+    for col in columns:
+        name, kind = col[1], col[2].upper()
+        values.append(override.get(name, 0 if kind in ("INTEGER", "REAL") else ""))
+    conn.execute(
+        "INSERT INTO " + table + "(" + ",".join('"' + name + '"' for name in names)
+        + ") VALUES (" + ",".join("?" for _ in names) + ")",
+        values,
+    )
+
+
+def synthetic_v3(conn: sqlite3.Connection, migration: list[str]) -> None:
+    # Construct a *compatible* v3-shaped fixture by undoing only the column
+    # renames seen in original 3->4 INSERT ... SELECT statements. This is not
+    # a complete historical Room v3 identity-hash or migration simulation.
+    old_item = re.sub(r'\bspecial TEXT\b', "isSpecial TEXT", migration[1])
+    old_video = migration[6]
+    for current, previous, kind in (
+        ("special", "isSpecial", "TEXT"),
+        ("mock", "isMock", "INTEGER"),
+        ("deleted", "isDeleted", "TEXT"),
+        ("addedToWatchLater", "isAddedToWatchLater", "INTEGER"),
+    ):
+        old_video = re.sub(r'\b' + current + r' ' + kind + r'\b',
+                           previous + " " + kind, old_video)
+    conn.execute(old_item)
+    conn.execute(old_video)
+    conn.execute("CREATE INDEX nb ON video_model (nb)")
+    insert_synthetic_row(conn, "CinemanaDownloadItem", {
+        "id": "download-17", "downloadTaskId": 17,
+        "title": "Episode", "path": "/work/Episode.mp4",
+        "sizeMB": 123, "isSpecial": "legacy-special",
+    })
+    insert_synthetic_row(conn, "video_model", {
+        "nb": "video-17", "enTitle": "Fixture show",
+        "isSpecial": "special-value", "isMock": 1, "isDeleted": "false",
+        "isAddedToWatchLater": 1, "downloadTaskId": 17,
+    })
+    conn.commit()
+
+
+def test_v3_to_v4(migration: list[str]) -> None:
+    with sqlite3.connect(":memory:") as conn:
+        synthetic_v3(conn, migration)
+        conn.execute("BEGIN IMMEDIATE")
+        for sql in migration:
+            conn.execute(sql)
+        conn.commit()
+        item = conn.execute(
+            "SELECT id, downloadTaskId, title, path, sizeMB, special "
+            "FROM CinemanaDownloadItem"
+        ).fetchone()
+        check(item == ("download-17", 17, "Episode",
+                       "/work/Episode.mp4", 123, "legacy-special"),
+              "3->4 retained downloaded item identity and renamed special flag")
+        video = conn.execute(
+            "SELECT nb, enTitle, special, mock, deleted, addedToWatchLater, "
+            "downloadTaskId FROM video_model"
+        ).fetchone()
+        check(video == ("video-17", "Fixture show", "special-value", 1, "false", 1, 17),
+              "3->4 remapped four renamed video_model flags")
+        check(conn.execute(
+            "SELECT COUNT(*) FROM CinemanaDownloadItem"
+        ).fetchone()[0] == 1, "3->4 item cardinality retained")
+        check(conn.execute(
+            "SELECT COUNT(*) FROM video_model"
+        ).fetchone()[0] == 1, "3->4 video cardinality retained")
+        check(any(row[1] == "nb" for row in conn.execute("PRAGMA index_list(video_model)")),
+              "3->4 recreated original video_model index")
+        check(conn.execute(
+            "SELECT COUNT(*) FROM sqlite_master "
+            "WHERE name IN ('temp_cinemana_download_item', 'temp_video_model')"
+        ).fetchone()[0] == 0, "3->4 no orphan scratch tables on commit")
+
+    with sqlite3.connect(":memory:") as conn:
+        synthetic_v3(conn, migration)
+        before = conn.execute(
+            "SELECT id, isSpecial FROM CinemanaDownloadItem"
+        ).fetchall()
+        conn.execute("BEGIN IMMEDIATE")
+        for sql in migration[:4]:
+            conn.execute(sql)
+        conn.rollback()
+        check(conn.execute(
+            "SELECT id, isSpecial FROM CinemanaDownloadItem"
+        ).fetchall() == before, "3->4 interrupted item remap rolls back")
+        check(conn.execute(
+            "SELECT COUNT(*) FROM sqlite_master WHERE name='temp_cinemana_download_item'"
+        ).fetchone()[0] == 0, "3->4 interruption leaves no staging table")
 
 
 def main() -> None:
