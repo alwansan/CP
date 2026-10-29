@@ -29,16 +29,18 @@
 
 1. `recovery/scripts/verify_original_room_database_names.py`: يتحقق من Dagger/Smali واسم الحزمة.
 2. `recovery/scripts/verify_original_room_migration_graph.py`: يضمن توافق الإصدارات والانتقالات الفعلية وترتيب الربط بمصدر Smali.
-3. `recovery/scripts/test_original_room_migration_sql.py`: يشغّل SQL الأصلي لتحويل Downloads 1→2 وإعادة تسمية الترجمات 4→5، ويحاكي مقاطعة العملية وrollback عبر SQLite داخل الذاكرة.
-4. `recovery/scripts/test_original_room_3_to_4.py`: يشغّل أوامر `kt2` الأصلية في SQLite مؤقت مع قيم وهمية لقياس الحفاظ على المفاتيح والحقول بعد إعادة البناء، ويختبر rollback.
+3. `recovery/scripts/test_original_room_2_to_3_sql.py`: يقرأ 13 قيمة SQL محمّلة lazy من `it2`، ويتأكد من ترتيب استدعائها الأصلي في `jt2`، ويطبّق جزء إنشاء الجداول ونسخ بيانات `DownloadItem` و`CollectionItem` في SQLite مؤقت. الاختبار وجد أن SQL ينسخ **التنزيلات المكتملة فقط** إلى `CinemanaDownloadItem`، بينما نسخ `TranslationDB` غير مقيّد بحالة finished. هذه مطابقة لعبارة SQL وحدها، وليست ضماناً بأن ترحيل JSON لاحقاً لن يغير النتائج.
+4. `recovery/scripts/test_original_room_migration_sql.py`: يشغّل SQL الأصلي لتحويل Downloads 1→2 وإعادة تسمية الترجمات 4→5، ويحاكي مقاطعة العملية وrollback عبر SQLite داخل الذاكرة.
+5. `recovery/scripts/test_original_room_3_to_4.py`: يشغّل أوامر `kt2` الأصلية في SQLite مؤقت مع قيم وهمية لقياس الحفاظ على المفاتيح والحقول بعد إعادة البناء، ويختبر rollback.
 
-جميع الأمثلة **بيانات مصطنعة**؛ تتوافق مع الأعمدة اللازمة للاختبار ولا تشكل نسخاً حقيقية من مخططات Room v1–v4 التاريخية. لا يُشغّل ترحيل JSON 2→3، ولا اختبارات ORM/SQLite على قواعد الإنتاج، ولا يتحقق من الهوية الفعلية للملفات على القرص.
+جميع الأمثلة **بيانات مصطنعة**؛ تتوافق مع الأعمدة اللازمة للاختبار ولا تشكل نسخاً حقيقية من مخططات Room v1–v4 التاريخية. لا يُشغّل ترحيل JSON 2→3 (الاختبار 2→3 يقتصر على SQL)، ولا اختبارات ORM/SQLite على قواعد الإنتاج، ولا يتحقق من الهوية الفعلية للملفات على القرص.
 
 لتشغيل فحوص المصادر:
 
 ```sh
 python3 recovery/scripts/verify_original_room_database_names.py
 python3 recovery/scripts/verify_original_room_migration_graph.py
+python3 recovery/scripts/test_original_room_2_to_3_sql.py
 python3 recovery/scripts/test_original_room_migration_sql.py
 python3 recovery/scripts/test_original_room_3_to_4.py
 ```
