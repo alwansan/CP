@@ -724,6 +724,10 @@
 .method public onResume()V
     .locals 3
 
+    const-string v0, "search_visible"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
     .line 1
     iget-object v0, p0, Lcom/shabakaty/downloader/hj;->t:Landroidx/databinding/ViewDataBinding;
 
@@ -893,6 +897,10 @@
 
     .line 1
     invoke-super {p0, p1, p2}, Lcom/shabakaty/downloader/hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+
+    const-string v0, "search_view_created"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     .line 2
     invoke-virtual {p0}, Lcom/shabakaty/downloader/hj;->c2()Lcom/shabakaty/downloader/xk;
