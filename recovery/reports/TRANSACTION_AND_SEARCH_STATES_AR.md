@@ -33,6 +33,21 @@
 - 34 فحصاً لبنية XML ومعرفات عناصر واجهة البحث الأصلية.
 - تجربة مستقلة داخل `android-smoke/SearchFlowActivity` باستخدام بيانات بحث وهمية فقط، للتأكد من أن ربط Lifecycle وLiveData والتفاعل يعمل على Android. هذه الشاشة **ليست** شاشة البحث الأصلية ولا تتصل بمصدر بيانات سينمانا.
 
+## تصادم الموارد عند جمع AndroidX مع موارد APKTool
+
+عند إدخال AndroidX Lifecycle/Activity إلى التطبيق التجريبي اكتشفنا أن مكتبة `androidx.core:core:1.13.0` والمجلد المفكك `app/res/values/attrs.xml` يعرّفان خصائص الخطوط الثلاث نفسها:
+
+- `fontProviderFetchStrategy`
+- `fontProviderFetchTimeout`
+- `fontStyle`
+
+أصبحت وحدة `legacy-resources` تشغّل `recovery/scripts/prepare_legacy_resources.py` الذي ينسخ مجلد `res` كاملاً إلى مسار `build/generated/legacy-res` ويحذف التعريفات الثلاثة المكررة **من النسخة المؤقتة حصراً**. يبقى ملف APKTool الأصلي كما هو، وتأتي هذه الخصائص من مكتبة AndroidX عند الدمج النهائي.
+
+آخر اختبار تجميع APK الموقّع بعد إزالة التكرارات نجح:
+https://github.com/alwansan/CP/actions/runs/40927158916
+
+اختبار واجهة Android التفاعلية منفصل، وقد تأكد فتح شاشة `SearchFlowActivity` وظهور عناصرها في ملفات UIAutomator. عدم نجاح أول اختبار ضغط كان نتيجة تحويل Android للنص إلى أحرف كبيرة، فتم تصحيح مطابقة أسماء الأزرار.
+
 ## أحدث فحوص مكتملة
 
 - نموذج تحديثات التنزيل واسترجاعها + حالات البحث + مطابقة XML: https://github.com/alwansan/CP/actions/runs/40923843681
