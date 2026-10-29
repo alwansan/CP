@@ -9,7 +9,7 @@ public class JSONObject {
         StringBuilder b = new StringBuilder("{");
         for (Map.Entry<String,Object> e : items.entrySet()) {
             if (b.length()>1) b.append(",");
-            b.append('"').append(e.getKey()).append("":");
+            b.append('"').append(e.getKey()).append('"').append(':');
             Object v=e.getValue();
             if (v instanceof Number) b.append(v);
             else b.append('"').append(String.valueOf(v).replace("\\","\\\\").replace("\"","\\\"")).append('"');
