@@ -39,6 +39,7 @@ grep -q 'SQLite rollback readback: PASS (6 in-memory SQLite cases)' "$report/win
 grep -q 'SQLite file reopen probe: PASS (6 file-backed reopen cases)' "$report/window.xml"
 grep -q 'SQLite journal restart probe: PASS (6 journal restart cases)' "$report/window.xml"
 grep -q 'Original Room schema probe: PASS (3 original Room tables, 2 subtitle rows)' "$report/window.xml"
+grep -q 'Original Room coordinator: PASS (3 Room coordinator scenarios)' "$report/window.xml"
 adb shell pidof "$package" | tee "$report/process.txt"
 test -s "$report/process.txt"
 echo "EMULATOR_PASS: source-first diagnostic APK installed, launched and displayed expected Media3 result"
