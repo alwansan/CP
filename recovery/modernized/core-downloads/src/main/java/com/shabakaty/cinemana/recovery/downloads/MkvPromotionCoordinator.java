@@ -32,6 +32,10 @@ public final class MkvPromotionCoordinator {
         void restoreSubtitles(Object snapshot) throws Exception;
         void restoreCinemana(MkvPromotionPreflight.CinemanaRow snapshot) throws Exception;
         void restoreDownload(MkvPromotionPreflight.DownloadRow snapshot) throws Exception;
+        /** Read back all three stores after compensating writes. */
+        boolean verifyRestored(MkvPromotionPreflight.DownloadRow download,
+                               MkvPromotionPreflight.CinemanaRow cinemana,
+                               Object subtitleSnapshot) throws Exception;
     }
 
     public enum Status {
@@ -80,6 +84,11 @@ public final class MkvPromotionCoordinator {
         // A null snapshot cannot prove that subtitle restoration is possible.
         if (subtitles == null) {
             return new Result(Status.REJECTED, null, "subtitle_snapshot", Collections.emptyList());
+        }
+        // Without the prior file size restoring only its filename would leave
+        // a corrupted Downloads row after a failed promotion.
+        if (download == null || download.originalBytes < 0) {
+            return new Result(Status.REJECTED, null, "download_size_snapshot", Collections.emptyList());
         }
 
         MkvPromotionPreflight.Decision decision =
@@ -132,6 +141,15 @@ public final class MkvPromotionCoordinator {
                 } catch (Exception error) {
                     rollback.add("download:" + error.getClass().getSimpleName());
                 }
+            }
+            // A DAO may acknowledge an UPDATE while changing zero rows. Never
+            // call a rollback successful without independent persisted readback.
+            try {
+                if (!port.verifyRestored(download, cinemana, subtitles)) {
+                    rollback.add("readback:restored_state_mismatch");
+                }
+            } catch (Exception error) {
+                rollback.add("readback:" + error.getClass().getSimpleName());
             }
             return new Result(rollback.isEmpty() ? Status.ROLLED_BACK : Status.ROLLBACK_FAILED,
                     decision.reason, phase, rollback);
