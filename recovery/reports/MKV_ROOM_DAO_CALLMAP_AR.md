@@ -39,10 +39,20 @@
 
 أُضيفت اختبارات Java مستقلة لانتقاء الصف وتحليل التباس العنوان والمسار، ومهمة Gradle `testLegacyDownloadResolver` ضمن `core-downloads:check`. هذا استبدال آمن **لجزء قرار الاختيار**، وليس استرجاعاً حرفياً لخوارزمية النقاط القديمة أو استبدال الدالة كلها. يجب وصله بالـDAO الحقيقي ضمن معاملة/قفل قبل دخوله تطبيق المستخدم.
 
+## أسماء ملفات قواعد Room مثبتة من Dagger Smali
+
+جرى تتبع مصدر أسماء ملفات SQLite في **مسارات إنشاء Room الحقيقية**، وليس استنتاجها من أسماء الأصناف:
+
+- `Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/km0.smali` (`DbModule_ProvideDatabase...Factory`): يستدعي `ut3.a(Context, AppDatabase.class, "localDatabase.db")`. الاسم **`localDatabase.db`** ثابت لقاعدة `AppDatabase`.
+- `Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/kh0.smali` (`DBModule_ProvideDaoFactory`): يركّب النص `shabakaty.` + **آخر جزء من `Context.getPackageName()` بعد فصل النقاط** + `.downloads.database`، ثم يمرره إلى `ut3.a(..., DownloadsDatabase.class, name)`. اسم `DownloadsDatabase` إذن **ديناميكي** ويتوقف على حزمة التطبيق الفعلية. على سبيل المثال، إن كانت الحزمة `com.shabakaty.cinemana` ينتج `shabakaty.cinemana.downloads.database`، وإن كانت `com.shabakaty.downloader` ينتج `shabakaty.downloader.downloads.database`. الأمثلة ليست إثباتاً للـpackageName المثبّت على الجهاز.
+- يرتبط `AppDatabase` بتكوين Room يحوي مصفوفة من أربع خطوات migration في نفس `km0`. يجب استخراج إصدارات الترحيل وتطابقها قبل فتح بيانات المستخدم في إصدار جديد.
+
+أضيف `recovery/scripts/verify_original_room_database_names.py` إلى CI، وهو يفحص هذه التعليمات في Smali الأصلي قراءة فقط. هذا يؤكد تسمية الملفات، **ولا يعني** أن موائم DAO الإنتاجي أصبح موجوداً أو أن تعديل قواعد بيانات المستخدم صار آمناً.
+
 ## الأمور المعلقة قبل استبدال promoteDatabase
 
 1. استخراج عقود `jw0/kw0` و`kz0/lz0` بالكامل إلى Kotlin/Java مقروء، مع ضمان التوافق مع عمليات Room suspend وtransactions والاستعلامات LiveData.
-2. تحديد ملفات قواعد البيانات وإصدارات Room الفعلية من مواقع الإنشاء في التطبيق؛ أسماء الكلاسات **لا تكفي** لتعيين أسماء ملفات DB.
+2. اسم الملف الثابت `localDatabase.db` وصيغة اسم ملف Downloads الديناميكية مثبتان من `km0/kh0`؛ **ما زال** مطلوباً تحديد `packageName` الفعلي وإصدارات Room والمهاجرات، دون فتح قواعد المستخدم.
 3. تدقيق سلوك `MkvExporter.findDownloadsRow` إذا تعددت نتائج المهمة أو كان `external_id` مختلفاً، وإثبات سياسة الإرجاع/الإصلاح من Smali.
 4. نقل لقطة `SubtitleDb` كاملة وإدارة حذف/إضافة الترجمات المتزامن (وليس حقول `file` وحدها)، مع اختبارات ضد تغيرات طرف آخر.
 5. الحفاظ على ذرية التحديثات داخل قاعدة `AppDatabase`، وكتابة Journal مستقل **قبل** تحديث `DownloadsDatabase`، واختبارات إيقاف العملية بعد كل نقطة تزامن.
