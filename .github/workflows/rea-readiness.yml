@@ -1,0 +1,111 @@
+name: REA Android readiness (isolated experiment)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - '.github/workflows/rea-readiness.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-rea:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Check out exact experiment branch
+        uses: actions/checkout@v4
+
+      - name: Configure supported Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.2'
+
+      - name: Configure full Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Check host prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
+          java -version
+          javac -version
+          command -v ps
+          command -v python3
+          command -v git
+
+      - name: Install official REA CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global rea-agents@6.8.0
+          command -v rea
+          rea --version
+          rea inspect-android-package --help > "$RUNNER_TEMP/rea-help.txt"
+
+      - name: Download and verify pinned JADX engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rea-tools"
+          curl --fail --location --retry 3 --retry-delay 2 \
+            'https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar' \
+            --output "$RUNNER_TEMP/rea-tools/jadx-headless-mcp-0.7.1-all.jar"
+          echo "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75  $RUNNER_TEMP/rea-tools/jadx-headless-mcp-0.7.1-all.jar" | sha256sum --check
+          echo "REA_JADX_MCP_JAR=$RUNNER_TEMP/rea-tools/jadx-headless-mcp-0.7.1-all.jar" >> "$GITHUB_ENV"
+
+      - name: Rebuild current unpacked Cinemana without modifying sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash Cinemana_PATCH252_Project/build.sh
+          test -s Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
+
+      - name: Inspect real Cinemana APK using REA
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$GITHUB_WORKSPACE/Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
+          timeout 720 rea inspect-android-package "$apk" --format json \
+            > "$RUNNER_TEMP/rea-inspect.json" 2> "$RUNNER_TEMP/rea-inspect-stderr.txt"
+          test -s "$RUNNER_TEMP/rea-inspect.json"
+          python3 - <<'PY'
+          import json, os
+          p = os.environ['RUNNER_TEMP'] + '/rea-inspect.json'
+          with open(p, encoding='utf-8') as f:
+              j = json.load(f)
+          print('REA Android inspection returned valid JSON; top-level keys:', list(j)[:24])
+          print('Evidence size:', os.path.getsize(p), 'bytes')
+          PY
+
+      - name: Search actual app class using REA
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$GITHUB_WORKSPACE/Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
+          timeout 360 rea search-android-classes "$apk" NavigationActivity --format json \
+            > "$RUNNER_TEMP/rea-class-search.json" 2> "$RUNNER_TEMP/rea-class-search-stderr.txt"
+          python3 -m json.tool "$RUNNER_TEMP/rea-class-search.json" >/dev/null
+          echo "Class search: PASS"
+
+      - name: Upload limited test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rea-cinemana-readiness
+          if-no-files-found: ignore
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/rea-help.txt
+            ${{ runner.temp }}/rea-inspect.json
+            ${{ runner.temp }}/rea-inspect-stderr.txt
+            ${{ runner.temp }}/rea-class-search.json
+            ${{ runner.temp }}/rea-class-search-stderr.txt
