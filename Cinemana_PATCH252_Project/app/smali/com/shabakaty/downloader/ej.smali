@@ -79,7 +79,7 @@
 
 # virtual methods
 .method public e(Ljava/util/List;)V
-    .locals 2
+    .locals 4
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "(",
@@ -96,7 +96,7 @@
     # List equality is linear, whereas the full diff and dispatch can be substantially heavier.
     iget-object v0, p0, Lcom/shabakaty/downloader/ej;->a:Ljava/util/List;
 
-    if-eq v0, p1, :perf_no_change
+    if-eq v0, p1, :perf_skip_diff
 
     if-eqz v0, :perf_calculate_diff
 
@@ -104,9 +104,14 @@
 
     move-result v1
 
-    if-nez v1, :perf_no_change
+    if-nez v1, :perf_skip_diff
 
     :perf_calculate_diff
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
+
+    move-result-wide v2
+
     .line 1
     new-instance v0, Lcom/shabakaty/downloader/ej$c;
 
@@ -119,6 +124,8 @@
 
     move-result-object v0
 
+    invoke-static {v2, v3}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->diff(J)V
+
     .line 3
     iput-object p1, p0, Lcom/shabakaty/downloader/ej;->a:Ljava/util/List;
 
@@ -128,6 +135,11 @@
     invoke-direct {p1, p0}, Landroidx/recyclerview/widget/b;-><init>(Landroidx/recyclerview/widget/RecyclerView$e;)V
 
     invoke-virtual {v0, p1}, Landroidx/recyclerview/widget/j$d;->a(Lcom/shabakaty/downloader/ni2;)V
+
+    goto :perf_no_change
+
+    :perf_skip_diff
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->skippedDiff()V
 
     :perf_no_change
     return-void
