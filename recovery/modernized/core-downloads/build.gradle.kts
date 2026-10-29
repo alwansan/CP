@@ -18,6 +18,12 @@ tasks.register<JavaExec>("testMkvCoordinator") {
     classpath = sourceSets["test"].runtimeClasspath
     mainClass.set("com.shabakaty.cinemana.recovery.downloads.MkvPromotionCoordinatorTest")
 }
+tasks.register<JavaExec>("testLegacyDownloadResolver") {
+    group = "verification"
+    dependsOn(tasks.named("testClasses"))
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.shabakaty.cinemana.recovery.downloads.LegacyDownloadIdentityResolverTest")
+}
 tasks.named("check") {
-    dependsOn("testMkvPreflight", "testMkvCoordinator")
+    dependsOn("testMkvPreflight", "testMkvCoordinator", "testLegacyDownloadResolver")
 }

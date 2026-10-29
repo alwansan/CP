@@ -31,6 +31,14 @@
 - `OriginalRoomCoordinatorProbe`: نجاح تحديث السجلات المستهدفة، تعويض عند حقن خطأ تحديث ترجمة، ورفض هوية خاطئة. الاختبارات تستخدم قواعد **داخل الذاكرة فقط**.
 - `MultiDatabaseJournalProbe`: تجارب عودة من قتل العملية بين قواعد SQLite مستقلة؛ تتصل بجداول تشخيصية مبسّطة، وليس بـDAO الأصلي.
 
+## استرجاع قرار اختيار صف التنزيل من الطريقة الأصلية
+
+راجعت جسم `MkvExporter.promoteDatabase` في JADX مع تعريف `pw0` (DownloadItem) في `recovery/generated/java/com/shabakaty/downloader/pw0.java`. حقول الصف المفككة هي `r=taskId`, `s=externalId`, `x=path`, `u=title`, `y=sizeBytes`. الطريقة القديمة تجمع نقاطاً من الهوية والمسار والعنوان ثم يمكن أن تغير `downloadTaskId` بناءً على أقوى نتيجة حتى إن لم تطابق الهوية الأولى. هذا السلوك خطر عند تشابه أسماء الحلقات أو المسارات.
+
+تمت كتابة `core-downloads/LegacyDownloadIdentityResolver.java` كمكوّن Java مستقل من المصدر: لا يسمح بالكتابة إلا إذا توافقت هوية `taskId + externalId` والمسار **الكامل**، وكانت النتيجة وحيدة بدون صف آخر يستخدم المسار نفسه. استرجاع هوية محتملة أو صف مشابه يظل مجرد **اقتراح للمراجعة**، ولا يُسمح بإصلاح تلقائي للـtask ID. الحالات `SOURCE_PATH_COLLISION` و`DUPLICATE_COMPOSITE_KEY` و`AMBIGUOUS_RECOVERY` ترفض الكتابة.
+
+أُضيفت اختبارات Java مستقلة لانتقاء الصف وتحليل التباس العنوان والمسار، ومهمة Gradle `testLegacyDownloadResolver` ضمن `core-downloads:check`. هذا استبدال آمن **لجزء قرار الاختيار**، وليس استرجاعاً حرفياً لخوارزمية النقاط القديمة أو استبدال الدالة كلها. يجب وصله بالـDAO الحقيقي ضمن معاملة/قفل قبل دخوله تطبيق المستخدم.
+
 ## الأمور المعلقة قبل استبدال promoteDatabase
 
 1. استخراج عقود `jw0/kw0` و`kz0/lz0` بالكامل إلى Kotlin/Java مقروء، مع ضمان التوافق مع عمليات Room suspend وtransactions والاستعلامات LiveData.
