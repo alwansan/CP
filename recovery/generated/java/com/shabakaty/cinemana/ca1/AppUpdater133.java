@@ -875,7 +875,7 @@ public final class AppUpdater133 {
         Object obj2 = obj;
         Class<?> cls = Class.forName("androidx.core.content.FileProvider");
         int i = 2;
-        ?? r7 = 1;
+        int r7 = 1;
         int i2 = 0;
         try {
             return Continue106.call(cls, "getUriForFile", obj2, PROVIDER, file);
@@ -892,7 +892,7 @@ public final class AppUpdater133 {
                         if (parameterTypes.length != i || !String.class.equals(parameterTypes[r7])) {
                             objArr = objArr2;
                         } else if (parameterTypes[i2].isInstance(obj2)) {
-                            method.setAccessible(r7);
+                            method.setAccessible(r7 != 0);
                             Object[] objArr3 = new Object[i];
                             objArr3[i2] = obj2;
                             objArr3[r7] = PROVIDER;
