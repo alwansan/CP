@@ -14,6 +14,31 @@
 
 ملف `promoteDatabase` المعاد عبر JADX ما زال يحتوي عبارات غير صالحة لـJava مثل `??`، لذلك لا يُعد مصدر تنفيذ معتمداً؛ Smali هو المرجع التنفيذي الأساسي.
 
+## مخططات Room الفعلية من ملفات Smali المولّدة
+
+راجعت تعليمات `CREATE TABLE` مباشرةً في:
+
+- `Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/data/db/DownloadsDatabase_Impl$a.smali`
+- `Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/data/db/AppDatabase_Impl$a.smali`
+
+وهذه الأسماء والأعمدة **مؤكدة من SQL المضمّن في Room**، وليست استنتاجاً من أصناف Kotlin:
+
+| الجدول الأصلي | عدد الأعمدة | المفتاح الأساسي | بيانات الترحيل المهمة |
+|---|---:|---|---|
+| `Downloads` | 10 | مركب `(task_id, external_id)` | `path` و`size_bytes` و`progress_bytes` و`status` |
+| `CinemanaDownloadItem` | 24 | `id` | `downloadTaskId` و`path` و`sizeMB` |
+| `SubtitleDb` | 7 | `id` | `parentId` و`downloadTaskId` و`file` |
+
+ويوجد أيضاً فهرس فريد باسم `id` على `Downloads(task_id, external_id)`. لذلك أي ربط DAO لاحق يجب أن يطابق **الزوج الكامل**؛ مجرد `task_id` وحده ليس ضماناً لهوية صف Downloads.
+
+أعمدة `Downloads` كاملة بالترتيب: `task_id`, `external_id`, `progress_bytes`, `title`, `url`, `img`, `path`, `size_bytes`, `status`, `last_updated`.
+
+وأعمدة `SubtitleDb` كاملة: `id`, `parentId`, `downloadTaskId`, `name`, `type`, `extension`, `file`. هذا يثبت ضرورة تسجيل **كل ترجمة بهويتها ومسارها الأصلي** وليس تخزين مسار واحد فقط في الـJournal.
+
+كما أن مكتبة FileDownloader تحتوي مخزناً SQLite منفصلاً باسم `filedownloader.db` في `SqliteDatabaseOpenHelper.smali`. لا يُفترض أنه نفس مخزن Room `Downloads`، ولا يجوز تعديله دون تتبع علاقته الفعلية بعمليات التنزيل.
+
+**الخطوة التالية:** إنشاء اختبارات Room-schema fixture مطابقة لهذه الجداول الأصلية قبل توصيل أي قاعدة حقيقية. قاعدة الاختبار ذات الأسماء `diag_*` تظل مبسطة لحين تطبيق ذلك.
+
 ## ما تؤكده الأصناف الأصلية
 
 | الكيان | حقول Java/Kotlin المستخرجة المهمة | ملاحظة |
