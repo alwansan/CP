@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH279"' in diag
+assert 'BUILD = "PATCH280"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -118,7 +118,16 @@ created=smali_method(home_fragment, '.method public onViewCreated(Landroid/view/
 assert resume.count('Continue106;->refresh(Ljava/lang/Object;)V')==1, 'home resume refresh absent'
 assert 'Continue106;->refresh(Ljava/lang/Object;)V' not in created, 'redundant full home refresh on view creation'
 assert 'UiPerfDiag;->homeRefresh(J)V' in resume and 'UiPerfDiag;->homeSetup(J)V' in created
+assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
+assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
+assert 'layout_max_ms' in diag and 'draw_max_ms' in diag
 details_fragment = source("com/shabakaty/downloader/d15.smali")
+assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(details_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
+vertical_listener = source("com/shabakaty/downloader/n65.smali")
+vertical_state = smali_method(vertical_listener,'.method public onScrollStateChanged(Landroidx/recyclerview/widget/RecyclerView;I)V')
+assert '->getItemCount()I' in vertical_state and 'n65;->c:I' in vertical_state and 'UiPerfDiag;->mark(Ljava/lang/String;)V' in vertical_state
+assert '->canScrollVertically(I)Z' in vertical_state and ':perf_end' in vertical_state
+assert 'n65;->c:I' in smali_method(vertical_listener,'.method public onScrolled(Landroidx/recyclerview/widget/RecyclerView;II)V')
 assert 'detail_visible' in details_fragment and 'detail_view_created' in details_fragment
 assert 'UiPerfDiag;->diff(J)V' in adapter and 'UiPerfDiag;->skippedDiff()V' in adapter
 assert 'UiPerfDiag;->scroll(II)V' in horizontal and 'UiPerfDiag;->scroll(II)V' in vertical
