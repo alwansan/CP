@@ -10,6 +10,7 @@ on:
       - 'recovery/scripts/verify_original_room_database_names.py'
       - 'recovery/scripts/verify_original_room_migration_graph.py'
       - 'recovery/scripts/verify_original_room_json_projection.py'
+      - 'recovery/scripts/verify_original_room_json_sql_guard.py'
       - 'recovery/scripts/test_original_room_migration_sql.py'
       - 'recovery/scripts/test_original_room_3_to_4.py'
       - 'recovery/scripts/test_original_room_2_to_3_sql.py'
@@ -40,6 +41,9 @@ jobs:
       - name: Guard original Room JSON projection field and Kotlin operation parity
         shell: bash
         run: python3 recovery/scripts/verify_original_room_json_projection.py
+      - name: Verify exact original 2-to-3 SQLite create/copy SQL and guarded Android identity
+        shell: bash
+        run: python3 recovery/scripts/verify_original_room_json_sql_guard.py
       - name: Run original Room migration SQL in disposable in-memory SQLite
         shell: bash
         run: python3 recovery/scripts/test_original_room_migration_sql.py
