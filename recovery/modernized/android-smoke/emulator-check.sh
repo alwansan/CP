@@ -114,3 +114,28 @@ tap_label 'Select Series tab'
 screen_has 'tab=1'
 adb exec-out screencap -p > "$report/search-screenshot.png" || true
 echo "SEARCH_FLOW_PASS: source-first LiveData binding, fixture submission, filter and clear verified on Android"
+
+# Unlike a DB close/reopen test, this kills the *actual Android process*
+# after writing half of a disposable diagnostic SQLite migration. The second
+# process must recover the journal from private app storage on disk.
+adb shell am start -W -n "$package/.JournalProcessProbeActivity" --es mode prepare |
+    tee "$report/journal-process-prepare.txt"
+screen_has 'Process restart journal: PREPARED'
+adb shell pidof "$package" | tee "$report/pid-before-force-stop.txt"
+test -s "$report/pid-before-force-stop.txt"
+
+adb shell am force-stop "$package"
+sleep 2
+if adb shell pidof "$package" | grep -Eq '[0-9]'; then
+    echo "JOURNAL_PROCESS_KILL_FAILED: diagnostic app still running after force-stop"
+    exit 1
+fi
+echo "FORCE_STOP_CONFIRMED" | tee "$report/force-stop-confirmation.txt"
+
+adb shell am start -W -n "$package/.JournalProcessProbeActivity" --es mode recover |
+    tee "$report/journal-process-recover.txt"
+screen_has 'Process restart journal: RECOVERED'
+adb shell pidof "$package" | tee "$report/pid-after-restart.txt"
+test -s "$report/pid-after-restart.txt"
+adb exec-out screencap -p > "$report/journal-process-recovered.png" || true
+echo "JOURNAL_PROCESS_RESTART_PASS: pending on-disk diagnostic journal recovered in new Android process" | tee "$report/journal-result.txt"
