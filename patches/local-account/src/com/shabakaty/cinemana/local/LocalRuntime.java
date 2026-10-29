@@ -21,7 +21,7 @@ public final class LocalRuntime {
  static final LinkedHashMap<String,String> cache=new LinkedHashMap<>();
  private static final String MODELS="com.shabakaty.cinemana.domain.models.remote.";
  static volatile boolean scanCancelled;private static volatile long lastMigrationAttempt;private static long storageProbe,lastStateSnapshot;private static volatile boolean stateDirty;
- static final long INTERVAL=6*60*60*1000L;
+ static final long INTERVAL=15*60*1000L;
  public static synchronized void init(Context context){
   if(app!=null)return;app=context.getApplicationContext();com.shabakaty.cinemana.ca1.LocalAccountLog.init(app);log("build=PATCH269");
   IO.execute(new Runnable(){public void run(){try{data();ensureLegacy();try{if(!data().config("upgrade268","0").equals("1")){snapshotLegacy(true);data().setConfig("upgrade268","1");log("account_upgrade268_complete");}}catch(Exception upgrade){failure("account_upgrade268",upgrade);}schedule();requestScan(false);}catch(Exception e){failure("init",e);}}});
@@ -206,6 +206,7 @@ public final class LocalRuntime {
    if(parental<0||parental>3||translation<0||translation>1)throw new IOException("invalid filter");
    // Commit the validated account before refreshing compatibility projections.
    pendingProgress.clear();data().importZip(new ByteArrayInputStream(bytes.toByteArray()));
+   data().setConfig("last_scan","0");data().setConfig("scan_cursor","0");log("notification_restore baselines_preserved=true scan_reset=true");
   }finally{removeStage(stage);}
  }
  private static void removeStage(File dir){File[] files=dir.listFiles();if(files!=null)for(File f:files)f.delete();dir.delete();}
@@ -316,13 +317,18 @@ public final class LocalRuntime {
     deadline=IO.schedule(()->{if(terminal.compareAndSet(false,true)){next.cancel();log("season_timeout id="+safeId(id));downstream.b(new java.net.SocketTimeoutException("episode catalogue timeout"));}},35,TimeUnit.SECONDS);
     downstream.d(new lf4(){public void u(long n){next.u(n);}public void cancel(){terminal.set(true);if(deadline!=null)deadline.cancel(false);next.cancel();log("season_cancel id="+safeId(id));}});
    }
-   public void e(Object value){if(terminal.get())return;if(deadline!=null)deadline.cancel(false);int count=value instanceof Collection?((Collection)value).size():-1;log("season_result id="+safeId(id)+" count="+count+" elapsed_ms="+(System.currentTimeMillis()-started));downstream.e(value);}
+   public void e(Object value){if(terminal.get())return;if(deadline!=null)deadline.cancel(false);int count=value instanceof Collection?((Collection)value).size():-1;log("season_result id="+safeId(id)+" count="+count+" elapsed_ms="+(System.currentTimeMillis()-started));observeEpisodes(id,value);downstream.e(value);}
    public void b(Throwable error){if(terminal.compareAndSet(false,true)){if(deadline!=null)deadline.cancel(false);log("season_failed id="+safeId(id)+" type="+causeTypes(error));downstream.b(error);}}
    public void a(){if(terminal.compareAndSet(false,true)){if(deadline!=null)deadline.cancel(false);downstream.a();}}
   });}
  }
+ static void observeEpisodes(final String id,Object value){
+  if(!(value instanceof Collection)||((Collection)value).isEmpty())return;
+  try{final JSONArray fetched=new JSONArray(JSON.i(value));NETWORK.execute(()->{try{LocalAccountStore account=data();Item show=account.find(ListKind.SUBSCRIPTION,id);if(show==null)return;int before=account.baselineSize(id);List<Item> added=account.reconcile(id,episodeItems(show,fetched));log("episode_observed id="+safeId(id)+" previous="+before+" fetched="+fetched.length()+" new="+added.size());deliver();}catch(Exception e){failure("episode_observed",e);}});}catch(Exception e){failure("episode_observed_decode",e);}
+ }
  static void schedule(){try{
   JobScheduler scheduler=(JobScheduler)app.getSystemService(Context.JOB_SCHEDULER_SERVICE);boolean exists=false;for(JobInfo j:scheduler.getAllPendingJobs())if(j.getId()==26601)exists=true;
+  if(exists){for(JobInfo j:scheduler.getAllPendingJobs())if(j.getId()==26601&&j.getIntervalMillis()!=INTERVAL){scheduler.cancel(26601);exists=false;}}
   if(!exists)scheduler.schedule(new JobInfo.Builder(26601,new ComponentName(app,LocalEpisodeJob.class)).setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY).setPeriodic(INTERVAL).setPersisted(true).build());
  }catch(Exception e){failure("schedule",e);}}
  static void requestBaseline(final String id){NETWORK.execute(()->{try{LocalAccountStore account=data();if(account.find(ListKind.SUBSCRIPTION,id)==null||account.hasBaseline(id))return;JSONArray fetched=episodes(id);List<Item> items=episodeItems(item(id),fetched);if(!items.isEmpty()){account=data();account.reconcile(id,items);log("subscription_baseline id="+safeId(id)+" count="+account.baselineSize(id));}}catch(Exception e){failure("subscription_baseline",e);}});}
@@ -334,15 +340,15 @@ public final class LocalRuntime {
   android.net.ConnectivityManager cm=(android.net.ConnectivityManager)app.getSystemService(Context.CONNECTIVITY_SERVICE);
   android.net.NetworkInfo info=cm.getActiveNetworkInfo();if(info==null||!info.isConnected())return;
   List<Item> subscriptions=s.list(ListKind.SUBSCRIPTION);if(subscriptions.isEmpty())return;
-  int cursor=Integer.parseInt(s.config("scan_cursor","0"));int count=Math.min(5,subscriptions.size());
+  int cursor=Integer.parseInt(s.config("scan_cursor","0"));int count=Math.min(force?30:5,subscriptions.size());
   long end=android.os.SystemClock.elapsedRealtime()+45000;int done=0;
   for(;done<count&&!scanCancelled&&android.os.SystemClock.elapsedRealtime()<end;done++){
    Item show=subscriptions.get((cursor+done)%subscriptions.size());
    try{JSONArray episodes=episodes(show.id);if(episodes.length()==0)continue;List<Item> items=episodeItems(show,episodes);
-    s=data();s.reconcile(show.id,items);log("subscription_checked id="+safeId(show.id)+" baseline="+s.baselineSize(show.id));
+    s=data();int previous=s.baselineSize(show.id);List<Item> added=s.reconcile(show.id,items);log("subscription_checked id="+safeId(show.id)+" previous="+previous+" fetched="+items.size()+" new="+added.size()+" baseline="+s.baselineSize(show.id));
    }catch(Exception e){failure("episode_fetch",e);}
   }
-  s.setConfig("scan_cursor",String.valueOf((cursor+done)%subscriptions.size()));s.setConfig("last_scan",String.valueOf(now));log("scan_complete checked="+done);deliver();
+  s.setConfig("scan_cursor",String.valueOf((cursor+done)%subscriptions.size()));s.setConfig("last_scan",String.valueOf(now));log("scan_complete checked="+done+" total="+subscriptions.size()+" cursor="+((cursor+done)%subscriptions.size()));deliver();
  }
  static JSONArray episodes(String id)throws Exception{
   HttpURLConnection connection=(HttpURLConnection)new URL("https://cinemana.shabakaty.cc/api/android/videoSeason/id/"+id).openConnection();
@@ -357,15 +363,15 @@ public final class LocalRuntime {
   if(Build.VERSION.SDK_INT>=33&&app.checkSelfPermission("android.permission.POST_NOTIFICATIONS")!=0){log("notification_permission_missing");return;}
   NotificationManager manager=(NotificationManager)app.getSystemService(Context.NOTIFICATION_SERVICE);
   if(Build.VERSION.SDK_INT>=26)manager.createNotificationChannel(new NotificationChannel("local_episodes","حلقات جديدة",NotificationManager.IMPORTANCE_DEFAULT));
-  if(Build.VERSION.SDK_INT>=24&&!manager.areNotificationsEnabled())return;
-  if(Build.VERSION.SDK_INT>=26&&manager.getNotificationChannel("local_episodes").getImportance()==0)return;
+  if(Build.VERSION.SDK_INT>=24&&!manager.areNotificationsEnabled()){log("notification_blocked reason=app_disabled");return;}
+  if(Build.VERSION.SDK_INT>=26&&manager.getNotificationChannel("local_episodes").getImportance()==0){log("notification_blocked reason=channel_disabled");return;}
   LocalAccountStore s=data();List<Item> inbox=s.inbox();int shown=0;
   for(Item episode:inbox){String key="delivered_"+episode.id;if(s.config(key,"0").equals("1"))continue;
    Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse("https://cinemana.shabakaty.cc/video/"+episode.id));intent.setPackage(app.getPackageName());intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
    PendingIntent pending=PendingIntent.getActivity(app,episode.id.hashCode(),intent,PendingIntent.FLAG_UPDATE_CURRENT|(Build.VERSION.SDK_INT>=23?PendingIntent.FLAG_IMMUTABLE:0));
    Notification.Builder builder=Build.VERSION.SDK_INT>=26?new Notification.Builder(app,"local_episodes"):new Notification.Builder(app);
    builder.setSmallIcon(android.R.drawable.ic_media_play).setContentTitle("حلقة جديدة").setContentText(episode.title).setContentIntent(pending).setAutoCancel(true).setOnlyAlertOnce(true);
-   manager.notify("local_episode_"+episode.id,266,builder.build());s.setConfig(key,"1");if(++shown>=5)break;
+   manager.notify("local_episode_"+episode.id,266,builder.build());log("notification_posted id="+safeId(episode.id));s.setConfig(key,"1");if(++shown>=5)break;
   }log("notifications_delivered count="+shown);
  }
 }

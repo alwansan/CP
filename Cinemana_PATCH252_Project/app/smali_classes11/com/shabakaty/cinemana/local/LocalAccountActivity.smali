@@ -1748,12 +1748,12 @@
 
     move-result-object p1
 
-    if-eqz p1, :cond_28
+    if-eqz p1, :cond_2b
 
     :try_start_a
     invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->importAccount(Ljava/io/InputStream;)V
     :try_end_d
-    .catchall {:try_start_a .. :try_end_d} :catchall_26
+    .catchall {:try_start_a .. :try_end_d} :catchall_29
 
     if-eqz p1, :cond_12
 
@@ -1776,17 +1776,19 @@
 
     const/4 p1, 0x1
 
+    invoke-static {p1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->requestScan(Z)V
+
     iput-boolean p1, p0, Lcom/shabakaty/cinemana/local/LocalAccountActivity;->restartAfterImport:Z
 
     return-void
 
-    :catchall_26
+    :catchall_29
     move-exception v0
 
-    goto :goto_30
+    goto :goto_33
 
-    :cond_28
-    :try_start_28
+    :cond_2b
+    :try_start_2b
     new-instance v0, Ljava/io/IOException;
 
     const-string v1, "document not readable"
@@ -1794,26 +1796,26 @@
     invoke-direct {v0, v1}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
     throw v0
-    :try_end_30
-    .catchall {:try_start_28 .. :try_end_30} :catchall_26
+    :try_end_33
+    .catchall {:try_start_2b .. :try_end_33} :catchall_29
 
-    :goto_30
-    if-eqz p1, :cond_3a
+    :goto_33
+    if-eqz p1, :cond_3d
 
-    :try_start_32
+    :try_start_35
     invoke-virtual {p1}, Ljava/io/InputStream;->close()V
-    :try_end_35
-    .catchall {:try_start_32 .. :try_end_35} :catchall_36
+    :try_end_38
+    .catchall {:try_start_35 .. :try_end_38} :catchall_39
 
-    goto :goto_3a
+    goto :goto_3d
 
-    :catchall_36
+    :catchall_39
     move-exception p1
 
     invoke-virtual {v0, p1}, Ljava/lang/Throwable;->addSuppressed(Ljava/lang/Throwable;)V
 
-    :cond_3a
-    :goto_3a
+    :cond_3d
+    :goto_3d
     throw v0
 .end method
 

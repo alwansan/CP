@@ -307,6 +307,12 @@
 
     invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
 
+    iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$EpisodeFlow$1;->this$0:Lcom/shabakaty/cinemana/local/LocalRuntime$EpisodeFlow;
+
+    iget-object v0, v0, Lcom/shabakaty/cinemana/local/LocalRuntime$EpisodeFlow;->id:Ljava/lang/String;
+
+    invoke-static {v0, p1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->observeEpisodes(Ljava/lang/String;Ljava/lang/Object;)V
+
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$EpisodeFlow$1;->val$downstream:Lcom/shabakaty/downloader/ef4;
 
     invoke-interface {v0, p1}, Lcom/shabakaty/downloader/ef4;->e(Ljava/lang/Object;)V

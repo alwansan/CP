@@ -16,7 +16,7 @@
 
 
 # static fields
-.field static final INTERVAL:J = 0x1499700L
+.field static final INTERVAL:J = 0xdbba0L
 
 .field public static final IO:Ljava/util/concurrent/ScheduledExecutorService;
 
@@ -1139,9 +1139,9 @@
 
     sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->IO:Ljava/util/concurrent/ScheduledExecutorService;
 
-    new-instance v2, Lcom/shabakaty/cinemana/local/LocalRuntime$$ExternalSyntheticLambda8;
+    new-instance v2, Lcom/shabakaty/cinemana/local/LocalRuntime$$ExternalSyntheticLambda9;
 
-    invoke-direct {v2}, Lcom/shabakaty/cinemana/local/LocalRuntime$$ExternalSyntheticLambda8;-><init>()V
+    invoke-direct {v2}, Lcom/shabakaty/cinemana/local/LocalRuntime$$ExternalSyntheticLambda9;-><init>()V
 
     invoke-interface {v0, v2}, Ljava/util/concurrent/ScheduledExecutorService;->execute(Ljava/lang/Runnable;)V
 
@@ -1380,20 +1380,24 @@
 
     const/16 v4, 0x18
 
-    if-lt v1, v4, :cond_40
+    if-lt v1, v4, :cond_45
 
     invoke-virtual {v0}, Landroid/app/NotificationManager;->areNotificationsEnabled()Z
 
     move-result v1
 
-    if-nez v1, :cond_40
+    if-nez v1, :cond_45
+
+    const-string v0, "notification_blocked reason=app_disabled"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
 
     return-void
 
-    :cond_40
+    :cond_45
     sget v1, Landroid/os/Build$VERSION;->SDK_INT:I
 
-    if-lt v1, v3, :cond_4f
+    if-lt v1, v3, :cond_59
 
     invoke-virtual {v0, v2}, Landroid/app/NotificationManager;->getNotificationChannel(Ljava/lang/String;)Landroid/app/NotificationChannel;
 
@@ -1403,11 +1407,15 @@
 
     move-result v1
 
-    if-nez v1, :cond_4f
+    if-nez v1, :cond_59
+
+    const-string v0, "notification_blocked reason=channel_disabled"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
 
     return-void
 
-    :cond_4f
+    :cond_59
     invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
 
     move-result-object v1
@@ -1424,13 +1432,13 @@
 
     const/4 v6, 0x0
 
-    :cond_5d
-    :goto_5d
+    :cond_67
+    :goto_67
     invoke-interface {v4}, Ljava/util/Iterator;->hasNext()Z
 
     move-result v7
 
-    if-eqz v7, :cond_11d
+    if-eqz v7, :cond_13e
 
     invoke-interface {v4}, Ljava/util/Iterator;->next()Ljava/lang/Object;
 
@@ -1464,11 +1472,11 @@
 
     move-result v9
 
-    if-eqz v9, :cond_88
+    if-eqz v9, :cond_92
 
-    goto :goto_5d
+    goto :goto_67
 
-    :cond_88
+    :cond_92
     new-instance v9, Landroid/content/Intent;
 
     new-instance v11, Ljava/lang/StringBuilder;
@@ -1517,16 +1525,16 @@
 
     const/16 v14, 0x17
 
-    if-lt v13, v14, :cond_c2
+    if-lt v13, v14, :cond_cc
 
     const/high16 v13, 0x4000000
 
-    goto :goto_c3
+    goto :goto_cd
 
-    :cond_c2
+    :cond_cc
     const/4 v13, 0x0
 
-    :goto_c3
+    :goto_cd
     const/high16 v14, 0x8000000
 
     or-int/2addr v13, v14
@@ -1537,7 +1545,7 @@
 
     sget v11, Landroid/os/Build$VERSION;->SDK_INT:I
 
-    if-lt v11, v3, :cond_d6
+    if-lt v11, v3, :cond_e0
 
     new-instance v11, Landroid/app/Notification$Builder;
 
@@ -1545,16 +1553,16 @@
 
     invoke-direct {v11, v12, v2}, Landroid/app/Notification$Builder;-><init>(Landroid/content/Context;Ljava/lang/String;)V
 
-    goto :goto_dd
+    goto :goto_e7
 
-    :cond_d6
+    :cond_e0
     new-instance v11, Landroid/app/Notification$Builder;
 
     sget-object v12, Lcom/shabakaty/cinemana/local/LocalRuntime;->app:Landroid/content/Context;
 
     invoke-direct {v11, v12}, Landroid/app/Notification$Builder;-><init>(Landroid/content/Context;)V
 
-    :goto_dd
+    :goto_e7
     const v12, 0x1080024
 
     invoke-virtual {v11, v12}, Landroid/app/Notification$Builder;->setSmallIcon(I)Landroid/app/Notification$Builder;
@@ -1591,7 +1599,33 @@
 
     invoke-direct {v9, v12}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
 
+    iget-object v12, v7, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
+
+    invoke-virtual {v9, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v9}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v9
+
+    const/16 v12, 0x10a
+
+    invoke-virtual {v11}, Landroid/app/Notification$Builder;->build()Landroid/app/Notification;
+
+    move-result-object v11
+
+    invoke-virtual {v0, v9, v12, v11}, Landroid/app/NotificationManager;->notify(Ljava/lang/String;ILandroid/app/Notification;)V
+
+    new-instance v9, Ljava/lang/StringBuilder;
+
+    const-string v11, "notification_posted id="
+
+    invoke-direct {v9, v11}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
     iget-object v7, v7, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
+
+    invoke-static {v7}, Lcom/shabakaty/cinemana/local/LocalRuntime;->safeId(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v7
 
     invoke-virtual {v9, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -1599,13 +1633,7 @@
 
     move-result-object v7
 
-    const/16 v9, 0x10a
-
-    invoke-virtual {v11}, Landroid/app/Notification$Builder;->build()Landroid/app/Notification;
-
-    move-result-object v11
-
-    invoke-virtual {v0, v7, v9, v11}, Landroid/app/NotificationManager;->notify(Ljava/lang/String;ILandroid/app/Notification;)V
+    invoke-static {v7}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
 
     invoke-virtual {v1, v8, v10}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->setConfig(Ljava/lang/String;Ljava/lang/String;)V
 
@@ -1613,9 +1641,9 @@
 
     const/4 v7, 0x5
 
-    if-lt v6, v7, :cond_5d
+    if-lt v6, v7, :cond_67
 
-    :cond_11d
+    :cond_13e
     new-instance v0, Ljava/lang/StringBuilder;
 
     const-string v1, "notifications_delivered count="
@@ -2740,7 +2768,7 @@
 
     move-result v2
 
-    if-eqz v2, :cond_13f
+    if-eqz v2, :cond_156
 
     :try_start_3e
     new-instance v2, Lcom/shabakaty/cinemana/local/LocalAccountStore;
@@ -2961,48 +2989,68 @@
 
     invoke-virtual {v2, v4, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->config(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
-    move-result-object v0
+    move-result-object v2
 
-    invoke-static {v0}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
+    invoke-static {v2}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
 
-    move-result v0
+    move-result v2
 
-    if-ltz v3, :cond_132
+    if-ltz v3, :cond_149
 
-    const/4 v2, 0x3
+    const/4 v4, 0x3
 
-    if-gt v3, v2, :cond_132
+    if-gt v3, v4, :cond_149
 
-    if-ltz v0, :cond_132
+    if-ltz v2, :cond_149
 
-    if-gt v0, v6, :cond_132
+    if-gt v2, v6, :cond_149
 
-    sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->pendingProgress:Ljava/util/concurrent/ConcurrentHashMap;
+    sget-object v2, Lcom/shabakaty/cinemana/local/LocalRuntime;->pendingProgress:Ljava/util/concurrent/ConcurrentHashMap;
 
-    invoke-virtual {v0}, Ljava/util/concurrent/ConcurrentHashMap;->clear()V
+    invoke-virtual {v2}, Ljava/util/concurrent/ConcurrentHashMap;->clear()V
 
     invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
 
-    move-result-object v0
+    move-result-object v2
 
-    new-instance v2, Ljava/io/ByteArrayInputStream;
+    new-instance v3, Ljava/io/ByteArrayInputStream;
 
     invoke-virtual {v1}, Ljava/io/ByteArrayOutputStream;->toByteArray()[B
 
     move-result-object v1
 
-    invoke-direct {v2, v1}, Ljava/io/ByteArrayInputStream;-><init>([B)V
+    invoke-direct {v3, v1}, Ljava/io/ByteArrayInputStream;-><init>([B)V
 
-    invoke-virtual {v0, v2}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->importZip(Ljava/io/InputStream;)V
-    :try_end_12e
-    .catchall {:try_start_3e .. :try_end_12e} :catchall_13a
+    invoke-virtual {v2, v3}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->importZip(Ljava/io/InputStream;)V
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
+
+    move-result-object v1
+
+    const-string v2, "last_scan"
+
+    invoke-virtual {v1, v2, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->setConfig(Ljava/lang/String;Ljava/lang/String;)V
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
+
+    move-result-object v1
+
+    const-string v2, "scan_cursor"
+
+    invoke-virtual {v1, v2, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->setConfig(Ljava/lang/String;Ljava/lang/String;)V
+
+    const-string v0, "notification_restore baselines_preserved=true scan_reset=true"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
+    :try_end_145
+    .catchall {:try_start_3e .. :try_end_145} :catchall_151
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->removeStage(Ljava/io/File;)V
 
     return-void
 
-    :cond_132
-    :try_start_132
+    :cond_149
+    :try_start_149
     new-instance v0, Ljava/io/IOException;
 
     const-string v1, "invalid filter"
@@ -3010,17 +3058,17 @@
     invoke-direct {v0, v1}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
     throw v0
-    :try_end_13a
-    .catchall {:try_start_132 .. :try_end_13a} :catchall_13a
+    :try_end_151
+    .catchall {:try_start_149 .. :try_end_151} :catchall_151
 
-    :catchall_13a
+    :catchall_151
     move-exception v0
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->removeStage(Ljava/io/File;)V
 
     throw v0
 
-    :cond_13f
+    :cond_156
     new-instance p0, Ljava/io/IOException;
 
     const-string v0, "staging unavailable"
@@ -3463,6 +3511,98 @@
     return-object v0
 .end method
 
+.method static synthetic lambda$observeEpisodes$8(Ljava/lang/String;Lorg/json/JSONArray;)V
+    .locals 4
+
+    const-string v0, "episode_observed id="
+
+    :try_start_2
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
+
+    move-result-object v1
+
+    sget-object v2, Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;->SUBSCRIPTION:Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;
+
+    invoke-virtual {v1, v2, p0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->find(Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;Ljava/lang/String;)Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;
+
+    move-result-object v2
+
+    if-nez v2, :cond_f
+
+    return-void
+
+    :cond_f
+    invoke-virtual {v1, p0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->baselineSize(Ljava/lang/String;)I
+
+    move-result v3
+
+    invoke-static {v2, p1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->episodeItems(Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;Lorg/json/JSONArray;)Ljava/util/List;
+
+    move-result-object v2
+
+    invoke-virtual {v1, p0, v2}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->reconcile(Ljava/lang/String;Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v1
+
+    new-instance v2, Ljava/lang/StringBuilder;
+
+    invoke-direct {v2, v0}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->safeId(Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string p0, " previous="
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string p0, " fetched="
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {p1}, Lorg/json/JSONArray;->length()I
+
+    move-result p0
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string p0, " new="
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-interface {v1}, Ljava/util/List;->size()I
+
+    move-result p0
+
+    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->deliver()V
+    :try_end_51
+    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_51} :catch_52
+
+    goto :goto_58
+
+    :catch_52
+    move-exception p0
+
+    const-string p1, "episode_observed"
+
+    invoke-static {p1, p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
+
+    :goto_58
+    return-void
+.end method
+
 .method static synthetic lambda$progress$2()V
     .locals 3
 
@@ -3709,7 +3849,7 @@
     return-void
 .end method
 
-.method static synthetic lambda$requestBaseline$8(Ljava/lang/String;)V
+.method static synthetic lambda$requestBaseline$9(Ljava/lang/String;)V
     .locals 3
 
     const-string v0, "subscription_baseline id="
@@ -4727,6 +4867,61 @@
 
     :goto_16
     return-object v1
+.end method
+
+.method static observeEpisodes(Ljava/lang/String;Ljava/lang/Object;)V
+    .locals 2
+
+    instance-of v0, p1, Ljava/util/Collection;
+
+    if-eqz v0, :cond_2a
+
+    move-object v0, p1
+
+    check-cast v0, Ljava/util/Collection;
+
+    invoke-interface {v0}, Ljava/util/Collection;->isEmpty()Z
+
+    move-result v0
+
+    if-eqz v0, :cond_e
+
+    goto :goto_2a
+
+    :cond_e
+    :try_start_e
+    new-instance v0, Lorg/json/JSONArray;
+
+    sget-object v1, Lcom/shabakaty/cinemana/local/LocalRuntime;->JSON:Lcom/shabakaty/downloader/lr1;
+
+    invoke-virtual {v1, p1}, Lcom/shabakaty/downloader/lr1;->i(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object p1
+
+    invoke-direct {v0, p1}, Lorg/json/JSONArray;-><init>(Ljava/lang/String;)V
+
+    sget-object p1, Lcom/shabakaty/cinemana/local/LocalRuntime;->NETWORK:Ljava/util/concurrent/ExecutorService;
+
+    new-instance v1, Lcom/shabakaty/cinemana/local/LocalRuntime$$ExternalSyntheticLambda8;
+
+    invoke-direct {v1, p0, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime$$ExternalSyntheticLambda8;-><init>(Ljava/lang/String;Lorg/json/JSONArray;)V
+
+    invoke-interface {p1, v1}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
+    :try_end_23
+    .catch Ljava/lang/Exception; {:try_start_e .. :try_end_23} :catch_24
+
+    goto :goto_2a
+
+    :catch_24
+    move-exception p0
+
+    const-string p1, "episode_observed_decode"
+
+    invoke-static {p1, p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
+
+    :cond_2a
+    :goto_2a
+    return-void
 .end method
 
 .method public static open(Landroid/content/Context;)V
@@ -6887,7 +7082,7 @@
 .end method
 
 .method static scan(Z)V
-    .locals 13
+    .locals 16
     .annotation system Ldalvik/annotation/Throws;
         value = {
             Ljava/lang/Exception;
@@ -6927,61 +7122,61 @@
     goto :goto_23
 
     :cond_20
-    const-wide/32 v7, 0x1499700
+    const-wide/32 v7, 0xdbba0
 
     :goto_23
-    cmp-long p0, v5, v7
+    cmp-long v9, v5, v7
 
-    if-gez p0, :cond_2b
+    if-gez v9, :cond_2b
 
     invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->deliver()V
 
     return-void
 
     :cond_2b
-    sget-object p0, Lcom/shabakaty/cinemana/local/LocalRuntime;->app:Landroid/content/Context;
+    sget-object v5, Lcom/shabakaty/cinemana/local/LocalRuntime;->app:Landroid/content/Context;
 
-    const-string v5, "connectivity"
+    const-string v6, "connectivity"
 
-    invoke-virtual {p0, v5}, Landroid/content/Context;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
+    invoke-virtual {v5, v6}, Landroid/content/Context;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
 
-    move-result-object p0
+    move-result-object v5
 
-    check-cast p0, Landroid/net/ConnectivityManager;
+    check-cast v5, Landroid/net/ConnectivityManager;
 
-    invoke-virtual {p0}, Landroid/net/ConnectivityManager;->getActiveNetworkInfo()Landroid/net/NetworkInfo;
+    invoke-virtual {v5}, Landroid/net/ConnectivityManager;->getActiveNetworkInfo()Landroid/net/NetworkInfo;
 
-    move-result-object p0
+    move-result-object v5
 
-    if-eqz p0, :cond_fb
+    if-eqz v5, :cond_14e
 
-    invoke-virtual {p0}, Landroid/net/NetworkInfo;->isConnected()Z
-
-    move-result p0
-
-    if-nez p0, :cond_43
-
-    goto/16 :goto_fb
-
-    :cond_43
-    sget-object p0, Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;->SUBSCRIPTION:Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;
-
-    invoke-virtual {v0, p0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->list(Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;)Ljava/util/List;
-
-    move-result-object p0
-
-    invoke-interface {p0}, Ljava/util/List;->isEmpty()Z
+    invoke-virtual {v5}, Landroid/net/NetworkInfo;->isConnected()Z
 
     move-result v5
 
-    if-eqz v5, :cond_50
+    if-nez v5, :cond_43
+
+    goto/16 :goto_14e
+
+    :cond_43
+    sget-object v5, Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;->SUBSCRIPTION:Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;
+
+    invoke-virtual {v0, v5}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->list(Lcom/shabakaty/cinemana/local/LocalAccountStore$ListKind;)Ljava/util/List;
+
+    move-result-object v5
+
+    invoke-interface {v5}, Ljava/util/List;->isEmpty()Z
+
+    move-result v6
+
+    if-eqz v6, :cond_50
 
     return-void
 
     :cond_50
-    const-string v5, "scan_cursor"
+    const-string v6, "scan_cursor"
 
-    invoke-virtual {v0, v5, v4}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->config(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-virtual {v0, v6, v4}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->config(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v4
 
@@ -6989,177 +7184,262 @@
 
     move-result v4
 
-    const/4 v6, 0x5
+    if-eqz p0, :cond_5f
 
-    invoke-interface {p0}, Ljava/util/List;->size()I
+    const/16 v7, 0x1e
+
+    goto :goto_60
+
+    :cond_5f
+    const/4 v7, 0x5
+
+    :goto_60
+    invoke-interface {v5}, Ljava/util/List;->size()I
+
+    move-result v8
+
+    invoke-static {v7, v8}, Ljava/lang/Math;->min(II)I
 
     move-result v7
 
-    invoke-static {v6, v7}, Ljava/lang/Math;->min(II)I
+    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
-    move-result v6
+    move-result-wide v8
+
+    const-wide/32 v10, 0xafc8
+
+    add-long/2addr v8, v10
+
+    const/4 v10, 0x0
+
+    move-object v10, v0
+
+    const/4 v11, 0x0
+
+    :goto_73
+    if-ge v11, v7, :cond_10c
+
+    sget-boolean v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->scanCancelled:Z
+
+    if-nez v0, :cond_10c
 
     invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
-    move-result-wide v7
+    move-result-wide v12
 
-    const-wide/32 v9, 0xafc8
+    cmp-long v0, v12, v8
 
-    add-long/2addr v7, v9
+    if-gez v0, :cond_10c
 
-    const/4 v9, 0x0
+    add-int v0, v4, v11
 
-    :goto_6c
-    if-ge v9, v6, :cond_d3
-
-    sget-boolean v10, Lcom/shabakaty/cinemana/local/LocalRuntime;->scanCancelled:Z
-
-    if-nez v10, :cond_d3
-
-    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
-
-    move-result-wide v10
-
-    cmp-long v12, v10, v7
-
-    if-gez v12, :cond_d3
-
-    add-int v10, v4, v9
-
-    invoke-interface {p0}, Ljava/util/List;->size()I
-
-    move-result v11
-
-    rem-int/2addr v10, v11
-
-    invoke-interface {p0, v10}, Ljava/util/List;->get(I)Ljava/lang/Object;
-
-    move-result-object v10
-
-    check-cast v10, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;
-
-    :try_start_87
-    iget-object v11, v10, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
-
-    invoke-static {v11}, Lcom/shabakaty/cinemana/local/LocalRuntime;->episodes(Ljava/lang/String;)Lorg/json/JSONArray;
-
-    move-result-object v11
-
-    invoke-virtual {v11}, Lorg/json/JSONArray;->length()I
+    invoke-interface {v5}, Ljava/util/List;->size()I
 
     move-result v12
 
-    if-nez v12, :cond_94
+    rem-int/2addr v0, v12
 
-    goto :goto_d0
-
-    :cond_94
-    invoke-static {v10, v11}, Lcom/shabakaty/cinemana/local/LocalRuntime;->episodeItems(Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;Lorg/json/JSONArray;)Ljava/util/List;
-
-    move-result-object v11
-
-    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
+    invoke-interface {v5, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
 
     move-result-object v0
 
-    iget-object v12, v10, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
+    check-cast v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;
 
-    invoke-virtual {v0, v12, v11}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->reconcile(Ljava/lang/String;Ljava/util/List;)Ljava/util/List;
+    :try_start_8e
+    iget-object v12, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
 
-    new-instance v11, Ljava/lang/StringBuilder;
-
-    invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v12, "subscription_checked id="
-
-    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    iget-object v12, v10, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
-
-    invoke-static {v12}, Lcom/shabakaty/cinemana/local/LocalRuntime;->safeId(Ljava/lang/String;)Ljava/lang/String;
+    invoke-static {v12}, Lcom/shabakaty/cinemana/local/LocalRuntime;->episodes(Ljava/lang/String;)Lorg/json/JSONArray;
 
     move-result-object v12
 
-    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v12}, Lorg/json/JSONArray;->length()I
 
-    const-string v12, " baseline="
+    move-result v13
 
-    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    if-nez v13, :cond_9d
 
-    iget-object v10, v10, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
+    move/from16 p0, v7
 
-    invoke-virtual {v0, v10}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->baselineSize(Ljava/lang/String;)I
+    goto :goto_106
 
-    move-result v10
+    :cond_9d
+    invoke-static {v0, v12}, Lcom/shabakaty/cinemana/local/LocalRuntime;->episodeItems(Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;Lorg/json/JSONArray;)Ljava/util/List;
 
-    invoke-virtual {v11, v10}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v12
 
-    invoke-virtual {v11}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->data()Lcom/shabakaty/cinemana/local/LocalAccountStore;
 
     move-result-object v10
 
-    invoke-static {v10}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
-    :try_end_c9
-    .catch Ljava/lang/Exception; {:try_start_87 .. :try_end_c9} :catch_ca
+    iget-object v13, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
 
-    goto :goto_d0
+    invoke-virtual {v10, v13}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->baselineSize(Ljava/lang/String;)I
 
-    :catch_ca
-    move-exception v10
+    move-result v13
 
-    const-string v11, "episode_fetch"
+    iget-object v14, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
 
-    invoke-static {v11, v10}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
+    invoke-virtual {v10, v14, v12}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->reconcile(Ljava/lang/String;Ljava/util/List;)Ljava/util/List;
 
-    :goto_d0
-    add-int/lit8 v9, v9, 0x1
+    move-result-object v14
 
-    goto :goto_6c
+    new-instance v15, Ljava/lang/StringBuilder;
 
-    :cond_d3
-    add-int/2addr v4, v9
+    invoke-direct {v15}, Ljava/lang/StringBuilder;-><init>()V
+    :try_end_b6
+    .catch Ljava/lang/Exception; {:try_start_8e .. :try_end_b6} :catch_fe
 
-    invoke-interface {p0}, Ljava/util/List;->size()I
+    move/from16 p0, v7
 
-    move-result p0
+    :try_start_b8
+    const-string v7, "subscription_checked id="
 
-    rem-int/2addr v4, p0
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    invoke-static {v4}, Ljava/lang/String;->valueOf(I)Ljava/lang/String;
+    iget-object v7, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
 
-    move-result-object p0
+    invoke-static {v7}, Lcom/shabakaty/cinemana/local/LocalRuntime;->safeId(Ljava/lang/String;)Ljava/lang/String;
 
-    invoke-virtual {v0, v5, p0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->setConfig(Ljava/lang/String;Ljava/lang/String;)V
+    move-result-object v7
+
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v7, " previous="
+
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v15, v13}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string v7, " fetched="
+
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-interface {v12}, Ljava/util/List;->size()I
+
+    move-result v7
+
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string v7, " new="
+
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-interface {v14}, Ljava/util/List;->size()I
+
+    move-result v7
+
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string v7, " baseline="
+
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    iget-object v0, v0, Lcom/shabakaty/cinemana/local/LocalAccountStore$Item;->id:Ljava/lang/String;
+
+    invoke-virtual {v10, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->baselineSize(Ljava/lang/String;)I
+
+    move-result v0
+
+    invoke-virtual {v15, v0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v15}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
+    :try_end_fb
+    .catch Ljava/lang/Exception; {:try_start_b8 .. :try_end_fb} :catch_fc
+
+    goto :goto_106
+
+    :catch_fc
+    move-exception v0
+
+    goto :goto_101
+
+    :catch_fe
+    move-exception v0
+
+    move/from16 p0, v7
+
+    :goto_101
+    const-string v7, "episode_fetch"
+
+    invoke-static {v7, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
+
+    :goto_106
+    add-int/lit8 v11, v11, 0x1
+
+    move/from16 v7, p0
+
+    goto/16 :goto_73
+
+    :cond_10c
+    add-int/2addr v4, v11
+
+    invoke-interface {v5}, Ljava/util/List;->size()I
+
+    move-result v0
+
+    rem-int v0, v4, v0
+
+    invoke-static {v0}, Ljava/lang/String;->valueOf(I)Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-virtual {v10, v6, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->setConfig(Ljava/lang/String;Ljava/lang/String;)V
 
     invoke-static {v1, v2}, Ljava/lang/String;->valueOf(J)Ljava/lang/String;
 
-    move-result-object p0
+    move-result-object v0
 
-    invoke-virtual {v0, v3, p0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->setConfig(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v10, v3, v0}, Lcom/shabakaty/cinemana/local/LocalAccountStore;->setConfig(Ljava/lang/String;Ljava/lang/String;)V
 
-    new-instance p0, Ljava/lang/StringBuilder;
+    new-instance v0, Ljava/lang/StringBuilder;
 
-    const-string v0, "scan_complete checked="
+    const-string v1, "scan_complete checked="
 
-    invoke-direct {p0, v0}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
 
-    invoke-virtual {p0, v9}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v11}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    invoke-virtual {p0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    const-string v1, " total="
 
-    move-result-object p0
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    invoke-static {p0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
+    invoke-interface {v5}, Ljava/util/List;->size()I
+
+    move-result v1
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    const-string v1, " cursor="
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-interface {v5}, Ljava/util/List;->size()I
+
+    move-result v1
+
+    rem-int/2addr v4, v1
+
+    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->log(Ljava/lang/String;)V
 
     invoke-static {}, Lcom/shabakaty/cinemana/local/LocalRuntime;->deliver()V
 
-    :cond_fb
-    :goto_fb
+    :cond_14e
+    :goto_14e
     return-void
 .end method
 
 .method static schedule()V
-    .locals 7
+    .locals 11
 
     :try_start_0
     sget-object v0, Lcom/shabakaty/cinemana/local/LocalRuntime;->app:Landroid/content/Context;
@@ -7182,36 +7462,85 @@
 
     const/4 v2, 0x0
 
-    :cond_13
-    :goto_13
+    const/4 v3, 0x0
+
+    :cond_14
+    :goto_14
     invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
 
-    move-result v3
-
-    const/16 v4, 0x67e9
+    move-result v4
 
     const/4 v5, 0x1
 
-    if-eqz v3, :cond_2a
+    const/16 v6, 0x67e9
+
+    if-eqz v4, :cond_2b
 
     invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
 
-    move-result-object v3
+    move-result-object v4
 
-    check-cast v3, Landroid/app/job/JobInfo;
+    check-cast v4, Landroid/app/job/JobInfo;
 
-    invoke-virtual {v3}, Landroid/app/job/JobInfo;->getId()I
+    invoke-virtual {v4}, Landroid/app/job/JobInfo;->getId()I
 
-    move-result v3
+    move-result v4
 
-    if-ne v3, v4, :cond_13
+    if-ne v4, v6, :cond_14
 
-    const/4 v2, 0x1
+    const/4 v3, 0x1
 
-    goto :goto_13
+    goto :goto_14
 
-    :cond_2a
-    if-nez v2, :cond_57
+    :cond_2b
+    const-wide/32 v7, 0xdbba0
+
+    if-eqz v3, :cond_57
+
+    invoke-virtual {v0}, Landroid/app/job/JobScheduler;->getAllPendingJobs()Ljava/util/List;
+
+    move-result-object v1
+
+    invoke-interface {v1}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+
+    move-result-object v1
+
+    :cond_38
+    :goto_38
+    invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v4
+
+    if-eqz v4, :cond_57
+
+    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v4
+
+    check-cast v4, Landroid/app/job/JobInfo;
+
+    invoke-virtual {v4}, Landroid/app/job/JobInfo;->getId()I
+
+    move-result v9
+
+    if-ne v9, v6, :cond_38
+
+    invoke-virtual {v4}, Landroid/app/job/JobInfo;->getIntervalMillis()J
+
+    move-result-wide v9
+
+    cmp-long v4, v9, v7
+
+    if-eqz v4, :cond_38
+
+    invoke-virtual {v0, v6}, Landroid/app/job/JobScheduler;->cancel(I)V
+
+    const/4 v3, 0x0
+
+    goto :goto_38
+
+    :cond_57
+    if-nez v3, :cond_81
 
     new-instance v1, Landroid/app/job/JobInfo$Builder;
 
@@ -7219,19 +7548,17 @@
 
     sget-object v3, Lcom/shabakaty/cinemana/local/LocalRuntime;->app:Landroid/content/Context;
 
-    const-class v6, Lcom/shabakaty/cinemana/local/LocalEpisodeJob;
+    const-class v4, Lcom/shabakaty/cinemana/local/LocalEpisodeJob;
 
-    invoke-direct {v2, v3, v6}, Landroid/content/ComponentName;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
+    invoke-direct {v2, v3, v4}, Landroid/content/ComponentName;-><init>(Landroid/content/Context;Ljava/lang/Class;)V
 
-    invoke-direct {v1, v4, v2}, Landroid/app/job/JobInfo$Builder;-><init>(ILandroid/content/ComponentName;)V
+    invoke-direct {v1, v6, v2}, Landroid/app/job/JobInfo$Builder;-><init>(ILandroid/content/ComponentName;)V
 
     invoke-virtual {v1, v5}, Landroid/app/job/JobInfo$Builder;->setRequiredNetworkType(I)Landroid/app/job/JobInfo$Builder;
 
     move-result-object v1
 
-    const-wide/32 v2, 0x1499700
-
-    invoke-virtual {v1, v2, v3}, Landroid/app/job/JobInfo$Builder;->setPeriodic(J)Landroid/app/job/JobInfo$Builder;
+    invoke-virtual {v1, v7, v8}, Landroid/app/job/JobInfo$Builder;->setPeriodic(J)Landroid/app/job/JobInfo$Builder;
 
     move-result-object v1
 
@@ -7244,20 +7571,20 @@
     move-result-object v1
 
     invoke-virtual {v0, v1}, Landroid/app/job/JobScheduler;->schedule(Landroid/app/job/JobInfo;)I
-    :try_end_50
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_50} :catch_51
+    :try_end_7a
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_7a} :catch_7b
 
-    goto :goto_57
+    goto :goto_81
 
-    :catch_51
+    :catch_7b
     move-exception v0
 
     const-string v1, "schedule"
 
     invoke-static {v1, v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->failure(Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    :cond_57
-    :goto_57
+    :cond_81
+    :goto_81
     return-void
 .end method
 

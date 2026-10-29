@@ -28,7 +28,7 @@
 
     iget-object v0, p0, Lcom/shabakaty/cinemana/local/LocalRuntime$$ExternalSyntheticLambda7;->f$0:Ljava/lang/String;
 
-    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$requestBaseline$8(Ljava/lang/String;)V
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/LocalRuntime;->lambda$requestBaseline$9(Ljava/lang/String;)V
 
     return-void
 .end method
