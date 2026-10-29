@@ -59,7 +59,14 @@ jobs:
             git commit -m "recovery: assess seven broken JADX methods with REA"
             # APKTool build may dirty tracked build metadata; reports are already committed.
             git reset --hard HEAD
-            git fetch origin experiment/rea-source-recovery
-            git rebase origin/experiment/rea-source-recovery
-            git push origin HEAD:refs/heads/experiment/rea-source-recovery
+            for attempt in 1 2 3 4 5; do
+              git fetch origin experiment/rea-source-recovery
+              git rebase origin/experiment/rea-source-recovery
+              if git push origin HEAD:refs/heads/experiment/rea-source-recovery; then
+                exit 0
+              fi
+              sleep 3
+            done
+            echo "::error::Could not push method report due to repeated concurrent branch updates"
+            exit 1
           fi
