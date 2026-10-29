@@ -34,6 +34,7 @@ public final class SearchScreenController implements AutoCloseable {
     private final SearchScreenRefs refs;
     private final SearchLiveDataBridge bridge;
     private final QueryPort inputPort;
+    private final Actions actions;
     private final View emptyLabel;
     private final View recentScroll;
     private boolean closed;
@@ -47,6 +48,7 @@ public final class SearchScreenController implements AutoCloseable {
         refs = SearchScreenRefs.bind(originalSearchRoot);
         this.bridge = bridge;
         this.inputPort = inputPort;
+        this.actions = actions;
         emptyLabel = originalSearchRoot.findViewWithTag("binding_4");
         recentScroll = originalSearchRoot.findViewWithTag("binding_6");
 
@@ -58,10 +60,7 @@ public final class SearchScreenController implements AutoCloseable {
             @Override public void submitted(String query) {
                 if (closed) return;
                 bridge.machine().changed(query);
-                long token = bridge.machine().submitted();
-                if (token > 0) {
-                    actions.onSearchSubmitted(bridge.machine().snapshot().query, token);
-                }
+                submitCurrentQuery();
             }
         });
         refs.filterButton.setOnClickListener(v -> {
@@ -73,7 +72,36 @@ public final class SearchScreenController implements AutoCloseable {
     }
 
     public void tabSelected(int position) {
-        if (!closed) bridge.machine().selectTab(position);
+        if (closed) return;
+        int previous = bridge.machine().snapshot().selectedTab;
+        bridge.machine().selectTab(position);
+        if (bridge.machine().snapshot().selectedTab != previous) {
+            // A request token is scoped to the query AND tab. Requery so
+            // the new tab never displays results belonging to the old tab.
+            submitAfterTabChange();
+        }
+    }
+
+    public void tabsChanged(int count) {
+        if (closed) return;
+        int previous = bridge.machine().snapshot().selectedTab;
+        bridge.machine().tabs(count);
+        if (bridge.machine().snapshot().selectedTab != previous) {
+            submitAfterTabChange();
+        }
+    }
+
+    private void submitAfterTabChange() {
+        if (!bridge.machine().snapshot().query.isEmpty()) {
+            submitCurrentQuery();
+        }
+    }
+
+    private void submitCurrentQuery() {
+        long token = bridge.machine().submitted();
+        if (token > 0) {
+            actions.onSearchSubmitted(bridge.machine().snapshot().query, token);
+        }
     }
 
     private void render(SearchStateMachine.Snapshot snapshot) {
