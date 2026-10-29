@@ -7,6 +7,10 @@ on:
     paths:
       - 'recovery/tests/enhancements/**'
       - 'recovery/tests/coroutine/**'
+      - 'recovery/tests/renameassets/**'
+      - 'recovery/tests/subtitlepreview/**'
+      - 'recovery/generated/java/com/shabakaty/cinemana/features/RenameAssets.java'
+      - 'recovery/generated/java/com/shabakaty/cinemana/mod/SubtitlePreviewTask.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/utils/extensions/ObserverWhileStartedImpl.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/ca1/Enhancements.java'
       - '.github/workflows/rea-restored-methods.yml'
@@ -29,3 +33,5 @@ jobs:
           set -euo pipefail
           python3 recovery/tests/enhancements/test_transform.py
           python3 recovery/tests/coroutine/test_observer.py
+          python3 recovery/tests/renameassets/test_rename.py
+          python3 recovery/tests/subtitlepreview/test_preview.py
