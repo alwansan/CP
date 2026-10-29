@@ -32,7 +32,7 @@
 # Must be called on the main thread. AndroidX generation guards reject stale
 # background results; the list itself is copied to avoid structural mutation.
 .method public static submit(Lcom/shabakaty/downloader/yt1;Ljava/util/List;)V
-    .locals 8
+    .locals 14
     if-eqz p1, :done
     iget-object v0, p0, Lcom/shabakaty/downloader/yt1;->e:Landroidx/recyclerview/widget/e;
     new-instance v1, Ljava/util/ArrayList;
@@ -50,12 +50,17 @@
     if-eqz v5, :instant
     if-eqz v4, :instant
     # Both lists nonempty: existing AndroidX DiffUtil worker + main-thread post.
-    new-instance v6, Landroidx/recyclerview/widget/d;
-    const/4 v7, 0x0
-    invoke-direct {v6, v0, v2, v1, v3, v7}, Landroidx/recyclerview/widget/d;-><init>(Landroidx/recyclerview/widget/e;Ljava/util/List;Ljava/util/List;ILjava/lang/Runnable;)V
+    # invoke-direct has six total registers; use contiguous range form.
+    new-instance v8, Landroidx/recyclerview/widget/d;
+    move-object v9, v0
+    move-object v10, v2
+    move-object v11, v1
+    move v12, v3
+    const/4 v13, 0x0
+    invoke-direct/range {v8 .. v13}, Landroidx/recyclerview/widget/d;-><init>(Landroidx/recyclerview/widget/e;Ljava/util/List;Ljava/util/List;ILjava/lang/Runnable;)V
     iget-object v7, v0, Landroidx/recyclerview/widget/e;->b:Landroidx/recyclerview/widget/c;
     iget-object v7, v7, Landroidx/recyclerview/widget/c;->a:Ljava/util/concurrent/Executor;
-    invoke-interface {v7, v6}, Ljava/util/concurrent/Executor;->execute(Ljava/lang/Runnable;)V
+    invoke-interface {v7, v8}, Ljava/util/concurrent/Executor;->execute(Ljava/lang/Runnable;)V
     return-void
     :instant
     iget-object v6, v0, Landroidx/recyclerview/widget/e;->f:Ljava/util/List;
