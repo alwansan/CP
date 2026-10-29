@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout android:id="@id/home_fragment_root_constraints" android:tag="layout/fragment_home_0" android:layout_width="fill_parent" android:layout_height="fill_parent" android:importantForAccessibility="noHideDescendants"
-  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:acc="http://schemas.android.com/apk/res-auto" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:recycler="http://schemas.android.com/apk/res-auto">
-    <androidx.recyclerview.widget.RecyclerView android:orientation="vertical" android:id="@id/home_page_main_recycler" android:tag="binding_1" android:clipChildren="false" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:accessibilityLiveRegion="none" recycler:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" recycler:layout_constraintEnd_toEndOf="parent" recycler:layout_constraintStart_toStartOf="parent" recycler:layout_constraintTop_toTopOf="parent" />
+<!-- Home presentation v2. Root ID and binding_1 are the API of the prebuilt data binding. -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@id/home_fragment_root_constraints"
+    android:tag="layout/fragment_home_0"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/nuvio_home_background"
+    android:animateLayoutChanges="false">
+    <!-- Fill available height: never measure the entire nested home feed with wrap_content. -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@id/home_page_main_recycler"
+        android:tag="binding_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:accessibilityLiveRegion="none"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

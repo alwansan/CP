@@ -1,8 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout android:id="@id/slider_item_root_constraint" android:tag="layout/item_slider_0" android:longClickable="true" android:layout_width="fill_parent" android:layout_height="180.0dip" android:layout_marginBottom="@dimen/cin_space_sm"
-  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:acc="http://schemas.android.com/apk/res-auto" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:debounce="http://schemas.android.com/apk/res-auto" xmlns:drawee="http://schemas.android.com/apk/res-auto" xmlns:text="http://schemas.android.com/apk/res-auto" xmlns:videoInfo="http://schemas.android.com/apk/res-auto">
-    <com.facebook.drawee.view.SimpleDraweeView android:id="@id/videoThumb" android:tag="binding_1" android:focusable="true" android:layout_width="0.0dip" android:layout_height="0.0dip" videoInfo:actualImageScaleType="fitXY" videoInfo:backgroundImage="?cinColorSurfaceRaised" videoInfo:layout_constraintBottom_toBottomOf="parent" videoInfo:layout_constraintEnd_toEndOf="parent" videoInfo:layout_constraintStart_toStartOf="parent" videoInfo:layout_constraintTop_toTopOf="parent" videoInfo:placeholderImage="@drawable/ic_video_placeholder" />
-    <TextView android:textSize="?cinTextTitleLarge" android:ellipsize="marquee" android:gravity="center_vertical" android:id="@id/item_slider_title" android:tag="binding_2" android:focusable="true" android:focusableInTouchMode="true" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="@dimen/cin_space_lg" android:scrollHorizontally="true" android:singleLine="true" android:marqueeRepeatLimit="marquee_forever" videoInfo:layout_constraintLeft_toLeftOf="parent" videoInfo:layout_constraintTop_toTopOf="parent" style="@style/SliderTitleTextAppearance" />
-    <TextView android:textSize="?cinTextBody" android:ellipsize="end" android:gravity="center_vertical" android:id="@id/item_slider_description" android:tag="binding_3" android:visibility="gone" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_marginTop="@dimen/cin_space_lg" android:maxLines="4" android:layout_marginStart="@dimen/cin_space_lg" android:layout_marginEnd="@dimen/cin_space_lg" videoInfo:layout_constraintEnd_toEndOf="parent" videoInfo:layout_constraintStart_toStartOf="parent" videoInfo:layout_constraintTop_toTopOf="parent" videoInfo:layout_constraintVertical_chainStyle="spread" />
-    <com.google.android.material.button.MaterialButton android:textSize="?cinTextBody" android:textColor="?cinColorTextOnMedia" android:id="@id/item_slider_watch_now" android:tag="binding_4" android:paddingTop="@dimen/cin_space_sm" android:paddingBottom="@dimen/cin_space_sm" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="@dimen/cin_space_lg" android:drawablePadding="8.0dip" android:paddingStart="@dimen/cin_space_lg" android:paddingEnd="@dimen/cin_space_lg" android:layout_marginEnd="@dimen/cin_space_lg" videoInfo:backgroundTint="?cinColorAccent" videoInfo:cornerRadius="20.0dip" videoInfo:icon="@drawable/ic_play_new" videoInfo:iconPadding="8.0dip" videoInfo:iconTint="?cinColorTextOnMedia" videoInfo:layout_constraintBottom_toBottomOf="parent" videoInfo:layout_constraintRight_toRightOf="parent" style="@style/HomePageWatchNowTextAppearance" />
+<!-- Rebuilt editorial hero: keep the original binding IDs, title, details, and Watch action. -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@id/slider_item_root_constraint"
+    android:tag="layout/item_slider_0"
+    android:layout_width="match_parent"
+    android:layout_height="318dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/nuvio_hero_outline"
+    android:clipToOutline="true"
+    android:longClickable="true">
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@id/videoThumb"
+        android:tag="binding_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:actualImageScaleType="centerCrop"
+        app:backgroundImage="@color/nuvio_home_surface"
+        app:fadeDuration="140"
+        app:placeholderImage="@drawable/ic_video_placeholder"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:importantForAccessibility="no"
+        android:background="@drawable/nuvio_hero_scrim"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@id/item_slider_watch_now"
+        android:tag="binding_4"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:minHeight="48dp"
+        android:textColor="#111318"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:includeFontPadding="false"
+        app:backgroundTint="#F5F6FA"
+        app:cornerRadius="24dp"
+        app:icon="@drawable/ic_play_new"
+        app:iconTint="#111318"
+        app:iconPadding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/HomePageWatchNowTextAppearance" />
+    <TextView
+        android:id="@id/item_slider_title"
+        android:tag="binding_2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="12dp"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/item_slider_watch_now"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <TextView
+        android:id="@id/item_slider_description"
+        android:tag="binding_3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="#CDD2DC"
+        android:textSize="13sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/item_slider_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

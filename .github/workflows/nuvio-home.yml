@@ -1,0 +1,83 @@
+name: Nuvio home rebuild - signed APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/nuvio-home-rebuild]
+    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/nuvio-home.yml', 'patches/patch262/**', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py']
+permissions:
+  contents: write
+concurrency:
+  group: local-account-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0'
+      - name: Download pinned compiler and test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/local-tools"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/org/robolectric/android-all/13-robolectric-9030017/android-all-13-robolectric-9030017.jar -o "$RUNNER_TEMP/local-tools/android.jar"
+          curl --fail --location --retry 3 https://storage.googleapis.com/r8-releases/raw/8.3.37/r8.jar -o "$RUNNER_TEMP/local-tools/r8.jar"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar -o "$RUNNER_TEMP/local-tools/gson.jar"
+          echo '4241c14a7727c34feea6507ec801318a3d4a90f070e4525681079fb94ee4c593  '"$RUNNER_TEMP/local-tools/gson.jar" | sha256sum --check
+      - name: Test account storage and API routing; compile helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 patches/local-account/run_tests.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --gson-jar "$RUNNER_TEMP/local-tools/gson.jar"
+          python3 patches/local-account/build.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --r8-jar "$RUNNER_TEMP/local-tools/r8.jar"
+          python3 patches/local-account/validate.py
+          python3 scripts/validate_recovery.py
+          python3 scripts/test_reference_guards.py
+          python3 scripts/test_recovery_flow.py
+          python3 scripts/test_apk_dex.py
+          bash Cinemana_PATCH252_Project/build.sh
+      - name: Align, sign and verify test APK
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: |
+          set -euo pipefail
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cinemana-Nuvio-Home-Phase1
+          path: |
+            Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk
+            Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Publish direct APK release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: nuvio-home-phase1-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: "Cinemana Nuvio Home phase 1 #${{ github.run_number }}"
+          prerelease: true
+          make_latest: "false"
+          body: |
+            Nuvio-inspired home visual rebuild phase 1. Retains existing catalogue and local-account behavior; performance profiling on device still required.
+            Install the APK directly as an update; preserve app data.
+          files: |
+            Cinemana_PATCH252_Project/output/Cinemana_Nuvio_Home_Phase1_signed.apk
+            Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
+          fail_on_unmatched_files: true
