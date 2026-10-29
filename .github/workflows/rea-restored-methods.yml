@@ -12,6 +12,8 @@ on:
       - 'recovery/tests/renderer/**'
       - 'recovery/tests/episodes/**'
       - 'recovery/tests/mkvwatcher/**'
+      - 'recovery/tests/sqliteschema/**'
+      - 'recovery/generated/java/com/shabakaty/downloader/kf5.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/features/MkvExporter.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/ca1/Episodes107.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/player/H26410SoftwareRenderer.java'
@@ -44,3 +46,4 @@ jobs:
           python3 recovery/tests/renderer/test_ready.py
           python3 recovery/tests/episodes/test_remote.py
           python3 recovery/tests/mkvwatcher/test_watcher.py
+          python3 recovery/tests/sqliteschema/test_schema.py
