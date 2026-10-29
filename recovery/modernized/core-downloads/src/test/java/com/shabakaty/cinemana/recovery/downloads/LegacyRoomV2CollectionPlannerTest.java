@@ -56,12 +56,11 @@ public final class LegacyRoomV2CollectionPlannerTest {
         );
         Set<Integer> originals = new HashSet<>(Collections.singletonList(91));
         Plan result = LegacyRoomV2CollectionPlanner.prepare(source, originals);
-        need(result.candidates.size() == 4,
-                "insert four safe collections 101 102 110 103");
+        need(result.candidates.size() == 3,
+                "insert three safe collections 101 102 103");
         need(result.candidates.get(0).id == 101, "first unoccupied id");
         need(result.candidates.get(1).id == 102, "second unoccupied id");
-        need(result.candidates.get(2).id == 110, "after empty-title candidate valid root accepted");
-        need(result.candidates.get(3).id == 103, "remaining candidate retains encounter order");
+        need(result.candidates.get(2).id == 103, "skip repeated root after empty-title first episode");
         need("The Witcher".equals(result.candidates.get(0).name),
                 "original title split and dropLast(4)");
         need("b".equals(result.candidates.get(0).sourceItemId),
