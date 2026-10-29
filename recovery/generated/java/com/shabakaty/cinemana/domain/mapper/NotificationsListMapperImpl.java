@@ -17,9 +17,9 @@ public class NotificationsListMapperImpl implements NotificationsListMapper {
         ArrayList arrayList;
         NotificationsList notificationsList = new NotificationsList();
         if (notificationsListApi != null) {
-            String str = notificationsListApi.new;
+            String str = notificationsListApi.newValue;
             if (str != null) {
-                notificationsList.new = str;
+                notificationsList.newValue = str;
             }
             List<VideoModelApi> list = notificationsListApi.notifications;
             if (list == null) {
