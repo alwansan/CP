@@ -6,6 +6,8 @@ on:
     branches: [experiment/rea-source-recovery]
     paths:
       - 'recovery/tests/enhancements/**'
+      - 'recovery/tests/coroutine/**'
+      - 'recovery/generated/java/com/shabakaty/cinemana/utils/extensions/ObserverWhileStartedImpl.java'
       - 'recovery/generated/java/com/shabakaty/cinemana/ca1/Enhancements.java'
       - '.github/workflows/rea-restored-methods.yml'
 
@@ -26,3 +28,4 @@ jobs:
         run: |
           set -euo pipefail
           python3 recovery/tests/enhancements/test_transform.py
+          python3 recovery/tests/coroutine/test_observer.py
