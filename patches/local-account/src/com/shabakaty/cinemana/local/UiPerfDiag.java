@@ -178,9 +178,13 @@ public final class UiPerfDiag {
         if (!installed || event == null) return;
         synchronized (LOCK) {
             lifecycleEvents++;
-            if ("home_visible".equals(event)) screen = "home";
-            else if ("detail_visible".equals(event)) screen = "details";
-            else if ("home_destroy_view".equals(event)) screen = "transition";
+            if ("home_visible".equals(event) || "home_view_created".equals(event)) screen = "home";
+            else if ("detail_visible".equals(event) || "detail_view_created".equals(event)) screen = "details";
+            else if ("search_visible".equals(event) || "search_view_created".equals(event)) screen = "search";
+            else if ("categories_view_created".equals(event)) screen = "categories";
+            else if ("profile_visible".equals(event) || "profile_view_created".equals(event)) screen = "profile";
+            else if ("franchises_view_created".equals(event)) screen = "franchises";
+            else if ("home_destroy_view".equals(event) || "detail_destroy_view".equals(event)) screen = "transition";
             else if ("pagination".equals(event)) pageEnds++;
         }
         // Preserve low-volume transition timestamps for correlating a slow frame with navigation.
@@ -188,6 +192,9 @@ public final class UiPerfDiag {
         if (!("pagination".equals(event)) && writer != null &&
             ("home_visible".equals(event) || "detail_visible".equals(event) ||
              "home_view_created".equals(event) || "detail_view_created".equals(event) ||
+             "search_visible".equals(event) || "search_view_created".equals(event) ||
+             "categories_view_created".equals(event) || "profile_visible".equals(event) ||
+             "profile_view_created".equals(event) || "franchises_view_created".equals(event) ||
              "home_destroy_view".equals(event) || "detail_destroy_view".equals(event) ||
              event.startsWith("activity_"))) {
             final long timestamp = System.currentTimeMillis();
