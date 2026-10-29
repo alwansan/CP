@@ -56,7 +56,7 @@ def smali_method(data, declaration):
 adapter = smali_method(source("com/shabakaty/downloader/ej.smali"),
                        ".method public e(Ljava/util/List;)V")
 assert adapter.index("->equals(Ljava/lang/Object;)Z") < adapter.index("Landroidx/recyclerview/widget/j;->b("), "DiffUtil still always runs"
-assert adapter.count(":perf_no_change") == 3 and ":perf_calculate_diff" in adapter, "missing no-op update guard"
+assert adapter.count(":perf_no_change") == 2 and ":perf_calculate_diff" in adapter, "missing no-op update guard"
 
 horizontal = source("com/shabakaty/downloader/gv1.smali")
 callback = smali_method(horizontal,
@@ -89,6 +89,32 @@ for path in ("com/shabakaty/downloader/ej.smali", "com/shabakaty/downloader/gv1.
         body = method.split(".end method")[0]
         labels = [line.strip() for line in body.splitlines() if line.strip().startswith(":")]
         assert len(labels) == len(set(labels)), (path, "duplicate branch label")
+
+
+# Phase 3: instrumentation must be explicitly wired, built and bounded.
+diag = (root / "patches/local-account/src/com/shabakaty/cinemana/local/UiPerfDiag.java").read_text()
+assert 'addOnFrameMetricsAvailableListener' in diag and 'removeOnFrameMetricsAvailableListener' in diag
+assert 'LAYOUT_MEASURE_DURATION' in diag and 'DRAW_DURATION' in diag
+assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in diag
+assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
+assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
+assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
+assert 'BUILD = "PATCH277"' in diag
+for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
+    assert unexpected not in diag, ('sensitive telemetry value', unexpected)
+
+home_activity = source("com/shabakaty/cinemana/ui/home_activity/HomeActivity.smali")
+assert 'UiPerfDiag;->install(Landroid/app/Activity;)V' in home_activity
+home_fragment = source("com/shabakaty/downloader/vt1.smali")
+assert 'HomeScrollPerfListener;-><init>()V' in home_fragment
+assert 'home_visible' in home_fragment and 'home_destroy_view' in home_fragment
+details_fragment = source("com/shabakaty/downloader/d15.smali")
+assert 'detail_visible' in details_fragment and 'detail_view_created' in details_fragment
+assert 'UiPerfDiag;->diff(J)V' in adapter and 'UiPerfDiag;->skippedDiff()V' in adapter
+assert 'UiPerfDiag;->scroll(II)V' in horizontal and 'UiPerfDiag;->scroll(II)V' in vertical
+scroll_observer = (root / "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/local/HomeScrollPerfListener.smali").read_text()
+assert 'UiPerfDiag;->scroll(II)V' in scroll_observer
+print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")
 
