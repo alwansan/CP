@@ -163,7 +163,7 @@ public final /* data */ class AdApi {
     /* JADX WARN: Type inference failed for: r0v12 */
     public int hashCode() {
         boolean z = this.success;
-        ?? r0 = z;
+        int r0 = z ? 1 : 0;
         if (z) {
             r0 = 1;
         }
