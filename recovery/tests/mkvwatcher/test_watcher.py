@@ -86,7 +86,15 @@ public final class WatcherTest {
         MkvExporter.logs.clear();
     }
     static void start(Model model) throws Exception {
-        MkvExporter.waitForCompletedVideoAndExport(ctx,"collection","name","1","2",model);
+        try {
+            java.lang.reflect.Method watcher=MkvExporter.class.getDeclaredMethod(
+                "waitForCompletedVideoAndExport",Context.class,String.class,String.class,
+                String.class,String.class,Object.class);
+            watcher.setAccessible(true);
+            watcher.invoke(null,ctx,"collection","name","1","2",model);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            throw new IllegalStateException("watcher failed",e.getCause());
+        }
     }
     public static void main(String[] args) throws Exception {
         File dir=Files.createTempDirectory("mkv-recovery").toFile();
