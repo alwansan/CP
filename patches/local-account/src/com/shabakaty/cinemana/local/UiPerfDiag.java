@@ -61,10 +61,11 @@ public final class UiPerfDiag {
 
     private static final class Snapshot {
         final String screen;
+        final boolean foreground;
         final long timestamp, elapsedMs, durationMs;
         final long[] v;
         Snapshot(String label, long utc, long elapsed, long duration, long[] data) {
-            screen=label; timestamp=utc; elapsedMs=elapsed; durationMs=duration; v=data;
+            screen=label; foreground=visible; timestamp=utc; elapsedMs=elapsed; durationMs=duration; v=data;
         }
         boolean hasData() {
             return v[0]>0 || v[13]>0 || v[15]>0 || v[17]>0 ||
@@ -326,7 +327,7 @@ public final class UiPerfDiag {
             long[] v=snap.v;
             String snapshot=String.format(Locale.US,
                 "{\"schema\":1,\"build\":\"%s\",\"session\":%d,\"utc_ms\":%d,\"elapsed_ms\":%d,\"visible\":%b,\"screen\":\"%s\",\"window_ms\":%d,\"frames\":%d,\"frame_avg_ms\":%.2f,\"frame_max_ms\":%.2f,\"over_24ms\":%d,\"over_32ms\":%d,\"over_50ms\":%d,\"over_100ms\":%d,\"over_200ms\":%d,\"dropped_reported\":%d,\"layout_sum_ms\":%.1f,\"draw_sum_ms\":%.1f,\"sync_sum_ms\":%.1f,\"command_sum_ms\":%.1f,\"scroll_home\":%d,\"scroll_home_px\":%d,\"scroll_horizontal\":%d,\"scroll_horizontal_px\":%d,\"scroll_vertical\":%d,\"scroll_vertical_px\":%d,\"diff_count\":%d,\"diff_avg_ms\":%.2f,\"diff_max_ms\":%.2f,\"diff_over_16\":%d,\"diff_over_32\":%d,\"diff_skipped\":%d,\"pagination\":%d,\"lifecycle\":%d,\"poster_start\":%d,\"poster_success\":%d,\"poster_failed\":%d,\"poster_fallback\":%d,\"main_probes\":%d,\"main_over_50ms\":%d,\"main_over_100ms\":%d,\"main_over_250ms\":%d,\"main_max_ms\":%.2f,\"process_cpu_ms\":%d,\"java_heap_used_kb\":%d,\"native_heap_used_kb\":%d,\"threads_approx\":%d}",
-                BUILD,session,snap.timestamp,snap.elapsedMs,visible,snap.screen,snap.durationMs,
+                BUILD,session,snap.timestamp,snap.elapsedMs,snap.foreground,snap.screen,snap.durationMs,
                 v[0],v[0]==0?0.0:v[1]/1e6/v[0],v[2]/1e6,v[4],v[5],v[6],v[7],v[8],v[3],
                 v[9]/1e6,v[10]/1e6,v[11]/1e6,v[12]/1e6,
                 v[13],v[14],v[15],v[16],v[17],v[18],
