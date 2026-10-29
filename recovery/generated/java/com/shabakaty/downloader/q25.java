@@ -85,31 +85,31 @@ public final class q25 implements Parcelable {
     /* JADX WARN: Type inference failed for: r2v9 */
     public int hashCode() {
         boolean z = this.r;
-        ?? r0 = z;
+        int r0 = z ? 1 : 0;
         if (z) {
             r0 = 1;
         }
         int i = r0 * 31;
         boolean z2 = this.s;
-        ?? r2 = z2;
+        int r2 = z2 ? 1 : 0;
         if (z2) {
             r2 = 1;
         }
         int i2 = (i + r2) * 31;
         boolean z3 = this.t;
-        ?? r3 = z3;
+        int r3 = z3 ? 1 : 0;
         if (z3) {
             r3 = 1;
         }
         int i3 = (i2 + r3) * 31;
         boolean z4 = this.u;
-        ?? r4 = z4;
+        int r4 = z4 ? 1 : 0;
         if (z4) {
             r4 = 1;
         }
         int i4 = (i3 + r4) * 31;
         boolean z5 = this.v;
-        int iA = ik4.a(this.w, (i4 + (z5 ? 1 : z5)) * 31, 31);
+        int iA = ik4.a(this.w, (i4 + (z5 ? 1 : 0)) * 31, 31);
         long j = this.x;
         return iA + ((int) (j ^ (j >>> 32)));
     }
