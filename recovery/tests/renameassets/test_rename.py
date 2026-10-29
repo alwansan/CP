@@ -25,6 +25,7 @@ def main():
 import java.util.*;
 public class RenameAssets {
     static final String TAG="CNM_RENAME";
+    static class Log { static int e(String tag,String text){return 0;} }
     static class Row {
         String id,name,type,extension,file;
         Row(String a,String b,String c,String d,String e) {id=a;name=b;type=c;extension=d;file=e;}
