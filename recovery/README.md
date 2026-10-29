@@ -16,6 +16,9 @@ This directory is an independent reverse-engineering workspace originating from
 - Latest JDK syntax audit: **846/851 staged Java files parse successfully; 5 still have syntax errors**.
 - The four recently repaired methods passed **52 actual-Java unit tests**, and the H26410 readiness method passed **14** more.
 - Actual Android Gradle Library `modernized/android-bridge` with Media3 compiles.
+- `modernized/legacy-resources` builds original APKTool `res` and `assets` into an Android AAR (verified by GitHub Actions run 40911283952).
+- `modernized/android-smoke` builds a **diagnostic-only** installable Android APK under `com.shabakaty.cinemana.recovery.smoke`, a different package ID from Cinemana. An initial smoke build with Media3 and native libs passed run 40911639300; integration of original resources and assets is being tested separately.
+- Native and resource AAR compilation does not imply original Cinemana app functionality.
 - `modernized/legacy-native` packages 49 shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
 ## Source files and reports
@@ -24,7 +27,8 @@ This directory is an independent reverse-engineering workspace originating from
 - `reports/java_inventory.json`: original source extraction inventory
 - `reports/OBFUSCATED_DEPENDENCIES.md`: first-layer dependency mapping
 - `reports/SOURCE_DEPENDENCY_AUDIT.md`: remaining decompiler problems and import boundaries
-- `reports/REMAINING_BLOCKERS_AR.md`: five remaining Java syntax blockers, classification, and next steps
+- `reports/REMAINING_BLOCKERS_AR.md`: syntax blocker classification and next steps
+- `reports/REA_INDEPENDENT_DECOMPILATION_AR.md`: REA results, unresolved type placeholders, and Data Binding caveats
 - `modernized/`: distinct Gradle modules, separately compiled and tested
 - `tests/workfolders/`: actual Java source with test doubles for reflection-based callers
 - `tests/batchlog/`: actual Java source compiled with isolated Android test doubles
@@ -53,5 +57,5 @@ bash Cinemana_PATCH252_Project/build.sh
 Build the reconstructed Gradle libraries:
 ```sh
 cd recovery/modernized
-gradle --no-daemon :core-video:check :android-bridge:assembleDebug :legacy-native:assembleDebug
+gradle --no-daemon :core-video:check :android-bridge:assembleDebug :legacy-native:assembleDebug :legacy-resources:assembleDebug :android-smoke:assembleDebug
 ```
