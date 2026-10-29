@@ -182,7 +182,18 @@ public final class UiPerfDiag {
             else if ("home_destroy_view".equals(event)) screen = "transition";
             else if ("pagination".equals(event)) pageEnds++;
         }
-        // No file IO or string serialization on the caller thread.
+        // Preserve low-volume transition timestamps for correlating a slow frame with navigation.
+        // All call sites use fixed, safe event labels; arbitrary text never enters the log.
+        if (!("pagination".equals(event)) && writer != null &&
+            ("home_visible".equals(event) || "detail_visible".equals(event) ||
+             "home_view_created".equals(event) || "detail_view_created".equals(event) ||
+             "home_destroy_view".equals(event) || "detail_destroy_view".equals(event) ||
+             event.startsWith("activity_"))) {
+            final long timestamp = System.currentTimeMillis();
+            final String safeEvent = event;
+            writer.execute(() -> append("{\"schema\":1,\"build\":\""+BUILD+"\",\"session\":"+session+
+                ",\"utc_ms\":"+timestamp+",\"event\":\""+safeEvent+"\"}"));
+        }
     }
 
     public static long begin() { return installed ? SystemClock.elapsedRealtimeNanos() : 0L; }
