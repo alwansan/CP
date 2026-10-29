@@ -602,13 +602,13 @@ public final /* data */ class VideoModelApi {
     public int hashCode() {
         int iA = ik4.a(this.useParentImg, ik4.a(this.rootSeries, ik4.a(this.imdbUrlRef, ik4.a(this.duration, ik4.a(this.itemDate, ik4.a(this.isSpecial, ik4.a(this.rate, ik4.a(this.episodeNummer, ik4.a(this.seriesRating, ik4.a(this.filmRating, ik4.a(this.imgMediumThumbObjUrl, ik4.a(this.imgObjUrl, ik4.a(this.season, ik4.a(this.kind, ik4.a(this.year, ik4.a(this.mDate, ik4.a(this.enContent, ik4.a(this.arContent, ik4.a(this.stars, ik4.a(this.arTitle, ik4.a(this.enTitle, this.nb.hashCode() * 31, 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31), 31);
         boolean z = this.showComments;
-        ?? r1 = z;
+        int r1 = z ? 1 : 0;
         if (z) {
             r1 = 1;
         }
         int iA2 = j60.a(this.translations, ik4.a(this.arTranslationFilePath, (this.skippingDurations.hashCode() + ik4.a(this.imgThumbObjUrl, ik4.a(this.parentSkipping, ik4.a(this.trailer, ik4.a(this.episodeFlag, (iA + r1) * 31, 31), 31), 31), 31)) * 31, 31), 31);
         boolean z2 = this.hasIntroSkipping;
-        return this.publishDate.hashCode() + ik4.a(this.castable, ik4.a(this.customEnTitle, ik4.a(this.customArTitle, ik4.a(this.listSortOrder, ik4.a(this.listId, ik4.a(this.itemOrderList, j60.a(this.writersInfo, j60.a(this.actorsInfo, j60.a(this.directorsInfo, ik4.a(this.videoViewsNumber, (((this.videoLanguages.hashCode() + ik4.a(this.videoDisLikesNumber, ik4.a(this.videoLikesNumber, j60.a(this.categories, j60.a(this.introSkipping, (iA2 + (z2 ? 1 : z2)) * 31, 31), 31), 31), 31)) * 31) + this.videoCommentsNumber) * 31, 31), 31), 31), 31), 31), 31), 31), 31), 31), 31);
+        return this.publishDate.hashCode() + ik4.a(this.castable, ik4.a(this.customEnTitle, ik4.a(this.customArTitle, ik4.a(this.listSortOrder, ik4.a(this.listId, ik4.a(this.itemOrderList, j60.a(this.writersInfo, j60.a(this.actorsInfo, j60.a(this.directorsInfo, ik4.a(this.videoViewsNumber, (((this.videoLanguages.hashCode() + ik4.a(this.videoDisLikesNumber, ik4.a(this.videoLikesNumber, j60.a(this.categories, j60.a(this.introSkipping, (iA2 + (z2 ? 1 : 0)) * 31, 31), 31), 31), 31)) * 31) + this.videoCommentsNumber) * 31, 31), 31), 31), 31), 31), 31), 31), 31), 31), 31);
     }
 
     public String toString() {
