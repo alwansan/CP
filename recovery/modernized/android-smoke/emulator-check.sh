@@ -145,3 +145,30 @@ adb shell pidof "$package" | tee "$report/pid-after-restart.txt"
 test -s "$report/pid-after-restart.txt"
 adb exec-out screencap -p > "$report/journal-process-recovered.png" || true
 echo "JOURNAL_PROCESS_RESTART_PASS: pending on-disk diagnostic journal recovered in new Android process" | tee "$report/journal-result.txt"
+
+# Independent on-disk SQLite files: Downloads, Cinemana/subtitles and intent.
+# After each of three partial-write points, force-stop the Android process.
+# A fresh process must reopen and compensate BOTH databases from the journal.
+for phase in 1 2 3; do
+    adb shell am start -W -n "$package/.MultiDatabaseProcessActivity" \
+        --es mode prepare --ei phase "$phase" |
+        tee "$report/multidb-phase-${phase}-prepare.txt"
+    screen_has "Cross-DB restart: PREPARED stage=$phase"
+    adb shell pidof "$package" > "$report/multidb-phase-${phase}-pid-before.txt"
+    test -s "$report/multidb-phase-${phase}-pid-before.txt"
+    adb shell am force-stop "$package"
+    sleep 2
+    if adb shell pidof "$package" | grep -Eq '[0-9]'; then
+        echo "MULTIDB_FORCE_STOP_FAILED: phase=$phase"
+        exit 1
+    fi
+    adb shell am start -W -n "$package/.MultiDatabaseProcessActivity" \
+        --es mode recover --ei phase "$phase" |
+        tee "$report/multidb-phase-${phase}-recover.txt"
+    screen_has "Cross-DB restart: RECOVERED stage=$phase"
+    adb shell pidof "$package" > "$report/multidb-phase-${phase}-pid-after.txt"
+    test -s "$report/multidb-phase-${phase}-pid-after.txt"
+    adb exec-out screencap -p > "$report/multidb-phase-${phase}-recovered.png" || true
+done
+echo "MULTIDB_PROCESS_RESTART_PASS: three independently committed SQLite stages recovered after force-stop" |
+    tee "$report/multidb-result.txt"
