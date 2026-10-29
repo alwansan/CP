@@ -5,6 +5,8 @@ on:
   push:
     branches: [experiment/rea-source-recovery]
     paths:
+      - 'recovery/modernized/legacy-resources/**'
+      - 'recovery/scripts/prepare_legacy_resources.py'
       - 'recovery/modernized/android-smoke/**'
       - 'recovery/modernized/core-downloads/**'
       - 'recovery/modernized/core-search/**'
