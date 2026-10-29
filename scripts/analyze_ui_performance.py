@@ -18,7 +18,7 @@ def read_records(paths):
                 for line in file:
                     try:
                         obj = json.loads(line)
-                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279"):
+                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280"):
                             records.append(obj)
                         else:
                             invalid += 1
@@ -76,6 +76,12 @@ def aggregate(records):
             "home_refresh_max_ms": round(max((float(r.get("home_refresh_max_ms", 0)) for r in rows), default=0), 2),
             "home_setup_count": sum(int(r.get("home_setup_count", 0)) for r in rows),
             "home_setup_max_ms": round(max((float(r.get("home_setup_max_ms", 0)) for r in rows), default=0), 2),
+            "home_inflate_count": sum(int(r.get("home_inflate_count", 0)) for r in rows),
+            "home_inflate_max_ms": round(max((float(r.get("home_inflate_max_ms", 0)) for r in rows), default=0), 2),
+            "detail_inflate_count": sum(int(r.get("detail_inflate_count", 0)) for r in rows),
+            "detail_inflate_max_ms": round(max((float(r.get("detail_inflate_max_ms", 0)) for r in rows), default=0), 2),
+            "layout_max_ms": round(max((float(r.get("layout_max_ms", 0)) for r in rows), default=0), 2),
+            "draw_max_ms": round(max((float(r.get("draw_max_ms", 0)) for r in rows), default=0), 2),
             "process_cpu_ms": sum(int(r.get("process_cpu_ms", 0)) for r in rows),
         }
 
@@ -105,7 +111,7 @@ def aggregate(records):
 def markdown(report, invalid):
     o = report["overall"]
     lines = [
-        "# Cinemana PATCH277–PATCH279 UI trace",
+        "# Cinemana PATCH277–PATCH280 UI trace",
         f"Sessions: {len(report['sessions'])} · Metrics windows: {o['windows']} · Invalid/skipped records: {invalid}",
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",
@@ -113,6 +119,9 @@ def markdown(report, invalid):
         f"Scroll events: {o['scroll_events']} · Pagination events: {o['pagination']} · Poster failures: {o['poster_failed']}",
         f"Main-loop checks: {o['main_probes']} · >100 ms: {o['main_over_100ms']} · >250 ms: {o['main_over_250ms']} · Max response: {o['main_max_ms']} ms",
         f"Home refresh: {o['home_refresh_count']} · Worst: {o['home_refresh_max_ms']} ms · Home setup: {o['home_setup_count']} · Worst: {o['home_setup_max_ms']} ms",
+        "",
+        f"Home inflate: {o['home_inflate_count']} · Worst: {o['home_inflate_max_ms']} ms · Detail inflate: {o['detail_inflate_count']} · Worst: {o['detail_inflate_max_ms']} ms",
+        f"Worst layout per frame: {o['layout_max_ms']} ms · Worst draw per frame: {o['draw_max_ms']} ms",
         "",
         "## By screen",
         "| Screen | Frames | Avg ms | Max ms | >32 ms | >50 ms | >100 ms | Scroll callbacks |",
