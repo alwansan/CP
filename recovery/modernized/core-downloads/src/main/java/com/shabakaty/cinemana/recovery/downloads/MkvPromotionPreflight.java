@@ -106,6 +106,26 @@ public final class MkvPromotionPreflight {
     }
 
     /**
+     * Legacy rows can store just the filename. Preserve that diagnostic
+     * compatibility, but never accept a different DIRECTORY when a database
+     * row contains a qualified path. Same basenames in different folders
+     * must not authorize an MKV promotion.
+     *
+     * This is a string-identity guard, not a filesystem/symlink safety check.
+     * Production migration additionally requires a stable DAO snapshot and
+     * the exact composite Downloads identity resolver.
+     */
+    private static boolean matchesRecordedSource(String recorded, String source) {
+        if (!hasText(recorded) || !hasText(source)) return false;
+        if (!name(source).equalsIgnoreCase(name(recorded))) return false;
+        // A filename-only legacy row has no directory to compare.
+        if (recorded.indexOf('/') < 0 && recorded.indexOf('\\') < 0) return true;
+        // A qualified row must match the *entire* path, not only basename.
+        // Do not silently canonicalize "..", case, or other path aliases.
+        return recorded.equals(source);
+    }
+
+    /**
      * Reject ambiguous or mismatched rows before any of the multi-table writes.
      * Task-ID recovery, database writes, and rollback still belong to the
      * original MkvExporter until the full migration passes integration tests.
@@ -140,8 +160,8 @@ public final class MkvPromotionPreflight {
                 || request.downloadTaskId != video.downloadTaskId) {
             return reject(Reason.CINEMANA_IDENTITY_MISMATCH);
         }
-        if (!sourceName.equalsIgnoreCase(name(download.path))
-                || !sourceName.equalsIgnoreCase(name(video.path))) {
+        if (!matchesRecordedSource(download.path, request.sourceMp4)
+                || !matchesRecordedSource(video.path, request.sourceMp4)) {
             return reject(Reason.AMBIGUOUS_SOURCE_PATH);
         }
         return new Decision(Reason.READY, mkvName);
