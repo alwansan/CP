@@ -1,0 +1,187 @@
+name: Recover Java sources from Cinemana APK (isolated)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - '.github/workflows/rea-full-source.yml'
+      - 'recovery/scripts/inventory.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rea-recovery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout isolated experiment branch only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install compatible Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.2'
+
+      - name: Install REA 6.8.0
+        run: |
+          set -euo pipefail
+          npm install -g rea-agents@6.8.0
+          rea --version
+
+      - name: Download verified REA JADX engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --retry-delay 3 \
+            https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar \
+            -o "$RUNNER_TEMP/jadx-headless-mcp.jar"
+          echo "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75  $RUNNER_TEMP/jadx-headless-mcp.jar" | sha256sum -c -
+          echo "REA_JADX_MCP_JAR=$RUNNER_TEMP/jadx-headless-mcp.jar" >> "$GITHUB_ENV"
+
+      - name: Build source APK from original unpacked Smali
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash Cinemana_PATCH252_Project/build.sh
+          test -s Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk
+
+      - name: Verify REA can recover real Cinemana method body
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$GITHUB_WORKSPACE/Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
+          timeout 240 rea inspect-android-method "$apk" com.shabakaty.cinemana.player.H26410SoftwareRenderer isHigh10 --format json > "$RUNNER_TEMP/rea-method.json"
+          python3 - <<'PY'
+          import json, os
+          doc = json.load(open(os.environ["RUNNER_TEMP"] + "/rea-method.json"))
+          data = doc.get("normalized_result") or {}
+          assert data.get("representation") == "java", data
+          assert data.get("body_status") == "available", data
+          assert data.get("fell_back") is False, data
+          assert data.get("source", {}).get("status") == "complete", data
+          print("REA real Java method: PASS")
+          PY
+
+      - name: Install checksum-verified JADX CLI 1.5.6 for bulk source export
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --retry-delay 3 \
+            https://github.com/skylot/jadx/releases/download/v1.5.6/jadx-1.5.6.zip \
+            -o "$RUNNER_TEMP/jadx-1.5.6.zip"
+          echo "545ea2be9c242511bc145755cf4bda2485ade42966e096f8b4d3da2a230e8974  $RUNNER_TEMP/jadx-1.5.6.zip" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/jadx-cli"
+          unzip -q "$RUNNER_TEMP/jadx-1.5.6.zip" -d "$RUNNER_TEMP/jadx-cli"
+          test -f "$RUNNER_TEMP/jadx-cli/bin/jadx"
+          chmod +x "$RUNNER_TEMP/jadx-cli/bin/jadx"
+          "$RUNNER_TEMP/jadx-cli/bin/jadx" --version
+
+      - name: Decompile all DEX classes without altering originals
+        timeout-minutes: 23
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$GITHUB_WORKSPACE/Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk"
+          mkdir -p "$RUNNER_TEMP/jadx-output"
+          export JAVA_OPTS="-Xmx5g"
+          set +e
+          timeout 1200 "$RUNNER_TEMP/jadx-cli/bin/jadx" \
+            --no-res --threads-count 2 \
+            --output-dir "$RUNNER_TEMP/jadx-output" \
+            "$apk" > "$RUNNER_TEMP/jadx-stdout.log" 2> "$RUNNER_TEMP/jadx-stderr.log"
+          rc=$?
+          set -e
+          echo "jadx_status=$rc" >> "$GITHUB_OUTPUT"
+          echo "JADX exit status: $rc"
+          tail -n 30 "$RUNNER_TEMP/jadx-stderr.log" || true
+          count="$(find "$RUNNER_TEMP/jadx-output/sources" -type f -name '*.java' | wc -l)"
+          echo "Recovered Java files: $count"
+          test "$count" -gt 100
+          if [ "$rc" -ne 0 ]; then
+            echo "::warning::JADX exited $rc; partial output is preserved and must be reviewed."
+          fi
+
+      - name: Inventory sources and stage first-party packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 recovery/scripts/inventory.py \
+            --java-root "$RUNNER_TEMP/jadx-output/sources" \
+            --apk "Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk" \
+            --apktool-root Cinemana_PATCH252_Project/app \
+            --repo-root .
+
+      - name: Package complete decompiled Java including obfuscated classes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/jadx-output"
+          zip -q -r "$RUNNER_TEMP/Cinemana_RECOVERED_JAVA_ALL.zip" sources
+          test -s "$RUNNER_TEMP/Cinemana_RECOVERED_JAVA_ALL.zip"
+          unzip -tq "$RUNNER_TEMP/Cinemana_RECOVERED_JAVA_ALL.zip" | tail -n 1
+          sha256sum "$RUNNER_TEMP/Cinemana_RECOVERED_JAVA_ALL.zip" | tee "$RUNNER_TEMP/RECOVERED_JAVA_SHA256SUMS.txt"
+
+      - name: Upload full source ZIP and REA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cinemana-Recovered-Java-Snapshot
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/Cinemana_RECOVERED_JAVA_ALL.zip
+            ${{ runner.temp }}/RECOVERED_JAVA_SHA256SUMS.txt
+            ${{ runner.temp }}/rea-method.json
+            ${{ runner.temp }}/jadx-stdout.log
+            ${{ runner.temp }}/jadx-stderr.log
+            recovery/reports/java_inventory.json
+            recovery/reports/JAVA_INVENTORY.md
+
+      - name: Commit first-party Java and audit back to experiment branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = 'experiment/rea-source-recovery'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add recovery/generated/java recovery/reports/java_inventory.json recovery/reports/JAVA_INVENTORY.md
+          if git diff --staged --quiet; then
+            echo "No changes to recovered sources"
+          else
+            git commit -m "recovery: capture first-party decompiled Java and inventory"
+            git push origin HEAD:refs/heads/experiment/rea-source-recovery
+          fi
+
+      - name: Publish retrievable source snapshot release
+        if: success()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: cinemana-source-recovery-${{ github.run_number }}
+          target_commitish: experiment/rea-source-recovery
+          name: "Cinemana decompiled Java (experiment #${{ github.run_number }})"
+          prerelease: true
+          make_latest: false
+          body: |
+            Decompiled Java snapshot and inventory for the original unpacked Cinemana app.
+            This is NOT a working Android Studio project and does not reproduce original Kotlin sources.
+            All existing Smali, assets, native .so, manifests and feature/local-account remain unchanged.
+          files: |
+            ${{ runner.temp }}/Cinemana_RECOVERED_JAVA_ALL.zip
+            ${{ runner.temp }}/RECOVERED_JAVA_SHA256SUMS.txt
+            recovery/reports/java_inventory.json
+          fail_on_unmatched_files: true
