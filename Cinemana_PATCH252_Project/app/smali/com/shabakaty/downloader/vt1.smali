@@ -594,6 +594,24 @@
     return-void
 .end method
 
+.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
+    .locals 3
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
+
+    move-result-wide v0
+
+    invoke-super {p0, p1, p2, p3}, Lcom/shabakaty/downloader/hj;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
+
+    move-result-object v2
+
+    const/4 p1, 0x1
+
+    invoke-static {p1, v0, v1}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->inflate(IJ)V
+
+    return-object v2
+.end method
+
 .method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
     .locals 3
 
