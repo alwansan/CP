@@ -44,4 +44,52 @@ for name in posters:
 runtime = (root / "patches/local-account/src/com/shabakaty/cinemana/local/LocalRuntime.java").read_text()
 episode_method = runtime.split("static void observeEpisodes(", 1)[1].split("static void schedule()", 1)[0]
 assert episode_method.index("NETWORK.execute(") < episode_method.index("JSON.i(value)"), "season JSON parsed on UI callback"
+# Phase 2: native scroll callbacks and adapter invalidation are performance-critical.
+smali = root / "Cinemana_PATCH252_Project/app/smali"
+def source(path):
+    return (smali / path).read_text()
+
+def smali_method(data, declaration):
+    assert declaration in data, declaration
+    return data.split(declaration, 1)[1].split(".end method", 1)[0]
+
+adapter = smali_method(source("com/shabakaty/downloader/ej.smali"),
+                       ".method public e(Ljava/util/List;)V")
+assert adapter.index("->equals(Ljava/lang/Object;)Z") < adapter.index("Landroidx/recyclerview/widget/j;->b("), "DiffUtil still always runs"
+assert adapter.count(":perf_no_change") == 2 and ":perf_calculate_diff" in adapter, "missing no-op update guard"
+
+horizontal = source("com/shabakaty/downloader/gv1.smali")
+callback = smali_method(horizontal,
+                        ".method public onScrolled(Landroidx/recyclerview/widget/RecyclerView;II)V")
+assert "java/lang/Integer;->valueOf" not in callback, "onScrolled boxes item count"
+assert "Lcom/shabakaty/downloader/gv1;->c:I" in callback, "pagination guard missing"
+assert callback.index("iput v0, p0, Lcom/shabakaty/downloader/gv1;->c:I") < callback.index("->invoke()Ljava/lang/Object;"), "callback not edge-triggered"
+assert "if-lez v0, :perf_done" in callback, "empty carousel may request another page"
+
+vertical = source("com/shabakaty/downloader/n65.smali")
+scroll = smali_method(vertical,
+                      ".method public onScrolled(Landroidx/recyclerview/widget/RecyclerView;II)V")
+assert scroll.count("Lcom/shabakaty/downloader/n65;->b:I") >= 4, "scroll FAB guard missing"
+assert "if-eq v0, v1, :goto_1" in scroll, "redundant FAB show/hide calls"
+
+for path in (
+    "com/shabakaty/downloader/vt1.smali",
+    "com/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView.smali",
+    "com/shabakaty/cinemana/ui/home_fragment/WideVerticalVideosView.smali",
+    "com/shabakaty/cinemana/ui/home_fragment/FranchisesRecyclerView.smali",
+):
+    assert "->setItemAnimator(Landroidx/recyclerview/widget/RecyclerView$j;)V" in source(path), path
+
+# Detect accidentally duplicated method labels in modified Smali classes.
+for path in ("com/shabakaty/downloader/ej.smali", "com/shabakaty/downloader/gv1.smali",
+             "com/shabakaty/downloader/n65.smali"):
+    data = source(path)
+    assert data.count(".method ") == data.count(".end method"), path
+    for method in data.split(".method ")[1:]:
+        body = method.split(".end method")[0]
+        labels = [line.strip() for line in body.splitlines() if line.strip().startswith(":")]
+        assert len(labels) == len(set(labels)), (path, "duplicate branch label")
+
+print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")
+
 print("PASS viewport-bound scrolling, static text labels, bounded image fades and off-thread episode parsing")
