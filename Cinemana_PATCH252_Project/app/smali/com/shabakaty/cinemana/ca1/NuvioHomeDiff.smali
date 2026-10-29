@@ -56,7 +56,8 @@
     move-object v10, v2
     move-object v11, v1
     move v12, v3
-    const/4 v13, 0x0
+    new-instance v13, Lcom/shabakaty/cinemana/ca1/NuvioHomeCommit;
+    invoke-direct {v13, p0}, Lcom/shabakaty/cinemana/ca1/NuvioHomeCommit;-><init>(Lcom/shabakaty/downloader/yt1;)V
     invoke-direct/range {v8 .. v13}, Landroidx/recyclerview/widget/d;-><init>(Landroidx/recyclerview/widget/e;Ljava/util/List;Ljava/util/List;ILjava/lang/Runnable;)V
     iget-object v7, v0, Landroidx/recyclerview/widget/e;->b:Landroidx/recyclerview/widget/c;
     iget-object v7, v7, Landroidx/recyclerview/widget/c;->a:Ljava/util/concurrent/Executor;
