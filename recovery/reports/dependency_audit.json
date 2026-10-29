@@ -1,0 +1,31 @@
+{
+  "first_party_files": 293,
+  "external_obfuscated_importing_files": 157,
+  "decompiler_issues": {
+    "decompiler_errors": 0,
+    "decompiler_warnings": 0,
+    "unreconstructed_method": 7,
+    "synthetic_dependencies_on_other_R": 10
+  },
+  "import_families": {
+    "android": 129,
+    "androidx": 27,
+    "com.cinemana": 3,
+    "com.facebook": 23,
+    "com.liulishuo": 5,
+    "com.onesignal": 2,
+    "com.shabakaty.cinemana": 106,
+    "com.shabakaty.downloader": 541,
+    "com.shabakaty": 3,
+    "java": 102,
+    "kotlin": 2,
+    "zendesk": 7,
+    "com.connectsdk": 17,
+    "org.json": 3,
+    "com.google": 8,
+    "androidx.media3": 1,
+    "io.github.anilbeesetti": 2,
+    "com.rd": 1,
+    "com.google.firebase": 1
+  }
+}
