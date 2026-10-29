@@ -94,7 +94,7 @@ public class RenameAssets {
         check(RenameAssets.rawQueries==0,"null parent returns without query");
 
         subs.cursor=new RenameAssets.Cursor();
-        RenameAssets.renameSubtitlesFor(subs,downloads,"1","Video");
+        invoke(subs,downloads,"1","Video");
         check(subs.cursor.closed,"empty cursor is closed");
         check(subs.args.isEmpty(),"empty cursor makes no changes");
 
@@ -103,7 +103,7 @@ public class RenameAssets {
         subs.cursor=new RenameAssets.Cursor(
             good("17"), new RenameAssets.Row("18","Arabic","SUB","srt","/test/manual.srt"),
             new RenameAssets.Row("19","Arabic","SUB","srt",null));
-        RenameAssets.renameSubtitlesFor(subs,downloads,"p101","Show.S01E02");
+        invoke(subs,downloads,"p101","Show.S01E02");
         check(subs.cursor.closed,"cursor closes on success");
         check(subs.args.size()==1,"only hashed existing subtitle renamed");
         check(downloads.args.size()==1,"download path updated");
@@ -116,7 +116,7 @@ public class RenameAssets {
         downloads=new RenameAssets.Database();
         subs.cursor=new RenameAssets.Cursor(good("20"));
         subs.taskId=null;
-        RenameAssets.renameSubtitlesFor(subs,downloads,"p","Episode");
+        invoke(subs,downloads,"p","Episode");
         check(subs.args.size()==1,"subtitle update survives missing task ID");
         check(downloads.args.isEmpty(),"no Downloads update without task ID");
 
@@ -124,11 +124,11 @@ public class RenameAssets {
         downloads=new RenameAssets.Database();
         subs.cursor=new RenameAssets.Cursor(good("31"));
         subs.throwOnUpdate=true;
-        RenameAssets.renameSubtitlesFor(subs,downloads,"p","Episode");
+        invoke(subs,downloads,"p","Episode");
         check(subs.cursor.closed,"cursor always closed on DB failure");
 
         subs=new RenameAssets.Database();
-        RenameAssets.renameSubtitlesFor(subs,downloads,"p","Episode");
+        invoke(subs,downloads,"p","Episode");
         check(subs.args.isEmpty(),"null cursor returns without update");
         System.out.println("PASS: "+checks+" tests of exact RenameAssets Java method");
     }
