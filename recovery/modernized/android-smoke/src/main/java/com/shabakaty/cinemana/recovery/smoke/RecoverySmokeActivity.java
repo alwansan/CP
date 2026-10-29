@@ -77,6 +77,13 @@ public final class RecoverySmokeActivity extends Activity {
             android.util.Log.e("CinemanaRecoverySmoke", "Legacy Room JSON probe failed", failure);
             legacyJsonCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
         }
+        String guardedJsonSqlCheck;
+        try {
+            guardedJsonSqlCheck = LegacyRoomV2SqliteIdentityProbe.run();
+        } catch (Throwable failure) {
+            android.util.Log.e("CinemanaRecoverySmoke", "Room 2-to-3 JSON SQL identity probe failed", failure);
+            guardedJsonSqlCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
+        }
         TextView message = new TextView(this);
         message.setPadding(48, 64, 48, 64);
         message.setText("Cinemana source recovery diagnostic host\n"
@@ -88,7 +95,7 @@ public final class RecoverySmokeActivity extends Activity {
                 + "SQLite journal restart probe: " + journalCheck + "\n"
                 + "Original Room schema probe: " + realRoomCheck + "\n"
                 + "Original Room coordinator: " + roomCoordinatorCheck + "\n"
-                + "Legacy Room JSON projection: " + legacyJsonCheck + "\n"
+                + "Legacy Room JSON projection: " + legacyJsonCheck + "\n"                + "Legacy Room JSON SQLite identity: " + guardedJsonSqlCheck + "\n"
                 + "This APK is NOT the original Cinemana application.");
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
