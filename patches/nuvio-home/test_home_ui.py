@@ -160,31 +160,53 @@ class HomeOverlayTests(unittest.TestCase):
         self.assertIn("->e(Ljava/util/List;)V", (ROOT / "smali/com/shabakaty/downloader/fo3.smali").read_text())
 
 
-    def test_glass_uses_only_clipped_background_sample_on_android_12(self):
+    def test_glass_keeps_native_nav_children_untouched_and_debounces_capture(self):
         source = (ROOT.parents[1] / "patches/local-account/src/com/shabakaty/cinemana/local/NuvioGlassBackdrop.java").read_text()
         activity = (ROOT / "smali/com/shabakaty/cinemana/ui/home_activity/HomeActivity.smali").read_text()
-        oncreate = activity.split(".method public onCreate(Landroid/os/Bundle;)V", 1)[1].split(".end method", 1)[0]
+        oncreate = activity.split(".method public onCreate(Landroid/os/Bundle;)V",1)[1].split(".end method",1)[0]
         self.assertIn("NuvioGlassBackdrop;->install(Landroid/app/Activity;)V", oncreate)
         self.assertIn("Build.VERSION.SDK_INT < 31", source)
         self.assertIn("isLowRamDevice()", source)
-        self.assertIn("RenderEffect.createBlurEffect", source)
-        self.assertIn("ViewTreeObserver.OnScrollChangedListener", source)
-        self.assertIn("ViewTreeObserver.OnGlobalLayoutListener", source)
+        self.assertIn("QUIET_MS = 950L", source)
+        self.assertIn("SAMPLE_DIVISOR = 6", source)
+        self.assertIn("MAX_SAMPLE_WIDTH = 160", source)
+        self.assertIn("ThreadPoolExecutor", source)
         self.assertIn("removeOnScrollChangedListener(this)", source)
-        self.assertIn("removeOnGlobalLayoutListener(this)", source)
-        self.assertIn("feed.draw(target)", source)
-        self.assertNotIn("getRootView().draw(", source)
-        self.assertNotIn("PixelCopy", source.split("public final class NuvioGlassBackdrop", 1)[1])
-        self.assertIn("CAPTURE_INTERVAL_MS = 160L", source)
-        self.assertIn("SAMPLE_DIVISOR = 4", source)
-        self.assertIn("bar.getLocationInWindow(barLocation)", source)
-        self.assertIn("feed.getLocationInWindow(feedLocation)", source)
-        self.assertIn("nav.addView(image, 0", source)
-        self.assertIn("nav.addView(tint, 1", source)
-        self.assertIn("nav.setClipToOutline(true)", source)
-        # Never blur the full fragment or feed; only the sampled ImageView.
+        self.assertIn("nav.removeCallbacks(sampleTask)", source)
+        self.assertIn("feed.draw(canvas)", source)
+        self.assertIn("nav.setBackground(new FrostedBackground", source)
+        self.assertNotIn("nav.addView(", source, "Must not change the Material nav child index")
+        self.assertNotIn("new FrostedImage(", source)
+        self.assertNotIn("RenderEffect.createBlurEffect", source)
         self.assertNotIn("feed.setRenderEffect(", source)
-        self.assertNotIn("bar.setRenderEffect(", source)
+        self.assertIn("feed.getLocationInWindow(feedPosition)", source)
+        self.assertIn("nav.getLocationInWindow(navPosition)", source)
+
+    def test_nav_menu_and_avatar_casts_are_type_guarded(self):
+        code = (ROOT / "smali/com/shabakaty/downloader/nl6.smali").read_text()
+        method = code.split(".method public static final v(Lcom/google/android/material/bottomnavigation/BottomNavigationView;Ljava/lang/String;)V",1)[1].split(".end method",1)[0]
+        self.assertIn(":nuvio_seek_menu",method)
+        self.assertIn(":nuvio_missing_menu",method)
+        self.assertIn("instance-of v2, v1, Lcom/shabakaty/downloader/kn;",method)
+        self.assertIn("instance-of v2, v1, Lcom/shabakaty/downloader/jn;",method)
+        self.assertLess(method.index("instance-of v2, v1, Lcom/shabakaty/downloader/kn;"),
+                        method.index("check-cast v1, Lcom/shabakaty/downloader/kn;"))
+
+    def test_nuvio_full_width_hero_and_fast_poster_rails(self):
+        hero = layout("item_slider.xml")
+        self.assertGreaterEqual(dp(hero.get(ANDROID + "layout_height")), 450)
+        self.assertIsNone(hero.get(ANDROID + "layout_marginStart"))
+        self.assertIsNone(hero.get(ANDROID + "layout_marginEnd"))
+        self.assertIsNone(hero.get(ANDROID + "background"))
+        self.assertEqual(get_by_id(hero, "videoThumb").get(APP + "actualImageScaleType"), "centerCrop")
+        row = layout("horizontal_scroll_videos_layout.xml")
+        recycler = get_by_id(row, "videos_recycler")
+        self.assertEqual(recycler.get(ANDROID + "nestedScrollingEnabled"), "false")
+        self.assertEqual(recycler.get(ANDROID + "clipToPadding"), "false")
+        code = (ROOT / "smali/com/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView.smali").read_text()
+        policy = code.split(".method public final applyNuvioRecyclerPolicy()V",1)[1].split(".end method",1)[0]
+        self.assertIn("setHasFixedSize(Z)V",policy)
+        self.assertIn("setItemViewCacheSize(I)V",policy)
 
 
 if __name__ == "__main__":
