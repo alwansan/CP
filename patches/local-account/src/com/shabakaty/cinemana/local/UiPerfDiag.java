@@ -239,20 +239,26 @@ public final class UiPerfDiag {
 
     public static void mark(String event) {
         if (!installed || event == null) return;
+        final Snapshot finished;
         synchronized (LOCK) {
+            String next=null;
+            if ("home_visible".equals(event) || "home_view_created".equals(event)) next="home";
+            else if ("detail_visible".equals(event) || "detail_view_created".equals(event)) next="details";
+            else if ("search_visible".equals(event) || "search_view_created".equals(event)) next="search";
+            else if ("categories_view_created".equals(event)) next="categories";
+            else if ("profile_visible".equals(event) || "profile_view_created".equals(event)) next="profile";
+            else if ("franchises_view_created".equals(event)) next="franchises";
+            else if ("home_destroy_view".equals(event) || "detail_destroy_view".equals(event)) next="transition";
+            if (next!=null && !next.equals(screen)) {
+                finished=captureLocked(SystemClock.elapsedRealtime());
+                screen=next;
+            } else finished=null;
             lifecycleEvents++;
-            if ("home_visible".equals(event) || "home_view_created".equals(event)) screen = "home";
-            else if ("detail_visible".equals(event) || "detail_view_created".equals(event)) screen = "details";
-            else if ("search_visible".equals(event) || "search_view_created".equals(event)) screen = "search";
-            else if ("categories_view_created".equals(event)) screen = "categories";
-            else if ("profile_visible".equals(event) || "profile_view_created".equals(event)) screen = "profile";
-            else if ("franchises_view_created".equals(event)) screen = "franchises";
-            else if ("home_destroy_view".equals(event) || "detail_destroy_view".equals(event)) screen = "transition";
-            else if ("pagination".equals(event)) pageEnds++;
+            if ("pagination".equals(event)) pageEnds++;
         }
-        // Preserve low-volume transition timestamps for correlating a slow frame with navigation.
-        // All call sites use fixed, safe event labels; arbitrary text never enters the log.
-        if (!("pagination".equals(event)) && writer != null &&
+        if (finished!=null && finished.hasData() && writer!=null)
+            writer.execute(()->writeSample(finished,0));
+        if (writer!=null &&
             ("home_visible".equals(event) || "detail_visible".equals(event) ||
              "home_view_created".equals(event) || "detail_view_created".equals(event) ||
              "search_visible".equals(event) || "search_view_created".equals(event) ||
@@ -260,9 +266,9 @@ public final class UiPerfDiag {
              "profile_view_created".equals(event) || "franchises_view_created".equals(event) ||
              "home_destroy_view".equals(event) || "detail_destroy_view".equals(event) ||
              event.startsWith("activity_"))) {
-            final long timestamp = System.currentTimeMillis();
-            final String safeEvent = event;
-            writer.execute(() -> append("{\"schema\":1,\"build\":\""+BUILD+"\",\"session\":"+session+
+            final long timestamp=System.currentTimeMillis();
+            final String safeEvent=event;
+            writer.execute(()->append("{\"schema\":1,\"build\":\""+BUILD+"\",\"session\":"+session+
                 ",\"utc_ms\":"+timestamp+",\"event\":\""+safeEvent+"\"}"));
         }
     }
