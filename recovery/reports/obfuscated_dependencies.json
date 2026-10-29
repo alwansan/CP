@@ -1,0 +1,481 @@
+{
+  "first_party_files_scanned": 293,
+  "unique_imported_obfuscated_symbols": 580,
+  "obfuscated_java_staged": 558,
+  "obfuscated_bytes_staged": 3035051,
+  "missing_direct_reference_source_files": [
+    {
+      "class": "CHANNEL_ID",
+      "source": "sources/com/shabakaty/downloader/CHANNEL_ID.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "ai0",
+      "source": "sources/com/shabakaty/downloader/ai0.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "b10",
+      "source": "sources/com/shabakaty/downloader/b10.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "bg3",
+      "source": "sources/com/shabakaty/downloader/bg3.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "data",
+      "source": "sources/com/shabakaty/downloader/data.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "dy1",
+      "source": "sources/com/shabakaty/downloader/dy1.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "gk3",
+      "source": "sources/com/shabakaty/downloader/gk3.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "j81",
+      "source": "sources/com/shabakaty/downloader/j81.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "k25",
+      "source": "sources/com/shabakaty/downloader/k25.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "ow",
+      "source": "sources/com/shabakaty/downloader/ow.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "services",
+      "source": "sources/com/shabakaty/downloader/services.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "th0",
+      "source": "sources/com/shabakaty/downloader/th0.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "views",
+      "source": "sources/com/shabakaty/downloader/views.java",
+      "referenced_by": 1
+    },
+    {
+      "class": "workers",
+      "source": "sources/com/shabakaty/downloader/workers.java",
+      "referenced_by": 1
+    }
+  ],
+  "top_referenced_symbols": [
+    {
+      "symbol": "j32",
+      "referenced_by": 97,
+      "direct_import_statements": 97
+    },
+    {
+      "symbol": "nj",
+      "referenced_by": 56,
+      "direct_import_statements": 28
+    },
+    {
+      "symbol": "um3",
+      "referenced_by": 46,
+      "direct_import_statements": 46
+    },
+    {
+      "symbol": "ik4",
+      "referenced_by": 31,
+      "direct_import_statements": 31
+    },
+    {
+      "symbol": "h61",
+      "referenced_by": 27,
+      "direct_import_statements": 27
+    },
+    {
+      "symbol": "qv4",
+      "referenced_by": 26,
+      "direct_import_statements": 25
+    },
+    {
+      "symbol": "w21",
+      "referenced_by": 25,
+      "direct_import_statements": 24
+    },
+    {
+      "symbol": "kf2",
+      "referenced_by": 18,
+      "direct_import_statements": 18
+    },
+    {
+      "symbol": "ng2",
+      "referenced_by": 18,
+      "direct_import_statements": 18
+    },
+    {
+      "symbol": "rm1",
+      "referenced_by": 17,
+      "direct_import_statements": 17
+    },
+    {
+      "symbol": "c14",
+      "referenced_by": 16,
+      "direct_import_statements": 16
+    },
+    {
+      "symbol": "af2",
+      "referenced_by": 14,
+      "direct_import_statements": 14
+    },
+    {
+      "symbol": "j96",
+      "referenced_by": 13,
+      "direct_import_statements": 12
+    },
+    {
+      "symbol": "ji1",
+      "referenced_by": 12,
+      "direct_import_statements": 0
+    },
+    {
+      "symbol": "ne4",
+      "referenced_by": 12,
+      "direct_import_statements": 12
+    },
+    {
+      "symbol": "nh3",
+      "referenced_by": 11,
+      "direct_import_statements": 11
+    },
+    {
+      "symbol": "p80",
+      "referenced_by": 11,
+      "direct_import_statements": 0
+    },
+    {
+      "symbol": "s45",
+      "referenced_by": 11,
+      "direct_import_statements": 11
+    },
+    {
+      "symbol": "vj",
+      "referenced_by": 11,
+      "direct_import_statements": 11
+    },
+    {
+      "symbol": "wt2",
+      "referenced_by": 11,
+      "direct_import_statements": 10
+    },
+    {
+      "symbol": "hn1",
+      "referenced_by": 10,
+      "direct_import_statements": 10
+    },
+    {
+      "symbol": "ll3",
+      "referenced_by": 10,
+      "direct_import_statements": 10
+    },
+    {
+      "symbol": "ud0",
+      "referenced_by": 10,
+      "direct_import_statements": 9
+    },
+    {
+      "symbol": "xi",
+      "referenced_by": 10,
+      "direct_import_statements": 9
+    },
+    {
+      "symbol": "bj",
+      "referenced_by": 9,
+      "direct_import_statements": 0
+    },
+    {
+      "symbol": "pm0",
+      "referenced_by": 9,
+      "direct_import_statements": 9
+    },
+    {
+      "symbol": "q25",
+      "referenced_by": 9,
+      "direct_import_statements": 7
+    },
+    {
+      "symbol": "se0",
+      "referenced_by": 9,
+      "direct_import_statements": 9
+    },
+    {
+      "symbol": "j60",
+      "referenced_by": 8,
+      "direct_import_statements": 8
+    },
+    {
+      "symbol": "tm1",
+      "referenced_by": 8,
+      "direct_import_statements": 7
+    },
+    {
+      "symbol": "ui4",
+      "referenced_by": 8,
+      "direct_import_statements": 8
+    },
+    {
+      "symbol": "cl3",
+      "referenced_by": 7,
+      "direct_import_statements": 7
+    },
+    {
+      "symbol": "mu0",
+      "referenced_by": 7,
+      "direct_import_statements": 7
+    },
+    {
+      "symbol": "o84",
+      "referenced_by": 7,
+      "direct_import_statements": 7
+    },
+    {
+      "symbol": "pw0",
+      "referenced_by": 7,
+      "direct_import_statements": 5
+    },
+    {
+      "symbol": "r9",
+      "referenced_by": 7,
+      "direct_import_statements": 1
+    },
+    {
+      "symbol": "te0",
+      "referenced_by": 7,
+      "direct_import_statements": 6
+    },
+    {
+      "symbol": "vd5",
+      "referenced_by": 7,
+      "direct_import_statements": 7
+    },
+    {
+      "symbol": "do1",
+      "referenced_by": 6,
+      "direct_import_statements": 6
+    },
+    {
+      "symbol": "fz0",
+      "referenced_by": 6,
+      "direct_import_statements": 6
+    },
+    {
+      "symbol": "ld0",
+      "referenced_by": 6,
+      "direct_import_statements": 6
+    },
+    {
+      "symbol": "uv3",
+      "referenced_by": 6,
+      "direct_import_statements": 6
+    },
+    {
+      "symbol": "xc0",
+      "referenced_by": 6,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "xh2",
+      "referenced_by": 6,
+      "direct_import_statements": 6
+    },
+    {
+      "symbol": "ck",
+      "referenced_by": 5,
+      "direct_import_statements": 5
+    },
+    {
+      "symbol": "f00",
+      "referenced_by": 5,
+      "direct_import_statements": 5
+    },
+    {
+      "symbol": "j2",
+      "referenced_by": 5,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "j51",
+      "referenced_by": 5,
+      "direct_import_statements": 5
+    },
+    {
+      "symbol": "m50",
+      "referenced_by": 5,
+      "direct_import_statements": 5
+    },
+    {
+      "symbol": "q12",
+      "referenced_by": 5,
+      "direct_import_statements": 5
+    },
+    {
+      "symbol": "tj",
+      "referenced_by": 5,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "b41",
+      "referenced_by": 4,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "fo3",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "i50",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "iq6",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "jw0",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "kw0",
+      "referenced_by": 4,
+      "direct_import_statements": 2
+    },
+    {
+      "symbol": "n24",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "nn0",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "ob4",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "ol3",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "re4",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "s64",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "t43",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "tu0",
+      "referenced_by": 4,
+      "direct_import_statements": 4
+    },
+    {
+      "symbol": "vt3",
+      "referenced_by": 4,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "ad3",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "ay3",
+      "referenced_by": 3,
+      "direct_import_statements": 2
+    },
+    {
+      "symbol": "bi2",
+      "referenced_by": 3,
+      "direct_import_statements": 2
+    },
+    {
+      "symbol": "bn2",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "bn4",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "cf4",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "cu",
+      "referenced_by": 3,
+      "direct_import_statements": 2
+    },
+    {
+      "symbol": "d4",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "ed3",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "ff3",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "hl3",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "hu0",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "k2",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    },
+    {
+      "symbol": "n10",
+      "referenced_by": 3,
+      "direct_import_statements": 3
+    }
+  ],
+  "warning": "These obfuscated Java classes are recovered code, not classified original app versus third-party libraries and not yet compilable."
+}
