@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "cinemana-source-recovery"
 include(":core-video", ":android-bridge", ":legacy-native", ":legacy-resources")
-include(":android-smoke", ":core-downloads")
+include(":android-smoke", ":core-downloads", ":core-search")
