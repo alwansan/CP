@@ -1,0 +1,41 @@
+name: Verify safe MKV preflight and original search view binding
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/modernized/core-downloads/**'
+      - 'recovery/modernized/legacy-resources/src/main/java/**'
+      - 'recovery/tests/searchbinding/**'
+      - '.github/workflows/rea-safe-migration.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  safe-migration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Validate original XML and recovered constructor bindings
+        run: |
+          set -euo pipefail
+          python3 recovery/tests/searchbinding/check_contract.py
+      - name: Compile source-first modules, run fail-closed DB tests
+        working-directory: recovery/modernized
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :core-downloads:check :legacy-resources:assembleDebug --stacktrace
+          test -s legacy-resources/build/outputs/aar/legacy-resources-debug.aar
