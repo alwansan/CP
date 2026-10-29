@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gradle --no-daemon :core-video:check :android-smoke:assembleDebug --stacktrace
+          gradle --no-daemon :core-video:check :core-downloads:check :android-smoke:assembleDebug --stacktrace
           apk=android-smoke/build/outputs/apk/debug/android-smoke-debug.apk
           test -s "$apk"
           test "$(unzip -Z1 "$apk" | grep -Ec '^lib/.*[.]so$')" -eq 49
