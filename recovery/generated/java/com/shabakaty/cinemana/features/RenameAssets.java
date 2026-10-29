@@ -293,21 +293,69 @@ public final class RenameAssets {
         }
     }
 
-    /* JADX WARN: Bottom block not found for handler: all -> 0x00fb */
-    /* JADX WARN: Code restructure failed: missing block: B:60:?, code lost:
-    
-        return;
+    /**
+     * Smali-verified reconstruction of the subtitle rename transaction.
+     * Only rename a subtitle file when its existing basename is an MD5 hash.
+     * Update SubtitleDb and Downloads records after the filesystem rename.
      */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    private static void renameSubtitlesFor(java.lang.Object r12, java.lang.Object r13, java.lang.String r14, java.lang.String r15) {
-        /*
-            Method dump skipped, instruction units count: 281
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: com.shabakaty.cinemana.features.RenameAssets.renameSubtitlesFor(java.lang.Object, java.lang.Object, java.lang.String, java.lang.String):void");
+    private static void renameSubtitlesFor(Object subtitleDb, Object downloadStore,
+                                           String parentId, String videoBaseName) {
+        if (parentId == null) {
+            return;
+        }
+        try {
+            Cursor cursor = rawQuery(subtitleDb,
+                "SELECT `id`,`name`,`type`,`extension`,`file` FROM `SubtitleDb` WHERE `parentId` = '" + parentId + "'");
+            if (cursor == null) {
+                return;
+            }
+            try {
+                if (!cursor.moveToFirst()) {
+                    return;
+                }
+                do {
+                    String id = cursor.getString(0);
+                    String name = cursor.getString(1);
+                    String type = cursor.getString(2);
+                    String extension = cursor.getString(3);
+                    String oldFile = cursor.getString(4);
+                    if (id == null || oldFile == null || oldFile.length() == 0) {
+                        continue;
+                    }
+                    String base = new File(oldFile).getName();
+                    int dot = base.lastIndexOf('.');
+                    if (dot > 0) {
+                        base = base.substring(0, dot);
+                    }
+                    if (!isMd5(base)) {
+                        continue;
+                    }
+                    String desiredBase = videoBaseName + "." + langFromName(name);
+                    String desiredExt = "." + extFor(type, extension);
+                    String renamed = doRename(oldFile, desiredBase, desiredExt);
+                    if (renamed != null && !renamed.equals(oldFile)) {
+                        execSql(subtitleDb,
+                            "UPDATE `SubtitleDb` SET `file` = ? WHERE `id` = ?",
+                            new Object[]{renamed, id});
+                        String taskId = queryString(subtitleDb,
+                            "SELECT `downloadTaskId` FROM `SubtitleDb` WHERE `id` = '" + id + "'", 0);
+                        if (taskId != null) {
+                            Object writable = getWritableDb(getDaoDb(downloadStore));
+                            execSql(writable,
+                                "UPDATE `Downloads` SET `path` = ? WHERE `task_id` = ?",
+                                new Object[]{renamed, taskId});
+                        }
+                    }
+                } while (cursor.moveToNext());
+            } finally {
+                try {
+                    cursor.close();
+                } catch (Throwable ignored) {
+                }
+            }
+        } catch (Throwable problem) {
+            Log.e(TAG, "SUBS_RENAME_ERR -> " + problem.getMessage());
+        }
     }
 
     public static String onSubtitleCompleted(Object obj, Object obj2, int i, Object obj3, Object obj4) {
