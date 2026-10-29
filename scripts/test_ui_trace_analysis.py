@@ -32,4 +32,4 @@ with tempfile.TemporaryDirectory() as tmp:
     assert report["events"]["detail_visible"] == 1
     assert report["worst_windows"][0]["screen"] == "home"
     assert "By screen" in markdown(report, bad)
-    print("PASS PATCH277 offline UI telemetry report parsing, aggregation, privacy-safe output and malformed-line handling")
+    print("PASS PATCH277/PATCH278 offline UI telemetry report parsing, aggregation, privacy-safe output and malformed-line handling")
