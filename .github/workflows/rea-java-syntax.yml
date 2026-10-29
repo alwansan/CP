@@ -6,7 +6,12 @@ on:
     branches: [experiment/rea-source-recovery]
     paths:
       - 'recovery/scripts/SourceSyntaxCheck.java'
+      - 'recovery/generated/java/**'
       - '.github/workflows/rea-java-syntax.yml'
+
+concurrency:
+  group: rea-java-syntax-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
