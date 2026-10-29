@@ -1,0 +1,79 @@
+[
+  {
+    "label": "BatchLog",
+    "class": "com.shabakaty.cinemana.ca1.BatchLog",
+    "method": "lambda$init$1",
+    "exit_code": 0,
+    "representation": "smali",
+    "body_status": "available",
+    "fell_back": true,
+    "source_status": "complete",
+    "source_size": 3910
+  },
+  {
+    "label": "Enhancements",
+    "class": "com.shabakaty.cinemana.ca1.Enhancements",
+    "method": "transform",
+    "exit_code": 0,
+    "representation": "smali",
+    "body_status": "available",
+    "fell_back": true,
+    "source_status": "complete",
+    "source_size": 6020
+  },
+  {
+    "label": "WorkFolders104",
+    "class": "com.shabakaty.cinemana.ca1.WorkFolders104",
+    "method": "name",
+    "exit_code": 0,
+    "representation": "smali",
+    "body_status": "available",
+    "fell_back": true,
+    "source_status": "complete",
+    "source_size": 7523
+  },
+  {
+    "label": "DownloadTrace",
+    "class": "com.shabakaty.cinemana.features.DownloadTrace",
+    "method": "log",
+    "exit_code": 0,
+    "representation": "java",
+    "body_status": "available",
+    "fell_back": false,
+    "source_status": "complete",
+    "source_size": 1152
+  },
+  {
+    "label": "RenameAssets",
+    "class": "com.shabakaty.cinemana.features.RenameAssets",
+    "method": "renameSubtitlesFor",
+    "exit_code": 0,
+    "representation": "smali",
+    "body_status": "available",
+    "fell_back": true,
+    "source_status": "complete",
+    "source_size": 9185
+  },
+  {
+    "label": "SubtitlePreviewTask",
+    "class": "com.shabakaty.cinemana.mod.SubtitlePreviewTask",
+    "method": "run",
+    "exit_code": 0,
+    "representation": "smali",
+    "body_status": "available",
+    "fell_back": true,
+    "source_status": "complete",
+    "source_size": 6038
+  },
+  {
+    "label": "ObserverWhileStartedImpl",
+    "class": "com.shabakaty.cinemana.utils.extensions.ObserverWhileStartedImpl$b$a",
+    "method": "t",
+    "exit_code": 0,
+    "representation": "smali",
+    "body_status": "available",
+    "fell_back": true,
+    "source_status": "complete",
+    "source_size": 1709
+  }
+]
