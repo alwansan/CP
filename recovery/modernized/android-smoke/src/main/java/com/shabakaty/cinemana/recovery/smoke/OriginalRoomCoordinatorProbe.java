@@ -118,7 +118,7 @@ public final class OriginalRoomCoordinatorProbe {
 
     public static String run() {
         int cases = 0;
-        for (int scenario = 0; scenario < 5; scenario++) {
+        for (int scenario = 0; scenario < 7; scenario++) {
             try (SQLiteDatabase dl = SQLiteDatabase.create(null);
                  SQLiteDatabase cine = SQLiteDatabase.create(null)) {
                 fill(dl, cine);
@@ -139,11 +139,45 @@ public final class OriginalRoomCoordinatorProbe {
                             new String[]{"17", "other-download"}) == 1,
                             "fixture Downloads path collision");
                 }
+                if (scenario == 5) {
+                    ContentValues foreignDirectory = new ContentValues();
+                    foreignDirectory.put("path", "/diagnostic-other/Episode.mp4");
+                    check(dl.update("Downloads", foreignDirectory,
+                            "task_id=? AND external_id=?",
+                            new String[]{"17", "external1"}) == 1,
+                            "fixture Downloads qualified path moved to unrelated folder");
+                }
+                if (scenario == 6) {
+                    ContentValues foreignDirectory = new ContentValues();
+                    foreignDirectory.put("path", "/diagnostic-other/Episode.mp4");
+                    check(cine.update("CinemanaDownloadItem", foreignDirectory,
+                            "id=?", new String[]{"item1"}) == 1,
+                            "fixture Cinemana qualified path moved to unrelated folder");
+                }
                 OriginalRoomDiagnosticPort port =
                         new OriginalRoomDiagnosticPort(dl, cine, REQUEST, scenario == 1);
                 MkvPromotionCoordinator.Result result =
                         MkvPromotionCoordinator.promote(REQUEST, port);
-                if (scenario == 4) {
+                if (scenario == 5 || scenario == 6) {
+                    check(result.status == MkvPromotionCoordinator.Status.REJECTED,
+                            "qualified same-name source in another directory rejected");
+                    String downloadsPath = scenario == 5
+                            ? "/diagnostic-other/Episode.mp4" : "Episode.mp4";
+                    String itemPath = scenario == 6
+                            ? "/diagnostic-other/Episode.mp4" : "Episode.mp4";
+                    check(downloadsPath.equals(scalar(dl,
+                            "SELECT path FROM Downloads WHERE task_id=17 AND external_id='external1'")),
+                            "qualified source mismatch did not mutate Downloads");
+                    check(itemPath.equals(scalar(cine,
+                            "SELECT path FROM CinemanaDownloadItem WHERE id='item1'")),
+                            "qualified source mismatch did not mutate Cinemana");
+                    check("4200000".equals(scalar(dl,
+                            "SELECT size_bytes FROM Downloads WHERE task_id=17 AND external_id='external1'")),
+                            "source mismatch preserved Downloads byte count");
+                    check("Episode.en.srt".equals(scalar(cine,
+                            "SELECT file FROM SubtitleDb WHERE id='sub-en'")),
+                            "source mismatch preserved subtitle");
+                } else if (scenario == 4) {
                     check(result.status == MkvPromotionCoordinator.Status.REJECTED,
                             "shared source path rejects selection");
                     check("Episode.mp4".equals(scalar(dl,
