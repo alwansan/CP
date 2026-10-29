@@ -62,7 +62,7 @@ public final /* data */ class RecommendationsApi {
     public int hashCode() {
         int iA = j60.a(this.recommendations, ik4.a(this.movieName, ((this.expirationDate.hashCode() * 31) + this.movieId) * 31, 31), 31);
         boolean z = this.temp;
-        ?? r1 = z;
+        int r1 = z ? 1 : 0;
         if (z) {
             r1 = 1;
         }
