@@ -18,7 +18,7 @@ def read_records(paths):
                 for line in file:
                     try:
                         obj = json.loads(line)
-                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") == "PATCH277":
+                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278"):
                             records.append(obj)
                         else:
                             invalid += 1
@@ -68,6 +68,10 @@ def aggregate(records):
             "poster_failed": sum(int(r.get("poster_failed", 0)) for r in rows),
             "peak_java_heap_kb": max((int(r.get("java_heap_used_kb", 0)) for r in rows), default=0),
             "peak_native_heap_kb": max((int(r.get("native_heap_used_kb", 0)) for r in rows), default=0),
+            "main_probes": sum(int(r.get("main_probes", 0)) for r in rows),
+            "main_over_100ms": sum(int(r.get("main_over_100ms", 0)) for r in rows),
+            "main_over_250ms": sum(int(r.get("main_over_250ms", 0)) for r in rows),
+            "main_max_ms": round(max((float(r.get("main_max_ms", 0)) for r in rows), default=0), 2),
             "process_cpu_ms": sum(int(r.get("process_cpu_ms", 0)) for r in rows),
         }
 
@@ -102,7 +106,7 @@ def markdown(report, invalid):
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",
         f"DiffUtil calls: {o['diff_count']} · Diff skipped: {o['diff_skipped']} · Worst diff: {o['diff_max_ms']} ms",
-        f"Scroll events: {o['scroll_events']} · Pagination events: {o['pagination']} · Poster failures: {o['poster_failed']}",
+        f"Scroll events: {o['scroll_events']} · Pagination events: {o['pagination']} · Poster failures: {o['poster_failed']}",\n        f"Main-loop checks: {o['main_probes']} · >100 ms: {o['main_over_100ms']} · >250 ms: {o['main_over_250ms']} · Max response: {o['main_max_ms']} ms",
         "",
         "## By screen",
         "| Screen | Frames | Avg ms | Max ms | >32 ms | >50 ms | >100 ms | Scroll callbacks |",
