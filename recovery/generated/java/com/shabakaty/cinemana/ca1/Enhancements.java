@@ -791,20 +791,62 @@ public final class Enhancements {
         }
     }
 
-    /* JADX WARN: Code restructure failed: missing block: B:7:0x0033, code lost:
-    
-        if (r1.equals(get(r5, "d")) != false) goto L40;
+    /**
+     * Reconstructed from Enhancements.transform Smali in classes6.dex.
+     * Keep the exact adapter filter, cache, search and sorting flow.
      */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public static java.util.List transform(java.lang.Object r5, java.util.List r6) {
-        /*
-            Method dump skipped, instruction units count: 222
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: com.shabakaty.cinemana.ca1.Enhancements.transform(java.lang.Object, java.util.List):java.util.List");
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static java.util.List transform(Object adapter, java.util.List input) {
+        String type = adapter.getClass().getSimpleName();
+        if (!java.util.Arrays.asList("dz0", "ez0", "zv0", "d41").contains(type)) {
+            return input;
+        }
+        if ("zv0".equals(type) && Integer.valueOf(1).equals(get(adapter, "d"))) {
+            return input;
+        }
+
+        State state = STATES.get(adapter);
+        if (state == null) {
+            state = new State();
+            STATES.put(adapter, state);
+        }
+        if (!state.updating) {
+            state.base = new java.util.ArrayList(input);
+        }
+        java.util.List result = new java.util.ArrayList(input);
+        if ("d41".equals(type)) {
+            String query = state.query;
+            if (!query.isEmpty()) {
+                java.util.Iterator iterator = result.iterator();
+                while (iterator.hasNext()) {
+                    Object item = iterator.next();
+                    String episode = num(str(item, "episodeNummer"));
+                    String expected = num(query);
+                    if (!episode.equals(expected) || "!".equals(expected)) {
+                        iterator.remove();
+                    }
+                }
+            }
+        } else {
+            final java.util.Map<String, String> names = new java.util.HashMap<>(ROOTS);
+            for (Object item : result) {
+                String root = str(item, "rootEpisode");
+                String title = str(item, "title");
+                if (!root.isEmpty() && !title.isEmpty()) {
+                    if (!names.containsKey(root)) {
+                        names.put(root, title);
+                    }
+                    resolveName(null, item);
+                }
+            }
+            java.util.Collections.sort(result, new java.util.Comparator<Object>() {
+                @Override
+                public int compare(Object left, Object right) {
+                    return Enhancements.compare(left, right, names);
+                }
+            });
+        }
+        return result;
     }
 
     static int natural(String str, String str2) {
