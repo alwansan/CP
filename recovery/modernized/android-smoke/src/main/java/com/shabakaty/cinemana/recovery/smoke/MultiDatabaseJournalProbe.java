@@ -231,6 +231,37 @@ public final class MultiDatabaseJournalProbe {
     }
 
     /**
+     * Deliberately stop midway through compensation: restore Cinemana and its
+     * subtitle in one database, but leave Downloads and the journal pending.
+     * The emulator then force-stops Android before retrying in a new process.
+     */
+    public static String partiallyRecover(Context context, int expectedPhase) {
+        Files files = new Files(context);
+        try (SQLiteDatabase dl = open(files.downloads);
+             SQLiteDatabase cine = open(files.cinemana);
+             SQLiteDatabase journal = open(files.journal)) {
+            if (journalStage(journal) != expectedPhase)
+                throw new IllegalStateException("unexpected partial-recovery phase");
+            verifyBeforeCompensation(dl, cine, journal);
+            if (!NEW.equals(dlPath(dl)) || dlBytes(dl) != NEW_BYTES)
+                throw new IllegalStateException("download not in expected partial state");
+            cine.beginTransaction();
+            try {
+                setPath(cine, "diag_subtitles", "item_id='item1'", OLD, false);
+                setPath(cine, "diag_cinemana", "item_id='item1'", OLD, false);
+                cine.setTransactionSuccessful();
+            } finally {
+                cine.endTransaction();
+            }
+            if (!OLD.equals(itemPath(cine)) || !OLD.equals(subtitlePath(cine))
+                    || !journalPending(journal) || !NEW.equals(dlPath(dl))) {
+                throw new IllegalStateException("midway recovery was not persisted");
+            }
+        }
+        return "PARTIAL_REPLAY stage=" + expectedPhase;
+    }
+
+    /**
      * Replay is idempotent as long as the only states seen are the before/after
      * values and IDs stored in the journal. A failure between writes leaves
      * journal pending; a later process may safely retry.
