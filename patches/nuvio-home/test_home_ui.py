@@ -160,5 +160,32 @@ class HomeOverlayTests(unittest.TestCase):
         self.assertIn("->e(Ljava/util/List;)V", (ROOT / "smali/com/shabakaty/downloader/fo3.smali").read_text())
 
 
+    def test_glass_uses_only_clipped_background_sample_on_android_12(self):
+        source = (ROOT.parents[1] / "patches/local-account/src/com/shabakaty/cinemana/local/NuvioGlassBackdrop.java").read_text()
+        activity = (ROOT / "smali/com/shabakaty/cinemana/ui/home_activity/HomeActivity.smali").read_text()
+        oncreate = activity.split(".method public onCreate(Landroid/os/Bundle;)V", 1)[1].split(".end method", 1)[0]
+        self.assertIn("NuvioGlassBackdrop;->install(Landroid/app/Activity;)V", oncreate)
+        self.assertIn("Build.VERSION.SDK_INT < 31", source)
+        self.assertIn("isLowRamDevice()", source)
+        self.assertIn("RenderEffect.createBlurEffect", source)
+        self.assertIn("ViewTreeObserver.OnScrollChangedListener", source)
+        self.assertIn("ViewTreeObserver.OnGlobalLayoutListener", source)
+        self.assertIn("removeOnScrollChangedListener(this)", source)
+        self.assertIn("removeOnGlobalLayoutListener(this)", source)
+        self.assertIn("feed.draw(target)", source)
+        self.assertNotIn("getRootView().draw(", source)
+        self.assertNotIn("PixelCopy", source.split("public final class NuvioGlassBackdrop", 1)[1])
+        self.assertIn("CAPTURE_INTERVAL_MS = 160L", source)
+        self.assertIn("SAMPLE_DIVISOR = 4", source)
+        self.assertIn("bar.getLocationInWindow(barLocation)", source)
+        self.assertIn("feed.getLocationInWindow(feedLocation)", source)
+        self.assertIn("nav.addView(image, 0", source)
+        self.assertIn("nav.addView(tint, 1", source)
+        self.assertIn("nav.setClipToOutline(true)", source)
+        # Never blur the full fragment or feed; only the sampled ImageView.
+        self.assertNotIn("feed.setRenderEffect(", source)
+        self.assertNotIn("bar.setRenderEffect(", source)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1588,6 +1588,9 @@
     :cond_3
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/ui/home_activity/HomeActivity;->J0()V
 
+    # Phase 6: API31+ backdrop sample behind the floating navigation.
+    invoke-static {p0}, Lcom/shabakaty/cinemana/local/NuvioGlassBackdrop;->install(Landroid/app/Activity;)V
+
     return-void
 .end method
 
