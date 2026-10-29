@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH278";
+    private static final String BUILD = "PATCH279";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -58,6 +58,8 @@ public final class UiPerfDiag {
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static final AtomicBoolean probePending = new AtomicBoolean();
     private static long mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs;
+    private static long homeRefreshCount, homeRefreshNs, homeRefreshMaxNs;
+    private static long homeSetupCount, homeSetupNs, homeSetupMaxNs;
 
     private static final class Snapshot {
         final String screen;
@@ -70,7 +72,7 @@ public final class UiPerfDiag {
         boolean hasData() {
             return v[0]>0 || v[13]>0 || v[15]>0 || v[17]>0 ||
                 v[19]>0 || v[24]>0 || v[25]>0 || v[26]>0 ||
-                v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0;
+                v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0;
         }
     }
 
@@ -82,7 +84,9 @@ public final class UiPerfDiag {
             verticalScrollEvents, verticalScrollAbs, diffCount, diffTotalNs, diffMaxNs,
             diffOver16, diffOver32, diffSkipped, pageEnds, lifecycleEvents,
             posterStarted, posterReady, posterFailed, posterFallback,
-            mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs};
+            mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs,
+            homeRefreshCount, homeRefreshNs, homeRefreshMaxNs,
+            homeSetupCount, homeSetupNs, homeSetupMaxNs};
         Snapshot snap=new Snapshot(screen, System.currentTimeMillis(), now,
             Math.max(1,now-lastCaptureMs),v);
         lastCaptureMs=now;
@@ -94,6 +98,8 @@ public final class UiPerfDiag {
         pageEnds=lifecycleEvents=0;
         posterStarted=posterReady=posterFailed=posterFallback=0;
         mainProbes=mainOver50=mainOver100=mainOver250=mainMaxNs=0;
+        homeRefreshCount=homeRefreshNs=homeRefreshMaxNs=0;
+        homeSetupCount=homeSetupNs=homeSetupMaxNs=0;
         return snap;
     }
 
@@ -276,6 +282,27 @@ public final class UiPerfDiag {
 
     public static long begin() { return installed ? SystemClock.elapsedRealtimeNanos() : 0L; }
 
+    /** Home resume refresh may perform synchronous disk access and full list rebinds. */
+    public static void homeRefresh(long started) {
+        if (!installed || started <= 0) return;
+        long ns = Math.max(0, SystemClock.elapsedRealtimeNanos()-started);
+        synchronized (LOCK) {
+            homeRefreshCount++; homeRefreshNs += ns;
+            if (ns>homeRefreshMaxNs) homeRefreshMaxNs=ns;
+        }
+    }
+
+    /** Measures home RecyclerView setup separately from resume refresh. */
+    public static void homeSetup(long started) {
+        if (!installed || started <= 0) return;
+        long ns = Math.max(0, SystemClock.elapsedRealtimeNanos()-started);
+        synchronized (LOCK) {
+            homeSetupCount++; homeSetupNs += ns;
+            if (ns>homeSetupMaxNs) homeSetupMaxNs=ns;
+        }
+    }
+
+
     public static void diff(long startedNanos) {
         if (!installed || startedNanos <= 0) return;
         long ns = Math.max(0L, SystemClock.elapsedRealtimeNanos() - startedNanos);
@@ -326,14 +353,16 @@ public final class UiPerfDiag {
         try {
             long[] v=snap.v;
             String snapshot=String.format(Locale.US,
-                "{\"schema\":1,\"build\":\"%s\",\"session\":%d,\"utc_ms\":%d,\"elapsed_ms\":%d,\"visible\":%b,\"screen\":\"%s\",\"window_ms\":%d,\"frames\":%d,\"frame_avg_ms\":%.2f,\"frame_max_ms\":%.2f,\"over_24ms\":%d,\"over_32ms\":%d,\"over_50ms\":%d,\"over_100ms\":%d,\"over_200ms\":%d,\"dropped_reported\":%d,\"layout_sum_ms\":%.1f,\"draw_sum_ms\":%.1f,\"sync_sum_ms\":%.1f,\"command_sum_ms\":%.1f,\"scroll_home\":%d,\"scroll_home_px\":%d,\"scroll_horizontal\":%d,\"scroll_horizontal_px\":%d,\"scroll_vertical\":%d,\"scroll_vertical_px\":%d,\"diff_count\":%d,\"diff_avg_ms\":%.2f,\"diff_max_ms\":%.2f,\"diff_over_16\":%d,\"diff_over_32\":%d,\"diff_skipped\":%d,\"pagination\":%d,\"lifecycle\":%d,\"poster_start\":%d,\"poster_success\":%d,\"poster_failed\":%d,\"poster_fallback\":%d,\"main_probes\":%d,\"main_over_50ms\":%d,\"main_over_100ms\":%d,\"main_over_250ms\":%d,\"main_max_ms\":%.2f,\"process_cpu_ms\":%d,\"java_heap_used_kb\":%d,\"native_heap_used_kb\":%d,\"threads_approx\":%d}",
+                "{\"schema\":1,\"build\":\"%s\",\"session\":%d,\"utc_ms\":%d,\"elapsed_ms\":%d,\"visible\":%b,\"screen\":\"%s\",\"window_ms\":%d,\"frames\":%d,\"frame_avg_ms\":%.2f,\"frame_max_ms\":%.2f,\"over_24ms\":%d,\"over_32ms\":%d,\"over_50ms\":%d,\"over_100ms\":%d,\"over_200ms\":%d,\"dropped_reported\":%d,\"layout_sum_ms\":%.1f,\"draw_sum_ms\":%.1f,\"sync_sum_ms\":%.1f,\"command_sum_ms\":%.1f,\"scroll_home\":%d,\"scroll_home_px\":%d,\"scroll_horizontal\":%d,\"scroll_horizontal_px\":%d,\"scroll_vertical\":%d,\"scroll_vertical_px\":%d,\"diff_count\":%d,\"diff_avg_ms\":%.2f,\"diff_max_ms\":%.2f,\"diff_over_16\":%d,\"diff_over_32\":%d,\"diff_skipped\":%d,\"pagination\":%d,\"lifecycle\":%d,\"poster_start\":%d,\"poster_success\":%d,\"poster_failed\":%d,\"poster_fallback\":%d,\"main_probes\":%d,\"main_over_50ms\":%d,\"main_over_100ms\":%d,\"main_over_250ms\":%d,\"main_max_ms\":%.2f,\"home_refresh_count\":%d,\"home_refresh_avg_ms\":%.2f,\"home_refresh_max_ms\":%.2f,\"home_setup_count\":%d,\"home_setup_avg_ms\":%.2f,\"home_setup_max_ms\":%.2f,\"process_cpu_ms\":%d,\"java_heap_used_kb\":%d,\"native_heap_used_kb\":%d,\"threads_approx\":%d}",
                 BUILD,session,snap.timestamp,snap.elapsedMs,snap.foreground,snap.screen,snap.durationMs,
                 v[0],v[0]==0?0.0:v[1]/1e6/v[0],v[2]/1e6,v[4],v[5],v[6],v[7],v[8],v[3],
                 v[9]/1e6,v[10]/1e6,v[11]/1e6,v[12]/1e6,
                 v[13],v[14],v[15],v[16],v[17],v[18],
                 v[19],v[19]==0?0.0:v[20]/1e6/v[19],v[21]/1e6,v[22],v[23],v[24],
                 v[25],v[26],v[27],v[28],v[29],v[30],
-                v[31],v[32],v[33],v[34],v[35]/1e6,cpuDelta,
+                v[31],v[32],v[33],v[34],v[35]/1e6,
+                v[36],v[36]==0?0.0:v[37]/1e6/v[36],v[38]/1e6,
+                v[39],v[39]==0?0.0:v[40]/1e6/v[39],v[41]/1e6,cpuDelta,
                 (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024,
                 Debug.getNativeHeapAllocatedSize()/1024,Thread.activeCount());
             append(snapshot);
