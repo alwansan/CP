@@ -1364,6 +1364,23 @@
 
     invoke-static {v1, v2}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
 
+    # Never assume an injected view is the Material nav menu. Search safely
+    # if the first child is not the required BottomNavigationMenuView.
+    instance-of v2, v1, Lcom/shabakaty/downloader/kn;
+    if-nez v2, :nuvio_menu_found
+    invoke-virtual {p0}, Landroid/widget/FrameLayout;->getChildCount()I
+    move-result v4
+    const/4 v3, 0x1
+    :nuvio_seek_menu
+    if-ge v3, v4, :nuvio_missing_menu
+    invoke-virtual {p0, v3}, Landroid/widget/FrameLayout;->getChildAt(I)Landroid/view/View;
+    move-result-object v1
+    instance-of v2, v1, Lcom/shabakaty/downloader/kn;
+    if-nez v2, :nuvio_menu_found
+    add-int/lit8 v3, v3, 0x1
+    goto :nuvio_seek_menu
+
+    :nuvio_menu_found
     check-cast v1, Lcom/shabakaty/downloader/kn;
 
     const/4 v2, 0x3
@@ -1378,6 +1395,8 @@
     .line 3
     invoke-static {v1, v2}, Ljava/util/Objects;->requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
 
+    instance-of v2, v1, Lcom/shabakaty/downloader/jn;
+    if-eqz v2, :nuvio_missing_menu
     check-cast v1, Lcom/shabakaty/downloader/jn;
 
     .line 4
@@ -1509,6 +1528,7 @@
     invoke-virtual {v1, v3}, Landroid/widget/ImageView;->setImageTintList(Landroid/content/res/ColorStateList;)V
 
     :goto_5
+    :nuvio_missing_menu
     return-void
 .end method
 
