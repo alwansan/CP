@@ -1,0 +1,28 @@
+name: Verify BatchLog Smali Java reconstruction
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/rea-source-recovery]
+    paths:
+      - 'recovery/tests/batchlog/**'
+      - 'recovery/generated/java/com/shabakaty/cinemana/ca1/BatchLog.java'
+      - '.github/workflows/rea-batchlog-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  batchlog:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Compile real reconstructed Java and test error delegation
+        run: |
+          set -euo pipefail
+          bash recovery/tests/batchlog/test.sh
