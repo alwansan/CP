@@ -54,93 +54,34 @@ public final class BatchLog {
         }
     }
 
-    /* JADX WARN: Code restructure failed: missing block: B:10:0x006e, code lost:
-    
-        if (r5 != null) goto L11;
+    /**
+     * Restored from smali_classes6/ca1/BatchLog.smali.
+     * Preserve the uncaught-exception delegation even if diagnostic logging fails.
      */
-    /* JADX WARN: Code restructure failed: missing block: B:11:0x0070, code lost:
-    
-        r5.uncaughtException(r6, r7);
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:12:0x0074, code lost:
-    
-        r6.getThreadGroup().uncaughtException(r6, r7);
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:13:0x007b, code lost:
-    
-        return;
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:16:?, code lost:
-    
-        return;
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:7:0x006a, code lost:
-    
-        if (r5 != null) goto L11;
-     */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    static /* synthetic */ void lambda$init$1(java.lang.Thread.UncaughtExceptionHandler r5, java.lang.Thread r6, java.lang.Throwable r7) {
-        /*
-            java.io.StringWriter r0 = new java.io.StringWriter     // Catch: java.lang.Throwable -> L6d
-            r0.<init>()     // Catch: java.lang.Throwable -> L6d
-            java.io.PrintWriter r1 = new java.io.PrintWriter     // Catch: java.lang.Throwable -> L6d
-            r1.<init>(r0)     // Catch: java.lang.Throwable -> L6d
-            r7.printStackTrace(r1)     // Catch: java.lang.Throwable -> L6d
-            org.json.JSONObject r1 = new org.json.JSONObject     // Catch: java.lang.Throwable -> L6d
-            r1.<init>()     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r2 = "utc_ms"
-            long r3 = java.lang.System.currentTimeMillis()     // Catch: java.lang.Throwable -> L6d
-            r1.put(r2, r3)     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r2 = "stage"
-            java.lang.String r3 = "uncaught_exception"
-            r1.put(r2, r3)     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r2 = "session"
-            com.shabakaty.cinemana.ca1.BatchDownload$Screen r3 = com.shabakaty.cinemana.ca1.BatchDownload.activeScreen     // Catch: java.lang.Throwable -> L6d
-            if (r3 != 0) goto L2b
-            java.lang.String r3 = "none"
-            goto L2f
-        L2b:
-            com.shabakaty.cinemana.ca1.BatchDownload$Screen r3 = com.shabakaty.cinemana.ca1.BatchDownload.activeScreen     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r3 = r3.session     // Catch: java.lang.Throwable -> L6d
-        L2f:
-            r1.put(r2, r3)     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r2 = "thread"
-            java.lang.String r3 = r6.getName()     // Catch: java.lang.Throwable -> L6d
-            r1.put(r2, r3)     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r2 = "error"
-            java.lang.String r0 = r0.toString()     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r0 = safe(r0)     // Catch: java.lang.Throwable -> L6d
-            r1.put(r2, r0)     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r0 = r1.toString()     // Catch: java.lang.Throwable -> L6d
-            java.io.File r1 = new java.io.File     // Catch: java.lang.Throwable -> L6d
-            android.content.Context r2 = com.shabakaty.cinemana.ca1.BatchLog.context     // Catch: java.lang.Throwable -> L6d
-            java.io.File r2 = r2.getFilesDir()     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r3 = "log/ca1_batch.jsonl"
-            r1.<init>(r2, r3)     // Catch: java.lang.Throwable -> L6d
-            append(r1, r0)     // Catch: java.lang.Throwable -> L6d
-            java.io.File r1 = new java.io.File     // Catch: java.lang.Throwable -> L6d
-            java.io.File r2 = android.os.Environment.getExternalStorageDirectory()     // Catch: java.lang.Throwable -> L6d
-            java.lang.String r3 = "Cinemana/work/log/ca1_batch.jsonl"
-            r1.<init>(r2, r3)     // Catch: java.lang.Throwable -> L6d
-            append(r1, r0)     // Catch: java.lang.Throwable -> L6d
-            if (r5 == 0) goto L74
-            goto L70
-        L6d:
-            r0 = move-exception
-            if (r5 == 0) goto L74
-        L70:
-            r5.uncaughtException(r6, r7)
-            goto L7b
-        L74:
-            java.lang.ThreadGroup r5 = r6.getThreadGroup()
-            r5.uncaughtException(r6, r7)
-        L7b:
-            return
-        */
-        throw new UnsupportedOperationException("Method not decompiled: com.shabakaty.cinemana.ca1.BatchLog.lambda$init$1(java.lang.Thread$UncaughtExceptionHandler, java.lang.Thread, java.lang.Throwable):void");
+    static /* synthetic */ void lambda$init$1(Thread.UncaughtExceptionHandler prior,
+                                               Thread thread, Throwable failure) {
+        try {
+            StringWriter out = new StringWriter();
+            failure.printStackTrace(new PrintWriter(out));
+            JSONObject event = new JSONObject();
+            event.put("utc_ms", System.currentTimeMillis());
+            event.put("stage", "uncaught_exception");
+            event.put("session", BatchDownload.activeScreen == null
+                    ? "none" : BatchDownload.activeScreen.session);
+            event.put("thread", thread.getName());
+            event.put("error", safe(out.toString()));
+            String serialized = event.toString();
+            append(new File(context.getFilesDir(), "log/ca1_batch.jsonl"), serialized);
+            append(new File(Environment.getExternalStorageDirectory(),
+                    "Cinemana/work/log/ca1_batch.jsonl"), serialized);
+        } catch (Throwable ignored) {
+            // Crash reporting is best effort; always delegate the original failure.
+        }
+        if (prior != null) {
+            prior.uncaughtException(thread, failure);
+        } else {
+            thread.getThreadGroup().uncaughtException(thread, failure);
+        }
     }
 
     static String safe(String str) {
