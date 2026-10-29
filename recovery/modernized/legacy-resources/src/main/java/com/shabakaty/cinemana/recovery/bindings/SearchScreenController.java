@@ -1,18 +1,31 @@
 package com.shabakaty.cinemana.recovery.bindings;
 
 import android.view.View;
-import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.LifecycleOwner;
-import com.google.android.material.tabs.TabLayout;
 import com.shabakaty.cinemana.recovery.search.SearchStateMachine;
 
 /**
- * Incremental replacement for the event/visibility portion of gk1
- * (FragmentSearchBindingImpl). Reads original stable view IDs and listens to
- * lifecycle-aware snapshots. Real search repository and result list adapters
- * must still be connected before this is used in production.
+ * Source-first binding for stable search view IDs and Lifecycle/LiveData.
+ *
+ * AppCompat SearchView and Material TabLayout from the original application
+ * are intentionally accessed through adapter ports: including fresh Maven
+ * copies of those libraries alongside decoded APKTool resources creates
+ * duplicate resource definitions in the Android Gradle application.
+ *
+ * Ports can be supplied by the final AppCompat/Material integration module
+ * after the original dependency/version boundaries are established.
  */
 public final class SearchScreenController implements AutoCloseable {
+    public interface QueryListener {
+        void changed(String query);
+        void submitted(String query);
+    }
+
+    public interface QueryPort {
+        void install(View searchField, QueryListener listener);
+        void uninstall(View searchField);
+    }
+
     public interface Actions {
         void onSearchSubmitted(String query, long requestToken);
         void onFilterPressed();
@@ -20,57 +33,47 @@ public final class SearchScreenController implements AutoCloseable {
 
     private final SearchScreenRefs refs;
     private final SearchLiveDataBridge bridge;
-    private final SearchView field;
-    private final TabLayout tabLayout;
+    private final QueryPort inputPort;
     private final View emptyLabel;
     private final View recentScroll;
-    private final TabLayout.OnTabSelectedListener tabListener;
     private boolean closed;
 
     public SearchScreenController(LifecycleOwner owner, View originalSearchRoot,
-                                  SearchLiveDataBridge bridge, Actions actions) {
-        if (owner == null || bridge == null || actions == null) {
-            throw new IllegalArgumentException("LifecycleOwner, bridge and actions required");
+                                  SearchLiveDataBridge bridge, QueryPort inputPort,
+                                  Actions actions) {
+        if (owner == null || bridge == null || inputPort == null || actions == null) {
+            throw new IllegalArgumentException("LifecycleOwner, bridge, query port and actions required");
         }
-        this.refs = SearchScreenRefs.bind(originalSearchRoot);
+        refs = SearchScreenRefs.bind(originalSearchRoot);
         this.bridge = bridge;
-        if (!(refs.searchField instanceof SearchView)
-                || !(refs.tabs instanceof TabLayout)) {
-            throw new IllegalStateException("Original search XML widget types have changed");
-        }
-        field = (SearchView) refs.searchField;
-        tabLayout = (TabLayout) refs.tabs;
+        this.inputPort = inputPort;
         emptyLabel = originalSearchRoot.findViewWithTag("binding_4");
         recentScroll = originalSearchRoot.findViewWithTag("binding_6");
 
-        field.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override public boolean onQueryTextSubmit(String query) {
+        inputPort.install(refs.searchField, new QueryListener() {
+            @Override public void changed(String query) {
+                if (!closed) bridge.machine().changed(query);
+            }
+
+            @Override public void submitted(String query) {
+                if (closed) return;
                 bridge.machine().changed(query);
                 long token = bridge.machine().submitted();
-                if (token > 0) actions.onSearchSubmitted(bridge.machine().snapshot().query, token);
-                field.clearFocus();
-                return true;
-            }
-            @Override public boolean onQueryTextChange(String query) {
-                if (!closed) bridge.machine().changed(query);
-                return true;
+                if (token > 0) {
+                    actions.onSearchSubmitted(bridge.machine().snapshot().query, token);
+                }
             }
         });
         refs.filterButton.setOnClickListener(v -> {
             if (!closed) actions.onFilterPressed();
         });
-        tabListener = new TabLayout.OnTabSelectedListener() {
-            @Override public void onTabSelected(TabLayout.Tab tab) {
-                if (!closed) bridge.machine().selectTab(tab.getPosition());
-            }
-            @Override public void onTabUnselected(TabLayout.Tab tab) {}
-            @Override public void onTabReselected(TabLayout.Tab tab) {}
-        };
-        tabLayout.addOnTabSelectedListener(tabListener);
-        bridge.machine().tabs(tabLayout.getTabCount());
         bridge.snapshots().observe(owner, snapshot -> {
             if (!closed) render(snapshot);
         });
+    }
+
+    public void tabSelected(int position) {
+        if (!closed) bridge.machine().selectTab(position);
     }
 
     private void render(SearchStateMachine.Snapshot snapshot) {
@@ -83,17 +86,12 @@ public final class SearchScreenController implements AutoCloseable {
         if (emptyLabel != null) {
             emptyLabel.setVisibility(snapshot.showEmpty() ? View.VISIBLE : View.GONE);
         }
-        if (snapshot.selectedTab < tabLayout.getTabCount()) {
-            TabLayout.Tab tab = tabLayout.getTabAt(snapshot.selectedTab);
-            if (tab != null && !tab.isSelected()) tab.select();
-        }
     }
 
     @Override public void close() {
         if (closed) return;
         closed = true;
-        field.setOnQueryTextListener(null);
+        inputPort.uninstall(refs.searchField);
         refs.filterButton.setOnClickListener(null);
-        tabLayout.removeOnTabSelectedListener(tabListener);
     }
 }
