@@ -37,6 +37,8 @@ This directory is an independent reverse-engineering workspace originating from
 
 - `modernized/android-smoke/OriginalRoomCrashJournalProbe` and `OriginalRoomCrashProcessActivity`: verify crash-recovery using exact original Room SQL schemas in two disposable on-disk DB files and an independently committed compensation journal, with force-stop after separate writes and mid-compensation. Only diagnostic data; not production DAO or globally atomic transactions.
 
+- `scripts/verify_original_room_schema.py`: standard-library CI guard comparing the three diagnostic Room CREATE TABLE statements verbatim against the recovered Smali and checking the composite Downloads key and unique index; runs in the modernized Java workflow.
+
 ## Source files and reports
 
 - `generated/java/`: staged reconstructed Java, including obfuscated dependency layer

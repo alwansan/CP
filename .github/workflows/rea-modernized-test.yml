@@ -6,6 +6,7 @@ on:
     branches: [experiment/rea-source-recovery]
     paths:
       - 'recovery/modernized/**'
+      - 'recovery/scripts/verify_original_room_schema.py'
       - '.github/workflows/rea-modernized-test.yml'
 
 permissions:
@@ -21,6 +22,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Verify original Room schema SQL and composite key match Smali
+        shell: bash
+        run: python3 recovery/scripts/verify_original_room_schema.py
       - name: Compile and test clean High10 Java module
         shell: bash
         run: |
