@@ -11,10 +11,12 @@ This directory is an independent reverse-engineering workspace originating from
 - Unstaged sources are still available in the archived release snapshot.
 - `WorkFolders104.name` rebuilt from the Smali control flow and tested in 19 cases.
 - `BatchLog.lambda$init$1` rebuilt from Smali and tested in 10 cases.
-- Three formerly unreconstructed methods restored: WorkFolders104.name (Smali), BatchLog.lambda$init$1 (Smali), DownloadTrace.log (REA Java confirmed against Smali).
-- Four first-party Java files still contain unreconstructed methods according to the current audit.
+- All seven methods formerly marked `Method not decompiled` within the 293-file first-party package have now been reconstructed from Smali/REA.
+- The latest source audit reports **zero such unresolved method markers**, but still **two first-party files with Java syntax failures** (`Episodes107` and `MkvExporter`).
+- Latest JDK syntax audit: **846/851 staged Java files parse successfully; 5 still have syntax errors**.
+- The four recently repaired methods passed **52 actual-Java unit tests**, and the H26410 readiness method passed **14** more.
 - Actual Android Gradle Library `modernized/android-bridge` with Media3 compiles.
-- `modernized/legacy-native` packages shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
+- `modernized/legacy-native` packages 49 shipped ABI-specific `.so` libraries without rebuilding FFmpeg (CI verifies packaging).
 
 ## Source files and reports
 
@@ -22,9 +24,11 @@ This directory is an independent reverse-engineering workspace originating from
 - `reports/java_inventory.json`: original source extraction inventory
 - `reports/OBFUSCATED_DEPENDENCIES.md`: first-layer dependency mapping
 - `reports/SOURCE_DEPENDENCY_AUDIT.md`: remaining decompiler problems and import boundaries
+- `reports/REMAINING_BLOCKERS_AR.md`: five remaining Java syntax blockers, classification, and next steps
 - `modernized/`: distinct Gradle modules, separately compiled and tested
 - `tests/workfolders/`: actual Java source with test doubles for reflection-based callers
 - `tests/batchlog/`: actual Java source compiled with isolated Android test doubles
+- `tests/enhancements/`, `tests/renameassets/`, `tests/coroutine/`, `tests/subtitlepreview/`, `tests/renderer/`: tests extracting the real restored method bodies
 - `scripts/`: repeatable recovery and audit tools
 
 ## Key rules
