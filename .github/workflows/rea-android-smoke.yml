@@ -34,7 +34,42 @@ jobs:
           gradle --no-daemon :core-video:check :android-smoke:assembleDebug --stacktrace
           apk=android-smoke/build/outputs/apk/debug/android-smoke-debug.apk
           test -s "$apk"
-          test "$(unzip -Z1 "$apk" | grep '^lib/.*\.so$' | wc -l)" -eq 49
+          test "$(unzip -Z1 "$apk" | grep '^lib/.*\.so
+          test -n "$(unzip -Z1 "$apk" | grep -E '^classes([0-9]+)?\.dex$' | head -1)"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$apk" | grep "^package: name='com.shabakaty.cinemana.recovery.smoke'"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$apk"
+          echo "Android smoke APK: build and package validation PASS (this is not Cinemana)."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery-smoke-apk-not-cinemana
+          retention-days: 14
+          if-no-files-found: error
+          path: recovery/modernized/android-smoke/build/outputs/apk/debug/android-smoke-debug.apk
+ | wc -l)" -eq 49
+          unzip -Z1 "$apk" | grep -q '^assets/ffmpeg
+          test -n "$(unzip -Z1 "$apk" | grep -E '^classes([0-9]+)?\.dex$' | head -1)"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$apk" | grep "^package: name='com.shabakaty.cinemana.recovery.smoke'"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$apk"
+          echo "Android smoke APK: build and package validation PASS (this is not Cinemana)."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery-smoke-apk-not-cinemana
+          retention-days: 14
+          if-no-files-found: error
+          path: recovery/modernized/android-smoke/build/outputs/apk/debug/android-smoke-debug.apk
+
+          unzip -Z1 "$apk" | grep -q '^resources\.arsc
+          test -n "$(unzip -Z1 "$apk" | grep -E '^classes([0-9]+)?\.dex$' | head -1)"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$apk" | grep "^package: name='com.shabakaty.cinemana.recovery.smoke'"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$apk"
+          echo "Android smoke APK: build and package validation PASS (this is not Cinemana)."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery-smoke-apk-not-cinemana
+          retention-days: 14
+          if-no-files-found: error
+          path: recovery/modernized/android-smoke/build/outputs/apk/debug/android-smoke-debug.apk
+
           test -n "$(unzip -Z1 "$apk" | grep -E '^classes([0-9]+)?\.dex$' | head -1)"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$apk" | grep "^package: name='com.shabakaty.cinemana.recovery.smoke'"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$apk"
