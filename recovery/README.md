@@ -39,6 +39,7 @@ This directory is an independent reverse-engineering workspace originating from
 - `reports/REA_INDEPENDENT_DECOMPILATION_AR.md`: REA results, unresolved type placeholders, and Data Binding caveats
 - `reports/SAFE_MIGRATION_AND_SEARCH_BINDING_AR.md`: non-mutating MKV DB preflight and original search UI structure
 - `reports/TRANSACTION_AND_SEARCH_STATES_AR.md`: rollback failure injection, LiveData state and resource integration caveats
+- `reports/SEARCH_BINDING_SMALI_PARITY_AR.md`: original gk1/fk1/hz3/dz3 binding-slot evidence, tab-safety fix, and remaining source-first parity requirements
 - `tests/episodes/`, `tests/mkvwatcher/`, `tests/sqliteschema/`: real-body Java regressions for episode network handling, completed-video export readiness, and SQLite schema verification
 - `modernized/`: distinct Gradle modules, separately compiled and tested
 - `tests/workfolders/`: actual Java source with test doubles for reflection-based callers
