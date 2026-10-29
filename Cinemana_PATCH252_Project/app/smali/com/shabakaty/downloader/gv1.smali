@@ -39,6 +39,10 @@
 
     invoke-static {p1, v0}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
 
+    const/4 v0, 0x2
+
+    invoke-static {v0, p2}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->scroll(II)V
+
     # Avoid allocating boxed integers and firing pagination on every pixel at the edge.
     invoke-virtual {p1}, Landroidx/recyclerview/widget/RecyclerView;->getAdapter()Landroidx/recyclerview/widget/RecyclerView$e;
 
@@ -77,6 +81,10 @@
     if-eqz v1, :perf_done
 
     iput v0, p0, Lcom/shabakaty/downloader/gv1;->c:I
+
+    const-string v0, "pagination"
+
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     invoke-interface {v1}, Lcom/shabakaty/downloader/rm1;->invoke()Ljava/lang/Object;
 
