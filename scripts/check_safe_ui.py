@@ -34,8 +34,8 @@ android="{http://schemas.android.com/apk/res/android}"
 detail=ET.parse(project/"res/layout-v22/fragment_video_info.xml").getroot()
 for elem in detail.iter():
     anim=elem.get(android+"animateLayoutChanges")
-    if anim:
-        assert anim=="true" and elem.get(android+"id")=="@id/video_info_description", (elem.tag,elem.get(android+"id"))
+    if anim is not None:
+        assert anim=="false" or (anim=="true" and elem.get(android+"id")=="@id/video_info_description"), (elem.tag,elem.get(android+"id"),anim)
 home=ET.parse(project/"res/layout/fragment_home.xml").getroot()
 nodes=[e for e in home.iter() if e.get(android+"id")=="@id/home_page_main_recycler"]
 assert len(nodes)==1 and nodes[0].get(android+"layout_height")=="0.0dip"
