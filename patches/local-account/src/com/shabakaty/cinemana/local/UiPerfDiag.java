@@ -379,7 +379,11 @@ public final class UiPerfDiag {
             if ("pagination".equals(event)) pageEnds++;
         }
         if (finished!=null && finished.hasData() && writer!=null)
-            writer.execute(()->writeSample(finished,0));
+            writer.execute(()->writeSample(finished,0,
+                gcStatDelta("art.gc.gc-count",0),
+                gcStatDelta("art.gc.gc-time",1),
+                gcStatDelta("art.gc.blocking-gc-count",2),
+                gcStatDelta("art.gc.blocking-gc-time",3)));
         if (writer!=null &&
             ("home_visible".equals(event) || "detail_visible".equals(event) ||
              "home_view_created".equals(event) || "detail_view_created".equals(event) ||
