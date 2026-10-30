@@ -356,6 +356,11 @@
     .line 16
     iget-object p1, p1, Lcom/shabakaty/downloader/c52;->M:Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
 
+    # jj uses identical video-card viewType/layout for every horizontal rail.
+    iget-object v0, p0, Lcom/shabakaty/downloader/yt1;->a:Lcom/shabakaty/downloader/vt1;
+    iget-object v0, v0, Lcom/shabakaty/downloader/vt1;->railPool:Landroidx/recyclerview/widget/RecyclerView$s;
+    invoke-virtual {p1, v0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->setSharedRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V
+
     .line 17
     iget-object v0, p0, Lcom/shabakaty/downloader/yt1;->c:Ljava/util/List;
 

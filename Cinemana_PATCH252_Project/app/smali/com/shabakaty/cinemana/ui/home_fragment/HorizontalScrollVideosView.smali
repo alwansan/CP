@@ -535,6 +535,19 @@
     return-void
 .end method
 
+.method public final setSharedRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V
+    .locals 2
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
+    move-result-object v0
+    iget-object v0, v0, Lcom/shabakaty/downloader/cv1;->N:Landroidx/recyclerview/widget/RecyclerView;
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView;->getRecycledViewPool()Landroidx/recyclerview/widget/RecyclerView$s;
+    move-result-object v1
+    if-eq v1, p1, :shared_pool_unchanged
+    invoke-virtual {v0, p1}, Landroidx/recyclerview/widget/RecyclerView;->setRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V
+    :shared_pool_unchanged
+    return-void
+.end method
+
 .method public final setItemCount(I)V
     .locals 0
 

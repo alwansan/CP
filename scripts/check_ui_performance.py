@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH285"' in diag
+assert 'BUILD = "PATCH286"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH285"' in diag
+assert 'BUILD = "PATCH286"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -169,7 +169,7 @@ assert 'FrameMetrics.INPUT_HANDLING_DURATION' in diag
 assert 'FrameMetrics.ANIMATION_DURATION' in diag
 assert 'worst_frame_unknown_ms' in diag and 'unknown_over_100ms' in diag
 assert 'main_stack_binder' in diag and 'main_stack_lock' in diag
-assert 'Arrays.copyOf(v,94)' in diag
+assert 'Arrays.copyOf(v,96)' in diag
 root_created=smali_method(home_fragment,'.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V')
 assert 'RecyclerView;->setItemViewCacheSize(I)V' in root_created
 assert 'const/4 p2, 0x3' in root_created
@@ -190,8 +190,22 @@ assert ':perf_publish' in refresh and 'goto :goto_1' in refresh
 assert refresh.count('Continue106;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V') == 1
 assert refresh.count('notifyDataSetChanged') == 1
 assert refresh.count('UiPerfDiag;->continueRefreshDecision(Z)V') == 2
-assert 'Arrays.copyOf(v,94)' in diag
+assert 'Arrays.copyOf(v,96)' in diag
 assert 'continue_refresh_skipped' in diag and 'continue_refresh_full' in diag
+home_ctor=smali_method(home_fragment,'.method public constructor <init>()V')
+assert 'RecyclerView$s;-><init>()V' in home_ctor
+assert 'railPool:Landroidx/recyclerview/widget/RecyclerView$s;' in home_fragment
+home_bind=smali_method(rows,'.method public onBindViewHolder(Landroidx/recyclerview/widget/RecyclerView$b0;I)V')
+assert 'setSharedRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V' in home_bind
+pool_setter=smali_method(childview,'.method public final setSharedRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V')
+assert 'RecyclerView;->getRecycledViewPool()Landroidx/recyclerview/widget/RecyclerView$s;' in pool_setter
+assert 'RecyclerView;->setRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V' in pool_setter
+jj=source("com/shabakaty/downloader/jj.smali")
+assert 'const p1, 0x7f0d008f' in smali_method(jj,'.method public getItemViewType(I)I')
+assert 'const p1, 0x7f0d008f' in smali_method(jj,'.method public i(I)I')
+card_create=smali_method(jj,'.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
+assert 'UiPerfDiag;->railCardCreate(J)V' in card_create
+assert 'rail_card_create_count' in diag and 'rail_card_create_max_ms' in diag
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")

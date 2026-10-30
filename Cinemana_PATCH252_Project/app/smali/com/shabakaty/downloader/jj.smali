@@ -66,3 +66,13 @@
 
     return p1
 .end method
+
+.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;
+    .locals 3
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
+    move-result-wide v0
+    invoke-super {p0, p1, p2}, Lcom/shabakaty/downloader/ej;->onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;
+    move-result-object v2
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->railCardCreate(J)V
+    return-object v2
+.end method

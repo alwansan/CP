@@ -53,6 +53,8 @@
 # instance fields
 .field public x:Lcom/shabakaty/downloader/yt1;
 
+.field public final railPool:Landroidx/recyclerview/widget/RecyclerView$s;
+
 .field public y:Lcom/shabakaty/downloader/fu1;
 
 
@@ -72,6 +74,10 @@
 
     iput-object v0, p0, Lcom/shabakaty/downloader/vt1;->y:Lcom/shabakaty/downloader/fu1;
 
+    # One RecyclerView RecycledViewPool per Home Fragment; never process-global.
+    new-instance v0, Landroidx/recyclerview/widget/RecyclerView$s;
+    invoke-direct {v0}, Landroidx/recyclerview/widget/RecyclerView$s;-><init>()V
+    iput-object v0, p0, Lcom/shabakaty/downloader/vt1;->railPool:Landroidx/recyclerview/widget/RecyclerView$s;
     return-void
 .end method
 

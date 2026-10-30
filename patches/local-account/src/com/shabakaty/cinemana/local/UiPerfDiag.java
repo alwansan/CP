@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH285";
+    private static final String BUILD = "PATCH286";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -72,6 +72,7 @@ public final class UiPerfDiag {
     private static long worstUnknownNs,worstInputNs,worstAnimationNs,unknownOver100;
     private static long layoutOver100,commandOver100,themeApplyCount,themeApplyMaxNs;
     private static long continueNoChangeSkips,continueFullRefreshes;
+    private static long railCardCreates,railCardCreateMaxNs;
     // Home row types are stable numeric layout enums; never record titles or content.
     private static final long[] rowBindCount=new long[5], rowBindMaxNs=new long[5];
     private static final long[] rowCreateCount=new long[5], rowCreateMaxNs=new long[5];
@@ -89,7 +90,7 @@ public final class UiPerfDiag {
                 v[19]>0 || v[24]>0 || v[25]>0 || v[26]>0 ||
                 v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0 || v[42]>0 || v[45]>0) return true;
             for(int t=0;t<5;t++)if(v[50+4*t]>0 || v[52+4*t]>0)return true;
-            if(v[77]>0||v[92]>0||v[93]>0)return true;
+            if(v[77]>0||v[92]>0||v[93]>0||v[94]>0)return true;
             for(int t=0;t<9;t++)if(v[79+t]>0)return true;
             return false;
         }
@@ -109,7 +110,9 @@ public final class UiPerfDiag {
             homeInflateCount, homeInflateNs, homeInflateMaxNs,
             detailInflateCount, detailInflateNs, detailInflateMaxNs,
             layoutMaxNs, drawMaxNs};
-        long[] extended=java.util.Arrays.copyOf(v,94);
+        long[] extended=java.util.Arrays.copyOf(v,96);
+        extended[94]=railCardCreates;extended[95]=railCardCreateMaxNs;
+        railCardCreates=railCardCreateMaxNs=0;
         extended[92]=continueNoChangeSkips;
         extended[93]=continueFullRefreshes;
         continueNoChangeSkips=continueFullRefreshes=0;
@@ -453,6 +456,15 @@ public final class UiPerfDiag {
     }
 
     /** Measures inflation of one parent home section by its layout enum. */
+    public static void railCardCreate(long startedNanos) {
+        if(!installed || startedNanos<=0)return;
+        long ns=Math.max(0,SystemClock.elapsedRealtimeNanos()-startedNanos);
+        synchronized(LOCK){
+            railCardCreates++;
+            if(ns>railCardCreateMaxNs)railCardCreateMaxNs=ns;
+        }
+    }
+
     public static void homeRowCreate(int type, long startedNanos) {
         if (!installed || startedNanos<=0 || type<0 || type>=5) return;
         long ns=Math.max(0,SystemClock.elapsedRealtimeNanos()-startedNanos);
@@ -559,6 +571,8 @@ public final class UiPerfDiag {
             extended.append(",\"unknown_over_100ms\":").append(v[91]);
             extended.append(",\"continue_refresh_skipped\":").append(v[92]);
             extended.append(",\"continue_refresh_full\":").append(v[93]);
+            extended.append(",\"rail_card_create_count\":").append(v[94]);
+            extended.append(",\"rail_card_create_max_ms\":").append(String.format(Locale.US,"%.2f",v[95]/1e6));
             append(extended.append('}').toString());
         } catch(Throwable error) {
             Log.w(TAG,"format_failed type="+error.getClass().getSimpleName());

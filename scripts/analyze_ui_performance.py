@@ -18,7 +18,7 @@ def read_records(paths):
                 for line in file:
                     try:
                         obj = json.loads(line)
-                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281", "PATCH282", "PATCH283", "PATCH284", "PATCH285"):
+                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281", "PATCH282", "PATCH283", "PATCH284", "PATCH285", "PATCH286"):
                             records.append(obj)
                         else:
                             invalid += 1
@@ -75,6 +75,8 @@ def aggregate(records):
             "home_refresh_count": sum(int(r.get("home_refresh_count", 0)) for r in rows),
             "continue_refresh_skipped": sum(int(r.get("continue_refresh_skipped",0)) for r in rows),
             "continue_refresh_full": sum(int(r.get("continue_refresh_full",0)) for r in rows),
+            "rail_card_create_count": sum(int(r.get("rail_card_create_count",0)) for r in rows),
+            "rail_card_create_max_ms": round(max((float(r.get("rail_card_create_max_ms",0)) for r in rows),default=0),2),
             "home_refresh_max_ms": round(max((float(r.get("home_refresh_max_ms", 0)) for r in rows), default=0), 2),
             "home_setup_count": sum(int(r.get("home_setup_count", 0)) for r in rows),
             "home_setup_max_ms": round(max((float(r.get("home_setup_max_ms", 0)) for r in rows), default=0), 2),
@@ -130,7 +132,7 @@ def aggregate(records):
 def markdown(report, invalid):
     o = report["overall"]
     lines = [
-        "# Cinemana PATCH277–PATCH285 UI trace",
+        "# Cinemana PATCH277–PATCH286 UI trace",
         f"Sessions: {len(report['sessions'])} · Metrics windows: {o['windows']} · Invalid/skipped records: {invalid}",
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",
@@ -144,6 +146,7 @@ def markdown(report, invalid):
         f"Same-frame slowest breakdown per window: {o['worst_frame_stages']} | layout>100ms: {o['layout_over_100ms']} | command>100ms: {o['command_over_100ms']}",
         f"ThemeEngine.apply: {o['theme_apply_count']} calls; max {o['theme_apply_max_ms']} ms",
         f"Continue resume: skipped identical {o['continue_refresh_skipped']}; full updates {o['continue_refresh_full']}",
+        f"Rail card inflation: {o['rail_card_create_count']} items; max {o['rail_card_create_max_ms']} ms",
         f"Slow frames: unknown delay over 100ms = {o['unknown_over_100ms']}",
         f"Main-thread blocked stack samples (non-identifying buckets): {o['main_stack_samples']}",
         "",

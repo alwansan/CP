@@ -1,0 +1,3 @@
+# PATCH286 — Fragment-local shared video-card RecyclerView pool
+
+Latest PATCH285: 2081 frames, 17 over 100ms. Continue rail skipped 2 unnecessary full refreshes, permitted one; Home still had slow frames on skipped updates. All horizontal cards use jj adapter and identical viewType/layout 0x7f0d008f. Add one fragment-local shared recycle pool to avoid duplicate card inflation; no global Activity leak. Measure per-card inflate count/max in JSONL. Preserve all UI and on-click behavior, keep bounded caches. Results require real-device verification; does not prove the UNKNOWN_DELAY problem solved. Never merge to main.
