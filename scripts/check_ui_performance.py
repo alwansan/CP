@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH280"' in diag
+assert 'BUILD = "PATCH281"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -118,6 +118,15 @@ created=smali_method(home_fragment, '.method public onViewCreated(Landroid/view/
 assert resume.count('Continue106;->refresh(Ljava/lang/Object;)V')==1, 'home resume refresh absent'
 assert 'Continue106;->refresh(Ljava/lang/Object;)V' not in created, 'redundant full home refresh on view creation'
 assert 'UiPerfDiag;->homeRefresh(J)V' in resume and 'UiPerfDiag;->homeSetup(J)V' in created
+created_home=smali_method(home_fragment, '.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V')
+assert 'RecyclerView;->setHasFixedSize(Z)V' in created_home, 'home viewport must stay fixed when rows update'
+assert created_home.index('RecyclerView;->setHasFixedSize(Z)V') > created_home.index('RecyclerView;->setAdapter(')
+rows=source("com/shabakaty/downloader/yt1.smali")
+assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onBindViewHolder(Landroidx/recyclerview/widget/RecyclerView$b0;I)V')
+assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
+assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
+assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
+assert 'BUILD = "PATCH281"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag

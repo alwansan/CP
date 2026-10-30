@@ -18,7 +18,7 @@ def read_records(paths):
                 for line in file:
                     try:
                         obj = json.loads(line)
-                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280"):
+                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281"):
                             records.append(obj)
                         else:
                             invalid += 1
@@ -82,6 +82,15 @@ def aggregate(records):
             "detail_inflate_max_ms": round(max((float(r.get("detail_inflate_max_ms", 0)) for r in rows), default=0), 2),
             "layout_max_ms": round(max((float(r.get("layout_max_ms", 0)) for r in rows), default=0), 2),
             "draw_max_ms": round(max((float(r.get("draw_max_ms", 0)) for r in rows), default=0), 2),
+            "home_row_types": {
+                name: {
+                    "bind_count": sum(int(r.get(f"row_{type_id}_bind_count", 0)) for r in rows),
+                    "bind_max_ms": round(max((float(r.get(f"row_{type_id}_bind_max_ms", 0)) for r in rows), default=0), 2),
+                    "create_count": sum(int(r.get(f"row_{type_id}_create_count", 0)) for r in rows),
+                    "create_max_ms": round(max((float(r.get(f"row_{type_id}_create_max_ms", 0)) for r in rows), default=0), 2),
+                }
+                for type_id, name in enumerate(("slider", "horizontal", "advertisement", "franchises", "bottom_groups"))
+            },
             "process_cpu_ms": sum(int(r.get("process_cpu_ms", 0)) for r in rows),
         }
 
@@ -111,7 +120,7 @@ def aggregate(records):
 def markdown(report, invalid):
     o = report["overall"]
     lines = [
-        "# Cinemana PATCH277–PATCH280 UI trace",
+        "# Cinemana PATCH277–PATCH281 UI trace",
         f"Sessions: {len(report['sessions'])} · Metrics windows: {o['windows']} · Invalid/skipped records: {invalid}",
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",
@@ -129,6 +138,11 @@ def markdown(report, invalid):
     ]
     for key, m in report["screens"].items():
         lines.append(f"| {key} | {m['frames']} | {m['avg_frame_ms']} | {m['max_frame_ms']} | {m['over_32ms']} | {m['over_50ms']} | {m['over_100ms']} | {m['scroll_events']} |")
+    lines += ["", "## Home row create/bind timing (max of each measured window)",
+              "| Section | Binds | Max bind ms | Creates | Max create ms |",
+              "|---|---:|---:|---:|---:|"]
+    for kind, stats in o["home_row_types"].items():
+        lines.append(f"| {kind} | {stats['bind_count']} | {stats['bind_max_ms']} | {stats['create_count']} | {stats['create_max_ms']} |")
     lines += ["", "## Worst 10-second windows", "| UTC ms | Screen | Max ms | >50 ms | >100 ms | Diff max ms |", "|---:|---|---:|---:|---:|---:|"]
     for row in report["worst_windows"]:
         lines.append(f"| {row.get('utc_ms')} | {row.get('screen')} | {row.get('frame_max_ms')} | {row.get('over_50ms')} | {row.get('over_100ms')} | {row.get('diff_max_ms')} |")

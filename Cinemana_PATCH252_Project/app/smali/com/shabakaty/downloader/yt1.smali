@@ -256,7 +256,7 @@
 .end method
 
 .method public onBindViewHolder(Landroidx/recyclerview/widget/RecyclerView$b0;I)V
-    .locals 4
+    .locals 7
 
     .line 1
     check-cast p1, Lcom/shabakaty/downloader/ej$b;
@@ -270,6 +270,11 @@
     invoke-virtual {p0, p2}, Lcom/shabakaty/downloader/yt1;->getItemViewType(I)I
 
     move-result v0
+
+    # Time each visible home section bind, keyed only by its fixed layout type.
+    move v6, v0
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
+    move-result-wide v4
 
     const/4 v1, 0x0
 
@@ -495,11 +500,16 @@
     invoke-static {p1, p2, v0, v1, v2}, Lcom/shabakaty/downloader/fo3;->b(Landroidx/recyclerview/widget/RecyclerView;Ljava/util/List;Ljava/lang/Integer;Lcom/shabakaty/downloader/tj$a;I)V
 
     :goto_5
+    invoke-static {v6, v4, v5}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->homeRowBind(IJ)V
     return-void
 .end method
 
 .method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;
-    .locals 2
+    .locals 5
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
+    move-result-wide v2
+    move v4, p2
 
     const-string v0, "parent"
 
@@ -580,6 +590,8 @@
     new-instance p2, Lcom/shabakaty/downloader/ej$b;
 
     invoke-direct {p2, p1}, Lcom/shabakaty/downloader/ej$b;-><init>(Landroidx/databinding/ViewDataBinding;)V
+
+    invoke-static {v4, v2, v3}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->homeRowCreate(IJ)V
 
     return-object p2
 .end method

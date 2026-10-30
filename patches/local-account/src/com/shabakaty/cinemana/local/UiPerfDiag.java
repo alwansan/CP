@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH280";
+    private static final String BUILD = "PATCH281";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -63,6 +63,9 @@ public final class UiPerfDiag {
     private static long homeInflateCount, homeInflateNs, homeInflateMaxNs;
     private static long detailInflateCount, detailInflateNs, detailInflateMaxNs;
     private static long layoutMaxNs, drawMaxNs;
+    // Home row types are stable numeric layout enums; never record titles or content.
+    private static final long[] rowBindCount=new long[5], rowBindMaxNs=new long[5];
+    private static final long[] rowCreateCount=new long[5], rowCreateMaxNs=new long[5];
 
     private static final class Snapshot {
         final String screen;
@@ -73,9 +76,11 @@ public final class UiPerfDiag {
             screen=label; foreground=visible; timestamp=utc; elapsedMs=elapsed; durationMs=duration; v=data;
         }
         boolean hasData() {
-            return v[0]>0 || v[13]>0 || v[15]>0 || v[17]>0 ||
+            if (v[0]>0 || v[13]>0 || v[15]>0 || v[17]>0 ||
                 v[19]>0 || v[24]>0 || v[25]>0 || v[26]>0 ||
-                v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0 || v[42]>0 || v[45]>0;
+                v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0 || v[42]>0 || v[45]>0) return true;
+            for(int t=0;t<5;t++)if(v[50+4*t]>0 || v[52+4*t]>0)return true;
+            return false;
         }
     }
 
@@ -93,8 +98,15 @@ public final class UiPerfDiag {
             homeInflateCount, homeInflateNs, homeInflateMaxNs,
             detailInflateCount, detailInflateNs, detailInflateMaxNs,
             layoutMaxNs, drawMaxNs};
+        long[] extended=java.util.Arrays.copyOf(v,70);
+        for(int t=0;t<5;t++) {
+            int off=50+4*t;
+            extended[off]=rowBindCount[t]; extended[off+1]=rowBindMaxNs[t];
+            extended[off+2]=rowCreateCount[t]; extended[off+3]=rowCreateMaxNs[t];
+            rowBindCount[t]=rowBindMaxNs[t]=rowCreateCount[t]=rowCreateMaxNs[t]=0;
+        }
         Snapshot snap=new Snapshot(screen, System.currentTimeMillis(), now,
-            Math.max(1,now-lastCaptureMs),v);
+            Math.max(1,now-lastCaptureMs),extended);
         lastCaptureMs=now;
         frames=frameTotalNs=frameMaxNs=missed=overBudget=over32=over50=over100=over200=0;
         layoutNs=drawNs=syncNs=commandNs=0;
@@ -112,7 +124,7 @@ public final class UiPerfDiag {
         return snap;
     }
 
-    /** A 1Hz main-thread heartbeat separates UI blocking from slow rendering. */
+    /** 4Hz bounded main-thread heartbeat helps catch intermittent stalls between frames. */
     private static void probeMainThread() {
         if (!visible || !probePending.compareAndSet(false,true)) return;
         final long started=SystemClock.elapsedRealtimeNanos();
@@ -162,7 +174,7 @@ public final class UiPerfDiag {
                 lastCaptureMs = lastWallMs;
                 lastCpuMs = android.os.Process.getElapsedCpuTime();
                 writer.scheduleAtFixedRate(() -> flush(false), 10, 10, TimeUnit.SECONDS);
-                writer.scheduleAtFixedRate(UiPerfDiag::probeMainThread, 1, 1, TimeUnit.SECONDS);
+                writer.scheduleAtFixedRate(UiPerfDiag::probeMainThread, 250, 250, TimeUnit.MILLISECONDS);
                 writer.execute(() -> append("{\"schema\":1,\"build\":\""+BUILD+"\",\"event\":\"session_start\",\"session\":"+session+",\"utc_ms\":"+System.currentTimeMillis()+",\"sdk\":"+Build.VERSION.SDK_INT+"}"));
             } catch (Throwable error) {
                 Log.w(TAG, "init_failed type=" + error.getClass().getSimpleName());
@@ -330,6 +342,26 @@ public final class UiPerfDiag {
         }
     }
 
+    /** Measures parent RecyclerView section binding, separate from frame layout/measure. */
+    public static void homeRowBind(int type, long startedNanos) {
+        if (!installed || startedNanos<=0 || type<0 || type>=5) return;
+        long ns=Math.max(0,SystemClock.elapsedRealtimeNanos()-startedNanos);
+        synchronized(LOCK) {
+            rowBindCount[type]++;
+            if(ns>rowBindMaxNs[type]) rowBindMaxNs[type]=ns;
+        }
+    }
+
+    /** Measures inflation of one parent home section by its layout enum. */
+    public static void homeRowCreate(int type, long startedNanos) {
+        if (!installed || startedNanos<=0 || type<0 || type>=5) return;
+        long ns=Math.max(0,SystemClock.elapsedRealtimeNanos()-startedNanos);
+        synchronized(LOCK) {
+            rowCreateCount[type]++;
+            if(ns>rowCreateMaxNs[type]) rowCreateMaxNs[type]=ns;
+        }
+    }
+
     public static void diff(long startedNanos) {
         if (!installed || startedNanos <= 0) return;
         long ns = Math.max(0L, SystemClock.elapsedRealtimeNanos() - startedNanos);
@@ -395,7 +427,15 @@ public final class UiPerfDiag {
                 v[48]/1e6,v[49]/1e6,cpuDelta,
                 (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1024,
                 Debug.getNativeHeapAllocatedSize()/1024,Thread.activeCount());
-            append(snapshot);
+            StringBuilder extended=new StringBuilder(snapshot.substring(0,snapshot.length()-1));
+            for(int t=0;t<5;t++) {
+                int off=50+4*t;
+                extended.append(",\\\"row_").append(t).append("_bind_count\\\":").append(v[off]);
+                extended.append(",\\\"row_").append(t).append("_bind_max_ms\\\":").append(String.format(Locale.US,"%.2f",v[off+1]/1e6));
+                extended.append(",\\\"row_").append(t).append("_create_count\\\":").append(v[off+2]);
+                extended.append(",\\\"row_").append(t).append("_create_max_ms\\\":").append(String.format(Locale.US,"%.2f",v[off+3]/1e6));
+            }
+            append(extended.append('}').toString());
         } catch(Throwable error) {
             Log.w(TAG,"format_failed type="+error.getClass().getSimpleName());
         }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline contract tests for PATCH277–PATCH280 diagnostic report parsing."""
+"""Offline contract tests for PATCH277–PATCH281 diagnostic report parsing."""
 import json
 import tempfile
 from pathlib import Path
@@ -16,12 +16,17 @@ with tempfile.TemporaryDirectory() as tmp:
         {"schema":1, "build":"PATCH280", "session":42, "utc_ms":2000,
          "screen":"details", "frames":10, "frame_avg_ms":10, "frame_max_ms":19,
          "over_32ms":0, "over_50ms":0, "over_100ms":0, "poster_failed":1, "home_refresh_count":2, "home_refresh_max_ms":120, "home_setup_count":1, "home_setup_max_ms":40, "home_inflate_count":1, "home_inflate_max_ms":34.7, "detail_inflate_count":2, "detail_inflate_max_ms":21.1, "layout_max_ms":13.5, "draw_max_ms":18.4, "main_probes":4, "main_over_100ms":2, "main_max_ms":309},
+        {"schema":1, "build":"PATCH281", "session":42, "utc_ms":2200,
+         "screen":"home", "frames":4, "frame_avg_ms":15, "frame_max_ms":28,
+         "over_32ms":0, "over_50ms":0, "over_100ms":0,
+         "row_1_bind_count":8, "row_1_bind_max_ms":7.2,
+         "row_1_create_count":3, "row_1_create_max_ms":22.5},
     ]
     target.write_text("\n".join(json.dumps(x) for x in sample) + "\ncorrupt\n", encoding="utf-8")
     records, bad = read_records([target])
     report = aggregate(records)
     assert bad == 1
-    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 20
+    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 24
     assert report["overall"]["over_32ms"] == 3
     assert report["overall"]["diff_count"] == 2
     assert report["overall"]["diff_skipped"] == 7
@@ -35,6 +40,9 @@ with tempfile.TemporaryDirectory() as tmp:
     assert report["screens"]["details"]["home_setup_max_ms"] == 40
     assert report["screens"]["details"]["main_max_ms"] == 309
     assert report["screens"]["home"]["scroll_events"] == 9
+    assert report["overall"]["home_row_types"]["horizontal"]["bind_count"] == 8
+    assert report["overall"]["home_row_types"]["horizontal"]["create_max_ms"] == 22.5
+    assert report["screens"]["home"]["home_row_types"]["horizontal"]["bind_max_ms"] == 7.2
     assert report["events"]["detail_visible"] == 1
     assert report["worst_windows"][0]["screen"] == "home"
     assert "By screen" in markdown(report, bad)
