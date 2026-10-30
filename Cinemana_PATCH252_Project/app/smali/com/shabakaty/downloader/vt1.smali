@@ -60,7 +60,7 @@
 
 # direct methods
 .method public constructor <init>()V
-    .locals 1
+    .locals 2
 
     const v0, 0x7f0d0077
 
@@ -78,6 +78,18 @@
     new-instance v0, Landroidx/recyclerview/widget/RecyclerView$s;
     invoke-direct {v0}, Landroidx/recyclerview/widget/RecyclerView$s;-><init>()V
     iput-object v0, p0, Lcom/shabakaty/downloader/vt1;->railPool:Landroidx/recyclerview/widget/RecyclerView$s;
+
+    # PATCH295: the horizontal video card is view type 0x7f0d008f.
+    # Stock pool cap for that type is 5; keep up to 10 across Home rails.
+    # The installed RecyclerView's setMaxRecycledViews implementation is
+    # obfuscated away: RecyclerView$s.a(type) returns its pooled type record,
+    # whose public b field is the capacity. No other type is modified.
+    const v1, 0x7f0d008f
+    invoke-virtual {v0, v1}, Landroidx/recyclerview/widget/RecyclerView$s;->a(I)Landroidx/recyclerview/widget/RecyclerView$s$a;
+    move-result-object v0
+    const/16 v1, 0xa
+    iput v1, v0, Landroidx/recyclerview/widget/RecyclerView$s$a;->b:I
+
     return-void
 .end method
 

@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH294"' in diag
+assert 'BUILD = "PATCH295"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH294"' in diag
+assert 'BUILD = "PATCH295"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -303,6 +303,25 @@ assert search294.index('sput-object v9, Lcom/shabakaty/downloader/gk1;->perf294S
 assert search294.index(':perf294_searchable_cached') < search294.index('SearchView;->setSearchableInfo(Landroid/app/SearchableInfo;)V')
 assert 'SearchView;->onActionViewExpanded()V' in search294
 assert 'SearchView;->clearFocus()V' in search294
+assert 'Continue106$$ExternalSyntheticLambda3' in card106
+# PATCH295: bounded Home-only shared rail RecycledViewPool capacity.
+# Verified exact obfuscated RecyclerView pool type record in this APK.
+ctor295=smali_method(home_fragment,'.method public constructor <init>()V')
+poolpart=ctor295.split('new-instance v0, Landroidx/recyclerview/widget/RecyclerView$s;',1)[1]
+assert ctor295.startswith('.method public constructor <init>()V')
+assert '.locals 2' in ctor295.split('new-instance v0, Landroidx/recyclerview/widget/RecyclerView$s;',1)[0]
+assert 'const v1, 0x7f0d008f' in poolpart
+assert 'RecyclerView$s;->a(I)Landroidx/recyclerview/widget/RecyclerView$s$a;' in poolpart
+assert 'const/16 v1, 0xa' in poolpart
+assert 'RecyclerView$s$a;->b:I' in poolpart
+assert poolpart.index('iput-object v0, p0, Lcom/shabakaty/downloader/vt1;->railPool:') < poolpart.index('RecyclerView$s;->a(I)')
+assert poolpart.count('RecyclerView$s$a;->b:I') == 1
+poolrec=source("androidx/recyclerview/widget/RecyclerView$s.smali")
+poolentry=source("androidx/recyclerview/widget/RecyclerView$s$a.smali")
+assert '.method public final a(I)Landroidx/recyclerview/widget/RecyclerView$s$a;' in poolrec
+assert '.field public b:I' in poolentry
+assert 'const/4 v0, 0x5' in poolentry
+assert 'const p1, 0x7f0d008f' in smali_method(source("com/shabakaty/downloader/jj.smali"),'.method public getItemViewType(I)I')
 assert 'Continue106$$ExternalSyntheticLambda3' in card106
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
