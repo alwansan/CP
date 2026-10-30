@@ -427,21 +427,11 @@
 
     move-result-object p0
 
-    const-string v1, "post"
+    check-cast p0, Landroid/view/View;
 
-    const/4 v2, 0x1
-
-    new-array v2, v2, [Ljava/lang/Object;
-
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/Continue106$$ExternalSyntheticLambda3;
-
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/Continue106$$ExternalSyntheticLambda3;-><init>(Ljava/lang/ref/WeakReference;)V
-
-    const/4 v0, 0x0
-
-    aput-object v3, v2, v0
-
-    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/Continue106$ExternalSyntheticLambda3;
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/Continue106$ExternalSyntheticLambda3;-><init>(Ljava/lang/ref/WeakReference;)V
+    invoke-virtual {p0, v3}, Landroid/view/View;->post(Ljava/lang/Runnable;)Z
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 
@@ -2244,15 +2234,11 @@
 
     move-result-object v0
 
-    const-string v1, "getParent"
+    check-cast v0, Landroid/view/View;
+    invoke-virtual {v0}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
+    move-result-object v0
 
     const/4 v2, 0x0
-
-    new-array v3, v2, [Ljava/lang/Object;
-
-    invoke-static {v0, v1, v3}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
-    move-result-object v0
 
     .line 160
     const/4 v1, 0x0
@@ -2284,12 +2270,8 @@
 
     :cond_0
     :try_start_0
-    const-string v3, "getParent"
-
-    new-array v4, v2, [Ljava/lang/Object;
-
-    invoke-static {v0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    check-cast v0, Landroid/view/View;
+    invoke-virtual {v0}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
     move-result-object v0
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
@@ -2316,12 +2298,8 @@
 
     move-result-object v3
 
-    const-string v4, "getTitle"
-
-    new-array v5, v2, [Ljava/lang/Object;
-
-    invoke-static {v0, v4, v5}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    check-cast v0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
+    invoke-virtual {v0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getTitle()Ljava/lang/String;
     move-result-object v0
 
     invoke-virtual {v3, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
