@@ -19,6 +19,11 @@
 
 .field public static final c0:Landroid/util/SparseIntArray;
 
+# PATCH294: SearchableInfo belongs to the fixed HomeActivity component.
+# Cache a null lookup too (metadata may be absent), and only inside this process.
+.field private static perf294SearchableLoaded:Z
+.field private static perf294SearchableInfo:Landroid/app/SearchableInfo;
+
 
 # instance fields
 .field public final V:Lcom/shabakaty/downloader/oz2;
@@ -1371,6 +1376,12 @@
     .line 50
     invoke-virtual {v6}, Landroidx/appcompat/widget/SearchView;->onActionViewExpanded()V
 
+    # PATCH294: this binding is always hosted by HomeActivity.
+    # Reuse SearchManager's immutable metadata across new search fragments.
+    # Do NOT cache SearchView, Activity, Context or input focus.
+    sget-boolean v9, Lcom/shabakaty/downloader/gk1;->perf294SearchableLoaded:Z
+    if-nez v9, :perf294_searchable_cached
+
     .line 51
     invoke-virtual {v6}, Landroid/view/ViewGroup;->getContext()Landroid/content/Context;
 
@@ -1412,9 +1423,12 @@
     move-result-object v12
 
     invoke-virtual {v9, v12}, Landroid/app/SearchManager;->getSearchableInfo(Landroid/content/ComponentName;)Landroid/app/SearchableInfo;
-
     move-result-object v9
-
+    sput-object v9, Lcom/shabakaty/downloader/gk1;->perf294SearchableInfo:Landroid/app/SearchableInfo;
+    const/4 v12, 0x1
+    sput-boolean v12, Lcom/shabakaty/downloader/gk1;->perf294SearchableLoaded:Z
+    :perf294_searchable_cached
+    sget-object v9, Lcom/shabakaty/downloader/gk1;->perf294SearchableInfo:Landroid/app/SearchableInfo;
     invoke-virtual {v6, v9}, Landroidx/appcompat/widget/SearchView;->setSearchableInfo(Landroid/app/SearchableInfo;)V
 
     .line 53

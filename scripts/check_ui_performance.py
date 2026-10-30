@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH293"' in diag
+assert 'BUILD = "PATCH294"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH293"' in diag
+assert 'BUILD = "PATCH294"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -287,6 +287,22 @@ assert ':perf293_layout_done' in progress293
 assert ':cond_7' in progress293 and ':cond_8' in progress293, 'preserve original branch labels'
 assert 'Continue106;->call(' not in progress293
 assert 'Class;->forName(' not in progress293
+assert 'Continue106$$ExternalSyntheticLambda3' in card106
+# PATCH294: SearchManager's Binder call should happen only on the first
+# SearchView bind per process, while every SearchView still receives metadata.
+gk294=source("com/shabakaty/downloader/gk1.smali")
+search294=smali_method(gk294,'.method public i()V')
+assert '.field private static perf294SearchableLoaded:Z' in gk294
+assert '.field private static perf294SearchableInfo:Landroid/app/SearchableInfo;' in gk294
+assert 'sget-boolean v9, Lcom/shabakaty/downloader/gk1;->perf294SearchableLoaded:Z' in search294
+assert 'if-nez v9, :perf294_searchable_cached' in search294
+assert search294.count('SearchManager;->getSearchableInfo(Landroid/content/ComponentName;)Landroid/app/SearchableInfo;') == 1
+assert 'sput-object v9, Lcom/shabakaty/downloader/gk1;->perf294SearchableInfo:Landroid/app/SearchableInfo;' in search294
+assert 'sput-boolean v12, Lcom/shabakaty/downloader/gk1;->perf294SearchableLoaded:Z' in search294
+assert search294.index('sput-object v9, Lcom/shabakaty/downloader/gk1;->perf294SearchableInfo:') < search294.index('sput-boolean v12, Lcom/shabakaty/downloader/gk1;->perf294SearchableLoaded:')
+assert search294.index(':perf294_searchable_cached') < search294.index('SearchView;->setSearchableInfo(Landroid/app/SearchableInfo;)V')
+assert 'SearchView;->onActionViewExpanded()V' in search294
+assert 'SearchView;->clearFocus()V' in search294
 assert 'Continue106$$ExternalSyntheticLambda3' in card106
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
