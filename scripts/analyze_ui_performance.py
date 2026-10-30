@@ -18,7 +18,7 @@ def read_records(paths):
                 for line in file:
                     try:
                         obj = json.loads(line)
-                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281", "PATCH282", "PATCH283", "PATCH284", "PATCH285", "PATCH286", "PATCH287"):
+                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281", "PATCH282", "PATCH283", "PATCH284", "PATCH285", "PATCH286", "PATCH287", "PATCH288"):
                             records.append(obj)
                         else:
                             invalid += 1
@@ -34,6 +34,7 @@ def read_records(paths):
 def aggregate(records):
     metrics = [r for r in records if "frames" in r]
     events = [r for r in records if "event" in r]
+    stalls = [r for r in events if r.get("event") == "main_stall_sample"]
     groups = defaultdict(list)
     for r in metrics:
         # Screen here is only a fixed fragment/activity category, not user content.
@@ -127,6 +128,23 @@ def aggregate(records):
     return {
         "sessions": sorted({str(r.get("session")) for r in records if "session" in r}),
         "events": dict(Counter(str(r.get("event")) for r in events)),
+        "main_stalls": {
+            "samples":len(stalls),
+            "longest_wait_ms":max((int(r.get("wait_ms",0)) for r in stalls),default=0),
+            "by_bucket":dict(Counter(str(r.get("bucket","unknown")) for r in stalls)),
+            "by_thread_state":dict(Counter(str(r.get("thread_state","unknown")) for r in stalls)),
+            "by_screen":dict(Counter(str(r.get("screen","unknown")) for r in stalls)),
+            "app_hotspots":[{"site":site,"samples":count}
+                for site,count in Counter(
+                    str(site) for r in stalls for site in r.get("app_sites",[])
+                    if isinstance(site,str) and site.startswith("com.shabakaty.") and len(site)<=160
+                ).most_common(12)],
+            "framework_hotspots":[{"site":site,"samples":count}
+                for site,count in Counter(
+                    str(r["framework_site"]) for r in stalls
+                    if isinstance(r.get("framework_site"),str) and r["framework_site"]
+                ).most_common(10)],
+        },
         "overall": totals(metrics),
         "screens": {screen: totals(rows) for screen, rows in sorted(groups.items())},
         "worst_windows": worst,
@@ -136,7 +154,7 @@ def aggregate(records):
 def markdown(report, invalid):
     o = report["overall"]
     lines = [
-        "# Cinemana PATCH277–PATCH287 UI trace",
+        "# Cinemana PATCH277–PATCH288 UI trace",
         f"Sessions: {len(report['sessions'])} · Metrics windows: {o['windows']} · Invalid/skipped records: {invalid}",
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",
@@ -154,6 +172,10 @@ def markdown(report, invalid):
         f"ART GC: {o['gc_count']} runs, {o['gc_time_ms']} ms, blocking {o['blocking_gc_count']} runs / {o['blocking_gc_time_ms']} ms",
         f"Slow frames: unknown delay over 100ms = {o['unknown_over_100ms']}",
         f"Main-thread blocked stack samples (non-identifying buckets): {o['main_stack_samples']}",
+        f"Bounded blocked-main samples: {report['main_stalls']['samples']}; worst wait {report['main_stalls']['longest_wait_ms']} ms",
+        f"Blocked-main thread states: {report['main_stalls']['by_thread_state']}; buckets: {report['main_stalls']['by_bucket']}",
+        f"Top app code locations (no arguments/paths): {report['main_stalls']['app_hotspots']}",
+        f"Top framework code locations: {report['main_stalls']['framework_hotspots']}",
         "",
         "## By screen",
         "| Screen | Frames | Avg ms | Max ms | >32 ms | >50 ms | >100 ms | Scroll callbacks |",

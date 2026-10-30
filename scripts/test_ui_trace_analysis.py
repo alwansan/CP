@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline contract tests for PATCH277–PATCH287 diagnostic report parsing."""
+"""Offline contract tests for PATCH277–PATCH288 diagnostic report parsing."""
 import json
 import tempfile
 from pathlib import Path
@@ -47,6 +47,16 @@ with tempfile.TemporaryDirectory() as tmp:
          "frames":2,"frame_avg_ms":9,"frame_max_ms":24,
          "gc_count":2,"gc_time_ms":123,"blocking_gc_count":1,
          "blocking_gc_time_ms":80},
+        {"schema":1,"build":"PATCH288","session":42,"utc_ms":2990,
+         "event":"main_stall_sample","screen":"home","wait_ms":250,
+         "thread_state":"RUNNABLE","bucket":"app",
+         "app_sites":["com.shabakaty.downloader.vt1#onResume","com.shabakaty.downloader.hj#onCreate"],
+         "framework_site":"android.view.Choreographer#doFrame"},
+        {"schema":1,"build":"PATCH288","session":42,"utc_ms":2992,
+         "event":"main_stall_sample","screen":"home","wait_ms":580,
+         "thread_state":"WAITING","bucket":"binder",
+         "app_sites":["com.shabakaty.downloader.vt1#onResume"],
+         "framework_site":"android.os.BinderProxy#transact"},
     ]
     target.write_text("\n".join(json.dumps(x) for x in sample) + "\ncorrupt\n", encoding="utf-8")
     records, bad = read_records([target])
@@ -91,6 +101,14 @@ with tempfile.TemporaryDirectory() as tmp:
     assert report["overall"]["blocking_gc_count"] == 1
     assert report["overall"]["blocking_gc_time_ms"] == 80
     assert report["screens"]["home"]["blocking_gc_time_ms"] == 80
+    assert report["events"]["main_stall_sample"] == 2
+    assert report["main_stalls"]["samples"] == 2
+    assert report["main_stalls"]["longest_wait_ms"] == 580
+    assert report["main_stalls"]["by_thread_state"] == {"RUNNABLE":1,"WAITING":1}
+    assert report["main_stalls"]["by_bucket"] == {"app":1,"binder":1}
+    assert report["main_stalls"]["by_screen"] == {"home":2}
+    assert report["main_stalls"]["app_hotspots"][0]["site"] == "com.shabakaty.downloader.vt1#onResume"
+    assert report["main_stalls"]["app_hotspots"][0]["samples"] == 2
     assert report["events"]["detail_visible"] == 1
     assert report["worst_windows"][0]["screen"] == "home"
     assert "By screen" in markdown(report, bad)

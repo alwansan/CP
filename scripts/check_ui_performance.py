@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH287"' in diag
+assert 'BUILD = "PATCH288"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH287"' in diag
+assert 'BUILD = "PATCH288"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -219,6 +219,17 @@ assert horizontal_fast.count('TextUtils;->equals(Ljava/lang/CharSequence;Ljava/l
 assert ':perf_title_unchanged' in horizontal_fast
 assert horizontal_fast.index(':perf_title_unchanged',horizontal_fast.index('nl6;->q(')) < horizontal_fast.index('.line 8')
 assert 'TextView;->setText(Ljava/lang/CharSequence;)V' in horizontal_fast
+stalled=s.split("DO_NOT_EXIST") if False else diag.split('private static void sampleBlockedMain()',1)[1].split('private static void probeMainThread()',1)[0]
+assert 'main_stall_sample' in stalled
+assert 'app_sites' in stalled and 'framework_site' in stalled
+assert 'count<3' in stalled and 'now-lastStallStackMs<500' in stalled
+assert 'org.json.JSONObject.quote' in stalled
+assert 'codeLocation(frame)' in stalled and 'getMethodName()' in diag
+assert 'sampleBlockedMain();' in diag and '>=100_000_000L' in diag
+assert 'writer.scheduleAtFixedRate(UiPerfDiag::probeMainThread' in diag
+assert 'append(event);' in stalled
+assert 'startMethodTracing' not in diag and 'getStackTrace()' in diag
+assert 'frame.getFileName()' not in diag and 'frame.getLineNumber()' not in diag
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")

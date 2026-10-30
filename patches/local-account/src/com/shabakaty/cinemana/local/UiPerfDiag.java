@@ -25,12 +25,14 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Lightweight, opt-in-by-build UI diagnostics. No title, account, ID, URL, request body,
- * stack trace, gesture coordinate, or screen content is ever included.
- * FrameMetrics callbacks and file IO run off the UI thread.
+ * stack arguments, file paths, gesture coordinate, or screen content is included.
+ * During a stalled main-thread heartbeat, record only bounded compiled class/method
+ * identifiers (at most 3 app frames plus 1 framework frame), never stack contents.
+ * FrameMetrics callbacks, stack sampling and file IO run off the UI thread.
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH287";
+    private static final String BUILD = "PATCH288";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -59,7 +61,7 @@ public final class UiPerfDiag {
     private static final AtomicBoolean probePending = new AtomicBoolean();
     private static volatile long pendingProbeNs;
     private static long lastStallStackMs;
-    // Seven fixed categories; never log stack text or user/content identifiers.
+    // Nine fixed categories; bounded code identifiers are logged only on >100ms stalls.
     private static final long[] blockedMainBuckets=new long[9];
     private static long mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs;
     private static long homeRefreshCount, homeRefreshNs, homeRefreshMaxNs;
@@ -158,7 +160,15 @@ public final class UiPerfDiag {
         return snap;
     }
 
-    /** Background-only stack CATEGORY sampling; never serialize stack frames. */
+    /** Compiled code identifier only; strips file names/line numbers and caps size. */
+    private static String codeLocation(StackTraceElement frame) {
+        String owner=frame.getClassName();
+        String member=frame.getMethodName();
+        String location=owner+"#"+member;
+        return location.length()>160?location.substring(0,160):location;
+    }
+
+    /** Background-only CATEGORY sampling + bounded compiled call sites; no user data. */
     private static void sampleBlockedMain() {
         long now=SystemClock.elapsedRealtime();
         if (now-lastStallStackMs<500) return;
@@ -189,7 +199,48 @@ public final class UiPerfDiag {
             }
             // Specific signals have priority over generic framework frames.
             int kind=theme?2:binder?7:lock?8:io?3:image?1:view?0:app?4:system?5:6;
-            synchronized(LOCK){blockedMainBuckets[kind]++;}
+            final String category=new String[]{"view","image","theme","io","app","system",
+                "unknown","binder","lock"}[kind];
+            final String currentScreen;
+            synchronized(LOCK) {
+                blockedMainBuckets[kind]++;
+                currentScreen=screen;
+            }
+
+            // Record up to THREE app methods and ONE framework method when the
+            // heartbeat is stalled. No arguments, line numbers, paths, URL or IDs.
+            // This is executed only by the background metrics writer and
+            // rate-limited to one observation per 500ms above.
+            StringBuilder appSites=new StringBuilder("[");
+            int count=0;
+            String frameworkSite=null;
+            for(StackTraceElement frame:frames) {
+                String owner=frame.getClassName();
+                if(owner.startsWith("com.shabakaty.") && count<3) {
+                    if(count++>0)appSites.append(',');
+                    appSites.append(org.json.JSONObject.quote(codeLocation(frame)));
+                } else if(frameworkSite==null && (owner.startsWith("android.") ||
+                        owner.startsWith("androidx.") || owner.startsWith("java.") ||
+                        owner.startsWith("libcore.") || owner.startsWith("com.facebook."))) {
+                    if(!owner.startsWith("android.os.Looper") &&
+                       !owner.startsWith("android.os.Handler") &&
+                       !owner.startsWith("android.app.ActivityThread")) {
+                        frameworkSite=codeLocation(frame);
+                    }
+                }
+            }
+            appSites.append(']');
+            long delayMs=Math.max(0,(SystemClock.elapsedRealtimeNanos()-pendingProbeNs)/1_000_000L);
+            String event="{\"schema\":1,\"build\":\""+BUILD+"\",\"session\":"+session+
+                ",\"utc_ms\":"+System.currentTimeMillis()+",\"event\":\"main_stall_sample\""+
+                ",\"screen\":"+org.json.JSONObject.quote(currentScreen)+
+                ",\"wait_ms\":"+delayMs+
+                ",\"thread_state\":\""+MAIN.getLooper().getThread().getState().name()+"\""+
+                ",\"bucket\":\""+category+"\""+
+                ",\"app_sites\":"+appSites+
+                ",\"framework_site\":"+org.json.JSONObject.quote(frameworkSite==null?"":frameworkSite)+"}";
+            // Never block the UI thread; append happens on the background writer.
+            append(event);
         } catch(Throwable ignored) {}
     }
 
