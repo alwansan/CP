@@ -26,6 +26,10 @@
 
 
 # instance fields
+# PATCH296: one SearchableInfo configuration per SearchView/binding instance.
+# No static View/Activity/Context reference; each new search view binds normally.
+.field private perf296SearchableBound:Z
+
 .field public final V:Lcom/shabakaty/downloader/oz2;
 
 .field public final W:Landroid/widget/TextView;
@@ -1429,7 +1433,15 @@
     sput-boolean v12, Lcom/shabakaty/downloader/gk1;->perf294SearchableLoaded:Z
     :perf294_searchable_cached
     sget-object v9, Lcom/shabakaty/downloader/gk1;->perf294SearchableInfo:Landroid/app/SearchableInfo;
+
+    # PATCH296: avoid reconfiguring the same SearchView on Data Binding updates.
+    # The cached metadata never changes during this binding's lifetime.
+    iget-boolean v12, v1, Lcom/shabakaty/downloader/gk1;->perf296SearchableBound:Z
+    if-nez v12, :perf296_searchable_bound
     invoke-virtual {v6, v9}, Landroidx/appcompat/widget/SearchView;->setSearchableInfo(Landroid/app/SearchableInfo;)V
+    const/4 v12, 0x1
+    iput-boolean v12, v1, Lcom/shabakaty/downloader/gk1;->perf296SearchableBound:Z
+    :perf296_searchable_bound
 
     .line 53
     invoke-virtual {v6}, Landroidx/appcompat/widget/SearchView;->clearFocus()V
