@@ -27,6 +27,26 @@ def viewport(name, identity):
     assert item.get(app + "layout_constraintBottom_toBottomOf") == "parent", name
 
 
+
+# PATCH298: the API 22+ detail XML must not re-enable implicit layout
+# transitions disabled in the default layout. Explicit poster shared-element
+# transitions and the expandable-description animation remain intact.
+detail_default=load("fragment_video_info.xml")
+detail_modern=ET.parse(root / "Cinemana_PATCH252_Project/app/res/layout-v22/fragment_video_info.xml").getroot()
+for identity in ("video_info_appbar", "video_info_collapsing_toolbar",
+                 "video_info_poster", "video_info_poster_fade_overlay",
+                 "video_info_toolbar", "root_scroll_view", "root_constraint"):
+    for layout in (detail_default, detail_modern):
+        matches=[node for node in layout.iter()
+                 if node.get(android+"id") == "@id/"+identity]
+        assert len(matches)==1, ("detail XML node", identity, len(matches))
+        assert matches[0].get(android+"animateLayoutChanges")=="false", (
+            "implicit detail layout transition", identity)
+assert sum(node.get(android+"animateLayoutChanges")=="true" for node in detail_modern.iter())==1
+assert any(node.tag.endswith("ExpandableTextView") and
+           node.get(android+"animateLayoutChanges")=="true"
+           for node in detail_modern.iter())
+
 viewport("fragment_home.xml", "home_page_main_recycler")
 viewport("fragment_franchises.xml", "home_page_franchises_view")
 assert load("fragment_franchises.xml").get(android + "animateLayoutChanges") == "false"
@@ -104,7 +124,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH297"' in diag
+assert 'BUILD = "PATCH298"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +146,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH297"' in diag
+assert 'BUILD = "PATCH298"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag

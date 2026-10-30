@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline contract tests for PATCH277–PATCH297 diagnostic report parsing."""
+"""Offline contract tests for PATCH277–PATCH298 diagnostic report parsing."""
 import json
 import tempfile
 from pathlib import Path
@@ -84,12 +84,15 @@ with tempfile.TemporaryDirectory() as tmp:
         {"schema":1,"build":"PATCH297","session":42,"utc_ms":3900,
          "screen":"details","frames":3,"frame_avg_ms":9,"frame_max_ms":18,
          "over_32ms":0,"over_50ms":0,"over_100ms":0},
+        {"schema":1,"build":"PATCH298","session":42,"utc_ms":4000,
+         "screen":"details","frames":2,"frame_avg_ms":9,"frame_max_ms":15,
+         "over_32ms":0,"over_50ms":0,"over_100ms":0},
     ]
     target.write_text("\n".join(json.dumps(x) for x in sample) + "\ncorrupt\n", encoding="utf-8")
     records, bad = read_records([target])
     report = aggregate(records)
     assert bad == 1
-    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 60
+    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 62
     assert report["overall"]["over_32ms"] == 6
     assert report["overall"]["diff_count"] == 2
     assert report["overall"]["diff_skipped"] == 7
