@@ -212,6 +212,14 @@
 
     invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setAdapter(Landroidx/recyclerview/widget/RecyclerView$e;)V
 
+    # Bounded offscreen card reuse; keeps height wrap_content and all gestures unchanged.
+    const/4 p2, 0x3
+    invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setItemViewCacheSize(I)V
+
+    const/4 p2, 0x0
+
+    invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setItemAnimator(Landroidx/recyclerview/widget/RecyclerView$j;)V
+
     .line 8
     invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
 
@@ -527,6 +535,19 @@
     return-void
 .end method
 
+.method public final setSharedRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V
+    .locals 2
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
+    move-result-object v0
+    iget-object v0, v0, Lcom/shabakaty/downloader/cv1;->N:Landroidx/recyclerview/widget/RecyclerView;
+    invoke-virtual {v0}, Landroidx/recyclerview/widget/RecyclerView;->getRecycledViewPool()Landroidx/recyclerview/widget/RecyclerView$s;
+    move-result-object v1
+    if-eq v1, p1, :shared_pool_unchanged
+    invoke-virtual {v0, p1}, Landroidx/recyclerview/widget/RecyclerView;->setRecycledViewPool(Landroidx/recyclerview/widget/RecyclerView$s;)V
+    :shared_pool_unchanged
+    return-void
+.end method
+
 .method public final setItemCount(I)V
     .locals 0
 
@@ -680,6 +701,26 @@
 
     iget-object v0, v0, Lcom/shabakaty/downloader/cv1;->O:Landroid/widget/TextView;
 
+    # Always initialize both registers for the unchanged-title fast path.
+    const-string v4, "binding.videosRecycler"
+    const/4 v5, 0x0
+    iget-object v6, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->R:Ljava/lang/String;
+    invoke-virtual {v0}, Landroid/widget/TextView;->getText()Ljava/lang/CharSequence;
+    move-result-object v2
+    invoke-static {v2, v6}, Landroid/text/TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+    move-result v2
+    if-eqz v2, :perf_update_title
+
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
+    move-result-object v2
+    iget-object v2, v2, Lcom/shabakaty/downloader/cv1;->N:Landroidx/recyclerview/widget/RecyclerView;
+    invoke-virtual {v2}, Landroid/view/View;->getContentDescription()Ljava/lang/CharSequence;
+    move-result-object v2
+    invoke-static {v2, v6}, Landroid/text/TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+    move-result v2
+    if-nez v2, :perf_title_unchanged
+
+    :perf_update_title
     iget-object v4, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->R:Ljava/lang/String;
 
     const/4 v5, 0x0
@@ -718,6 +759,10 @@
 
     .line 7
     invoke-static {v0, v6}, Lcom/shabakaty/downloader/nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V
+
+    # No Spannable allocation, TextView.setText, or accessibility invalidation
+    # when both labels already match the current section title.
+    :perf_title_unchanged
 
     .line 8
     iget-object v0, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->Q:Ljava/util/List;
@@ -795,7 +840,13 @@
     invoke-static {v0, v1, v2, v5}, Lcom/shabakaty/downloader/fo3;->a(Landroidx/recyclerview/widget/RecyclerView;Ljava/util/List;Ljava/lang/Integer;Lcom/shabakaty/downloader/tj$a;)V
 
     :goto_4
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->row(Ljava/lang/Object;)V
+    # Equivalent to Continue106.row, which always sets the button visible.
+    # Remove reflection and I18n allocation from each home row bind.
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
+    move-result-object v0
+    iget-object v0, v0, Lcom/shabakaty/downloader/cv1;->M:Lcom/google/android/material/button/MaterialButton;
+    const/4 v1, 0x0
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
 
     return-void
 .end method
