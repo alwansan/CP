@@ -96,7 +96,7 @@ diag = (root / "patches/local-account/src/com/shabakaty/cinemana/local/UiPerfDia
 assert 'home_refresh_count' in diag and 'home_setup_count' in diag
 assert 'main_over_250ms' in diag and 'captureLocked' in diag
 assert 'probeMainThread' in diag and 'MAIN.post' in diag
-assert 'if (snap.hasData()) writeSample(snap,cpuDelta);' in diag
+assert 'if(snap.hasData())writeSample(snap,cpuDelta,gcCount,gcTime,blockingCount,blockingTime);' in diag
 assert 'next!=null && !next.equals(screen)' in diag
 assert 'addOnFrameMetricsAvailableListener' in diag and 'removeOnFrameMetricsAvailableListener' in diag
 assert 'LAYOUT_MEASURE_DURATION' in diag and 'DRAW_DURATION' in diag
