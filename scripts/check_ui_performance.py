@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH290"' in diag
+assert 'BUILD = "PATCH291"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH290"' in diag
+assert 'BUILD = "PATCH291"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -242,6 +242,21 @@ assert pre_metadata.count('View;->getParent()Landroid/view/ViewParent;') == 2
 assert 'HorizontalScrollVideosView;->getTitle()Ljava/lang/String;' in pre_metadata
 assert 'Continue106;->call(' not in pre_metadata
 assert 'instance-of v3, v0, Landroid/view/View;' in pre_metadata
+# PATCH291: optimization applies to horizontal video cards only.
+nl6text=source("com/shabakaty/downloader/nl6.smali")
+text_fast=smali_method(nl6text,'.method public static final perfHorizontalText(Landroid/widget/TextView;Ljava/lang/String;)V')
+description_fast=smali_method(nl6text,'.method public static final perfHorizontalDescription(Landroid/view/View;Ljava/lang/CharSequence;)V')
+for body in (text_fast,description_fast):
+    assert 'Landroid/text/Spanned;' in body
+    assert 'TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z' in body
+    assert 'if-eqz v1, :perf_' in body
+assert 'nl6;->r(Landroid/widget/TextView;Ljava/lang/String;)V' in text_fast
+assert 'nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V' in description_fast
+g42bind=smali_method(source("com/shabakaty/downloader/g42.smali"),'.method public i()V')
+assert g42bind.count('nl6;->perfHorizontalText(Landroid/widget/TextView;Ljava/lang/String;)V') == 2
+assert g42bind.count('nl6;->perfHorizontalDescription(Landroid/view/View;Ljava/lang/CharSequence;)V') == 3
+assert 'nl6;->r(Landroid/widget/TextView;Ljava/lang/String;)V' not in g42bind
+assert 'nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V' not in g42bind
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")
