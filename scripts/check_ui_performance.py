@@ -308,7 +308,7 @@ assert 'Continue106$$ExternalSyntheticLambda3' in card106
 # Verified exact obfuscated RecyclerView pool type record in this APK.
 ctor295=smali_method(home_fragment,'.method public constructor <init>()V')
 poolpart=ctor295.split('new-instance v0, Landroidx/recyclerview/widget/RecyclerView$s;',1)[1]
-assert ctor295.startswith('.method public constructor <init>()V')
+assert ctor295.lstrip().startswith('.locals 2')
 assert '.locals 2' in ctor295.split('new-instance v0, Landroidx/recyclerview/widget/RecyclerView$s;',1)[0]
 assert 'const v1, 0x7f0d008f' in poolpart
 assert 'RecyclerView$s;->a(I)Landroidx/recyclerview/widget/RecyclerView$s$a;' in poolpart
