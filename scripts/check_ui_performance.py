@@ -336,7 +336,7 @@ assert search294.index('if-nez v12, :perf296_searchable_bound') < search294.inde
 assert search294.index('SearchView;->setSearchableInfo(') < search294.index('iput-boolean v12, v1, Lcom/shabakaty/downloader/gk1;->perf296SearchableBound:Z') < search294.index('\n    :perf296_searchable_bound')
 assert search294.index('\n    :perf296_searchable_bound') < search294.index('SearchView;->clearFocus()V')
 assert 'SearchView;->onActionViewExpanded()V' in search294
-assert 'Continue106$ExternalSyntheticLambda3' in card106
+assert 'Continue106$$ExternalSyntheticLambda3' in card106
 
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
