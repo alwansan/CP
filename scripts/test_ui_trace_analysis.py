@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline contract tests for PATCH277–PATCH284 diagnostic report parsing."""
+"""Offline contract tests for PATCH277–PATCH285 diagnostic report parsing."""
 import json
 import tempfile
 from pathlib import Path
@@ -37,12 +37,15 @@ with tempfile.TemporaryDirectory() as tmp:
          "worst_frame_unknown_ms":190.5,"worst_frame_input_ms":3.5,
          "worst_frame_animation_ms":7.0,"unknown_over_100ms":1,
          "main_stack_binder":1,"main_stack_lock":2},
+        {"schema":1, "build":"PATCH285", "session":42, "utc_ms":2700,
+         "screen":"home", "frames":1, "frame_avg_ms":13, "frame_max_ms":13,
+         "continue_refresh_skipped":3,"continue_refresh_full":1},
     ]
     target.write_text("\n".join(json.dumps(x) for x in sample) + "\ncorrupt\n", encoding="utf-8")
     records, bad = read_records([target])
     report = aggregate(records)
     assert bad == 1
-    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 29
+    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 30
     assert report["overall"]["over_32ms"] == 6
     assert report["overall"]["diff_count"] == 2
     assert report["overall"]["diff_skipped"] == 7
@@ -70,6 +73,9 @@ with tempfile.TemporaryDirectory() as tmp:
     assert report["overall"]["worst_frame_stages"]["animation"] == 7.0
     assert report["overall"]["main_stack_samples"]["binder"] == 1
     assert report["overall"]["main_stack_samples"]["lock"] == 2
+    assert report["overall"]["continue_refresh_skipped"] == 3
+    assert report["overall"]["continue_refresh_full"] == 1
+    assert report["screens"]["home"]["continue_refresh_skipped"] == 3
     assert report["events"]["detail_visible"] == 1
     assert report["worst_windows"][0]["screen"] == "home"
     assert "By screen" in markdown(report, bad)

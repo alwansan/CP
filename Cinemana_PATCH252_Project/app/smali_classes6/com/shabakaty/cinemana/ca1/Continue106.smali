@@ -42,6 +42,9 @@
 .end field
 
 .field static home:Ljava/lang/ref/WeakReference;
+# Only weakly identify the last adapter; never retain the Fragment or its View.
+.field private static lastRefreshAdapter:Ljava/lang/ref/WeakReference;
+.field private static lastRefreshStamp:J
     .annotation system Ldalvik/annotation/Signature;
         value = {
             "Ljava/lang/ref/WeakReference<",
@@ -3036,8 +3039,84 @@
     return-void
 .end method
 
+.method private static declared-synchronized refreshStateStamp()J
+    .locals 9
+
+    const-class v0, Lcom/shabakaty/cinemana/ca1/Continue106;
+    monitor-enter v0
+
+    :try_start_0
+    # A 64-bit content revision covering continue-watching ids and progress.
+    # The stamp stays in memory and is never written to logs.
+    const-wide/16 v1, 0x23
+
+    sget-object v3, Lcom/shabakaty/cinemana/ca1/Continue106;->entries:Ljava/util/Map;
+    invoke-interface {v3}, Ljava/util/Map;->size()I
+    move-result v4
+    int-to-long v5, v4
+    xor-long/2addr v1, v5
+
+    invoke-interface {v3}, Ljava/util/Map;->values()Ljava/util/Collection;
+    move-result-object v3
+    invoke-interface {v3}, Ljava/util/Collection;->iterator()Ljava/util/Iterator;
+    move-result-object v3
+
+    const-wide/16 v7, 0x1f
+
+    :stamp_loop
+    invoke-interface {v3}, Ljava/util/Iterator;->hasNext()Z
+    move-result v4
+    if-eqz v4, :stamp_done
+
+    invoke-interface {v3}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v4
+    check-cast v4, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;
+
+    iget-wide v5, v4, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;->p:J
+    xor-long/2addr v1, v5
+    mul-long/2addr v1, v7
+
+    iget-wide v5, v4, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;->d:J
+    xor-long/2addr v1, v5
+    mul-long/2addr v1, v7
+
+    iget-wide v5, v4, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;->t:J
+    xor-long/2addr v1, v5
+    mul-long/2addr v1, v7
+
+    iget-object v5, v4, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;->id:Ljava/lang/String;
+    if-eqz v5, :stamp_no_id
+    invoke-virtual {v5}, Ljava/lang/String;->hashCode()I
+    move-result v5
+    int-to-long v5, v5
+    xor-long/2addr v1, v5
+    mul-long/2addr v1, v7
+
+    :stamp_no_id
+    iget-object v5, v4, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;->localPath:Ljava/lang/String;
+    if-eqz v5, :stamp_loop
+    invoke-virtual {v5}, Ljava/lang/String;->hashCode()I
+    move-result v5
+    int-to-long v5, v5
+    xor-long/2addr v1, v5
+    mul-long/2addr v1, v7
+    goto :stamp_loop
+
+    :stamp_done
+    :try_end_0
+    monitor-exit v0
+    return-wide v1
+
+    :catchall_0
+    move-exception v3
+    monitor-exit v0
+    throw v3
+
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+.end method
+
 .method public static refresh(Ljava/lang/Object;)V
-    .locals 4
+    .locals 8
 
     .line 135
     const-string v0, "c"
@@ -3094,11 +3173,49 @@
 
     check-cast v2, Ljava/util/List;
 
-    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/Continue106;->decorate(Ljava/util/List;)Ljava/util/List;
+    # Capture the old list before recomputing the continue-watching rail.
+    move-object v5, v2
 
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/Continue106;->decorate(Ljava/util/List;)Ljava/util/List;
     move-result-object v2
 
+    # List equality alone misses playback-position changes; also compare the
+    # in-memory content revision of continue entries (position/duration/time).
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Continue106;->refreshStateStamp()J
+    move-result-wide v3
+
+    sget-object v6, Lcom/shabakaty/cinemana/ca1/Continue106;->lastRefreshAdapter:Ljava/lang/ref/WeakReference;
+    if-eqz v6, :perf_publish
+
+    invoke-virtual {v6}, Ljava/lang/ref/WeakReference;->get()Ljava/lang/Object;
+    move-result-object v6
+    if-ne v6, p0, :perf_publish
+
+    sget-wide v6, Lcom/shabakaty/cinemana/ca1/Continue106;->lastRefreshStamp:J
+    cmp-long v6, v6, v3
+    if-nez v6, :perf_publish
+
+    if-eqz v5, :perf_publish
+    invoke-interface {v5, v2}, Ljava/util/List;->equals(Ljava/lang/Object;)Z
+    move-result v6
+    if-eqz v6, :perf_publish
+
+    # No new data/progress: don't trigger RecyclerView full layout on resume.
+    const/4 v6, 0x0
+    invoke-static {v6}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->continueRefreshDecision(Z)V
+    goto :goto_1
+
+    :perf_publish
+    sput-wide v3, Lcom/shabakaty/cinemana/ca1/Continue106;->lastRefreshStamp:J
+
+    new-instance v3, Ljava/lang/ref/WeakReference;
+    invoke-direct {v3, p0}, Ljava/lang/ref/WeakReference;-><init>(Ljava/lang/Object;)V
+    sput-object v3, Lcom/shabakaty/cinemana/ca1/Continue106;->lastRefreshAdapter:Ljava/lang/ref/WeakReference;
+
     invoke-static {p0, v0, v2}, Lcom/shabakaty/cinemana/ca1/Continue106;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const/4 v3, 0x1
+    invoke-static {v3}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->continueRefreshDecision(Z)V
 
     const-string v0, "notifyDataSetChanged"
 
