@@ -284,6 +284,7 @@ for api in ('ProgressBar;->getProgress()I','ProgressBar;->setProgress(I)V',
     assert api in progress293, api
 assert 'sget-object v3, Lcom/shabakaty/cinemana/ca1/Continue106;->heights:Ljava/util/Map;' in progress293
 assert ':perf293_layout_done' in progress293
+assert ':cond_7' in progress293 and ':cond_8' in progress293, 'preserve original branch labels'
 assert 'Continue106;->call(' not in progress293
 assert 'Class;->forName(' not in progress293
 assert 'Continue106$$ExternalSyntheticLambda3' in card106
