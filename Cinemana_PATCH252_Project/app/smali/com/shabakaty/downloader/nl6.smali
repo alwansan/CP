@@ -2042,3 +2042,38 @@
     :goto_1
     return-object p0
 .end method
+
+
+.method public static final perfHorizontalText(Landroid/widget/TextView;Ljava/lang/String;)V
+    .locals 2
+
+    invoke-virtual {p0}, Landroid/widget/TextView;->getText()Ljava/lang/CharSequence;
+    move-result-object v0
+    instance-of v1, v0, Landroid/text/Spanned;
+    if-eqz v1, :perf_text_update
+    invoke-static {v0, p1}, Landroid/text/TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+    move-result v1
+    if-eqz v1, :perf_text_update
+    return-void
+
+    :perf_text_update
+    invoke-static {p0, p1}, Lcom/shabakaty/downloader/nl6;->r(Landroid/widget/TextView;Ljava/lang/String;)V
+    return-void
+.end method
+
+.method public static final perfHorizontalDescription(Landroid/view/View;Ljava/lang/CharSequence;)V
+    .locals 2
+
+    invoke-virtual {p0}, Landroid/view/View;->getContentDescription()Ljava/lang/CharSequence;
+    move-result-object v0
+    instance-of v1, v0, Landroid/text/Spanned;
+    if-eqz v1, :perf_description_update
+    invoke-static {v0, p1}, Landroid/text/TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+    move-result v1
+    if-eqz v1, :perf_description_update
+    return-void
+
+    :perf_description_update
+    invoke-static {p0, p1}, Lcom/shabakaty/downloader/nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V
+    return-void
+.end method

@@ -1051,12 +1051,12 @@
     .line 32
     iget-object v4, v1, Lcom/shabakaty/downloader/f42;->N:Landroid/widget/TextView;
 
-    invoke-static {v4, v15}, Lcom/shabakaty/downloader/nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V
+    invoke-static {v4, v15}, Lcom/shabakaty/downloader/nl6;->perfHorizontalDescription(Landroid/view/View;Ljava/lang/CharSequence;)V
 
     .line 33
     iget-object v4, v1, Lcom/shabakaty/downloader/f42;->N:Landroid/widget/TextView;
 
-    invoke-static {v4, v12}, Lcom/shabakaty/downloader/nl6;->r(Landroid/widget/TextView;Ljava/lang/String;)V
+    invoke-static {v4, v12}, Lcom/shabakaty/downloader/nl6;->perfHorizontalText(Landroid/widget/TextView;Ljava/lang/String;)V
 
     .line 34
     iget-object v4, v1, Lcom/shabakaty/downloader/f42;->O:Lcom/facebook/drawee/view/SimpleDraweeView;
@@ -1073,7 +1073,7 @@
     .line 36
     iget-object v4, v1, Lcom/shabakaty/downloader/f42;->Q:Landroid/widget/TextView;
 
-    invoke-static {v4, v8}, Lcom/shabakaty/downloader/nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V
+    invoke-static {v4, v8}, Lcom/shabakaty/downloader/nl6;->perfHorizontalDescription(Landroid/view/View;Ljava/lang/CharSequence;)V
 
     .line 37
     iget-object v4, v1, Lcom/shabakaty/downloader/f42;->Q:Landroid/widget/TextView;
@@ -1085,7 +1085,7 @@
 
     move-object/from16 v7, v17
 
-    invoke-static {v4, v7}, Lcom/shabakaty/downloader/nl6;->r(Landroid/widget/TextView;Ljava/lang/String;)V
+    invoke-static {v4, v7}, Lcom/shabakaty/downloader/nl6;->perfHorizontalText(Landroid/widget/TextView;Ljava/lang/String;)V
 
     .line 39
     iget-object v4, v1, Lcom/shabakaty/downloader/f42;->S:Landroid/widget/ProgressBar;
@@ -1174,7 +1174,7 @@
 
     move-result-object v2
 
-    invoke-static {v0, v2}, Lcom/shabakaty/downloader/nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V
+    invoke-static {v0, v2}, Lcom/shabakaty/downloader/nl6;->perfHorizontalDescription(Landroid/view/View;Ljava/lang/CharSequence;)V
 
     :cond_26
     invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->card(Ljava/lang/Object;)V
