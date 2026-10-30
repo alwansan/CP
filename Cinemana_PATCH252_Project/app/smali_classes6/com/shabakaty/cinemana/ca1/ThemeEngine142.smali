@@ -499,7 +499,10 @@
 .end method
 
 .method public static apply(Landroid/app/Activity;)V
-    .locals 0
+    .locals 2
+
+    invoke-static {}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->begin()J
+    move-result-wide v0
 
     if-eqz p0, :cond_0
 
@@ -508,6 +511,7 @@
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->syncSystemBars(Landroid/app/Activity;)V
 
     :cond_0
+    invoke-static {v0, v1}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->themeApply(J)V
     return-void
 .end method
 

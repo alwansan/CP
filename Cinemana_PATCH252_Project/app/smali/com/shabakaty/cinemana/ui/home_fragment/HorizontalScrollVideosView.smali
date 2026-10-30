@@ -799,7 +799,13 @@
     invoke-static {v0, v1, v2, v5}, Lcom/shabakaty/downloader/fo3;->a(Landroidx/recyclerview/widget/RecyclerView;Ljava/util/List;Ljava/lang/Integer;Lcom/shabakaty/downloader/tj$a;)V
 
     :goto_4
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->row(Ljava/lang/Object;)V
+    # Equivalent to Continue106.row, which always sets the button visible.
+    # Remove reflection and I18n allocation from each home row bind.
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
+    move-result-object v0
+    iget-object v0, v0, Lcom/shabakaty/downloader/cv1;->M:Lcom/google/android/material/button/MaterialButton;
+    const/4 v1, 0x0
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
 
     return-void
 .end method

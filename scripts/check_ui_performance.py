@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH281"' in diag
+assert 'BUILD = "PATCH282"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH281"' in diag
+assert 'BUILD = "PATCH282"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -145,6 +145,15 @@ assert 'UiPerfDiag;->diff(J)V' in adapter and 'UiPerfDiag;->skippedDiff()V' in a
 assert 'UiPerfDiag;->scroll(II)V' in horizontal and 'UiPerfDiag;->scroll(II)V' in vertical
 scroll_observer = (root / "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/local/HomeScrollPerfListener.smali").read_text()
 assert 'UiPerfDiag;->scroll(II)V' in scroll_observer
+horizontal_u=smali_method(source("com/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView.smali"), '.method public final u()V')
+assert 'Continue106;->row(Ljava/lang/Object;)V' not in horizontal_u
+assert 'Lcom/shabakaty/downloader/cv1;->M:Lcom/google/android/material/button/MaterialButton;' in horizontal_u
+assert 'Landroid/view/View;->setVisibility(I)V' in horizontal_u
+theme=(root / "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/ThemeEngine142.smali").read_text()
+theme_apply=smali_method(theme, '.method public static apply(Landroid/app/Activity;)V')
+assert 'UiPerfDiag;->begin()J' in theme_apply and 'UiPerfDiag;->themeApply(J)V' in theme_apply
+assert 'FrameMetrics.SWAP_BUFFERS_DURATION' in diag
+assert 'worst_frame_layout_ms' in diag and 'worst_frame_swap_ms' in diag
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")

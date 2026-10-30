@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH281";
+    private static final String BUILD = "PATCH282";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -63,6 +63,8 @@ public final class UiPerfDiag {
     private static long homeInflateCount, homeInflateNs, homeInflateMaxNs;
     private static long detailInflateCount, detailInflateNs, detailInflateMaxNs;
     private static long layoutMaxNs, drawMaxNs;
+    private static long worstLayoutNs,worstDrawNs,worstSyncNs,worstCommandNs,worstSwapNs;
+    private static long layoutOver100,commandOver100,themeApplyCount,themeApplyMaxNs;
     // Home row types are stable numeric layout enums; never record titles or content.
     private static final long[] rowBindCount=new long[5], rowBindMaxNs=new long[5];
     private static final long[] rowCreateCount=new long[5], rowCreateMaxNs=new long[5];
@@ -80,7 +82,7 @@ public final class UiPerfDiag {
                 v[19]>0 || v[24]>0 || v[25]>0 || v[26]>0 ||
                 v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0 || v[42]>0 || v[45]>0) return true;
             for(int t=0;t<5;t++)if(v[50+4*t]>0 || v[52+4*t]>0)return true;
-            return false;
+            return v[77]>0;
         }
     }
 
@@ -98,7 +100,13 @@ public final class UiPerfDiag {
             homeInflateCount, homeInflateNs, homeInflateMaxNs,
             detailInflateCount, detailInflateNs, detailInflateMaxNs,
             layoutMaxNs, drawMaxNs};
-        long[] extended=java.util.Arrays.copyOf(v,70);
+        long[] extended=java.util.Arrays.copyOf(v,79);
+        extended[70]=worstLayoutNs;extended[71]=worstDrawNs;extended[72]=worstSyncNs;
+        extended[73]=worstCommandNs;extended[74]=worstSwapNs;
+        extended[75]=layoutOver100;extended[76]=commandOver100;
+        extended[77]=themeApplyCount;extended[78]=themeApplyMaxNs;
+        worstLayoutNs=worstDrawNs=worstSyncNs=worstCommandNs=worstSwapNs=0;
+        layoutOver100=commandOver100=themeApplyCount=themeApplyMaxNs=0;
         for(int t=0;t<5;t++) {
             int off=50+4*t;
             extended[off]=rowBindCount[t]; extended[off+1]=rowBindMaxNs[t];
@@ -217,10 +225,20 @@ public final class UiPerfDiag {
                 long draw = metrics.getMetric(FrameMetrics.DRAW_DURATION);
                 long sync = metrics.getMetric(FrameMetrics.SYNC_DURATION);
                 long command = metrics.getMetric(FrameMetrics.COMMAND_ISSUE_DURATION);
+                long swap = metrics.getMetric(FrameMetrics.SWAP_BUFFERS_DURATION);
                 synchronized (LOCK) {
                     frames++;
                     frameTotalNs += duration;
-                    if (duration > frameMaxNs) frameMaxNs = duration;
+                    if (duration > frameMaxNs) {
+                        frameMaxNs=duration;
+                        worstLayoutNs=Math.max(0,layout);
+                        worstDrawNs=Math.max(0,draw);
+                        worstSyncNs=Math.max(0,sync);
+                        worstCommandNs=Math.max(0,command);
+                        worstSwapNs=Math.max(0,swap);
+                    }
+                    if(layout>=100_000_000L)layoutOver100++;
+                    if(command>=100_000_000L)commandOver100++;
                     missed += Math.max(0, dropped);
                     if (duration > 24_000_000L) overBudget++;
                     if (duration > 32_000_000L) over32++;
@@ -343,6 +361,13 @@ public final class UiPerfDiag {
     }
 
     /** Measures parent RecyclerView section binding, separate from frame layout/measure. */
+    /** Measures ThemeEngine.apply without altering its behavior. */
+    public static void themeApply(long startedNanos) {
+        if(!installed||startedNanos<=0)return;
+        long ns=Math.max(0,SystemClock.elapsedRealtimeNanos()-startedNanos);
+        synchronized(LOCK){themeApplyCount++;if(ns>themeApplyMaxNs)themeApplyMaxNs=ns;}
+    }
+
     public static void homeRowBind(int type, long startedNanos) {
         if (!installed || startedNanos<=0 || type<0 || type>=5) return;
         long ns=Math.max(0,SystemClock.elapsedRealtimeNanos()-startedNanos);
@@ -435,6 +460,15 @@ public final class UiPerfDiag {
                 extended.append(",\"row_").append(t).append("_create_count\":").append(v[off+2]);
                 extended.append(",\"row_").append(t).append("_create_max_ms\":").append(String.format(Locale.US,"%.2f",v[off+3]/1e6));
             }
+            extended.append(",\"worst_frame_layout_ms\":").append(String.format(Locale.US,"%.2f",v[70]/1e6));
+            extended.append(",\"worst_frame_draw_ms\":").append(String.format(Locale.US,"%.2f",v[71]/1e6));
+            extended.append(",\"worst_frame_sync_ms\":").append(String.format(Locale.US,"%.2f",v[72]/1e6));
+            extended.append(",\"worst_frame_command_ms\":").append(String.format(Locale.US,"%.2f",v[73]/1e6));
+            extended.append(",\"worst_frame_swap_ms\":").append(String.format(Locale.US,"%.2f",v[74]/1e6));
+            extended.append(",\"layout_over_100ms\":").append(String.format(Locale.US,"%d",v[75]));
+            extended.append(",\"command_over_100ms\":").append(String.format(Locale.US,"%d",v[76]));
+            extended.append(",\"theme_apply_count\":").append(String.format(Locale.US,"%d",v[77]));
+            extended.append(",\"theme_apply_max_ms\":").append(String.format(Locale.US,"%.2f",v[78]/1e6));
             append(extended.append('}').toString());
         } catch(Throwable error) {
             Log.w(TAG,"format_failed type="+error.getClass().getSimpleName());
