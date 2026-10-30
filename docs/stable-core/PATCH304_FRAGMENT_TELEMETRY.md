@@ -1,0 +1,7 @@
+# PATCH304 — screen-specific telemetry (no functional behavior changes)
+
+PATCH303 restored global frame metrics and startup markers, but HomeActivity alone cannot identify all Fragment screens. PATCH304 adds one passive `UiPerfDiag.mark` call in existing resume/created/destroy lifecycle methods on Home (`vt1`), details (`d15`), search (`yy3`), profile (`jg3`), categories (`bx`), franchises (`cm1`); downloads (`pz0`) retains PATCH303 begin/end markers. The marker only increments counters, swaps diagnostic screen bucket and schedules sparse logs on the writer thread. Existing UI/adapter/download behavior is unchanged.
+
+PATCH304 also updates instrumentation build labels, retains byte-identical four-class RTSP DEX split, and adds per-fragment guard assertions. No core downloader/queue, MKV, storage schema, notification code, user account, player or `Continue106` changes. Do not interpret passing CI as proof of runtime stability.
+
+Diagnostics: `Cinemana/work/log/ui_performance.jsonl`; `CinemanaUITrace` and `CinemanaStartupTrace` Logcat tags. Run identical navigation sessions with downloaded content present and absent, **back up before deleting anything**. Review `CL/logfox` startup ANRs separately from frame drops.

@@ -2305,6 +2305,10 @@
 
     .line 5
     invoke-super {p0}, Lcom/shabakaty/downloader/hj;->onDestroyView()V
+    # PATCH304: passive screen identity marker (no adapter/service changes).
+    const-string v0, "detail_destroy_view"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
 
     return-void
 .end method
@@ -2314,6 +2318,10 @@
 
     .line 1
     invoke-super {p0}, Landroidx/fragment/app/Fragment;->onResume()V
+    # PATCH304: passive screen identity marker (no adapter/service changes).
+    const-string v0, "detail_visible"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
 
     .line 2
     invoke-virtual {p0}, Lcom/shabakaty/downloader/hj;->c2()Lcom/shabakaty/downloader/xk;

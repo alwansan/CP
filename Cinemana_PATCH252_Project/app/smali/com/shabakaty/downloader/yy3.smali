@@ -723,6 +723,10 @@
 
 .method public onResume()V
     .locals 3
+    # PATCH304: passive screen identity marker (no adapter/service changes).
+    const-string v0, "search_visible"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
+
 
     .line 1
     iget-object v0, p0, Lcom/shabakaty/downloader/hj;->t:Landroidx/databinding/ViewDataBinding;
