@@ -430,10 +430,10 @@ public final class UiPerfDiag {
             StringBuilder extended=new StringBuilder(snapshot.substring(0,snapshot.length()-1));
             for(int t=0;t<5;t++) {
                 int off=50+4*t;
-                extended.append(",\\\"row_").append(t).append("_bind_count\\\":").append(v[off]);
-                extended.append(",\\\"row_").append(t).append("_bind_max_ms\\\":").append(String.format(Locale.US,"%.2f",v[off+1]/1e6));
-                extended.append(",\\\"row_").append(t).append("_create_count\\\":").append(v[off+2]);
-                extended.append(",\\\"row_").append(t).append("_create_max_ms\\\":").append(String.format(Locale.US,"%.2f",v[off+3]/1e6));
+                extended.append(",\"row_").append(t).append("_bind_count\":").append(v[off]);
+                extended.append(",\"row_").append(t).append("_bind_max_ms\":").append(String.format(Locale.US,"%.2f",v[off+1]/1e6));
+                extended.append(",\"row_").append(t).append("_create_count\":").append(v[off+2]);
+                extended.append(",\"row_").append(t).append("_create_max_ms\":").append(String.format(Locale.US,"%.2f",v[off+3]/1e6));
             }
             append(extended.append('}').toString());
         } catch(Throwable error) {
