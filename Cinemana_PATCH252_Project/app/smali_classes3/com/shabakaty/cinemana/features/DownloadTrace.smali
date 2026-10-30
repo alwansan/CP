@@ -230,6 +230,23 @@
 
     .line 30
     :cond_1
+    # PATCH301: asynchronous diagnostic file logging only on main thread.
+    invoke-static {}, Landroid/os/Looper;->myLooper()Landroid/os/Looper;
+    move-result-object v0
+    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
+    move-result-object v1
+    if-ne v0, v1, :perf301_worker_log
+
+    :perf301_try_start
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/DownloadTrace301;->schedule(Landroid/content/Context;Ljava/lang/String;)V
+    :perf301_try_end
+    .catch Ljava/lang/Throwable; {:perf301_try_start .. :perf301_try_end} :perf301_schedule_error
+    return-void
+
+    :perf301_schedule_error
+    move-exception v0
+    # If async logger class cannot initialize, retain original logging path.
+    :perf301_worker_log
     :try_start_0
     new-instance p0, Ljava/io/File;
 

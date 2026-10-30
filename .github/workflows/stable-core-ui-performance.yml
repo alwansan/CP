@@ -24,7 +24,7 @@ jobs:
           baseline=82d7f67037f67659115d41782d3a9b5bf4e0bd02
           while IFS= read -r file; do
             case "$file" in
-              Cinemana_PATCH252_Project/app/res/layout-v22/fragment_video_info.xml|.github/workflows/stable-core-ui-performance.yml|scripts/test_stable_core_layout.py|scripts/audit_download_logs.py|.github/workflows/download-audit.yml|patches/local-account/src/com/shabakaty/cinemana/local/UiPerfDiag.java|Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/ui/home_activity/HomeActivity.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/pz0.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/CinemanaApplication.smali|scripts/analyze_ui_performance.py|scripts/test_stable_diagnostics.py|patches/local-account/validate.py|Cinemana_PATCH252_Project/app/smali/com/google/android/exoplayer2/source/rtsp/*.smali|Cinemana_PATCH252_Project/app/smali_classes10/com/google/android/exoplayer2/source/rtsp/*.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/vt1.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/d15.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/yy3.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/jg3.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/bx.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/cm1.smali|docs/stable-core/*) ;;
+              Cinemana_PATCH252_Project/app/res/layout-v22/fragment_video_info.xml|.github/workflows/stable-core-ui-performance.yml|scripts/test_stable_core_layout.py|scripts/audit_download_logs.py|.github/workflows/download-audit.yml|patches/local-account/src/com/shabakaty/cinemana/local/UiPerfDiag.java|Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/ui/home_activity/HomeActivity.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/pz0.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/CinemanaApplication.smali|scripts/analyze_ui_performance.py|scripts/test_stable_diagnostics.py|patches/local-account/validate.py|Cinemana_PATCH252_Project/app/smali/com/google/android/exoplayer2/source/rtsp/*.smali|Cinemana_PATCH252_Project/app/smali_classes10/com/google/android/exoplayer2/source/rtsp/*.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/vt1.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/d15.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/yy3.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/jg3.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/bx.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/cm1.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301$Log.smali|docs/stable-core/*) ;;
               *) echo "Unaudited change to functional core: $file"; exit 1 ;;
             esac
           done < <(git diff --name-only "$baseline" "$GITHUB_SHA")
@@ -68,31 +68,31 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH304_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH304_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH304_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH304_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH304_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH305_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH305_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH305_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH305_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH305_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-Stable-Core-PATCH304
+          name: Cinemana-Stable-Core-PATCH305
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH304_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH305_signed.apk
             Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: stable-core-PATCH304-${{ github.run_number }}
+          tag_name: stable-core-PATCH305-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana Stable Core PATCH304 #${{ github.run_number }}"
+          name: "Cinemana Stable Core PATCH305 #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
             Baseline PATCH274 with reviewed layout-only optimization (PATCH298). Core download, notification and MKV code paths are unchanged. Static/build checks are not device/runtime evidence.
             Uses existing checkpoint145 signing key. Verify compatibility and test downloads on device before relying on this build.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH304_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH305_signed.apk
             Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
           fail_on_unmatched_files: true
