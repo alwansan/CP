@@ -169,7 +169,7 @@ assert 'FrameMetrics.INPUT_HANDLING_DURATION' in diag
 assert 'FrameMetrics.ANIMATION_DURATION' in diag
 assert 'worst_frame_unknown_ms' in diag and 'unknown_over_100ms' in diag
 assert 'main_stack_binder' in diag and 'main_stack_lock' in diag
-assert 'Arrays.copyOf(v,92)' in diag
+assert 'Arrays.copyOf(v,94)' in diag
 root_created=smali_method(home_fragment,'.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V')
 assert 'RecyclerView;->setItemViewCacheSize(I)V' in root_created
 assert 'const/4 p2, 0x3' in root_created
