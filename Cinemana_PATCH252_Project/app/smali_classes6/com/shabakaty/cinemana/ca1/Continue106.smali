@@ -247,7 +247,7 @@
     :goto_1
     if-eqz v2, :cond_8
 
-    invoke-virtual {v2}, Ljava/lang/Class;->getDeclaredMethods()[Ljava/lang/reflect/Method;
+    invoke-static {v2}, Lcom/shabakaty/cinemana/ca1/MethodCache299;->declaredMethods(Ljava/lang/Class;)[Ljava/lang/reflect/Method;
 
     move-result-object v3
 
