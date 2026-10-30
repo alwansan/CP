@@ -178,7 +178,10 @@
 .end method
 
 .method public onPause()V
-    .locals 0
+    .locals 1
+
+    const-string v0, "downloads_hidden"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Fix100;->hide(Ljava/lang/Object;)V
 
@@ -188,11 +191,15 @@
 .end method
 
 .method public onResume()V
-    .locals 0
+    .locals 1
 
     invoke-super {p0}, Lcom/shabakaty/downloader/hj;->onResume()V
 
     invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Fix100;->show(Ljava/lang/Object;)V
+
+    # PATCH303: report visibility only; do not pause or modify download tasks.
+    const-string v0, "downloads_visible"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     return-void
 .end method
