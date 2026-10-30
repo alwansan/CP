@@ -1,0 +1,26 @@
+name: Audit LogFox startup ANRs (CL)
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/stable-core-ui-performance]
+    paths:
+      - '.github/workflows/logfox-anr-audit.yml'
+      - 'scripts/audit_logfox.py'
+permissions:
+  contents: read
+jobs:
+  analyze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and summarize latest public LogFox ANRs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/audit_logfox.py "$RUNNER_TEMP/cinemana-logfox" --fetch | tee "$RUNNER_TEMP/logfox-audit.md" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: logfox-anr-audit
+          path: ${{ runner.temp }}/logfox-audit.md
+          if-no-files-found: error
