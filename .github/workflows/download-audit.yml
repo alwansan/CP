@@ -1,0 +1,35 @@
+name: Audit full CL download and MKV logs
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/stable-core-ui-performance]
+    paths: ['.github/workflows/download-audit.yml', 'scripts/audit_download_logs.py']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch complete CL logs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cl-logs"
+          for file in downloads.log diagnostics.log .mkv_export.log ui95.log ui_performance.jsonl ui_performance.previous.jsonl; do
+            curl -fsSL --retry 3 "https://raw.githubusercontent.com/alwansan/CL/main/log/$file" -o "$RUNNER_TEMP/cl-logs/$file"
+          done
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/alwansan/CL/main/data/mkv_repair_pending.properties -o "$RUNNER_TEMP/cl-logs/mkv_repair_pending.properties"
+          curl -fsSL --retry 3 https://api.github.com/repos/alwansan/CL/commits/main -o "$RUNNER_TEMP/cl-logs/commit.json"
+          python3 -c 'import json,os;d=json.load(open(os.environ["RUNNER_TEMP"]+"/cl-logs/commit.json"));print("CL source commit:",d["sha"])'
+      - name: Count errors and state transitions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/audit_download_logs.py "$RUNNER_TEMP/cl-logs" | tee "$RUNNER_TEMP/stable-core-audit.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stable-core-download-audit
+          path: ${{ runner.temp }}/stable-core-audit.txt
+          if-no-files-found: error

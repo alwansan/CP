@@ -24,7 +24,7 @@ jobs:
           baseline=82d7f67037f67659115d41782d3a9b5bf4e0bd02
           while IFS= read -r file; do
             case "$file" in
-              Cinemana_PATCH252_Project/app/res/layout-v22/fragment_video_info.xml|.github/workflows/stable-core-ui-performance.yml|scripts/test_stable_core_layout.py|docs/stable-core/*) ;;
+              Cinemana_PATCH252_Project/app/res/layout-v22/fragment_video_info.xml|.github/workflows/stable-core-ui-performance.yml|scripts/test_stable_core_layout.py|scripts/audit_download_logs.py|.github/workflows/download-audit.yml|docs/stable-core/*) ;;
               *) echo "Unaudited change to functional core: $file"; exit 1 ;;
             esac
           done < <(git diff --name-only "$baseline" "$GITHUB_SHA")
