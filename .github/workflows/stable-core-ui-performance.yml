@@ -1,0 +1,97 @@
+name: Build stable core UI performance APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/stable-core-ui-performance]
+    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/stable-core-ui-performance.yml', 'scripts/test_stable_core_layout.py', 'docs/stable-core/**']
+permissions:
+  contents: write
+concurrency:
+  group: stable-core-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Protect original download and background systems
+        shell: bash
+        run: |
+          set -euo pipefail
+          baseline=82d7f67037f67659115d41782d3a9b5bf4e0bd02
+          while IFS= read -r file; do
+            case "$file" in
+              Cinemana_PATCH252_Project/app/res/layout-v22/fragment_video_info.xml|.github/workflows/stable-core-ui-performance.yml|scripts/test_stable_core_layout.py|docs/stable-core/*) ;;
+              *) echo "Unaudited change to functional core: $file"; exit 1 ;;
+            esac
+          done < <(git diff --name-only "$baseline" "$GITHUB_SHA")
+          python3 scripts/test_stable_core_layout.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0'
+      - name: Download pinned compiler and test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/local-tools"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/org/robolectric/android-all/13-robolectric-9030017/android-all-13-robolectric-9030017.jar -o "$RUNNER_TEMP/local-tools/android.jar"
+          curl --fail --location --retry 3 https://storage.googleapis.com/r8-releases/raw/8.3.37/r8.jar -o "$RUNNER_TEMP/local-tools/r8.jar"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar -o "$RUNNER_TEMP/local-tools/gson.jar"
+          echo '4241c14a7727c34feea6507ec801318a3d4a90f070e4525681079fb94ee4c593  '"$RUNNER_TEMP/local-tools/gson.jar" | sha256sum --check
+      - name: Test account storage and API routing; compile helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 patches/local-account/run_tests.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --gson-jar "$RUNNER_TEMP/local-tools/gson.jar"
+          python3 patches/local-account/build.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --r8-jar "$RUNNER_TEMP/local-tools/r8.jar"
+          python3 patches/local-account/validate.py
+          python3 scripts/validate_recovery.py
+          python3 scripts/test_reference_guards.py
+          python3 scripts/test_recovery_flow.py
+          python3 scripts/test_apk_dex.py
+          bash Cinemana_PATCH252_Project/build.sh
+      - name: Align, sign and verify test APK
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: |
+          set -euo pipefail
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH302_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH302_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH302_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH302_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH302_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cinemana-Stable-Core-PATCH302
+          path: |
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH302_signed.apk
+            Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Publish direct APK release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: stable-core-PATCH302-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: "Cinemana Stable Core PATCH302 #${{ github.run_number }}"
+          prerelease: true
+          make_latest: "false"
+          body: |
+            Baseline PATCH274 with reviewed layout-only optimization (PATCH298). Core download, notification and MKV code paths are unchanged. Static/build checks are not device/runtime evidence.
+            Uses existing checkpoint145 signing key. Verify compatibility and test downloads on device before relying on this build.
+          files: |
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH302_signed.apk
+            Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
+          fail_on_unmatched_files: true
