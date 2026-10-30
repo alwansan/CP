@@ -2452,192 +2452,92 @@
     return-void
 
     .line 167
-    :cond_7
     const-string v3, "S"
-
     invoke-static {p0, v3}, Lcom/shabakaty/cinemana/ca1/Continue106;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
     move-result-object p0
+    # PATCH293: S is the XML LinearLayout's ProgressBar (f42.S).
+    check-cast p0, Landroid/widget/ProgressBar;
 
-    const-string v3, "setVisibility"
+    invoke-virtual {p0}, Landroid/view/View;->getVisibility()I
+    move-result v3
+    if-eqz v3, :perf293_visible
+    invoke-virtual {p0, v2}, Landroid/view/View;->setVisibility(I)V
+    :perf293_visible
 
-    new-array v4, v1, [Ljava/lang/Object;
-
-    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object v6
-
-    aput-object v6, v4, v2
-
-    invoke-static {p0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
-    const-string v3, "setMax"
-
-    new-array v4, v1, [Ljava/lang/Object;
-
-    const/16 v6, 0x64
-
-    invoke-static {v6}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object v6
-
-    aput-object v6, v4, v2
-
-    invoke-static {p0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
-    const-string v3, "setProgress"
-
-    new-array v4, v1, [Ljava/lang/Object;
+    const/16 v3, 0x64
+    invoke-virtual {p0}, Landroid/widget/ProgressBar;->getMax()I
+    move-result v4
+    if-eq v4, v3, :perf293_max
+    invoke-virtual {p0, v3}, Landroid/widget/ProgressBar;->setMax(I)V
+    :perf293_max
 
     iget-wide v6, v0, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;->p:J
-
     iget-wide v8, v0, Lcom/shabakaty/cinemana/ca1/Continue106$Entry;->d:J
-
     invoke-static {v6, v7, v8, v9}, Lcom/shabakaty/cinemana/ca1/Progress106;->percent(JJ)I
-
-    move-result v0
-
-    invoke-static {v0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object v0
-
-    aput-object v0, v4, v2
-
-    invoke-static {p0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result v3
+    invoke-virtual {p0}, Landroid/widget/ProgressBar;->getProgress()I
+    move-result v4
+    if-eq v4, v3, :perf293_progress
+    invoke-virtual {p0, v3}, Landroid/widget/ProgressBar;->setProgress(I)V
+    :perf293_progress
 
     .line 168
-    const-string v0, "android.content.res.ColorStateList"
-
-    invoke-static {v0}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
-
-    move-result-object v0
-
-    const-string v3, "valueOf"
-
-    new-array v4, v1, [Ljava/lang/Object;
-
-    const v6, -0x28e6e0
-
-    invoke-static {v6}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object v6
-
-    aput-object v6, v4, v2
-
-    invoke-static {v0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
-    move-result-object v0
-
-    const-string v3, "setProgressTintList"
-
-    new-array v4, v1, [Ljava/lang/Object;
-
-    aput-object v0, v4, v2
-
-    invoke-static {p0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    const v3, -0x28e6e0
+    invoke-virtual {p0}, Landroid/widget/ProgressBar;->getProgressTintList()Landroid/content/res/ColorStateList;
+    move-result-object v4
+    if-eqz v4, :perf293_tint_update
+    invoke-virtual {v4}, Landroid/content/res/ColorStateList;->isStateful()Z
+    move-result v6
+    if-nez v6, :perf293_tint_update
+    invoke-virtual {v4}, Landroid/content/res/ColorStateList;->getDefaultColor()I
+    move-result v6
+    if-eq v6, v3, :perf293_tint_done
+    :perf293_tint_update
+    invoke-static {v3}, Landroid/content/res/ColorStateList;->valueOf(I)Landroid/content/res/ColorStateList;
+    move-result-object v4
+    invoke-virtual {p0, v4}, Landroid/widget/ProgressBar;->setProgressTintList(Landroid/content/res/ColorStateList;)V
+    :perf293_tint_done
 
     .line 169
-    const-string v0, "getLayoutParams"
-
-    new-array v3, v2, [Ljava/lang/Object;
-
-    invoke-static {p0, v0, v3}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    invoke-virtual {p0}, Landroid/view/View;->getLayoutParams()Landroid/view/ViewGroup$LayoutParams;
     move-result-object v0
-
     sget-object v3, Lcom/shabakaty/cinemana/ca1/Continue106;->heights:Ljava/util/Map;
-
     invoke-interface {v3, p0}, Ljava/util/Map;->containsKey(Ljava/lang/Object;)Z
-
     move-result v4
-
     if-nez v4, :cond_8
-
-    const-string v4, "height"
-
-    invoke-static {v0, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v4
-
-    check-cast v4, Ljava/lang/Number;
-
-    invoke-virtual {v4}, Ljava/lang/Number;->intValue()I
-
-    move-result v4
-
+    iget v4, v0, Landroid/view/ViewGroup$LayoutParams;->height:I
     invoke-static {v4}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
     move-result-object v4
-
     invoke-interface {v3, p0, v4}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
     .line 170
     :cond_8
-    const-string v3, "getResources"
-
-    new-array v4, v2, [Ljava/lang/Object;
-
-    invoke-static {p0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;
     move-result-object v3
-
-    const-string v4, "getDisplayMetrics"
-
-    new-array v6, v2, [Ljava/lang/Object;
-
-    invoke-static {v3, v4, v6}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    invoke-virtual {v3}, Landroid/content/res/Resources;->getDisplayMetrics()Landroid/util/DisplayMetrics;
     move-result-object v3
-
-    const-string v4, "density"
-
-    invoke-static {v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
-
-    move-result-object v3
-
-    check-cast v3, Ljava/lang/Number;
-
-    invoke-virtual {v3}, Ljava/lang/Number;->floatValue()F
-
-    move-result v3
-
-    const-string v4, "height"
-
+    iget v3, v3, Landroid/util/DisplayMetrics;->density:F
     const/high16 v6, 0x40800000    # 4.0f
-
     mul-float v3, v3, v6
-
     invoke-static {v3}, Ljava/lang/Math;->round(F)I
-
     move-result v3
-
+    const/4 v5, 0x2
     invoke-static {v5, v3}, Ljava/lang/Math;->max(II)I
-
     move-result v3
 
-    invoke-static {v3}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object v3
-
-    invoke-static {v0, v4, v3}, Lcom/shabakaty/cinemana/ca1/Continue106;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
-
-    const-string v3, "gravity"
-
-    const/16 v4, 0x10
-
-    invoke-static {v4}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object v4
-
-    invoke-static {v0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
-
-    const-string v3, "setLayoutParams"
-
-    new-array v1, v1, [Ljava/lang/Object;
-
-    aput-object v0, v1, v2
-
-    invoke-static {p0, v3, v1}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    # LinearLayout.LayoutParams owns the gravity field. Skip identical layout.
+    check-cast v0, Landroid/widget/LinearLayout$LayoutParams;
+    iget v4, v0, Landroid/view/ViewGroup$LayoutParams;->height:I
+    if-ne v4, v3, :perf293_layout_apply
+    iget v4, v0, Landroid/widget/LinearLayout$LayoutParams;->gravity:I
+    const/16 v6, 0x10
+    if-eq v4, v6, :perf293_layout_done
+    :perf293_layout_apply
+    iput v3, v0, Landroid/view/ViewGroup$LayoutParams;->height:I
+    const/16 v6, 0x10
+    iput v6, v0, Landroid/widget/LinearLayout$LayoutParams;->gravity:I
+    invoke-virtual {p0, v0}, Landroid/view/View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V
+    :perf293_layout_done
 
     .line 172
     return-void

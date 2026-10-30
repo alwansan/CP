@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH292"' in diag
+assert 'BUILD = "PATCH293"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH292"' in diag
+assert 'BUILD = "PATCH293"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -271,6 +271,21 @@ assert ':perf_badge_text_same' in badge107 and ':perf_badge_visible' in badge107
 assert 'const-string v5, "setVisibility"' in badge107
 assert 'const-string p0, "setText"' not in badge107
 assert 'const-string v5, "findViewWithTag"' not in badge107
+assert 'Continue106$$ExternalSyntheticLambda3' in card106
+# PATCH293: no per-bind reflective progress operations and no extra layout pass
+# when watched progress state is already correct. Post callback remains PATCH288.
+progress293=paint106.split('.line 167',1)[1].split('.line 172',1)[0]
+for api in ('ProgressBar;->getProgress()I','ProgressBar;->setProgress(I)V',
+            'ProgressBar;->getMax()I','ProgressBar;->setMax(I)V',
+            'ProgressBar;->getProgressTintList()Landroid/content/res/ColorStateList;',
+            'ProgressBar;->setProgressTintList(Landroid/content/res/ColorStateList;)V',
+            'LinearLayout$LayoutParams;->gravity:I',
+            'View;->setLayoutParams(Landroid/view/ViewGroup$LayoutParams;)V'):
+    assert api in progress293, api
+assert 'sget-object v3, Lcom/shabakaty/cinemana/ca1/Continue106;->heights:Ljava/util/Map;' in progress293
+assert ':perf293_layout_done' in progress293
+assert 'Continue106;->call(' not in progress293
+assert 'Class;->forName(' not in progress293
 assert 'Continue106$$ExternalSyntheticLambda3' in card106
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
