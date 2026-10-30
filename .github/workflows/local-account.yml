@@ -76,7 +76,7 @@ jobs:
           prerelease: true
           make_latest: "false"
           body: |
-            UI-only safe rebase of original feature/local-account. All baseline download, multiple downloads, MKV, notifications, subscriptions and account core sources are preserved and fingerprint-verified. UI layout and text optimizations only; original marquee and RecyclerView item animations preserved. Requires on-device tests.
+            UI-only safe rebase of original feature/local-account. Four unmodified ExoPlayer RTSP class blobs relocated from smali to classes10 to respect primary DEX reference limit. All baseline download, multiple downloads, MKV, notifications, subscriptions and account core sources are preserved and fingerprint-verified. UI layout and text optimizations only; original marquee and RecyclerView item animations preserved. Requires on-device tests.
             Install the APK directly as an update; preserve app data.
           files: |
             Cinemana_PATCH252_Project/output/Cinemana_UI_Safe_PATCH302_signed.apk

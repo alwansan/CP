@@ -7,3 +7,5 @@ Selected UI optimizations only: reduced implicit LayoutTransition on API22+ deta
 All backend code remains byte-for-byte identical to local-account base for Continue106, Episodes107, Queue110, BatchDownload, Restart108, DownloadTrace, MkvManifestStore, CnmDownloadQueue, RenameAssets, LocalRuntime, LocalEpisodeJob, LocalAccountStore. Signed release CI checks Git blob SHA for all files plus DEX consistency.
 
 CL logs show multi-download queue admission accepted=220 and accepted=247 without enqueue failure, plus separate `ambiguous exact native subtitle task` error. Actual user-visible download failure not yet proven to originate in a specific patch. On-device test must include multiple simultaneous downloads, resume after background, MKV, subtitles, and notification delivery. No main changes.
+
+Build fix: Android primary DEX exceeded 65535 method/type references in local-account baseline. Relocate 4 byte-identical ExoPlayer RTSP smali files (c,d,f,h) to smali_classes10. No code or API changes; CI verifies original blob hashes and one-copy placement.

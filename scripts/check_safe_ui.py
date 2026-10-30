@@ -23,6 +23,15 @@ for rel, expected in locked.items():
     actual=sha1(b"blob "+str(len(content)).encode()+bytes([0])+content).hexdigest()
     assert actual==expected, f"PROTECTED BACKEND CHANGED: {rel}: {actual} != {expected}"
 project=root/"Cinemana_PATCH252_Project/app"
+# Byte-identical RTSP DEX sharding only: keep the ExoPlayer code itself unchanged.
+rtsp={"c":"b4bdddbf23be9b463c50ba8b2f9ee1c3a7ac5720","d":"8c34412a71cbf23a9897edac0e44701df98f7b90","f":"0fd846bb197af8c110b2e47926c0484a31d408e5","h":"eb0bc91df7113549f9bfa84bdbcfeb3b8f9788bf"}
+for name, expected in rtsp.items():
+    src=project/f"smali/com/google/android/exoplayer2/source/rtsp/{name}.smali"
+    dest=project/f"smali_classes10/com/google/android/exoplayer2/source/rtsp/{name}.smali"
+    assert not src.exists(), "Duplicate RTSP class in primary DEX: "+str(src)
+    data=dest.read_bytes()
+    sha=sha1(b"blob "+str(len(data)).encode()+bytes([0])+data).hexdigest()
+    assert sha==expected, "RTSP code changed while relocating: "+name
 for rel in (
     "smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301.smali",
     "smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301$Log.smali",
