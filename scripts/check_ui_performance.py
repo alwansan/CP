@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH291"' in diag
+assert 'BUILD = "PATCH292"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH291"' in diag
+assert 'BUILD = "PATCH292"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -257,6 +257,21 @@ assert g42bind.count('nl6;->perfHorizontalText(Landroid/widget/TextView;Ljava/la
 assert g42bind.count('nl6;->perfHorizontalDescription(Landroid/view/View;Ljava/lang/CharSequence;)V') == 3
 assert 'nl6;->r(Landroid/widget/TextView;Ljava/lang/String;)V' not in g42bind
 assert 'nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V' not in g42bind
+# PATCH292: eliminate repeated reflective badge view/text calls without changing
+# the crashed PATCH289 callback, the generated badge layout or its styling.
+ep107=(root / "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Episodes107.smali").read_text()
+badge107=smali_method(ep107,'.method public static badge(Ljava/lang/Object;Z)V')
+assert 'Landroid/view/View;->getParent()Landroid/view/ViewParent;' in badge107
+assert 'Landroid/view/View;->findViewWithTag(Ljava/lang/Object;)Landroid/view/View;' in badge107
+assert 'instance-of v1, v0, Landroid/view/View;' in badge107
+assert 'Landroid/text/TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z' in badge107
+assert 'TextView;->setText(Ljava/lang/CharSequence;)V' in badge107
+assert badge107.count('Landroid/view/View;->setVisibility(I)V') == 2
+assert ':perf_badge_text_same' in badge107 and ':perf_badge_visible' in badge107
+assert 'const-string v5, "setVisibility"' in badge107
+assert 'const-string p0, "setText"' not in badge107
+assert 'const-string v5, "findViewWithTag"' not in badge107
+assert 'Continue106$$ExternalSyntheticLambda3' in card106
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")

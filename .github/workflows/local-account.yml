@@ -1,4 +1,4 @@
-name: Build scoped horizontal video label rebinding optimization (phase 17)
+name: Build episode badge reflect-free fastpath (phase 18)
 on:
   workflow_dispatch:
   push:
@@ -55,32 +55,32 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH291_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH291_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH291_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH291_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          python3 scripts/test_continue_dex_linkage.py Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH291_signed.apk
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH291_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH292_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH292_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH292_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH292_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          python3 scripts/test_continue_dex_linkage.py Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH292_signed.apk
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH292_signed.apk > Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-UI-Performance-PATCH291
+          name: Cinemana-UI-Performance-PATCH292
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH291_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH292_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ui-performance-PATCH291-${{ github.run_number }}
+          tag_name: ui-performance-PATCH292-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana UI Performance PATCH291 #${{ github.run_number }}"
+          name: "Cinemana UI Performance PATCH292 #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            Independent UI performance test build from feature/ui-performance-optimization. Phase 1 viewport/image rendering and Phase 2 adapter diff guards, throttled pagination, stable scroll animations, plus deduplicated home refresh, measured home/details inflation, per-frame max layout/draw, guarded vertical pagination, fixed-size home viewport, timed section viewholder creation/binding, screen-accurate navigation snapshots, 4Hz main-thread stall sampling, correlated slow-frame pipeline and theme apply measurements and bounded FrameMetrics/scroll/CPU/memory JSONL diagnostics. PATCH291 adds safe no-op guards for previously localized unchanged horizontal video title/metadata labels; PATCH290 original callback and synthetic class untouched. Continue card parent traversal optimization retained. DEX and signed Lambda linkage checks required. Diagnostic stack sampling remains available. No merge to main.
+            Independent UI performance test build from feature/ui-performance-optimization. Phase 1 viewport/image rendering and Phase 2 adapter diff guards, throttled pagination, stable scroll animations, plus deduplicated home refresh, measured home/details inflation, per-frame max layout/draw, guarded vertical pagination, fixed-size home viewport, timed section viewholder creation/binding, screen-accurate navigation snapshots, 4Hz main-thread stall sampling, correlated slow-frame pipeline and theme apply measurements and bounded FrameMetrics/scroll/CPU/memory JSONL diagnostics. PATCH292 optimizes episode badge parent lookup and idempotent text/visibility updates; PATCH291 horizontal card label no-op guards retained. The original PATCH288 callback and synthetic class remain unchanged; signed DEX Lambda-linkage guards still required. Diagnostic stack sampling remains available. No merge to main.
             Install the APK directly as an update; preserve app data.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH291_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_UI_Performance_PATCH292_signed.apk
             Cinemana_PATCH252_Project/output/LOCAL_SHA256SUMS.txt
           fail_on_unmatched_files: true

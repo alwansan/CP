@@ -37,36 +37,26 @@
 
     move-result-object v0
 
-    const-string v1, "getParent"
-
-    const/4 v2, 0x0
-
-    new-array v3, v2, [Ljava/lang/Object;
-
-    invoke-static {v0, v1, v3}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    # PATCH292: the bound poster is a View. Keep the existing try/catch.
+    check-cast v0, Landroid/view/View;
+    invoke-virtual {v0}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
     move-result-object v0
+    const/4 v2, 0x0
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 
-    if-nez v0, :cond_0
-
+    # Parent can be an Android ViewParent that is not a View.
+    # Such a parent cannot own our episode badge; skip it safely.
+    instance-of v1, v0, Landroid/view/View;
+    if-nez v1, :cond_0
     return-void
 
     .line 110
     :cond_0
     const/4 v1, 0x1
-
-    new-array v3, v1, [Ljava/lang/Object;
-
     const-string v4, "ca1_episode_badge107"
-
-    aput-object v4, v3, v2
-
-    const-string v5, "findViewWithTag"
-
-    invoke-static {v0, v5, v3}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    check-cast v0, Landroid/view/View;
+    invoke-virtual {v0, v4}, Landroid/view/View;->findViewWithTag(Ljava/lang/Object;)Landroid/view/View;
     move-result-object v3
 
     if-eqz p1, :cond_1
@@ -98,17 +88,12 @@
 
     if-eqz v3, :cond_2
 
-    new-array p0, v1, [Ljava/lang/Object;
-
-    const/16 p1, 0x8
-
-    invoke-static {p1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
-    move-result-object p1
-
-    aput-object p1, p0, v2
-
-    invoke-static {v3, v5, p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    # No redundant invalidation when the badge is already hidden.
+    invoke-virtual {v3}, Landroid/view/View;->getVisibility()I
+    move-result p1
+    const/16 v6, 0x8
+    if-eq p1, v6, :cond_2
+    invoke-virtual {v3, v6}, Landroid/view/View;->setVisibility(I)V
 
     :cond_2
     return-void
@@ -435,24 +420,23 @@
 
     .line 118
     :cond_4
-    new-array p1, v1, [Ljava/lang/Object;
-
-    aput-object p0, p1, v2
-
-    const-string p0, "setText"
-
-    invoke-static {v3, p0, p1}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
-    new-array p0, v1, [Ljava/lang/Object;
-
-    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
-
+    # Badge is a TextView created by the existing branch above.
+    # Avoid costly reflection and layout on identical label rebinds.
+    check-cast v3, Landroid/widget/TextView;
+    invoke-virtual {v3}, Landroid/widget/TextView;->getText()Ljava/lang/CharSequence;
     move-result-object p1
+    invoke-static {p1, p0}, Landroid/text/TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+    move-result p1
+    if-nez p1, :perf_badge_text_same
+    invoke-virtual {v3, p0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    aput-object p1, p0, v2
+    :perf_badge_text_same
+    invoke-virtual {v3}, Landroid/view/View;->getVisibility()I
+    move-result p1
+    if-eqz p1, :perf_badge_visible
+    invoke-virtual {v3, v2}, Landroid/view/View;->setVisibility(I)V
 
-    invoke-static {v3, v5, p0}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    :perf_badge_visible
     .line 119
     return-void
 
