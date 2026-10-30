@@ -124,7 +124,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH300"' in diag
+assert 'BUILD = "PATCH301"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -146,7 +146,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH300"' in diag
+assert 'BUILD = "PATCH301"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -399,6 +399,25 @@ assert '.class public final Lcom/shabakaty/cinemana/ca1/Continue106$ExternalSynt
 for runnable in (original_runnable, alias_runnable):
     assert '.implements Ljava/lang/Runnable;' in runnable
     assert 'Continue106;->lambda$card$5(Ljava/lang/ref/WeakReference;)V' in runnable
+
+# PATCH301: main-thread log path must not perform the original file writes.
+download_trace=(root/'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace.smali').read_text()
+logger=smali_method(download_trace,'.method public static log(Landroid/content/Context;Ljava/lang/String;)V')
+assert 'Looper;->myLooper()Landroid/os/Looper;' in logger
+assert 'Looper;->getMainLooper()Landroid/os/Looper;' in logger
+assert 'if-ne v0, v1, :perf301_worker_log' in logger
+assert 'DownloadTrace301;->schedule(Landroid/content/Context;Ljava/lang/String;)V' in logger
+assert logger.index('DownloadTrace301;->schedule(') < logger.index('FileOutputStream;-><init>(Ljava/io/File;Z)V')
+assert 'DownloadTrace;->diagnosticLocked(Ljava/lang/String;)V' in logger
+queue_helper=(root/'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301.smali').read_text()
+queue_task=(root/'Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301$Log.smali').read_text()
+assert 'const/16 v3, 0x100' in queue_helper
+assert 'Executors;->newSingleThreadExecutor()' in queue_helper
+assert 'getApplicationContext()' in queue_helper
+assert 'AtomicInteger;->incrementAndGet()I' in queue_helper
+assert 'AtomicInteger;->decrementAndGet()I' in queue_helper
+assert 'DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V' in queue_task
+assert 'DownloadTrace301;->finished()V' in queue_task
 
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 

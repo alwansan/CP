@@ -40,17 +40,22 @@ def verify(apk):
         matches=[]
         helper_matches=[]
         alias_matches=[]
+        logger_matches=[]
+        logjob_matches=[]
         for n in z.namelist():
             if n.startswith('classes') and n.endswith('.dex'):
                 found=dex_classes(z.read(n))
                 if descriptor in found:matches.append(n)
                 if helper in found:helper_matches.append(n)
                 if alias in found:alias_matches.append(n)
+                if 'Lcom/shabakaty/cinemana/features/DownloadTrace301;' in found:logger_matches.append(n)
+                if 'Lcom/shabakaty/cinemana/features/DownloadTrace301$Log;' in found:logjob_matches.append(n)
+        if len(logger_matches)!=1 or len(logjob_matches)!=1:raise ValueError('PATCH301 logging worker missing in signed DEX: '+repr((logger_matches,logjob_matches)))
         if len(alias_matches)!=1:raise ValueError('MISSING one-dollar ART callback: '+repr(alias_matches))
         if len(helper_matches)!=1:raise ValueError('Reflection helper missing or duplicated in signed DEX: '+repr(helper_matches))
         if len(matches)!=1:
             raise ValueError('Synthetic callback '+descriptor+' expected in exactly one DEX; found '+repr(matches))
-    print('PASS PATCH300 both one-dollar and two-dollar callback descriptors in signed APK:',alias_matches[0],matches[0])
+    print('PASS PATCH301 async log worker and both Continue callback descriptors in signed APK:',logger_matches[0],alias_matches[0],matches[0])
 
 if __name__=='__main__':
     try:verify(Path(sys.argv[1]))
