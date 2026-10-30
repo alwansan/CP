@@ -72,3 +72,21 @@ if f.exists():
     lines=[s for s in f.read_text(errors="replace").splitlines() if s and not s.startswith("#")]
     print("\n## MKV_REPAIR_PENDING",len(lines),Counter(s.split("|")[1] for s in lines if "|" in s).most_common())
 print("\nWARNING: files combine builds and sessions; error counts alone are not a proven cause.")
+
+# TAIL_PREVIEW_FOR_CAUSE_ANALYSIS: inspect current behavior without reading old sessions only.
+for filename in (".mkv_export.log", "downloads.log"):
+    p = root / filename
+    if not p.exists():
+        continue
+    last = deque(maxlen=25)
+    prefixes = Counter()
+    with p.open(errors="replace") as stream:
+        for line in stream:
+            last.append(line)
+            match = re.match(r"^\d{13}\s+([A-Za-z0-9_]+)", line)
+            if match:
+                prefixes[match.group(1)] += 1
+    print("\n## EVENT_PREFIXES", filename, prefixes.most_common(30))
+    print("## TAIL", filename)
+    for line in last:
+        print("TAIL", redact(line))
