@@ -2244,15 +2244,12 @@
 
     move-result-object v0
 
-    const-string v1, "getParent"
-
-    const/4 v2, 0x0
-
-    new-array v3, v2, [Ljava/lang/Object;
-
-    invoke-static {v0, v1, v3}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    # PATCH290: direct parent lookup replaces Class.getDeclaredMethods on every card.
+    # The PATCH288 post/lambda method remains byte-for-byte unchanged.
+    check-cast v0, Landroid/view/View;
+    invoke-virtual {v0}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
     move-result-object v0
+    const/4 v2, 0x0
 
     .line 160
     const/4 v1, 0x0
@@ -2264,32 +2261,16 @@
 
     if-ge v1, v3, :cond_1
 
-    invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
-
-    move-result-object v3
-
-    invoke-virtual {v3}, Ljava/lang/Class;->getName()Ljava/lang/String;
-
-    move-result-object v3
-
-    const-string v4, "com.shabakaty.cinemana.ui.home_fragment.HorizontalScrollVideosView"
-
-    invoke-virtual {v3, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_0
-
-    goto :goto_1
+    instance-of v3, v0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
+    if-nez v3, :goto_1
 
     :cond_0
+    # A ViewRootImpl is a ViewParent but not a View; stop at that boundary.
+    instance-of v3, v0, Landroid/view/View;
+    if-eqz v3, :cond_1
     :try_start_0
-    const-string v3, "getParent"
-
-    new-array v4, v2, [Ljava/lang/Object;
-
-    invoke-static {v0, v3, v4}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    check-cast v0, Landroid/view/View;
+    invoke-virtual {v0}, Landroid/view/View;->getParent()Landroid/view/ViewParent;
     move-result-object v0
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
@@ -2316,12 +2297,8 @@
 
     move-result-object v3
 
-    const-string v4, "getTitle"
-
-    new-array v5, v2, [Ljava/lang/Object;
-
-    invoke-static {v0, v4, v5}, Lcom/shabakaty/cinemana/ca1/Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
-
+    check-cast v0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;
+    invoke-virtual {v0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getTitle()Ljava/lang/String;
     move-result-object v0
 
     invoke-virtual {v3, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z

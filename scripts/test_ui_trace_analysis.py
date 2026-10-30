@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline contract tests for PATCH277–PATCH288 diagnostic report parsing."""
+"""Offline contract tests for PATCH277–PATCH290 diagnostic report parsing."""
 import json
 import tempfile
 from pathlib import Path
@@ -57,12 +57,15 @@ with tempfile.TemporaryDirectory() as tmp:
          "thread_state":"WAITING","bucket":"binder",
          "app_sites":["com.shabakaty.downloader.vt1#onResume"],
          "framework_site":"android.os.BinderProxy#transact"},
+        {"schema":1,"build":"PATCH290","session":42,"utc_ms":3100,
+         "screen":"home","frames":1,"frame_avg_ms":10,"frame_max_ms":10,
+         "over_32ms":0,"over_50ms":0,"over_100ms":0},
     ]
     target.write_text("\n".join(json.dumps(x) for x in sample) + "\ncorrupt\n", encoding="utf-8")
     records, bad = read_records([target])
     report = aggregate(records)
     assert bad == 1
-    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 34
+    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 35
     assert report["overall"]["over_32ms"] == 6
     assert report["overall"]["diff_count"] == 2
     assert report["overall"]["diff_skipped"] == 7

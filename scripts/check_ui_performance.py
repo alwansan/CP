@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH288"' in diag
+assert 'BUILD = "PATCH290"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH288"' in diag
+assert 'BUILD = "PATCH290"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -230,6 +230,18 @@ assert 'writer.scheduleAtFixedRate(UiPerfDiag::probeMainThread' in diag
 assert 'append(event);' in stalled
 assert 'startMethodTracing' not in diag and 'getStackTrace()' in diag
 assert 'frame.getFileName()' not in diag and 'frame.getLineNumber()' not in diag
+c106=(root / "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Continue106.smali").read_text()
+card106=smali_method(c106,'.method public static card(Ljava/lang/Object;)V')
+paint106=smali_method(c106,'.method static paint(Ljava/lang/Object;)V')
+assert 'Continue106$$ExternalSyntheticLambda3;-><init>(Ljava/lang/ref/WeakReference;)V' in card106
+assert 'const-string v1, "post"' in card106
+assert 'View;->post(Ljava/lang/Runnable;)Z' not in card106, "do not reintroduce crashed PATCH289 callback rewrite"
+assert 'Continue106;->call(' in card106, "PATCH288 callback path changed"
+pre_metadata=paint106.split('.line 162',1)[0]
+assert pre_metadata.count('View;->getParent()Landroid/view/ViewParent;') == 2
+assert 'HorizontalScrollVideosView;->getTitle()Ljava/lang/String;' in pre_metadata
+assert 'Continue106;->call(' not in pre_metadata
+assert 'instance-of v3, v0, Landroid/view/View;' in pre_metadata
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")
