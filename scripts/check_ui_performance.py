@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH296"' in diag
+assert 'BUILD = "PATCH297"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH296"' in diag
+assert 'BUILD = "PATCH297"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -336,6 +336,21 @@ assert search294.index('if-nez v12, :perf296_searchable_bound') < search294.inde
 assert search294.index('SearchView;->setSearchableInfo(') < search294.index('iput-boolean v12, v1, Lcom/shabakaty/downloader/gk1;->perf296SearchableBound:Z') < search294.index('\n    :perf296_searchable_bound')
 assert search294.index('\n    :perf296_searchable_bound') < search294.index('SearchView;->clearFocus()V')
 assert 'SearchView;->onActionViewExpanded()V' in search294
+assert 'Continue106$$ExternalSyntheticLambda3' in card106
+
+
+# PATCH297: only one synchronous LiveData observer dispatch for initial
+# detail model sync; do not change shared-element transitions or view lifecycle.
+detail_refresh=smali_method(details_fragment,'.method public final k2()V')
+assert detail_refresh.count('zi2;->f(Lcom/shabakaty/downloader/xv2;)V') == 1
+assert detail_refresh.index('tj;->b:Ljava/lang/Object;') < detail_refresh.index('zi2;->f(Lcom/shabakaty/downloader/xv2;)V')
+assert 'FirebaseAnalytics;->getInstance(Landroid/content/Context;)' in detail_refresh
+detail_init=smali_method(details_fragment,'.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V')
+assert 'detail_view_created' in detail_init
+assert 'const-string v0, "detail_ui_ready"' in detail_init
+assert detail_init.index('hj;->f2(ZLjava/lang/String;)V') < detail_init.index('const-string v0, "detail_ui_ready"')
+assert 'UiPerfDiag;->mark(Ljava/lang/String;)V' in detail_init
+assert '"detail_ui_ready".equals(event)' in diag
 assert 'Continue106$$ExternalSyntheticLambda3' in card106
 
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")

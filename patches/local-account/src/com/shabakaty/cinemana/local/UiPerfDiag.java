@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH296";
+    private static final String BUILD = "PATCH297";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -438,6 +438,7 @@ public final class UiPerfDiag {
         if (writer!=null &&
             ("home_visible".equals(event) || "detail_visible".equals(event) ||
              "home_view_created".equals(event) || "detail_view_created".equals(event) ||
+             "detail_ui_ready".equals(event) ||
              "home_inflate_begin".equals(event) || "detail_inflate_begin".equals(event) ||
              "search_visible".equals(event) || "search_view_created".equals(event) ||
              "categories_view_created".equals(event) || "profile_visible".equals(event) ||

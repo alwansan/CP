@@ -1251,19 +1251,9 @@
     .line 7
     invoke-static {v0}, Lcom/shabakaty/downloader/zi2;->f(Lcom/shabakaty/downloader/xv2;)V
 
-    .line 8
-    invoke-virtual {p0}, Lcom/shabakaty/downloader/hj;->c2()Lcom/shabakaty/downloader/xk;
-
-    move-result-object v0
-
-    check-cast v0, Lcom/shabakaty/downloader/u15;
-
-    .line 9
-    iget-object v0, v0, Lcom/shabakaty/downloader/u15;->t:Lcom/shabakaty/downloader/mj;
-
-    .line 10
-    invoke-static {v0}, Lcom/shabakaty/downloader/zi2;->f(Lcom/shabakaty/downloader/xv2;)V
-
+    # PATCH297: one LiveData re-emit already follows the model update.
+    # The removed second zi2.f() re-emitted the same value with no intervening
+    # change, synchronously dispatching the same observers twice.
     .line 11
     invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireContext()Landroid/content/Context;
 
@@ -2701,6 +2691,12 @@
     move-result-object p1
 
     invoke-virtual {p0, v1, p1}, Lcom/shabakaty/downloader/hj;->f2(ZLjava/lang/String;)V
+
+    # PATCH297: one bounded lifecycle marker after synchronous detail setup.
+    # Paired with existing detail_view_created to distinguish binding from
+    # later layout/render/transition delay without logging content.
+    const-string v0, "detail_ui_ready"
+    invoke-static {v0}, Lcom/shabakaty/cinemana/local/UiPerfDiag;->mark(Ljava/lang/String;)V
 
     return-void
 

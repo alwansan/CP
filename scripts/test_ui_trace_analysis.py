@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline contract tests for PATCH277–PATCH296 diagnostic report parsing."""
+"""Offline contract tests for PATCH277–PATCH297 diagnostic report parsing."""
 import json
 import tempfile
 from pathlib import Path
@@ -79,12 +79,17 @@ with tempfile.TemporaryDirectory() as tmp:
         {"schema":1,"build":"PATCH296","session":42,"utc_ms":3700,
          "screen":"search","frames":2,"frame_avg_ms":8,"frame_max_ms":12,
          "over_32ms":0,"over_50ms":0,"over_100ms":0},
+        {"schema":1,"build":"PATCH297","session":42,"utc_ms":3800,
+         "event":"detail_ui_ready"},
+        {"schema":1,"build":"PATCH297","session":42,"utc_ms":3900,
+         "screen":"details","frames":3,"frame_avg_ms":9,"frame_max_ms":18,
+         "over_32ms":0,"over_50ms":0,"over_100ms":0},
     ]
     target.write_text("\n".join(json.dumps(x) for x in sample) + "\ncorrupt\n", encoding="utf-8")
     records, bad = read_records([target])
     report = aggregate(records)
     assert bad == 1
-    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 57
+    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 60
     assert report["overall"]["over_32ms"] == 6
     assert report["overall"]["diff_count"] == 2
     assert report["overall"]["diff_skipped"] == 7
@@ -123,6 +128,7 @@ with tempfile.TemporaryDirectory() as tmp:
     assert report["overall"]["blocking_gc_count"] == 1
     assert report["overall"]["blocking_gc_time_ms"] == 80
     assert report["screens"]["home"]["blocking_gc_time_ms"] == 80
+    assert report["events"]["detail_ui_ready"] == 1
     assert report["events"]["main_stall_sample"] == 2
     assert report["main_stalls"]["samples"] == 2
     assert report["main_stalls"]["longest_wait_ms"] == 580
