@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH282";
+    private static final String BUILD = "PATCH283";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -57,6 +57,10 @@ public final class UiPerfDiag {
     private static long lastCaptureMs;
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static final AtomicBoolean probePending = new AtomicBoolean();
+    private static volatile long pendingProbeNs;
+    private static long lastStallStackMs;
+    // Seven fixed categories; never log stack text or user/content identifiers.
+    private static final long[] blockedMainBuckets=new long[7];
     private static long mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs;
     private static long homeRefreshCount, homeRefreshNs, homeRefreshMaxNs;
     private static long homeSetupCount, homeSetupNs, homeSetupMaxNs;
@@ -82,7 +86,9 @@ public final class UiPerfDiag {
                 v[19]>0 || v[24]>0 || v[25]>0 || v[26]>0 ||
                 v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0 || v[42]>0 || v[45]>0) return true;
             for(int t=0;t<5;t++)if(v[50+4*t]>0 || v[52+4*t]>0)return true;
-            return v[77]>0;
+            if(v[77]>0)return true;
+            for(int t=0;t<7;t++)if(v[79+t]>0)return true;
+            return false;
         }
     }
 
@@ -100,7 +106,11 @@ public final class UiPerfDiag {
             homeInflateCount, homeInflateNs, homeInflateMaxNs,
             detailInflateCount, detailInflateNs, detailInflateMaxNs,
             layoutMaxNs, drawMaxNs};
-        long[] extended=java.util.Arrays.copyOf(v,79);
+        long[] extended=java.util.Arrays.copyOf(v,86);
+        for(int t=0;t<7;t++) {
+            extended[79+t]=blockedMainBuckets[t];
+            blockedMainBuckets[t]=0;
+        }
         extended[70]=worstLayoutNs;extended[71]=worstDrawNs;extended[72]=worstSyncNs;
         extended[73]=worstCommandNs;extended[74]=worstSwapNs;
         extended[75]=layoutOver100;extended[76]=commandOver100;
@@ -132,10 +142,42 @@ public final class UiPerfDiag {
         return snap;
     }
 
+    /** Executes only on the background writer when an outstanding main-thread probe is late. */
+    private static void sampleBlockedMain() {
+        long now=SystemClock.elapsedRealtime();
+        if (now-lastStallStackMs<500) return;
+        lastStallStackMs=now;
+        try {
+            StackTraceElement[] frames=MAIN.getLooper().getThread().getStackTrace();
+            int kind=6;
+            for (StackTraceElement frame:frames) {
+                String c=frame.getClassName();
+                if (c.startsWith("androidx.recyclerview") ||
+                    c.startsWith("androidx.constraintlayout") ||
+                    c.startsWith("android.view.") || c.startsWith("android.widget.")) {kind=0;break;}
+                if (c.startsWith("com.facebook.drawee") ||
+                    c.startsWith("com.facebook.imagepipeline") ||
+                    c.startsWith("android.graphics.")) {kind=1;break;}
+                if (c.contains("ThemeEngine142") || c.contains("ThemeStudio142")) {kind=2;break;}
+                if (c.startsWith("java.io.") || c.startsWith("android.database.") ||
+                    c.startsWith("libcore.io.") || c.startsWith("org.json.")) {kind=3;break;}
+                if (c.startsWith("com.shabakaty.")) {kind=4;break;}
+                if (c.startsWith("android.") || c.startsWith("java.")) {kind=5;break;}
+            }
+            synchronized(LOCK) {blockedMainBuckets[kind]++;}
+        } catch(Throwable ignored) {}
+    }
+
     /** 4Hz bounded main-thread heartbeat helps catch intermittent stalls between frames. */
     private static void probeMainThread() {
-        if (!visible || !probePending.compareAndSet(false,true)) return;
+        if (!visible) return;
+        if (!probePending.compareAndSet(false,true)) {
+            if (SystemClock.elapsedRealtimeNanos()-pendingProbeNs>=100_000_000L)
+                sampleBlockedMain();
+            return;
+        }
         final long started=SystemClock.elapsedRealtimeNanos();
+        pendingProbeNs=started;
         if (!MAIN.post(()->{
             long delay=Math.max(0,SystemClock.elapsedRealtimeNanos()-started);
             synchronized (LOCK) {
@@ -469,6 +511,13 @@ public final class UiPerfDiag {
             extended.append(",\"command_over_100ms\":").append(String.format(Locale.US,"%d",v[76]));
             extended.append(",\"theme_apply_count\":").append(String.format(Locale.US,"%d",v[77]));
             extended.append(",\"theme_apply_max_ms\":").append(String.format(Locale.US,"%.2f",v[78]/1e6));
+            extended.append(",\"main_stack_view\":").append(v[79]);
+            extended.append(",\"main_stack_image\":").append(v[80]);
+            extended.append(",\"main_stack_theme\":").append(v[81]);
+            extended.append(",\"main_stack_io\":").append(v[82]);
+            extended.append(",\"main_stack_app\":").append(v[83]);
+            extended.append(",\"main_stack_system\":").append(v[84]);
+            extended.append(",\"main_stack_unknown\":").append(v[85]);
             append(extended.append('}').toString());
         } catch(Throwable error) {
             Log.w(TAG,"format_failed type="+error.getClass().getSimpleName());

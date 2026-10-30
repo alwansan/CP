@@ -19,8 +19,6 @@
     .end annotation
 .end field
 
-.field private glassSwitch:Landroid/widget/Switch;
-
 .field private opacitySeek:Landroid/widget/SeekBar;
 
 .field private opacityValue:Landroid/widget/TextView;
@@ -727,11 +725,8 @@
     move-object/from16 v0, p0
 
     .line 159
-    iget-object v1, v15, Lcom/shabakaty/cinemana/ca1/ThemeStudio142;->glassSwitch:Landroid/widget/Switch;
-
-    invoke-virtual {v1}, Landroid/widget/Switch;->isChecked()Z
-
-    move-result v1
+    # Legacy glass switch was never initialized; keep custom themes opaque.
+    const/4 v1, 0x0
 
     iget-object v2, v15, Lcom/shabakaty/cinemana/ca1/ThemeStudio142;->opacitySeek:Landroid/widget/SeekBar;
 
@@ -1259,37 +1254,8 @@
 
     .line 173
     :goto_1
-    iget-object v6, p0, Lcom/shabakaty/cinemana/ca1/ThemeStudio142;->glassSwitch:Landroid/widget/Switch;
+    # Unsupported glass preview removed; keep normal opaque surface.
 
-    if-eqz v6, :cond_3
-
-    iget-object v6, p0, Lcom/shabakaty/cinemana/ca1/ThemeStudio142;->glassSwitch:Landroid/widget/Switch;
-
-    invoke-virtual {v6}, Landroid/widget/Switch;->isChecked()Z
-
-    move-result v6
-
-    if-eqz v6, :cond_3
-
-    int-to-float v4, v4
-
-    const/high16 v6, 0x42c80000    # 100.0f
-
-    div-float/2addr v4, v6
-
-    const/high16 v6, 0x437f0000    # 255.0f
-
-    mul-float v4, v4, v6
-
-    invoke-static {v4}, Ljava/lang/Math;->round(F)I
-
-    move-result v4
-
-    invoke-static {v0, v4}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->withAlpha(II)I
-
-    move-result v0
-
-    .line 174
     :cond_3
     new-instance v4, Landroid/graphics/drawable/GradientDrawable;
 

@@ -1544,22 +1544,11 @@
 .end method
 
 .method public static isGlassEnabled(Landroid/content/Context;)Z
-    .locals 2
+    .locals 1
 
-    .line 166
-    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->prefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
-
-    move-result-object p0
-
-    const-string v0, "glass"
-
-    const/4 v1, 0x0
-
-    invoke-interface {p0, v0, v1}, Landroid/content/SharedPreferences;->getBoolean(Ljava/lang/String;Z)Z
-
-    move-result p0
-
-    return p0
+    # Glass rendering was never implemented; always render opaque themed surfaces.
+    const/4 v0, 0x0
+    return v0
 .end method
 
 .method private static isThemeEligible(Landroid/app/Activity;)Z
@@ -2482,9 +2471,9 @@
 
     const-string v1, "glass"
 
-    move v2, p1
+    const/4 v2, 0x0
 
-    invoke-interface {v0, v1, p1}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
+    invoke-interface {v0, v1, v2}, Landroid/content/SharedPreferences$Editor;->putBoolean(Ljava/lang/String;Z)Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
 

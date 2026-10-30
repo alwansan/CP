@@ -18,7 +18,7 @@ def read_records(paths):
                 for line in file:
                     try:
                         obj = json.loads(line)
-                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281", "PATCH282"):
+                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281", "PATCH282", "PATCH283"):
                             records.append(obj)
                         else:
                             invalid += 1
@@ -85,6 +85,8 @@ def aggregate(records):
             "worst_frame_stages": {k: round(max((float(x.get("worst_frame_"+k+"_ms",0)) for x in rows),default=0),2) for k in ("layout","draw","sync","command","swap")},
             "layout_over_100ms":sum(int(x.get("layout_over_100ms",0)) for x in rows),
             "command_over_100ms":sum(int(x.get("command_over_100ms",0)) for x in rows),
+            "main_stack_samples": {kind:sum(int(x.get("main_stack_"+kind,0)) for x in rows)
+                for kind in ("view","image","theme","io","app","system","unknown")},
             "theme_apply_count":sum(int(x.get("theme_apply_count",0)) for x in rows),
             "theme_apply_max_ms":round(max((float(x.get("theme_apply_max_ms",0)) for x in rows),default=0),2),
             "home_row_types": {
@@ -125,7 +127,7 @@ def aggregate(records):
 def markdown(report, invalid):
     o = report["overall"]
     lines = [
-        "# Cinemana PATCH277–PATCH282 UI trace",
+        "# Cinemana PATCH277–PATCH283 UI trace",
         f"Sessions: {len(report['sessions'])} · Metrics windows: {o['windows']} · Invalid/skipped records: {invalid}",
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",
@@ -138,6 +140,7 @@ def markdown(report, invalid):
         f"Worst layout per frame: {o['layout_max_ms']} ms · Worst draw per frame: {o['draw_max_ms']} ms",
         f"Same-frame slowest breakdown per window: {o['worst_frame_stages']} | layout>100ms: {o['layout_over_100ms']} | command>100ms: {o['command_over_100ms']}",
         f"ThemeEngine.apply: {o['theme_apply_count']} calls; max {o['theme_apply_max_ms']} ms",
+        f"Main-thread blocked stack samples (non-identifying buckets): {o['main_stack_samples']}",
         "",
         "## By screen",
         "| Screen | Frames | Avg ms | Max ms | >32 ms | >50 ms | >100 ms | Scroll callbacks |",

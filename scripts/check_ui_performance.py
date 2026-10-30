@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH282"' in diag
+assert 'BUILD = "PATCH283"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH282"' in diag
+assert 'BUILD = "PATCH283"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -154,6 +154,16 @@ theme_apply=smali_method(theme, '.method public static apply(Landroid/app/Activi
 assert 'UiPerfDiag;->begin()J' in theme_apply and 'UiPerfDiag;->themeApply(J)V' in theme_apply
 assert 'FrameMetrics.SWAP_BUFFERS_DURATION' in diag
 assert 'worst_frame_layout_ms' in diag and 'worst_frame_swap_ms' in diag
+theme_method=smali_method(theme, '.method public static isGlassEnabled(Landroid/content/Context;)Z')
+assert 'return v0' in theme_method and 'const/4 v0, 0x0' in theme_method
+assert 'SharedPreferences;->getBoolean' not in theme_method
+save_custom=smali_method(theme,'.method public static saveCustom(Landroid/content/Context;ZIIIIIIIIIIIIIIIIII)V')
+assert 'const/4 v2, 0x0' in save_custom
+studio=(root/"Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/ThemeStudio142.smali").read_text()
+assert 'glassSwitch' not in studio, "stale uninitialized glass control"
+assert 'const/4 v1, 0x0' in smali_method(studio,'.method private saveCustom()V')
+assert 'main_stack_view' in diag and 'main_stack_io' in diag
+assert 'sampleBlockedMain()' in diag and 'MAIN.getLooper().getThread().getStackTrace()' in diag
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")
