@@ -18,7 +18,7 @@ def read_records(paths):
                 for line in file:
                     try:
                         obj = json.loads(line)
-                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281", "PATCH282", "PATCH283", "PATCH284", "PATCH285", "PATCH286", "PATCH287", "PATCH288", "PATCH290", "PATCH291", "PATCH292", "PATCH293", "PATCH294", "PATCH295", "PATCH296", "PATCH297", "PATCH298"):
+                        if isinstance(obj, dict) and obj.get("schema") == 1 and obj.get("build") in ("PATCH277", "PATCH278", "PATCH279", "PATCH280", "PATCH281", "PATCH282", "PATCH283", "PATCH284", "PATCH285", "PATCH286", "PATCH287", "PATCH288", "PATCH290", "PATCH291", "PATCH292", "PATCH293", "PATCH294", "PATCH295", "PATCH296", "PATCH297", "PATCH298", "PATCH299"):
                             records.append(obj)
                         else:
                             invalid += 1
@@ -154,7 +154,7 @@ def aggregate(records):
 def markdown(report, invalid):
     o = report["overall"]
     lines = [
-        "# Cinemana PATCH277–PATCH298 UI trace",
+        "# Cinemana PATCH277–PATCH299 UI trace",
         f"Sessions: {len(report['sessions'])} · Metrics windows: {o['windows']} · Invalid/skipped records: {invalid}",
         f"Frames: {o['frames']} · Average: {o['avg_frame_ms']} ms · Worst: {o['max_frame_ms']} ms",
         f"Above 32 ms: {o['over_32ms']} ({o['slow_32_pct']}%) · Above 50 ms: {o['over_50ms']} · Above 100 ms: {o['over_100ms']}",

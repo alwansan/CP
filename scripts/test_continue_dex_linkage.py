@@ -24,12 +24,22 @@ def verify(apk):
     assert 'invoke-direct {v3, v0}, '+descriptor+'-><init>(Ljava/lang/ref/WeakReference;)V' in original
     assert 'Continue106;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;' in original
     assert 'View;->post(Ljava/lang/Runnable;)Z' not in original
+    # PATCH299: additionally verify the new method cache is in the signed APK.
+    helper='Lcom/shabakaty/cinemana/ca1/MethodCache299;'
+    helper_src=(base/'MethodCache299.smali').read_text()
+    call=owner.split('.method static varargs call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;',1)[1].split('.end method',1)[0]
+    assert '.class public final '+helper in helper_src
+    assert 'MethodCache299;->declaredMethods(Ljava/lang/Class;)' in call
+    assert 'Class;->getDeclaredMethods()' not in call
     with zipfile.ZipFile(apk) as z:
         matches=[]
+        helper_matches=[]
         for n in z.namelist():
             if n.startswith('classes') and n.endswith('.dex'):
                 found=dex_classes(z.read(n))
                 if descriptor in found:matches.append(n)
+                if helper in found:helper_matches.append(n)
+        if len(helper_matches)!=1:raise ValueError('Reflection helper missing or duplicated in signed DEX: '+repr(helper_matches))
         if len(matches)!=1:
             raise ValueError('Synthetic callback '+descriptor+' expected in exactly one DEX; found '+repr(matches))
     print('PASS stable PATCH288 continue-card callback and synthetic lambda class in signed APK:',matches[0])

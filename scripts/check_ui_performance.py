@@ -124,7 +124,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH298"' in diag
+assert 'BUILD = "PATCH299"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -146,7 +146,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH298"' in diag
+assert 'BUILD = "PATCH299"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -371,6 +371,22 @@ assert 'const-string v0, "detail_ui_ready"' in detail_init
 assert detail_init.index('hj;->f2(ZLjava/lang/String;)V') < detail_init.index('const-string v0, "detail_ui_ready"')
 assert 'UiPerfDiag;->mark(Ljava/lang/String;)V' in detail_init
 assert '"detail_ui_ready".equals(event)' in diag
+assert 'Continue106$$ExternalSyntheticLambda3' in card106
+
+
+# PATCH299: retain original overload checks, invocation, lambda and all UI.
+continue_call=smali_method(c106,'.method static varargs call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;')
+assert continue_call.count('MethodCache299;->declaredMethods(Ljava/lang/Class;)[Ljava/lang/reflect/Method;') == 1
+assert 'Class;->getDeclaredMethods()' not in continue_call
+assert 'Method;->getParameterTypes()' in continue_call
+assert 'Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)' in continue_call
+assert 'NoSuchMethodException;' in continue_call
+reflect_helper=(root/'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/MethodCache299.smali').read_text()
+assert '.class public final Lcom/shabakaty/cinemana/ca1/MethodCache299;' in reflect_helper
+assert 'ConcurrentHashMap;->get(Ljava/lang/Object;)' in reflect_helper
+assert 'Class;->getDeclaredMethods()[Ljava/lang/reflect/Method;' in reflect_helper
+assert 'ConcurrentHashMap;->putIfAbsent(Ljava/lang/Object;Ljava/lang/Object;)' in reflect_helper
+assert 'Landroid/view/' not in reflect_helper and 'Landroid/app/Activity;' not in reflect_helper
 assert 'Continue106$$ExternalSyntheticLambda3' in card106
 
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
