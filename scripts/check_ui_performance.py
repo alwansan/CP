@@ -124,7 +124,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH299"' in diag
+assert 'BUILD = "PATCH300"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -146,7 +146,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH299"' in diag
+assert 'BUILD = "PATCH300"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -253,7 +253,7 @@ assert 'frame.getFileName()' not in diag and 'frame.getLineNumber()' not in diag
 c106=(root / "Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Continue106.smali").read_text()
 card106=smali_method(c106,'.method public static card(Ljava/lang/Object;)V')
 paint106=smali_method(c106,'.method static paint(Ljava/lang/Object;)V')
-assert 'Continue106$$ExternalSyntheticLambda3;-><init>(Ljava/lang/ref/WeakReference;)V' in card106
+assert 'Continue106$ExternalSyntheticLambda3;-><init>(Ljava/lang/ref/WeakReference;)V' in card106
 assert 'const-string v1, "post"' in card106
 assert 'View;->post(Ljava/lang/Runnable;)Z' not in card106, "do not reintroduce crashed PATCH289 callback rewrite"
 assert 'Continue106;->call(' in card106, "PATCH288 callback path changed"
@@ -291,7 +291,7 @@ assert ':perf_badge_text_same' in badge107 and ':perf_badge_visible' in badge107
 assert 'const-string v5, "setVisibility"' in badge107
 assert 'const-string p0, "setText"' not in badge107
 assert 'const-string v5, "findViewWithTag"' not in badge107
-assert 'Continue106$$ExternalSyntheticLambda3' in card106
+assert 'Continue106$ExternalSyntheticLambda3' in card106
 # PATCH293: no per-bind reflective progress operations and no extra layout pass
 # when watched progress state is already correct. Post callback remains PATCH288.
 progress293=paint106.split('.line 167',1)[1].split('.line 172',1)[0]
@@ -307,7 +307,7 @@ assert ':perf293_layout_done' in progress293
 assert ':cond_7' in progress293 and ':cond_8' in progress293, 'preserve original branch labels'
 assert 'Continue106;->call(' not in progress293
 assert 'Class;->forName(' not in progress293
-assert 'Continue106$$ExternalSyntheticLambda3' in card106
+assert 'Continue106$ExternalSyntheticLambda3' in card106
 # PATCH294: SearchManager's Binder call should happen only on the first
 # SearchView bind per process, while every SearchView still receives metadata.
 gk294=source("com/shabakaty/downloader/gk1.smali")
@@ -323,7 +323,7 @@ assert search294.index('sput-object v9, Lcom/shabakaty/downloader/gk1;->perf294S
 assert search294.index(':perf294_searchable_cached') < search294.index('SearchView;->setSearchableInfo(Landroid/app/SearchableInfo;)V')
 assert 'SearchView;->onActionViewExpanded()V' in search294
 assert 'SearchView;->clearFocus()V' in search294
-assert 'Continue106$$ExternalSyntheticLambda3' in card106
+assert 'Continue106$ExternalSyntheticLambda3' in card106
 # PATCH295: bounded Home-only shared rail RecycledViewPool capacity.
 # Verified exact obfuscated RecyclerView pool type record in this APK.
 ctor295=smali_method(home_fragment,'.method public constructor <init>()V')
@@ -342,7 +342,7 @@ assert '.method public final a(I)Landroidx/recyclerview/widget/RecyclerView$s$a;
 assert '.field public b:I' in poolentry
 assert 'const/4 v0, 0x5' in poolentry
 assert 'const p1, 0x7f0d008f' in smali_method(source("com/shabakaty/downloader/jj.smali"),'.method public getItemViewType(I)I')
-assert 'Continue106$$ExternalSyntheticLambda3' in card106
+assert 'Continue106$ExternalSyntheticLambda3' in card106
 
 # PATCH296: bind the stable SearchableInfo to each SearchView just once.
 # Must not skip setup for a newly inflated SearchView or retain old View objects.
@@ -356,7 +356,7 @@ assert search294.index('if-nez v12, :perf296_searchable_bound') < search294.inde
 assert search294.index('SearchView;->setSearchableInfo(') < search294.index('iput-boolean v12, v1, Lcom/shabakaty/downloader/gk1;->perf296SearchableBound:Z') < search294.index('\n    :perf296_searchable_bound')
 assert search294.index('\n    :perf296_searchable_bound') < search294.index('SearchView;->clearFocus()V')
 assert 'SearchView;->onActionViewExpanded()V' in search294
-assert 'Continue106$$ExternalSyntheticLambda3' in card106
+assert 'Continue106$ExternalSyntheticLambda3' in card106
 
 
 # PATCH297: only one synchronous LiveData observer dispatch for initial
@@ -371,7 +371,7 @@ assert 'const-string v0, "detail_ui_ready"' in detail_init
 assert detail_init.index('hj;->f2(ZLjava/lang/String;)V') < detail_init.index('const-string v0, "detail_ui_ready"')
 assert 'UiPerfDiag;->mark(Ljava/lang/String;)V' in detail_init
 assert '"detail_ui_ready".equals(event)' in diag
-assert 'Continue106$$ExternalSyntheticLambda3' in card106
+assert 'Continue106$ExternalSyntheticLambda3' in card106
 
 
 # PATCH299: retain original overload checks, invocation, lambda and all UI.
@@ -387,7 +387,18 @@ assert 'ConcurrentHashMap;->get(Ljava/lang/Object;)' in reflect_helper
 assert 'Class;->getDeclaredMethods()[Ljava/lang/reflect/Method;' in reflect_helper
 assert 'ConcurrentHashMap;->putIfAbsent(Ljava/lang/Object;Ljava/lang/Object;)' in reflect_helper
 assert 'Landroid/view/' not in reflect_helper and 'Landroid/app/Activity;' not in reflect_helper
-assert 'Continue106$$ExternalSyntheticLambda3' in card106
+assert 'Continue106$ExternalSyntheticLambda3' in card106
+
+# PATCH300: check the one-dollar runtime alias and retain original class.
+assert 'new-instance v3, Lcom/shabakaty/cinemana/ca1/Continue106$ExternalSyntheticLambda3;' in card106
+assert 'Continue106$$ExternalSyntheticLambda3;-><init>' not in card106
+original_runnable=(root/'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Continue106$$ExternalSyntheticLambda3.smali').read_text()
+alias_runnable=(root/'Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Continue106$ExternalSyntheticLambda3.smali').read_text()
+assert '.class public final synthetic Lcom/shabakaty/cinemana/ca1/Continue106$$ExternalSyntheticLambda3;' in original_runnable
+assert '.class public final Lcom/shabakaty/cinemana/ca1/Continue106$ExternalSyntheticLambda3;' in alias_runnable
+for runnable in (original_runnable, alias_runnable):
+    assert '.implements Ljava/lang/Runnable;' in runnable
+    assert 'Continue106;->lambda$card$5(Ljava/lang/ref/WeakReference;)V' in runnable
 
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 

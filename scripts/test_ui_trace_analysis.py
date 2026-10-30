@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline contract tests for PATCH277–PATCH299 diagnostic report parsing."""
+"""Offline contract tests for PATCH277–PATCH300 diagnostic report parsing."""
 import json
 import tempfile
 from pathlib import Path
@@ -87,7 +87,7 @@ with tempfile.TemporaryDirectory() as tmp:
         {"schema":1,"build":"PATCH298","session":42,"utc_ms":4000,
          "screen":"details","frames":2,"frame_avg_ms":9,"frame_max_ms":15,
          "over_32ms":0,"over_50ms":0,"over_100ms":0},
-        {"schema":1,"build":"PATCH299","session":42,"utc_ms":4100,
+        {"schema":1,"build":"PATCH300","session":42,"utc_ms":4100,
          "screen":"home","frames":2,"frame_avg_ms":9,"frame_max_ms":15,
          "over_32ms":0,"over_50ms":0,"over_100ms":0},
     ]

@@ -434,9 +434,9 @@
 
     new-array v2, v2, [Ljava/lang/Object;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/Continue106$$ExternalSyntheticLambda3;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/Continue106$ExternalSyntheticLambda3;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/Continue106$$ExternalSyntheticLambda3;-><init>(Ljava/lang/ref/WeakReference;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/Continue106$ExternalSyntheticLambda3;-><init>(Ljava/lang/ref/WeakReference;)V
 
     const/4 v0, 0x0
 
