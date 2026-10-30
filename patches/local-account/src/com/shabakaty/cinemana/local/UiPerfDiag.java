@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH286";
+    private static final String BUILD = "PATCH287";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -73,6 +73,8 @@ public final class UiPerfDiag {
     private static long layoutOver100,commandOver100,themeApplyCount,themeApplyMaxNs;
     private static long continueNoChangeSkips,continueFullRefreshes;
     private static long railCardCreates,railCardCreateMaxNs;
+    // Cumulative ART runtime stats. Read on the background writer, never the UI thread.
+    private static long gcCountBase=-1,gcTimeBase=-1,blockingGcCountBase=-1,blockingGcTimeBase=-1;
     // Home row types are stable numeric layout enums; never record titles or content.
     private static final long[] rowBindCount=new long[5], rowBindMaxNs=new long[5];
     private static final long[] rowCreateCount=new long[5], rowCreateMaxNs=new long[5];
@@ -502,6 +504,22 @@ public final class UiPerfDiag {
         }
     }
 
+    /** Approximate ART GC totals; refresh baselines on EVERY writer flush. */
+    private static long gcStatDelta(String name, int index) {
+        if(Build.VERSION.SDK_INT<23)return 0;
+        try {
+            String raw=Debug.getRuntimeStat(name);
+            if(raw==null)return 0;
+            long current=Long.parseLong(raw);
+            long previous;
+            if(index==0){previous=gcCountBase;gcCountBase=current;}
+            else if(index==1){previous=gcTimeBase;gcTimeBase=current;}
+            else if(index==2){previous=blockingGcCountBase;blockingGcCountBase=current;}
+            else {previous=blockingGcTimeBase;blockingGcTimeBase=current;}
+            return previous<0 || current<previous ? 0 : current-previous;
+        }catch(Throwable ignored){return 0;}
+    }
+
     private static void flush(boolean force) {
         if (!installed) return;
         try {
@@ -512,15 +530,21 @@ public final class UiPerfDiag {
             long cpuDelta=Math.max(0,cpuNow-lastCpuMs);
             lastCpuMs=cpuNow;
             lastWallMs=now;
+            // Read on the writer thread, even when the window contains no frames.
+            // This avoids attributing an old GC to a later screen.
+            long gcCount=gcStatDelta("art.gc.gc-count",0);
+            long gcTime=gcStatDelta("art.gc.gc-time",1);
+            long blockingCount=gcStatDelta("art.gc.blocking-gc-count",2);
+            long blockingTime=gcStatDelta("art.gc.blocking-gc-time",3);
             final Snapshot snap;
             synchronized(LOCK) { snap=captureLocked(now); }
-            if (snap.hasData()) writeSample(snap,cpuDelta);
+            if(snap.hasData())writeSample(snap,cpuDelta,gcCount,gcTime,blockingCount,blockingTime);
         } catch(Throwable error) {
             Log.w(TAG,"flush_failed type="+error.getClass().getSimpleName());
         }
     }
 
-    private static void writeSample(Snapshot snap, long cpuDelta) {
+    private static void writeSample(Snapshot snap,long cpuDelta,long gcCount,long gcTime,long blockingCount,long blockingTime) {
         try {
             long[] v=snap.v;
             String snapshot=String.format(Locale.US,
@@ -573,6 +597,10 @@ public final class UiPerfDiag {
             extended.append(",\"continue_refresh_full\":").append(v[93]);
             extended.append(",\"rail_card_create_count\":").append(v[94]);
             extended.append(",\"rail_card_create_max_ms\":").append(String.format(Locale.US,"%.2f",v[95]/1e6));
+            extended.append(",\"gc_count\":").append(gcCount);
+            extended.append(",\"gc_time_ms\":").append(gcTime);
+            extended.append(",\"blocking_gc_count\":").append(blockingCount);
+            extended.append(",\"blocking_gc_time_ms\":").append(blockingTime);
             append(extended.append('}').toString());
         } catch(Throwable error) {
             Log.w(TAG,"format_failed type="+error.getClass().getSimpleName());

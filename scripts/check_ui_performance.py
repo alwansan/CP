@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH286"' in diag
+assert 'BUILD = "PATCH287"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH286"' in diag
+assert 'BUILD = "PATCH287"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -206,6 +206,19 @@ assert 'const p1, 0x7f0d008f' in smali_method(jj,'.method public i(I)I')
 card_create=smali_method(jj,'.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'UiPerfDiag;->railCardCreate(J)V' in card_create
 assert 'rail_card_create_count' in diag and 'rail_card_create_max_ms' in diag
+assert 'Debug.getRuntimeStat(name)' in diag
+assert 'art.gc.blocking-gc-time' in diag
+assert 'art.gc.gc-time' in diag
+assert 'gc_count' in diag and 'blocking_gc_count' in diag
+assert 'writeSample(snap,cpuDelta,gcCount,gcTime,blockingCount,blockingTime)' in diag
+assert 'private static void gcStatDelta' not in diag  # method returns long
+assert 'private static long gcStatDelta' in diag
+horizontal_fast=smali_method(childview,'.method public final u()V')
+assert 'TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z' in horizontal_fast
+assert horizontal_fast.count('TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z') == 2
+assert ':perf_title_unchanged' in horizontal_fast
+assert horizontal_fast.index(':perf_title_unchanged',horizontal_fast.index('nl6;->q(')) < horizontal_fast.index('.line 8')
+assert 'TextView;->setText(Ljava/lang/CharSequence;)V' in horizontal_fast
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")

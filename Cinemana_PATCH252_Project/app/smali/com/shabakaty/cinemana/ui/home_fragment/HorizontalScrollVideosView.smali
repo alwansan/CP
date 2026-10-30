@@ -701,6 +701,26 @@
 
     iget-object v0, v0, Lcom/shabakaty/downloader/cv1;->O:Landroid/widget/TextView;
 
+    # Always initialize both registers for the unchanged-title fast path.
+    const-string v4, "binding.videosRecycler"
+    const/4 v5, 0x0
+    iget-object v6, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->R:Ljava/lang/String;
+    invoke-virtual {v0}, Landroid/widget/TextView;->getText()Ljava/lang/CharSequence;
+    move-result-object v2
+    invoke-static {v2, v6}, Landroid/text/TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+    move-result v2
+    if-eqz v2, :perf_update_title
+
+    invoke-direct {p0}, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->getBinding()Lcom/shabakaty/downloader/cv1;
+    move-result-object v2
+    iget-object v2, v2, Lcom/shabakaty/downloader/cv1;->N:Landroidx/recyclerview/widget/RecyclerView;
+    invoke-virtual {v2}, Landroid/view/View;->getContentDescription()Ljava/lang/CharSequence;
+    move-result-object v2
+    invoke-static {v2, v6}, Landroid/text/TextUtils;->equals(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+    move-result v2
+    if-nez v2, :perf_title_unchanged
+
+    :perf_update_title
     iget-object v4, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->R:Ljava/lang/String;
 
     const/4 v5, 0x0
@@ -739,6 +759,10 @@
 
     .line 7
     invoke-static {v0, v6}, Lcom/shabakaty/downloader/nl6;->q(Landroid/view/View;Ljava/lang/CharSequence;)V
+
+    # No Spannable allocation, TextView.setText, or accessibility invalidation
+    # when both labels already match the current section title.
+    :perf_title_unchanged
 
     .line 8
     iget-object v0, p0, Lcom/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView;->Q:Ljava/util/List;

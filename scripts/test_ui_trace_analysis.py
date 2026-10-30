@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline contract tests for PATCH277–PATCH286 diagnostic report parsing."""
+"""Offline contract tests for PATCH277–PATCH287 diagnostic report parsing."""
 import json
 import tempfile
 from pathlib import Path
@@ -43,12 +43,16 @@ with tempfile.TemporaryDirectory() as tmp:
         {"schema":1,"build":"PATCH286","session":42,"utc_ms":2800,"screen":"home",
          "frames":2,"frame_avg_ms":8,"frame_max_ms":12,
          "rail_card_create_count":7,"rail_card_create_max_ms":18.6},
+        {"schema":1,"build":"PATCH287","session":42,"utc_ms":2900,"screen":"home",
+         "frames":2,"frame_avg_ms":9,"frame_max_ms":24,
+         "gc_count":2,"gc_time_ms":123,"blocking_gc_count":1,
+         "blocking_gc_time_ms":80},
     ]
     target.write_text("\n".join(json.dumps(x) for x in sample) + "\ncorrupt\n", encoding="utf-8")
     records, bad = read_records([target])
     report = aggregate(records)
     assert bad == 1
-    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 32
+    assert len(report["sessions"]) == 1 and report["overall"]["frames"] == 34
     assert report["overall"]["over_32ms"] == 6
     assert report["overall"]["diff_count"] == 2
     assert report["overall"]["diff_skipped"] == 7
@@ -82,6 +86,11 @@ with tempfile.TemporaryDirectory() as tmp:
     assert report["overall"]["rail_card_create_count"] == 7
     assert report["overall"]["rail_card_create_max_ms"] == 18.6
     assert report["screens"]["home"]["rail_card_create_count"] == 7
+    assert report["overall"]["gc_count"] == 2
+    assert report["overall"]["gc_time_ms"] == 123
+    assert report["overall"]["blocking_gc_count"] == 1
+    assert report["overall"]["blocking_gc_time_ms"] == 80
+    assert report["screens"]["home"]["blocking_gc_time_ms"] == 80
     assert report["events"]["detail_visible"] == 1
     assert report["worst_windows"][0]["screen"] == "home"
     assert "By screen" in markdown(report, bad)
