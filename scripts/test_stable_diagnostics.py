@@ -25,3 +25,13 @@ assert "newSingleThreadScheduledExecutor" in ui
 assert '"downloads_visible".equals(event)' in ui
 assert 'LOG_LIMIT_BYTES = 1536 * 1024' in ui
 print("PATCH303 passive instrumentation hooks validated")
+
+# The dex distribution is only a byte-for-byte move of four existing RTSP classes.
+import subprocess
+base="82d7f67037f67659115d41782d3a9b5bf4e0bd02"
+for name in ("c", "d", "f", "h"):
+    original="Cinemana_PATCH252_Project/app/smali/com/google/android/exoplayer2/source/rtsp/"+name+".smali"
+    moved="Cinemana_PATCH252_Project/app/smali_classes10/com/google/android/exoplayer2/source/rtsp/"+name+".smali"
+    assert not (root/original).exists(), original
+    assert (root/moved).read_bytes()==subprocess.check_output(["git","show",base+":"+original]),moved
+print("PASS: four RTSP classes moved to classes10 with identical bytes")
