@@ -104,7 +104,7 @@ assert 'scroll(int area, int delta)' in diag and 'diff(long startedNanos)' in di
 assert 'LOG_LIMIT_BYTES' in diag and 'ui_performance.jsonl' in diag
 assert 'getFilesDir()' in diag and 'Cinemana/work/log' in diag
 assert 'getNativeHeapAllocatedSize' in diag and 'getElapsedCpuTime' in diag
-assert 'BUILD = "PATCH283"' in diag
+assert 'BUILD = "PATCH284"' in diag
 for unexpected in ('getAccount(', 'getToken(', 'getTitle(', 'getUrl(', 'getRequestBody('):
     assert unexpected not in diag, ('sensitive telemetry value', unexpected)
 
@@ -126,7 +126,7 @@ assert 'UiPerfDiag;->homeRowBind(IJ)V' in smali_method(rows, '.method public onB
 assert 'UiPerfDiag;->homeRowCreate(IJ)V' in smali_method(rows, '.method public onCreateViewHolder(Landroid/view/ViewGroup;I)Landroidx/recyclerview/widget/RecyclerView$b0;')
 assert 'homeRowBind(int type, long startedNanos)' in diag and 'homeRowCreate(int type, long startedNanos)' in diag
 assert 'for(int t=0;t<5;t++)' in diag and 'rowBindCount[type]++' in diag
-assert 'BUILD = "PATCH283"' in diag
+assert 'BUILD = "PATCH284"' in diag
 assert 'UiPerfDiag;->inflate(IJ)V' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_begin' in smali_method(home_fragment, '.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;')
 assert 'home_inflate_count' in diag and 'detail_inflate_count' in diag
@@ -164,6 +164,20 @@ assert 'glassSwitch' not in studio, "stale uninitialized glass control"
 assert 'const/4 v1, 0x0' in smali_method(studio,'.method private saveCustom()V')
 assert 'main_stack_view' in diag and 'main_stack_io' in diag
 assert 'sampleBlockedMain()' in diag and 'MAIN.getLooper().getThread().getStackTrace()' in diag
+assert 'FrameMetrics.UNKNOWN_DELAY_DURATION' in diag
+assert 'FrameMetrics.INPUT_HANDLING_DURATION' in diag
+assert 'FrameMetrics.ANIMATION_DURATION' in diag
+assert 'worst_frame_unknown_ms' in diag and 'unknown_over_100ms' in diag
+assert 'main_stack_binder' in diag and 'main_stack_lock' in diag
+assert 'Arrays.copyOf(v,92)' in diag
+root_created=smali_method(home_fragment,'.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V')
+assert 'RecyclerView;->setItemViewCacheSize(I)V' in root_created
+assert 'const/4 p2, 0x3' in root_created
+childview=source("com/shabakaty/cinemana/ui/home_fragment/HorizontalScrollVideosView.smali")
+childctor=smali_method(childview,'.method public constructor <init>(Landroid/content/Context;Landroid/util/AttributeSet;)V')
+assert 'RecyclerView;->setItemViewCacheSize(I)V' in childctor
+assert childctor.index('RecyclerView;->setItemViewCacheSize(I)V') > childctor.index('RecyclerView;->setAdapter(')
+assert 'const/4 p2, 0x3' in childctor
 print("PASS Phase 3 bounded FrameMetrics tracing, lifecycle probes, and non-sensitive telemetry wiring")
 
 print("PASS Phase 2 adapter diff guards, pagination debounce, FAB state, and RecyclerView animation policy")

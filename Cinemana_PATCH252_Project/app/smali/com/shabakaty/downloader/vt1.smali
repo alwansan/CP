@@ -697,6 +697,11 @@
 
     invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setAdapter(Landroidx/recyclerview/widget/RecyclerView$e;)V
 
+    # Keep one extra previously measured home row when scrolling back and forth.
+    # Bounded: the default offscreen cache is 2; this only grows it to 3.
+    const/4 p2, 0x3
+    invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setItemViewCacheSize(I)V
+
     # The root viewport is constrained on all four sides: adapter updates must not resize it.
     const/4 p2, 0x1
     invoke-virtual {p1, p2}, Landroidx/recyclerview/widget/RecyclerView;->setHasFixedSize(Z)V

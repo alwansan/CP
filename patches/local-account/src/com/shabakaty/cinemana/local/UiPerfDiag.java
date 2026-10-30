@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH283";
+    private static final String BUILD = "PATCH284";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -60,7 +60,7 @@ public final class UiPerfDiag {
     private static volatile long pendingProbeNs;
     private static long lastStallStackMs;
     // Seven fixed categories; never log stack text or user/content identifiers.
-    private static final long[] blockedMainBuckets=new long[7];
+    private static final long[] blockedMainBuckets=new long[9];
     private static long mainProbes, mainOver50, mainOver100, mainOver250, mainMaxNs;
     private static long homeRefreshCount, homeRefreshNs, homeRefreshMaxNs;
     private static long homeSetupCount, homeSetupNs, homeSetupMaxNs;
@@ -68,6 +68,8 @@ public final class UiPerfDiag {
     private static long detailInflateCount, detailInflateNs, detailInflateMaxNs;
     private static long layoutMaxNs, drawMaxNs;
     private static long worstLayoutNs,worstDrawNs,worstSyncNs,worstCommandNs,worstSwapNs;
+    // Missing stages explain stalls with short layout/draw/GPU times.
+    private static long worstUnknownNs,worstInputNs,worstAnimationNs,unknownOver100;
     private static long layoutOver100,commandOver100,themeApplyCount,themeApplyMaxNs;
     // Home row types are stable numeric layout enums; never record titles or content.
     private static final long[] rowBindCount=new long[5], rowBindMaxNs=new long[5];
@@ -87,7 +89,7 @@ public final class UiPerfDiag {
                 v[27]>0 || v[28]>0 || v[29]>0 || v[30]>0 || v[31]>0 || v[36]>0 || v[39]>0 || v[42]>0 || v[45]>0) return true;
             for(int t=0;t<5;t++)if(v[50+4*t]>0 || v[52+4*t]>0)return true;
             if(v[77]>0)return true;
-            for(int t=0;t<7;t++)if(v[79+t]>0)return true;
+            for(int t=0;t<9;t++)if(v[79+t]>0)return true;
             return false;
         }
     }
@@ -106,11 +108,16 @@ public final class UiPerfDiag {
             homeInflateCount, homeInflateNs, homeInflateMaxNs,
             detailInflateCount, detailInflateNs, detailInflateMaxNs,
             layoutMaxNs, drawMaxNs};
-        long[] extended=java.util.Arrays.copyOf(v,86);
-        for(int t=0;t<7;t++) {
+        long[] extended=java.util.Arrays.copyOf(v,92);
+        for(int t=0;t<9;t++) {
             extended[79+t]=blockedMainBuckets[t];
             blockedMainBuckets[t]=0;
         }
+        extended[88]=worstUnknownNs;
+        extended[89]=worstInputNs;
+        extended[90]=worstAnimationNs;
+        extended[91]=unknownOver100;
+        worstUnknownNs=worstInputNs=worstAnimationNs=unknownOver100=0;
         extended[70]=worstLayoutNs;extended[71]=worstDrawNs;extended[72]=worstSyncNs;
         extended[73]=worstCommandNs;extended[74]=worstSwapNs;
         extended[75]=layoutOver100;extended[76]=commandOver100;
@@ -142,29 +149,38 @@ public final class UiPerfDiag {
         return snap;
     }
 
-    /** Executes only on the background writer when an outstanding main-thread probe is late. */
+    /** Background-only stack CATEGORY sampling; never serialize stack frames. */
     private static void sampleBlockedMain() {
         long now=SystemClock.elapsedRealtime();
         if (now-lastStallStackMs<500) return;
         lastStallStackMs=now;
         try {
             StackTraceElement[] frames=MAIN.getLooper().getThread().getStackTrace();
-            int kind=6;
-            for (StackTraceElement frame:frames) {
+            boolean view=false,image=false,theme=false,io=false,app=false,system=false,binder=false,lock=false;
+            for(StackTraceElement frame:frames) {
                 String c=frame.getClassName();
-                if (c.startsWith("androidx.recyclerview") ||
-                    c.startsWith("androidx.constraintlayout") ||
-                    c.startsWith("android.view.") || c.startsWith("android.widget.")) {kind=0;break;}
-                if (c.startsWith("com.facebook.drawee") ||
-                    c.startsWith("com.facebook.imagepipeline") ||
-                    c.startsWith("android.graphics.")) {kind=1;break;}
-                if (c.contains("ThemeEngine142") || c.contains("ThemeStudio142")) {kind=2;break;}
-                if (c.startsWith("java.io.") || c.startsWith("android.database.") ||
-                    c.startsWith("libcore.io.") || c.startsWith("org.json.")) {kind=3;break;}
-                if (c.startsWith("com.shabakaty.")) {kind=4;break;}
-                if (c.startsWith("android.") || c.startsWith("java.")) {kind=5;break;}
+                if(c.contains("ThemeEngine142")||c.contains("ThemeStudio142")) theme=true;
+                else if(c.startsWith("android.os.BinderProxy") || c.startsWith("android.os.Parcel") ||
+                        c.startsWith("android.os.Binder") || c.startsWith("libcore.io.Binder")) binder=true;
+                else if(c.startsWith("java.util.concurrent.locks.") || c.startsWith("java.lang.Object")) lock=true;
+                else if(c.startsWith("java.io.") || c.startsWith("android.database.") ||
+                        c.startsWith("libcore.io.") || c.startsWith("org.json.")) io=true;
+                else if(c.startsWith("com.facebook.drawee") ||
+                        c.startsWith("com.facebook.imagepipeline") ||
+                        c.startsWith("android.graphics.")) image=true;
+                else if(c.startsWith("androidx.recyclerview") ||
+                        c.startsWith("androidx.constraintlayout") ||
+                        c.startsWith("android.view.") || c.startsWith("android.widget.")) view=true;
+                else if(c.startsWith("com.shabakaty.")) app=true;
+                // Looper/Handler/ActivityThread are structural frames, not root causes.
+                else if(c.startsWith("android.") && !c.startsWith("android.os.Looper") &&
+                        !c.startsWith("android.os.Handler") &&
+                        !c.startsWith("android.os.MessageQueue") &&
+                        !c.startsWith("android.app.ActivityThread")) system=true;
             }
-            synchronized(LOCK) {blockedMainBuckets[kind]++;}
+            // Specific signals have priority over generic framework frames.
+            int kind=theme?2:binder?7:lock?8:io?3:image?1:view?0:app?4:system?5:6;
+            synchronized(LOCK){blockedMainBuckets[kind]++;}
         } catch(Throwable ignored) {}
     }
 
@@ -268,6 +284,9 @@ public final class UiPerfDiag {
                 long sync = metrics.getMetric(FrameMetrics.SYNC_DURATION);
                 long command = metrics.getMetric(FrameMetrics.COMMAND_ISSUE_DURATION);
                 long swap = metrics.getMetric(FrameMetrics.SWAP_BUFFERS_DURATION);
+                long unknown = metrics.getMetric(FrameMetrics.UNKNOWN_DELAY_DURATION);
+                long input = metrics.getMetric(FrameMetrics.INPUT_HANDLING_DURATION);
+                long animation = metrics.getMetric(FrameMetrics.ANIMATION_DURATION);
                 synchronized (LOCK) {
                     frames++;
                     frameTotalNs += duration;
@@ -278,7 +297,11 @@ public final class UiPerfDiag {
                         worstSyncNs=Math.max(0,sync);
                         worstCommandNs=Math.max(0,command);
                         worstSwapNs=Math.max(0,swap);
+                        worstUnknownNs=Math.max(0,unknown);
+                        worstInputNs=Math.max(0,input);
+                        worstAnimationNs=Math.max(0,animation);
                     }
+                    if(unknown>=100_000_000L)unknownOver100++;
                     if(layout>=100_000_000L)layoutOver100++;
                     if(command>=100_000_000L)commandOver100++;
                     missed += Math.max(0, dropped);
@@ -518,6 +541,12 @@ public final class UiPerfDiag {
             extended.append(",\"main_stack_app\":").append(v[83]);
             extended.append(",\"main_stack_system\":").append(v[84]);
             extended.append(",\"main_stack_unknown\":").append(v[85]);
+            extended.append(",\"main_stack_binder\":").append(v[86]);
+            extended.append(",\"main_stack_lock\":").append(v[87]);
+            extended.append(",\"worst_frame_unknown_ms\":").append(String.format(Locale.US,"%.2f",v[88]/1e6));
+            extended.append(",\"worst_frame_input_ms\":").append(String.format(Locale.US,"%.2f",v[89]/1e6));
+            extended.append(",\"worst_frame_animation_ms\":").append(String.format(Locale.US,"%.2f",v[90]/1e6));
+            extended.append(",\"unknown_over_100ms\":").append(v[91]);
             append(extended.append('}').toString());
         } catch(Throwable error) {
             Log.w(TAG,"format_failed type="+error.getClass().getSimpleName());
