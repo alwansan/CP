@@ -13332,7 +13332,22 @@
     .catchall {:try_start_recover_rollback .. :try_end_recover_rollback} :recover_unlock_failed
     const/4 v1, 0x0
     const-string v2, "FAILED"
+    # PATCH329: after executor rejection or another enqueue exception, the
+    # dedupe key is already rolled back. Failure of best-effort UI state
+    # must not hide the original fatal enqueue cause from diagnostic logs.
+    :try_start_p329_rollback_state
     invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    :try_end_p329_rollback_state
+    .catch Ljava/lang/Throwable; {:try_start_p329_rollback_state .. :try_end_p329_rollback_state} :p329_rollback_state_failed
+    goto :p329_log_original
+
+    :p329_rollback_state_failed
+    move-exception v1
+    const-string v2, "CinemanaMkv"
+    const-string v3, "PATCH329_RECOVERED_ROLLBACK_STATE_WRITE_FAILED"
+    invoke-static {v2, v3, v1}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :p329_log_original
     const-string v1, "RECOVERED_ENQUEUE_FAILED"
     invoke-static {p0, v1, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     :recover_rejected
