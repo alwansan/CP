@@ -102,8 +102,21 @@
 
     const-string v3, "PROCESSING"
 
+    # PATCH330: do not fail the actual MKV worker merely because its optional
+    # UI state write is temporarily unavailable.
+    :try_start_p330_processing
     invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    :try_end_p330_processing
+    .catch Ljava/lang/Throwable; {:try_start_p330_processing .. :try_end_p330_processing} :p330_processing_failed
+    goto :p330_processing_done
 
+    :p330_processing_failed
+    move-exception v5
+    const-string v6, "CinemanaMkv"
+    const-string v7, "PATCH330_PROCESSING_STATE_WRITE_FAILED_CONTINUING"
+    invoke-static {v6, v7, v5}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :p330_processing_done
     .line 110
     nop
 
@@ -448,11 +461,22 @@
 
     const-string v3, "IDLE"
 
+    # PATCH330: preserve cancellation cleanup even on Room status or compact
+    # ledger I/O failure. The source and pending ledger remain untouched.
+    :try_start_p330_ok_cleanup
     invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
-
-    # Resweep compact pending records after the exporter/promotion attempt. Failed MP4s remain pending.
     invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
+    :try_end_p330_ok_cleanup
+    .catch Ljava/lang/Throwable; {:try_start_p330_ok_cleanup .. :try_end_p330_ok_cleanup} :p330_ok_cleanup_failed
+    goto :p330_ok_clear_current
 
+    :p330_ok_cleanup_failed
+    move-exception v5
+    const-string v6, "CinemanaMkv"
+    const-string v7, "PATCH330_NORMAL_CLEANUP_WRITE_FAILED_CONTINUING"
+    invoke-static {v6, v7, v5}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :p330_ok_clear_current
     .line 145
     nop
 
@@ -530,11 +554,22 @@
 
     const-string v4, "FAILED"
 
+    # PATCH330: do not replace the original worker Throwable (v0), or skip
+    # clearing the cancellation slot, due to best-effort UI/ledger I/O.
+    :try_start_p330_failed_cleanup
     invoke-static {v1, v2, v3, v4}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
-
-    # A late successful promotion is cleared; an actual failure remains in the compact ledger.
     invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
+    :try_end_p330_failed_cleanup
+    .catch Ljava/lang/Throwable; {:try_start_p330_failed_cleanup .. :try_end_p330_failed_cleanup} :p330_failed_cleanup_failed
+    goto :p330_failed_clear_current
 
+    :p330_failed_cleanup_failed
+    move-exception v5
+    const-string v6, "CinemanaMkv"
+    const-string v7, "PATCH330_FAILED_CLEANUP_WRITE_FAILED_PRESERVING_ORIGINAL"
+    invoke-static {v6, v7, v5}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :p330_failed_clear_current
     .line 145
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     throw v0
