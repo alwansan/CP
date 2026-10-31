@@ -30,6 +30,9 @@
     :patch321_manual_sidecars_done
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;
     move-result-object v2
+    # PATCH326: re-promote interrupted exports after a manual full scan adds
+    # more ordinary jobs. No new mux worker and no pre-lease .part deletion.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->prioritizeInterruptedParts(Landroid/content/Context;)V
     :try_end_0
     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :worker_failed
     goto :worker_post

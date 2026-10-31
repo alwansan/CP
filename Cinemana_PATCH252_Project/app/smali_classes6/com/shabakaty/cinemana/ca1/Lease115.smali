@@ -1049,8 +1049,30 @@
 
     if-eqz v6, :cond_4
 
+    # PATCH326: this is reached only with a valid per-target cross-process
+    # file lease, a canonical exact-name UUID stage, and a distinct attempt.
+    # Never create another stage while an obsolete one could not be removed.
     invoke-virtual {v5}, Ljava/io/File;->delete()Z
+    move-result v6
+    if-nez v6, :p326_removed
+    new-instance v6, Ljava/io/IOException;
+    const-string v7, "STAGE_CLEANUP_SKIPPED delete_failed_under_lease"
+    invoke-direct {v6, v7}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
+    throw v6
 
+    :p326_removed
+    new-instance v6, Ljava/lang/StringBuilder;
+    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v7, "STAGE_ORPHAN_REMOVED part="
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v5}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v7
+    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v6
+    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v6
+    invoke-static {v6}, Lcom/shabakaty/cinemana/ca1/Restart108;->trace(Ljava/lang/String;)V
     goto :goto_2
 
     .line 35
@@ -1095,7 +1117,20 @@
     move-result-object p0
 
     invoke-direct {v1, p1, p0}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-
+    # PATCH326: log the beginning of the new UUID stage while the lease is held.
+    # FFmpeg and the final Room/manifest checks still run in the old path.
+    new-instance v3, Ljava/lang/StringBuilder;
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v4, "STAGE_REBUILD_STARTED part="
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    invoke-virtual {v1}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v3
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v3
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/Restart108;->trace(Ljava/lang/String;)V
     return-object v1
 
     .line 30

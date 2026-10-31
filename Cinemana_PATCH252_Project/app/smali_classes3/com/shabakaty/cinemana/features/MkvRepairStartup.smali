@@ -59,6 +59,10 @@
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
     :startup_sidecars_done
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
+    # PATCH326: the full scan / durable receipt replay can add ordinary jobs
+    # after the first promotion. Restore oldest orphan priority on this pass.
+    # Only reorders queued work; running FFmpeg is never interrupted.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->prioritizeInterruptedParts(Landroid/content/Context;)V
     :try_end_second_pass
     .catch Ljava/lang/Throwable; {:try_start_second_pass .. :try_end_second_pass} :second_pass_failed
 
