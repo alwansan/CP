@@ -13299,7 +13299,22 @@
     invoke-direct/range {v0 .. v4}, Lcom/shabakaty/cinemana/features/MkvExporter$Recovered;-><init>(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/lang/String;)V
     const/4 v5, 0x1
     const-string v6, "QUEUED"
+    # PATCH329: one failed best-effort queue-state write must not prevent
+    # a previously validated recovered MP4 from reaching the MKV worker.
+    # Still under JOB_LOCK, with the existing catchall rollback on execute.
+    :try_start_p329_state
     invoke-static {p0, p1, v5, v6}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    :try_end_p329_state
+    .catch Ljava/lang/Throwable; {:try_start_p329_state .. :try_end_p329_state} :p329_state_failed
+    goto :p329_enqueue
+
+    :p329_state_failed
+    move-exception v5
+    const-string v6, "CinemanaMkv"
+    const-string v7, "PATCH329_RECOVERED_QUEUE_STATE_WRITE_FAILED_CONTINUING"
+    invoke-static {v6, v7, v5}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :p329_enqueue
     sget-object v5, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
     invoke-interface {v5, v0}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
     :recover_already_owned
