@@ -28,6 +28,9 @@
 
     :audit_exception
     move-exception v0
+    # PATCH321: report why periodic recovery failed instead of silently
+    # swallowing a Throwable and pretending every file was scanned.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvReconciler;->auditFailure(Ljava/lang/Throwable;)V
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->auditFinished()V
     return-void
 .end method

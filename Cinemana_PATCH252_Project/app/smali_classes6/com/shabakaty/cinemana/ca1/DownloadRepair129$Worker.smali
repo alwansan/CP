@@ -19,6 +19,14 @@
     iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/DownloadRepair129$Worker;->title:Landroid/widget/TextView;
 
     :try_start_0
+    # PATCH321: manual Repair Downloads uses the same durable sidecar
+    # recovery+native queue rescan as cold app startup, before oldest-first
+    # MKV auditing. No source files deleted; retries remain guarded.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverPending(Landroid/content/Context;)I
+    move-result v3
+    if-lez v3, :patch321_manual_sidecars_done
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
+    :patch321_manual_sidecars_done
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;
     move-result-object v2
     :try_end_0

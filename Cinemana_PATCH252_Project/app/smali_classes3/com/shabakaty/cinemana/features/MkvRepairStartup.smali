@@ -15,6 +15,22 @@
 .method public run()V
     .locals 4
 
+    # PATCH321 immediate, separate worker-thread scan; keep delayed retry.
+    iget-object v0, p0, Lcom/shabakaty/cinemana/features/MkvRepairStartup;->context:Landroid/content/Context;
+    :try_start_immediate
+    const-string v1, "download_repair_actions.log"
+    const-string v2, "PATCH321_BOOT_IMMEDIATE_AUDIT"
+    invoke-static {v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;
+    :try_end_immediate
+    .catch Ljava/lang/Throwable; {:try_start_immediate .. :try_end_immediate} :startup_immediate_failed
+    goto :try_start_delay
+
+    :startup_immediate_failed
+    move-exception v1
+    const-string v2, "STARTUP_IMMEDIATE_SCAN_FAILED"
+    invoke-static {v0, v2, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
+
     :try_start_delay
     const-wide/16 v0, 0x1f40
     invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
@@ -23,12 +39,16 @@
 
     :try_start_second_pass
     iget-object v0, p0, Lcom/shabakaty/cinemana/features/MkvRepairStartup;->context:Landroid/content/Context;
+    const-string v2, "download_repair_actions.log"
+    const-string v3, "PATCH321_BOOT_DELAYED_RETRY"
+    invoke-static {v0, v2, v3}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverPending(Landroid/content/Context;)I
     move-result v1
     if-lez v1, :startup_sidecars_done
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
     :startup_sidecars_done
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
     :try_end_second_pass
     .catch Ljava/lang/Throwable; {:try_start_second_pass .. :try_end_second_pass} :second_pass_failed
 
@@ -36,6 +56,9 @@
 
     :second_pass_failed
     move-exception v0
+    iget-object v1, p0, Lcom/shabakaty/cinemana/features/MkvRepairStartup;->context:Landroid/content/Context;
+    const-string v2, "STARTUP_DELAYED_RECOVERY_FAILED"
+    invoke-static {v1, v2, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     goto :startup_done
 
     :interrupted

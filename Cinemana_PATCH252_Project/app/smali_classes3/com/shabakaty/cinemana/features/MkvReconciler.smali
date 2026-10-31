@@ -1830,6 +1830,28 @@
     return-void
 .end method
 
+.method public static auditFailure(Ljava/lang/Throwable;)V
+    .locals 3
+    # Only exception class, never source paths, signed URLs or messages.
+    if-eqz p0, :audit_failure_done
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
+    invoke-virtual {v0}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
+    move-result-object v0
+    check-cast v0, Landroid/content/Context;
+    if-eqz v0, :audit_failure_done
+    invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/Class;->getName()Ljava/lang/String;
+    move-result-object v1
+    const-string v2, "MKV_AUDIT_FAILURE_CLASS="
+    invoke-virtual {v2, v1}, Ljava/lang/String;->concat(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    const-string v2, "download_repair_unresolved.log"
+    invoke-static {v0, v2, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+    :audit_failure_done
+    return-void
+.end method
+
 .method public static declared-synchronized auditFinished()V
     .locals 2
     const/4 v0, 0x0

@@ -47,12 +47,28 @@
 
     if-eqz p0, :startup_done
 
+    # PATCH321: Application.onCreate runs in the :filedownloader process too.
+    # Use the existing main-process check (also used by Restart108.bootstrap)
+    # so only the main app owns disk observers, repair queue and native muxer.
+    :try_start_process_gate
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Restart108;->main(Ljava/lang/Object;)Z
+    move-result v0
+    :try_end_process_gate
+    .catch Ljava/lang/Throwable; {:try_start_process_gate .. :try_end_process_gate} :startup_gate_failed
+    if-eqz v0, :startup_done
+
     new-instance v0, Lcom/shabakaty/cinemana/features/MkvRepairStartup;
     invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/features/MkvRepairStartup;-><init>(Landroid/content/Context;)V
 
     new-instance v1, Ljava/lang/Thread;
     invoke-direct {v1, v0}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
     invoke-virtual {v1}, Ljava/lang/Thread;->start()V
+
+    :startup_gate_failed
+    move-exception v0
+    # Guard failures never crash the downloader service process.
+    const-string v1, "MKV_STARTUP_PROCESS_CHECK_FAILED"
+    invoke-static {p0, v1, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
 
     :startup_done
     return-void
