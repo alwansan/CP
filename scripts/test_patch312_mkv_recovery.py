@@ -47,6 +47,15 @@ assert 'const-string v6, ".mp4"' in sweep
 assert 'const-string v6, ".tmp.mp4"' in sweep
 assert 'delete()Z' not in sweep and "renameTo" not in sweep
 assert '"WAITING_PLAN_OR_SUBTITLES"' in reconciler
+# PATCH314: only the logging sink is sampled; never change DB or recovery gates.
+exporter = (features/"MkvExporter.smali").read_text()
+external_log = method(exporter, "appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V")
+assert 'MkvLogGate314;->shouldWrite(Ljava/lang/String;)Z' in external_log
+assert external_log.index('Log94;->enabled()Z') < external_log.index('MkvLogGate314;->shouldWrite')
+assert external_log.index('MkvLogGate314;->shouldWrite') < external_log.index('ensureLogDir()Ljava/io/File;')
+assert 'appendLog(Ljava/io/File;Ljava/lang/String;)V' in external_log
+assert 'DB_PROMOTE_SUCCESS' in exporter and 'DB_PROMOTE_FAIL' in exporter
+
 assert 'Queue110;->mayRepairCompleted(Ljava/lang/Object;)Z' in (features/"MkvExporter.smali").read_text()
 files = [f"episode-{i:03}.mp4" for i in range(66)] + ["episode-070.mp4.temp", "episode-071.mp4.temp"]
 cursor, seen = 0, set()

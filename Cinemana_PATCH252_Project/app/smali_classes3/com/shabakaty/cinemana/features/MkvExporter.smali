@@ -213,6 +213,13 @@
 
     .line 1677
     :cond_0
+    # PATCH314: sample only repeated DAO identity diagnostics, never errors
+    # or database/FFmpeg work. Gate precedes external disk I/O.
+    invoke-static {p1}, Lcom/shabakaty/cinemana/local/MkvLogGate314;->shouldWrite(Ljava/lang/String;)Z
+    move-result v0
+    if-nez v0, :patch314_log_allowed
+    return-void
+    :patch314_log_allowed
     :try_start_0
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvExporter;->ensureLogDir()Ljava/io/File;
 
