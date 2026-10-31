@@ -19,3 +19,7 @@
 
 ## Honest completion state / next evidence
 CI and Android runtime are unverified until GitHub Actions completes and Poco F5 Pro installs the new APK. Verify no new Android 15 VerifyError; on cold restart E42 should have a fresh `PATCH324_INTERRUPTED_PART_AUDIT` and enqueue/worker markers, one final validated MKV, intact MP4 until DB promotion. If still rejected, inspect Queue110 paused/active and exact Room/manifest states, not bypass them. Compare E49 and other old `.part` similarly; avoid using old manually deleted stress evidence.
+
+## Verified CI final result
+- **SUCCESS** [Actions #41](https://github.com/alwansan/CP/actions/runs/41232930490), commit `ea3d0899072bbdea0b842b68f2e5f5688a770ec4`: protected tests (including `scripts/test_patch324_interrupted_part_recovery.py`), Java helpers, Smali/DEX build, APK signing, verification and Release upload passed.
+- Signed direct APK: https://github.com/alwansan/CP/releases/download/stable-core-PATCH324-41/Cinemana_Stable_Core_PATCH324_signed.apk (56,343,580 bytes). **Not tested on Android 15 in newly uploaded CL yet.** Need phone E42 and restart logs.
