@@ -25,5 +25,12 @@ assert method.index(cache_put) > method.index("DB_PROMOTE_DOWNLOADS_DAO=")
 assert "if-eqz v0, :patch318_return_dao" in method
 assert ".field public final a:Lcom/shabakaty/downloader/vt3;" in dao
 assert "iput-object p1, p0, Lcom/shabakaty/downloader/lz0;->a:Lcom/shabakaty/downloader/vt3;" in dao
-assert "newFixedThreadPool" in export and "FFMPEG_SLOTS" in export
+# PATCH325 keeps exactly one worker, but uses a deque so stopped MKV jobs
+# can move ahead of FIFO backlog. Verify the actual worker parameters.
+assert "FFMPEG_SLOTS" in export
+init=re.search(r"(?ms)^\\.method static constructor <clinit>\\(\\)V\\n.*?^\\.end method", export)
+assert init, "MkvExporter static initializer missing"
+assert "ThreadPoolExecutor;-><init>(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V" in init.group()
+assert "const/4 v1, 0x1" in init.group() and "const/4 v2, 0x1" in init.group()
+assert "LinkedBlockingDeque" in init.group()
 print("PASS PATCH318: synchronized one-time DAO cache, original DB/DAO resolution and queries retained")
