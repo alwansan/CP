@@ -27,7 +27,7 @@ assert immediate_body.index("DownloadRepair129;->execute(") < immediate_body.ind
 assert immediate_body.index("RecoveryCapsule;->recoverPending(") < immediate_body.index("Queue110;->scan()V")
 assert immediate_body.index("Queue110;->scan()V") < immediate_body.index("MkvReconciler;->requestAudit()V")
 assert "if-lez v1, :patch323_immediate_sidecars_done" in immediate_body
-assert immediate_body.index("Queue110;->scan()V") < immediate_body.index(":patch323_immediate_sidecars_done")
+assert immediate_body.index("Queue110;->scan()V") < immediate_body.index("\n    :patch323_immediate_sidecars_done\n")
 assert "goto :try_start_delay" in run[first_end:delay]
 assert run.index(":startup_immediate_failed") < delay
 assert run.index("move-exception v1",run.index(":startup_immediate_failed")) < delay
