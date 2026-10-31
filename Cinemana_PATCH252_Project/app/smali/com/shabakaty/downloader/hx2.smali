@@ -505,6 +505,10 @@
     .line 1
     invoke-super {p0, p1}, Lcom/shabakaty/downloader/xi;->onCreate(Landroid/os/Bundle;)V
 
+    # PATCH311: initialize the default tab register on BOTH verifier paths.
+    # The PATCH310 saved-state jump skipped its former only definition.
+    const v0, 0x7f0a0305
+
     if-nez v5, :patch310_keep_restored_fragments
 
     .line 2

@@ -16,9 +16,9 @@ assert "UiPerfDiag;->install(Landroid/app/Activity;)V" in method(home,"onStart()
 assert 'const-string v0, "downloads_visible"' in method(downloads,"onResume()V")
 assert 'const-string v0, "downloads_hidden"' in method(downloads,"onPause()V")
 assert "UiPerfDiag;->mark(Ljava/lang/String;)V" in downloads
-assert ui.count('private static final String BUILD = "PATCH310";')==1
+assert ui.count('private static final String BUILD = "PATCH311";')==1
 for marker in ("attach_base_enter","app_create_enter","app_super_completed","local_init_returned","repair_startup_begin","app_create_finished"):
-    assert ("PATCH310 "+marker) in startup, marker
+    assert ("PATCH311 "+marker) in startup, marker
 assert "registerActivityLifecycleCallbacks" in ui
 assert "FrameMetrics" in ui and "probeMainThread" in ui
 assert "newSingleThreadScheduledExecutor" in ui
@@ -91,7 +91,7 @@ assert 'private static final int MAX_TASKS = 256' in prof
 assert '/proc/self/task' in prof and 'cpu_ticks_delta' in prof and 'tasks_capped' in prof
 assert 'if(i>=6)continue;' in prof
 assert 'ThreadCpuDiag308.sample()' in load
-assert '"PATCH310"' in load
+assert '"PATCH311"' in load
 assert 'TrafficStats.getUidRxBytes' in load and 'TrafficStats.getUidTxBytes' in load
 assert 'uid_network_rx_delta' in load and 'uid_network_tx_delta' in load
 assert 'proc_io_accessible' in load
@@ -136,3 +136,13 @@ assert "startActivity(Landroid/content/Intent;)V" in details
 manifest=(root/"Cinemana_PATCH252_Project/app/AndroidManifest.xml").read_text()
 assert 'android:name="com.shabakaty.cinemana.player.VideoPlayerActivity"' in manifest
 print("PASS PATCH310 saved-backstack preservation, player launch and navigation diagnostics")
+
+# PATCH311 fixes real Android 15 VerifyError:
+# hx2.onCreate formerly branched past the only definition of v0, causing the
+# verifier to reject HomeActivity at [0xEE] as "Undefined but expected Integer".
+prefix=on_create[:on_create.index("if-nez v5, :patch310_keep_restored_fragments")]
+assert "const v0, 0x7f0a0305" in prefix, "restored path uses undefined v0"
+assert prefix.index("invoke-super {p0, p1}") < prefix.index("const v0, 0x7f0a0305")
+assert prefix.index("const v0, 0x7f0a0305") < len(prefix)
+assert "goto :goto_3" in on_create
+print("PASS PATCH311 register v0 defined on both restored/fresh paths")

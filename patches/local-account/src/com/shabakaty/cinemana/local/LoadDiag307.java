@@ -298,7 +298,7 @@ public final class LoadDiag307 {
 
     private static JSONObject base(String event) throws Exception {
         JSONObject o = new JSONObject();
-        o.put("schema",1);o.put("build","PATCH310");
+        o.put("schema",1);o.put("build","PATCH311");
         o.put("event",event);o.put("utc_ms",System.currentTimeMillis());
         o.put("pid",pid);o.put("process",process);
         o.put("screen",screen);o.put("foreground",foreground);o.put("downloads_tab",downloadsTab);

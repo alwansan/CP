@@ -97,7 +97,7 @@
 
     # PATCH303: logcat-only marker before app/component initialization (no filesystem work).
     const-string v0, "CinemanaStartupTrace"
-    const-string v1, "PATCH310 attach_base_enter"
+    const-string v1, "PATCH311 attach_base_enter"
     invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     const-string v0, "base"
@@ -536,7 +536,7 @@
 
     # PATCH303: logcat-only startup checkpoints, also visible in :filedownloader.
     const-string v0, "CinemanaStartupTrace"
-    const-string v2, "PATCH310 app_create_enter"
+    const-string v2, "PATCH311 app_create_enter"
     invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     move-object/from16 v1, p0
@@ -545,7 +545,7 @@
     invoke-super/range {p0 .. p0}, Lcom/shabakaty/downloader/vk0;->onCreate()V
 
     const-string v0, "CinemanaStartupTrace"
-    const-string v2, "PATCH310 app_super_completed"
+    const-string v2, "PATCH311 app_super_completed"
     invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     # PATCH307: diagnostics begin after super, without touching core startup or downloader.
@@ -556,7 +556,7 @@
     invoke-static {v1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->init(Landroid/content/Context;)V
 
     const-string v0, "CinemanaStartupTrace"
-    const-string v2, "PATCH310 local_init_returned"
+    const-string v2, "PATCH311 local_init_returned"
     invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     const-string v0, "APP_ONCREATE"
@@ -1407,13 +1407,13 @@
     invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/ca1/Restart108;->bootstrap(Ljava/lang/Object;)V
 
     const-string v0, "CinemanaStartupTrace"
-    const-string v2, "PATCH310 repair_startup_begin"
+    const-string v2, "PATCH311 repair_startup_begin"
     invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->startup(Landroid/content/Context;)V
 
     const-string v0, "CinemanaStartupTrace"
-    const-string v2, "PATCH310 app_create_finished"
+    const-string v2, "PATCH311 app_create_finished"
     invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     const-string v2, "app_create_finished"
