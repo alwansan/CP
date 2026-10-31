@@ -26,6 +26,8 @@
 
 .field private static final FFMPEG_NATIVE_NAME:Ljava/lang/String; = "libffmpeg.so"
 
+.field private static volatile SHARED_DOWNLOADS_DAO318:Ljava/lang/Object;
+
 .field private static final FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
 
 .field private static final JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
@@ -4024,7 +4026,7 @@
     return-object p0
 .end method
 
-.method private static getDownloadsDao(Landroid/content/Context;Landroid/content/Context;)Ljava/lang/Object;
+.method private static declared-synchronized getDownloadsDao(Landroid/content/Context;Landroid/content/Context;)Ljava/lang/Object;
     .locals 6
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -4032,6 +4034,14 @@
         }
     .end annotation
 
+    # PATCH318: only one Room database builder+DAO per process. Reusing the
+    # generated DAO retains its RoomDatabase owner (lz0.a) and prevents
+    # thousands of uncached Room instances / SQLite handles in stress runs.
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->SHARED_DOWNLOADS_DAO318:Ljava/lang/Object;
+    if-eqz v0, :patch318_build_first_dao
+    return-object v0
+
+    :patch318_build_first_dao
     .line 1164
     invoke-virtual {p0}, Landroid/content/Context;->getPackageName()Ljava/lang/String;
 
@@ -4252,6 +4262,10 @@
     invoke-static {p1, p0}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
 
     .line 1180
+    # Cache only successful non-null DAO resolution; failures still throw and retry.
+    if-eqz v0, :patch318_return_dao
+    sput-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->SHARED_DOWNLOADS_DAO318:Ljava/lang/Object;
+    :patch318_return_dao
     return-object v0
 .end method
 
