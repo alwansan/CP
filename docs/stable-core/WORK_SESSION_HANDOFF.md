@@ -157,3 +157,6 @@ The CL full-log audit workflow was repaired in `05b3b763284fb187825c5c5ca9558e5f
 PATCH313 UI metrics still show serious Downloads lag and high CPU (28,304 process CPU ms during a 15,010ms window, up to 294 threads, main/RenderThread/GC spikes); PATCH314 is a targeted log I/O optimization, **not a proven lag fix**. Investigate UI binding/GC, process restarts, native queue replays, missing durable receipts, retention and player navigation with new logs.
 
 **At write time:** PATCH314 commit, Actions/Release outcome and real-device behavior still require live verification. Do not claim success until completed. Never merge to main or modify the two reference branches.
+
+### PATCH314 CI gate correction
+The first PATCH314 build (GitHub Actions `41220856590`) failed its **protected file allowlist**, because the new `MkvLogGate314.java` and its standalone test were not yet explicitly listed. This is a CI allowlist failure, **not** a Smali/DEX or Android runtime failure. A subsequent workflow-only correction explicitly allows exactly those two audited files without opening the rest of the functional core. Check the corrected build's actual status and direct signed release before installing.
