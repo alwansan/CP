@@ -267,6 +267,10 @@
     const-string v9, " cap=16; no_parts_deleted"
     invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v8
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvExporter;->queueTelemetry()Ljava/lang/String;
+    move-result-object v9
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
     invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v8
     const-string v9, "download_repair_actions.log"
