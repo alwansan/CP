@@ -387,6 +387,18 @@
 .method static find(Landroid/view/View;Ljava/lang/String;)Landroid/view/View;
     .locals 2
 
+    # PATCH320: native cards rebind frequently; resolve the verified ID
+    # directly before fallback to recursive Resources.getResourceEntryName.
+    const-string v0, "download_button"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :patch320_legacy
+    const v0, 0x7f0a0146
+    invoke-virtual {p0, v0}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v0
+    return-object v0
+
+    :patch320_legacy
     .line 5
     :try_start_0
     invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;
