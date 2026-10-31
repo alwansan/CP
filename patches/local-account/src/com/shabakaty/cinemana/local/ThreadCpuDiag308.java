@@ -75,7 +75,8 @@ public final class ThreadCpuDiag308 {
             if (line==null || line.length()>1024) return null;
             int left=line.indexOf('('), right=line.lastIndexOf(')');
             if (left<0 || right<=left || right+2>=line.length()) return null;
-            String type=group(line.substring(left+1,right));
+            // Android names its main thread after the app; TID equals process PID.
+            String type=tid==android.os.Process.myPid()?"main":group(line.substring(left+1,right));
             String[] fields=line.substring(right+2).trim().split(" +");
             // fields[0] = /proc stat field #3 (state).
             if (fields.length<20) return null;

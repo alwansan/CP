@@ -1,0 +1,15 @@
+# PATCH309 — Correct CPU thread & video activity attribution
+
+## Evidence from CL PATCH308
+The newest uploaded `CL/log/load_diagnostics.main.jsonl` includes PATCH308 main-process PID **18615**. The per-thread CPU reporter repeatedly listed TID **18615** as `group=other`, alongside `RenderThread`. Linux's main Android thread may be named after the process rather than the literal word "main", so the reporter misclassified it. The process' RSS reached **436,908 KiB** and thread count **233** during the sampled session, with **0 active download requests** at recovery queue scans. This does NOT establish all cost as idle UI: `CL/log/ui_performance.jsonl` for PATCH308 includes `VideoPlayerActivity` frames, whereas the independent load logger classified parts of that interval as `details`. UID network download deltas also reached tens of MB during such intervals, consistent with activity that may include video playback rather than idle app use.
+
+## Scope
+- Change only `ThreadCpuDiag308.readStat` classification: `tid==android.os.Process.myPid()` is `main`, regardless of the Android process thread name. All other thread sampling and size limits remain unchanged.
+- Forward Activity lifecycle **labels only** from existing `UiPerfDiag.resume/pause` to `LoadDiag307.activity/activityPaused`, matching *only* three known names: `VideoPlayerActivity`, `SettingsActivity`, and `HomeActivity`. Player periods are marked `screen=player`, `player_enter` / `player_exit`; unknown component names are never logged. The old UI `FrameMetrics` screen naming remains unchanged.
+- Keep existing 15-second CPU/RSS/threads/UID network samples, 30-second max-six-thread profiling, limited log rotation, startup instrumentation and background writes.
+- No changes to `Restart108`, downloader, database, MKV export, notifications, media playback, or activity navigation.
+
+## Controlled next test
+Use PATCH309 for 3–5 minutes first with **no new download starts and no playback**, rotating through Home, categories, profile, search, details. Then repeat including **video playback** and finally, on another pass, with **many simultaneous downloads** (as desired). Preserve app data; upload `load_diagnostics.main.jsonl`, `ui_performance.jsonl`, `downloads.log`, `.mkv_export.log` and, if present, `load_diagnostics.filedownloader.jsonl` to `alwansan/CL/log`. For freezes/crashes upload LogFox traces to `CL/logfox`.
+
+Measurement caveats: each 15-second sample describes a **whole preceding period**, while `screen` is the state at sample time; switching screens within a period mixes activities. Main and RenderThread CPU ticks in the same 30-second window are more informative when the activity remains unchanged. If `/proc/self/io` is restricted, it remains unavailable and is not misrepresented as UID network I/O. CI success is not a substitute for device runtime testing.

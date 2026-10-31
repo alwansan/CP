@@ -16,9 +16,9 @@ assert "UiPerfDiag;->install(Landroid/app/Activity;)V" in method(home,"onStart()
 assert 'const-string v0, "downloads_visible"' in method(downloads,"onResume()V")
 assert 'const-string v0, "downloads_hidden"' in method(downloads,"onPause()V")
 assert "UiPerfDiag;->mark(Ljava/lang/String;)V" in downloads
-assert ui.count('private static final String BUILD = "PATCH308";')==1
+assert ui.count('private static final String BUILD = "PATCH309";')==1
 for marker in ("attach_base_enter","app_create_enter","app_super_completed","local_init_returned","repair_startup_begin","app_create_finished"):
-    assert ("PATCH308 "+marker) in startup, marker
+    assert ("PATCH309 "+marker) in startup, marker
 assert "registerActivityLifecycleCallbacks" in ui
 assert "FrameMetrics" in ui and "probeMainThread" in ui
 assert "newSingleThreadScheduledExecutor" in ui
@@ -91,9 +91,21 @@ assert 'private static final int MAX_TASKS = 256' in prof
 assert '/proc/self/task' in prof and 'cpu_ticks_delta' in prof and 'tasks_capped' in prof
 assert 'if(i>=6)continue;' in prof
 assert 'ThreadCpuDiag308.sample()' in load
-assert '"PATCH308"' in load
+assert '"PATCH309"' in load
 assert 'TrafficStats.getUidRxBytes' in load and 'TrafficStats.getUidTxBytes' in load
 assert 'uid_network_rx_delta' in load and 'uid_network_tx_delta' in load
 assert 'proc_io_accessible' in load
 assert 'network_scope' in load and 'app_uid_all_processes' in load
 print("PASS PATCH308 bounded per-thread CPU profiling and labelled UID network counters")
+
+# PATCH309: real main thread has TID == PID even if Android truncates its name.
+assert 'tid==android.os.Process.myPid()?"main":group(' in prof
+assert 'private static void resume(Activity activity)' in ui
+assert 'LoadDiag307.activity(activity);' in ui
+assert 'LoadDiag307.activityPaused(activity);' in ui
+assert 'public static void activity(android.app.Activity activity)' in load
+assert 'public static void activityPaused(android.app.Activity activity)' in load
+for key in ('"VideoPlayerActivity"', '"HomeActivity"', '"SettingsActivity"',
+            'note("player_enter")', 'note("player_exit")'):
+    assert key in load, key
+print("PASS PATCH309: main thread PID and player vs details attribution")

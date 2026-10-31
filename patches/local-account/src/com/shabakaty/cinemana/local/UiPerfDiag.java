@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH308";
+    private static final String BUILD = "PATCH309";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -312,6 +312,7 @@ public final class UiPerfDiag {
         if (!installed) return;
         foreground = activity;
         visible = true;
+        LoadDiag307.activity(activity);
         synchronized (LOCK) {
             screen = activity.getClass().getSimpleName().replaceAll("[^A-Za-z0-9_]", "");
             lifecycleEvents++;
@@ -323,6 +324,7 @@ public final class UiPerfDiag {
     private static void pause(Activity activity) {
         if (foreground != activity) return;
         mark("activity_pause");
+        LoadDiag307.activityPaused(activity);
         if (Build.VERSION.SDK_INT >= 24) detachMetrics();
         visible = false;
         foreground = null;

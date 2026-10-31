@@ -81,8 +81,33 @@ public final class LoadDiag307 {
     public static void note(String event) {
         if (!started || event == null || worker == null) return;
         if (!("app_create_finished".equals(event) || "downloads_tab_enter".equals(event) ||
-              "downloads_tab_exit".equals(event))) return;
+              "downloads_tab_exit".equals(event) || "player_enter".equals(event) ||
+              "player_exit".equals(event))) return;
         try { worker.execute(() -> eventNow(event)); } catch (Throwable ignored) {}
+    }
+
+    /** Exact known Activity class names; do not log arbitrary component names. */
+    public static void activity(android.app.Activity activity) {
+        if (!started || activity==null) return;
+        String name=activity.getClass().getSimpleName();
+        foreground=true;
+        if ("VideoPlayerActivity".equals(name)) {
+            screen="player";
+            note("player_enter");
+        } else if ("SettingsActivity".equals(name)) {
+            screen="settings";
+        } else if ("HomeActivity".equals(name)) {
+            screen="home_activity";
+        }
+    }
+
+    public static void activityPaused(android.app.Activity activity) {
+        if (!started || activity==null) return;
+        if ("VideoPlayerActivity".equals(activity.getClass().getSimpleName())) {
+            screen="transition";
+            note("player_exit");
+        }
+        foreground=false;
     }
 
     /** O(1) marker only: never appends a log or reads files on the UI thread. */
@@ -273,7 +298,7 @@ public final class LoadDiag307 {
 
     private static JSONObject base(String event) throws Exception {
         JSONObject o = new JSONObject();
-        o.put("schema",1);o.put("build","PATCH308");
+        o.put("schema",1);o.put("build","PATCH309");
         o.put("event",event);o.put("utc_ms",System.currentTimeMillis());
         o.put("pid",pid);o.put("process",process);
         o.put("screen",screen);o.put("foreground",foreground);o.put("downloads_tab",downloadsTab);
