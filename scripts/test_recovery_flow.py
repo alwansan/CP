@@ -16,6 +16,7 @@ class Flow:
         self.scheduled = []
         self.dispatched = []
         self.files = []
+        self.cursor = 0
 
     def run(self, method, *args):
         block = re.search(r'\.method [^\n]*\b' + re.escape(method) + r'\([^\n]+\n(.*?)\.end method', SOURCE, re.S)[1]
@@ -43,6 +44,8 @@ class Flow:
             elif op.startswith('move'):
                 put(parts[0], get(parts[1]))
             elif op == 'sget-boolean': put(parts[0], self.pending)
+            elif op == 'sget': put(parts[0], self.cursor)
+            elif op == 'sput': self.cursor = get(parts[0])
             elif op == 'sput-boolean': self.pending = bool(get(parts[0]))
             elif op.startswith('sget-object'): put(parts[0], operands.split('->')[1].split(':')[0])
             elif op == 'new-instance': put(parts[0], {})
@@ -72,6 +75,12 @@ class Flow:
                 if condition == (op == 'if-nez'): pc = labels[parts[1]]
             elif op == 'if-ge':
                 if get(parts[0]) >= get(parts[1]): pc = labels[parts[2]]
+            elif op == 'if-lt':
+                if get(parts[0]) < get(parts[1]): pc = labels[parts[2]]
+            elif op == 'if-lez':
+                if get(parts[0]) <= 0: pc = labels[parts[1]]
+            elif op == 'if-gez':
+                if get(parts[0]) >= 0: pc = labels[parts[1]]
             elif op.startswith('goto'): pc = labels[operands]
             elif op == 'return-void': return None
             elif op.startswith('return'): return get(parts[0])
@@ -106,6 +115,19 @@ class RecoveryFlowTests(unittest.TestCase):
             ('same-B.mp4',20),('same-A.mp4',20),('already.mkv',4)]]
         f.run('scanExistingRoot', 'work')
         self.assertEqual(f.dispatched, ['old.mp4','same-A.mp4','same-B.mp4','new.mp4'])
+
+    def test_burst_work_is_bounded_and_eventually_fair(self):
+        f = Flow()
+        f.files = [dict(name=f"episode-{i:03}.mp4",mtime=i) for i in range(66)]
+        f.files.extend([dict(name="video.mp4.temp",mtime=70),
+                        dict(name="crash.cnm-recovery.tmp.mp4",mtime=71)])
+        for _ in range(10):
+            old = len(f.dispatched)
+            f.run('scanExistingRoot', 'work')
+            self.assertLessEqual(len(f.dispatched)-old,8)
+        self.assertEqual(len(set(f.dispatched)),66)
+        self.assertFalse(any(x.endswith(".temp") for x in f.dispatched))
+        self.assertNotIn("crash.cnm-recovery.tmp.mp4", f.dispatched)
 
     def test_empty_work(self):
         f = Flow(); f.run('scanExistingRoot','work')
