@@ -31,3 +31,7 @@ In the existing immediate try region, **after** `DownloadRepair129.execute()`, i
 
 ## Second CI attempt (run #39)
 - [Run 41231948635](https://github.com/alwansan/CP/actions/runs/41231948635) again ended in the new test before any Smali/DEX build. The second positional assertion accidentally defined `delay` using the `goto :try_start_delay` operand instead of the newline-delimited actual label, so the asserted range was empty. Fixed the test's `delay` anchor only; the functional PATCH323 Smali remains unchanged. The third CI run must be checked live.
+
+## Final protected CI checkpoint
+- PATCH323 corrected static test commit `9b22c79821b574267caf2c059ad5826442b28577` passed full [GitHub Actions run #40](https://github.com/alwansan/CP/actions/runs/41232007723): all protected regression steps, Java helper tests, Smali/DEX app build, zipalign, apksigner verification and direct APK release. Earlier run #38 and #39 failed test-anchor expectations only.
+- Signed APK published (56,343,580 bytes): https://github.com/alwansan/CP/releases/download/stable-core-PATCH323-40/Cinemana_Stable_Core_PATCH323_signed.apk . **No Android 15 phone runtime verification yet**. Next CL log and real device tests remain required.
