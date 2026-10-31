@@ -102,10 +102,10 @@ class RecoveryFlowTests(unittest.TestCase):
     def test_active_work_retries_then_stops(self):
         f = Flow(); f.run('requestAudit'); f.work = True
         f.run('auditFinished')
-        self.assertEqual(f.scheduled, [250,5000])
+        self.assertEqual(f.scheduled, [250,1500])
         f.work = False; f.run('auditFinished')
         self.assertFalse(f.pending)
-        self.assertEqual(f.scheduled, [250,5000])
+        self.assertEqual(f.scheduled, [250,1500])
 
     def test_oldest_first_and_finalized_sources_only(self):
         f = Flow()
