@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class UiPerfDiag {
     private static final String TAG = "CinemanaUITrace";
-    private static final String BUILD = "PATCH306";
+    private static final String BUILD = "PATCH307";
     private static final long LOG_LIMIT_BYTES = 1536 * 1024;
     private static final Object LOCK = new Object();
     private static volatile boolean installed;
@@ -412,6 +412,8 @@ public final class UiPerfDiag {
 
     public static void mark(String event) {
         if (!installed || event == null) return;
+        // PATCH307: constant-time screen attribution for background process load samples.
+        LoadDiag307.screen(event);
         final Snapshot finished;
         synchronized (LOCK) {
             String next=null;

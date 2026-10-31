@@ -16,9 +16,9 @@ assert "UiPerfDiag;->install(Landroid/app/Activity;)V" in method(home,"onStart()
 assert 'const-string v0, "downloads_visible"' in method(downloads,"onResume()V")
 assert 'const-string v0, "downloads_hidden"' in method(downloads,"onPause()V")
 assert "UiPerfDiag;->mark(Ljava/lang/String;)V" in downloads
-assert ui.count('private static final String BUILD = "PATCH306";')==1
+assert ui.count('private static final String BUILD = "PATCH307";')==1
 for marker in ("attach_base_enter","app_create_enter","app_super_completed","local_init_returned","repair_startup_begin","app_create_finished"):
-    assert ("PATCH305 "+marker) in startup, marker
+    assert ("PATCH307 "+marker) in startup, marker
 assert "registerActivityLifecycleCallbacks" in ui
 assert "FrameMetrics" in ui and "probeMainThread" in ui
 assert "newSingleThreadScheduledExecutor" in ui
@@ -65,3 +65,21 @@ assert "AtomicInteger;->incrementAndGet()" in worker
 assert 'invoke-static {v0, v1}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log' in task
 assert "DownloadTrace301;->finished()V" in task
 print("PASS PATCH305: main-thread file logging safely scheduled, 256-message cap, worker decrements")
+
+# PATCH307: passive per-process startup/idle/stress logger has hard read/write caps.
+new=(root/"patches/local-account/src/com/shabakaty/cinemana/local/LoadDiag307.java").read_text()
+assert "LoadDiag307;->start(Landroid/content/Context;)V" in startup
+assert 'LoadDiag307;->note(Ljava/lang/String;)V' in startup
+assert "LoadDiag307.screen(event)" in ui
+assert "load_diagnostics." in new and 'private static final long LIMIT = 512L * 1024L' in new
+assert 'private static final int MAX_DOWNLOAD_READ = 32768' in new
+assert 'scheduleWithFixedDelay(LoadDiag307::sample, 15, 15, TimeUnit.SECONDS)' in new
+assert 'scheduleWithFixedDelay(LoadDiag307::probeMain, 2, 2, TimeUnit.SECONDS)' in new
+for key in ("process_cpu_delta_ms", "vm_rss_kb", "threads", "io_rchar_delta",
+            "download_log_delta", "download_progress", "queue_scans", "mkv_log_delta",
+            "screen", "foreground", "downloads_tab", "app_sites"):
+    assert key in new, key
+assert '"Cinemana/work/log"' in new
+assert "MAX_DOWNLOAD_READ, available" in new
+assert 'FileOutputStream(target, true)' in new
+print("PASS PATCH307 per-process bounded idle/stress telemetry and startup hooks")
