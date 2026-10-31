@@ -18,3 +18,7 @@ Date 2026-10-31, only `feature/stable-core-ui-performance`
 - Added Python test `scripts/test_patch325_priority_deque.py` to preserve one worker, exact source match, queued-only reordering, dedup, no file mutation, and oldest-first ordering; adjusted PATCH316/319 static tests for equivalent single-worker implementation.
 - Protected build workflow intended to label signed PATCH325 direct APK and run all prior protections including Smali/DEX verification.
 - **GitHub CI / APK runtime status must be verified after committing**. New Android CL should show `PATCH324_INTERRUPTED_PART_AUDIT candidates=2 accepted_or_owned=2 priority_promoted=2` or explain if 0 (already executing, no queued matching Runnable, source mapping changed), and then E42/E49 `PATCH319_EXPORT_JOB_START`, `MKV_FFMPEG_SLOT_ACQUIRED` and eventual DB promotion / slot release. Do not claim E42 fixed until verified.
+
+## Initial CI result / test correction
+- [Run #42, 41237503076](https://github.com/alwansan/CP/actions/runs/41237503076) failed **before Smali/DEX** at `scripts/test_patch318_room_dao_cache.py`: legacy static assertion required the literal `newFixedThreadPool` text. PATCH325's equivalent `ThreadPoolExecutor(1,1,...,LinkedBlockingDeque,...)` correctly retains one worker but no longer contains that name.
+- Updated that regression in commit `5a237141923a685d468f2c7fb058e57c4d21cfa3`, verifying actual one-worker constructor, queue type and semaphore. Re-run full protected CI from the next source commit; **first failure does not imply APK/runtime success or failure**.
