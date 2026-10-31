@@ -16,9 +16,9 @@ assert "UiPerfDiag;->install(Landroid/app/Activity;)V" in method(home,"onStart()
 assert 'const-string v0, "downloads_visible"' in method(downloads,"onResume()V")
 assert 'const-string v0, "downloads_hidden"' in method(downloads,"onPause()V")
 assert "UiPerfDiag;->mark(Ljava/lang/String;)V" in downloads
-assert ui.count('private static final String BUILD = "PATCH307";')==1
+assert ui.count('private static final String BUILD = "PATCH308";')==1
 for marker in ("attach_base_enter","app_create_enter","app_super_completed","local_init_returned","repair_startup_begin","app_create_finished"):
-    assert ("PATCH307 "+marker) in startup, marker
+    assert ("PATCH308 "+marker) in startup, marker
 assert "registerActivityLifecycleCallbacks" in ui
 assert "FrameMetrics" in ui and "probeMainThread" in ui
 assert "newSingleThreadScheduledExecutor" in ui
@@ -83,3 +83,17 @@ assert '"Cinemana/work/log"' in new
 assert "MAX_DOWNLOAD_READ, available" in new
 assert 'FileOutputStream(target, true)' in new
 print("PASS PATCH307 per-process bounded idle/stress telemetry and startup hooks")
+
+# PATCH308: additional thread CPU / UID traffic sampling with strict output cap.
+prof=(root/"patches/local-account/src/com/shabakaty/cinemana/local/ThreadCpuDiag308.java").read_text()
+load=(root/"patches/local-account/src/com/shabakaty/cinemana/local/LoadDiag307.java").read_text()
+assert 'private static final int MAX_TASKS = 256' in prof
+assert '/proc/self/task' in prof and 'cpu_ticks_delta' in prof and 'tasks_capped' in prof
+assert 'if(i>=6)continue;' in prof
+assert 'ThreadCpuDiag308.sample()' in load
+assert '"PATCH308"' in load
+assert 'TrafficStats.getUidRxBytes' in load and 'TrafficStats.getUidTxBytes' in load
+assert 'uid_network_rx_delta' in load and 'uid_network_tx_delta' in load
+assert 'proc_io_accessible' in load
+assert 'network_scope' in load and 'app_uid_all_processes' in load
+print("PASS PATCH308 bounded per-thread CPU profiling and labelled UID network counters")

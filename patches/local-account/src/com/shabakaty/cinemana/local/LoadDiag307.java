@@ -42,6 +42,7 @@ public final class LoadDiag307 {
     private static volatile long postedAt;
     private static long lastStallLog;
     private static long lastWall, lastCpu, lastRchar, lastWchar, lastRead, lastWrite;
+    private static long lastUidRx=-1, lastUidTx=-1;
     private static long lastDownloadsBytes = -1, lastMkvBytes = -1, lastUiBytes = -1;
     private static Context context;
     private static ScheduledExecutorService worker;
@@ -178,6 +179,14 @@ public final class LoadDiag307 {
         return counts;
     }
 
+    private static long uidNetworkBytes(boolean incoming) {
+        try {
+            int uid=android.os.Process.myUid();
+            return incoming ? android.net.TrafficStats.getUidRxBytes(uid)
+                            : android.net.TrafficStats.getUidTxBytes(uid);
+        } catch (Throwable ignored) { return -1; }
+    }
+
     private static void sample() {
         try {
             long now = SystemClock.elapsedRealtime(), cpu = android.os.Process.getElapsedCpuTime();
@@ -185,6 +194,7 @@ public final class LoadDiag307 {
             Map<String, Long> io = readProc("/proc/self/io");
             long rchar = value(io, "rchar"), wchar = value(io, "wchar");
             long read = value(io, "read_bytes"), write = value(io, "write_bytes");
+            long uidRx=uidNetworkBytes(true), uidTx=uidNetworkBytes(false);
             File folder = new File(Environment.getExternalStorageDirectory(), "Cinemana/work/log");
             File downloadLog = new File(folder, "downloads.log");
             long dl = downloadLog.isFile() ? downloadLog.length() : -1;
@@ -208,6 +218,12 @@ public final class LoadDiag307 {
             o.put("io_write_bytes_delta", delta(write,lastWrite));
             o.put("io_syscr", value(io,"syscr"));
             o.put("io_syscw", value(io,"syscw"));
+            o.put("proc_io_accessible", !io.isEmpty());
+            o.put("uid_network_rx_delta", delta(uidRx,lastUidRx));
+            o.put("uid_network_tx_delta", delta(uidTx,lastUidTx));
+            o.put("network_scope", "app_uid_all_processes");
+            JSONObject threadCpu=ThreadCpuDiag308.sample();
+            if(threadCpu!=null) o.put("thread_cpu",threadCpu);
             o.put("download_log_delta", delta(dl,lastDownloadsBytes));
             o.put("mkv_log_delta", delta(mkv,lastMkvBytes));
             o.put("local_log_delta", delta(ui,lastUiBytes));
@@ -223,6 +239,7 @@ public final class LoadDiag307 {
             append(o.toString());
             lastWall=now; lastCpu=cpu;
             lastRchar=rchar; lastWchar=wchar; lastRead=read; lastWrite=write;
+            lastUidRx=uidRx; lastUidTx=uidTx;
             lastDownloadsBytes=dl; lastMkvBytes=mkv; lastUiBytes=ui;
         } catch (Throwable error) {
             Log.w(TAG, "sample_failed type="+error.getClass().getSimpleName());
@@ -256,7 +273,7 @@ public final class LoadDiag307 {
 
     private static JSONObject base(String event) throws Exception {
         JSONObject o = new JSONObject();
-        o.put("schema",1);o.put("build","PATCH307");
+        o.put("schema",1);o.put("build","PATCH308");
         o.put("event",event);o.put("utc_ms",System.currentTimeMillis());
         o.put("pid",pid);o.put("process",process);
         o.put("screen",screen);o.put("foreground",foreground);o.put("downloads_tab",downloadsTab);
