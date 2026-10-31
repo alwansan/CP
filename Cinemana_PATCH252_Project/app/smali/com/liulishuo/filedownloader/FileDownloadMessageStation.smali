@@ -223,6 +223,9 @@
 .method private static interceptBlockCompleteMessage(Lcom/liulishuo/filedownloader/IFileDownloadMessenger;)Z
     .locals 2
 
+    # PATCH315: no callback can be delivered from a null messenger.
+    if-eqz p0, :cond_0
+
     .line 1
     invoke-interface {p0}, Lcom/liulishuo/filedownloader/IFileDownloadMessenger;->isBlockingCompleted()Z
 
@@ -414,6 +417,9 @@
 .method public requestEnqueue(Lcom/liulishuo/filedownloader/IFileDownloadMessenger;Z)V
     .locals 3
 
+    # PATCH315: prevent the native queue/UI from accepting an invalid null item.
+    if-eqz p1, :patch315_null_enqueue
+
     .line 2
     invoke-interface {p1}, Lcom/liulishuo/filedownloader/IFileDownloadMessenger;->handoverDirectly()Z
 
@@ -537,5 +543,8 @@
     :goto_2
     invoke-direct {p0, p1}, Lcom/liulishuo/filedownloader/FileDownloadMessageStation;->handoverInUIThread(Lcom/liulishuo/filedownloader/IFileDownloadMessenger;)V
 
+    return-void
+
+    :patch315_null_enqueue
     return-void
 .end method

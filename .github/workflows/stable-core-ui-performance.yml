@@ -24,18 +24,19 @@ jobs:
           baseline=82d7f67037f67659115d41782d3a9b5bf4e0bd02
           while IFS= read -r file; do
             case "$file" in
-              Cinemana_PATCH252_Project/app/res/layout-v22/fragment_video_info.xml|.github/workflows/stable-core-ui-performance.yml|scripts/test_stable_core_layout.py|scripts/audit_download_logs.py|.github/workflows/download-audit.yml|scripts/audit_logfox.py|.github/workflows/logfox-anr-audit.yml|patches/local-account/src/com/shabakaty/cinemana/local/UiPerfDiag.java|patches/local-account/src/com/shabakaty/cinemana/local/LoadDiag307.java|patches/local-account/src/com/shabakaty/cinemana/local/ThreadCpuDiag308.java|patches/local-account/src/com/shabakaty/cinemana/local/MkvCompletion312.java|patches/local-account/src/com/shabakaty/cinemana/local/MkvLogGate314.java|patches/local-account/tests/MkvLogGate314Test.java|Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/ui/home_activity/HomeActivity.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/pz0.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/CinemanaApplication.smali|scripts/analyze_ui_performance.py|scripts/test_stable_diagnostics.py|patches/local-account/validate.py|Cinemana_PATCH252_Project/app/smali/com/google/android/exoplayer2/source/rtsp/*.smali|Cinemana_PATCH252_Project/app/smali_classes10/com/google/android/exoplayer2/source/rtsp/*.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/vt1.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/d15.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/yy3.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/jg3.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/bx.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/cm1.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/hx2.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali|scripts/test_patch312_mkv_recovery.py|scripts/test_recovery_flow.py|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301*.smali|Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Continue106.smali|Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/MethodCache299.smali|docs/stable-core/*) ;;
+              Cinemana_PATCH252_Project/app/res/layout-v22/fragment_video_info.xml|.github/workflows/stable-core-ui-performance.yml|scripts/test_stable_core_layout.py|scripts/audit_download_logs.py|.github/workflows/download-audit.yml|scripts/audit_logfox.py|.github/workflows/logfox-anr-audit.yml|patches/local-account/src/com/shabakaty/cinemana/local/UiPerfDiag.java|patches/local-account/src/com/shabakaty/cinemana/local/LoadDiag307.java|patches/local-account/src/com/shabakaty/cinemana/local/ThreadCpuDiag308.java|patches/local-account/src/com/shabakaty/cinemana/local/MkvCompletion312.java|patches/local-account/src/com/shabakaty/cinemana/local/MkvLogGate314.java|patches/local-account/tests/MkvLogGate314Test.java|Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/ui/home_activity/HomeActivity.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/pz0.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/CinemanaApplication.smali|scripts/analyze_ui_performance.py|scripts/test_stable_diagnostics.py|patches/local-account/validate.py|Cinemana_PATCH252_Project/app/smali/com/google/android/exoplayer2/source/rtsp/*.smali|Cinemana_PATCH252_Project/app/smali_classes10/com/google/android/exoplayer2/source/rtsp/*.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/vt1.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/d15.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/yy3.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/jg3.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/bx.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/cm1.smali|Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/hx2.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali|Cinemana_PATCH252_Project/app/smali/com/liulishuo/filedownloader/FileDownloadMessageStation.smali|Cinemana_PATCH252_Project/app/smali/com/liulishuo/filedownloader/FileDownloadMessageStation$UIHandlerCallback.smali|scripts/test_patch315_null_messenger.py|scripts/audit_stress_compare.py|scripts/test_patch312_mkv_recovery.py|scripts/test_recovery_flow.py|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301.smali|Cinemana_PATCH252_Project/app/smali_classes3/com/shabakaty/cinemana/features/DownloadTrace301*.smali|Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Continue106.smali|Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/MethodCache299.smali|docs/stable-core/*) ;;
               *) echo "Unaudited change to functional core: $file"; exit 1 ;;
             esac
           done < <(git diff --name-only "$baseline" "$GITHUB_SHA")
           python3 scripts/test_stable_core_layout.py
           python3 scripts/test_stable_diagnostics.py
           python3 scripts/test_patch312_mkv_recovery.py
+          python3 scripts/test_patch315_null_messenger.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Run pure Java PATCH314 MKV log sampling regression
+      - name: Run pure Java PATCH315 MKV log sampling regression
         shell: bash
         run: |
           set -euo pipefail
@@ -76,31 +77,31 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH314_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH314_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH314_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH314_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH314_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH315_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH315_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH315_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH315_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH315_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-Stable-Core-PATCH314
+          name: Cinemana-Stable-Core-PATCH315
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH314_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH315_signed.apk
             Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: stable-core-PATCH314-${{ github.run_number }}
+          tag_name: stable-core-PATCH315-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana Stable Core PATCH314 #${{ github.run_number }}"
+          name: "Cinemana Stable Core PATCH315 #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            Baseline PATCH274 with reviewed layout-only optimization (PATCH298). PATCH314 keeps PATCH313 byte verification and samples three repetitive MKV DAO identity diagnostics; failure, subtitle, DB promotion and FFmpeg events remain logged and functional. Original downloader, notification, subtitle validation and MKV exporter remain unchanged. Static/build checks are not device/runtime evidence.
+            Baseline PATCH274 with reviewed layout-only optimization (PATCH298). PATCH315 preserves PATCH313/314 MKV behavior, filters only invalid null FileDownloader UI messenger deliveries that caused an observed main-thread NPE, and retains every valid downloader completion and notification. No recovery gates relaxed. Original downloader, notification, subtitle validation and MKV exporter remain unchanged. Static/build checks are not device/runtime evidence.
             Uses existing checkpoint145 signing key. Verify compatibility and test downloads on device before relying on this build.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH314_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH315_signed.apk
             Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
           fail_on_unmatched_files: true

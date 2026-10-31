@@ -65,6 +65,15 @@
 
     check-cast v1, Lcom/liulishuo/filedownloader/IFileDownloadMessenger;
 
+    # PATCH315: a null entry was observed in the UI disposal batch and
+    # crashed the main thread. Ignore ONLY null, never a valid completion.
+    if-nez v1, :patch315_dispose_valid
+    const-string v1, "CNM_FILEDOWNLOADER"
+    const-string v2, "null_messenger_dispose_skipped"
+    invoke-static {v1, v2}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
+    goto :goto_0
+
+    :patch315_dispose_valid
     .line 2
     invoke-static {v1}, Lcom/liulishuo/filedownloader/FileDownloadMessageStation;->access$400(Lcom/liulishuo/filedownloader/IFileDownloadMessenger;)Z
 
@@ -103,6 +112,9 @@
     iget-object p1, p1, Landroid/os/Message;->obj:Ljava/lang/Object;
 
     check-cast p1, Lcom/liulishuo/filedownloader/IFileDownloadMessenger;
+
+    # Null single-message deliveries cannot represent valid download callbacks.
+    if-eqz p1, :goto_0
 
     invoke-interface {p1}, Lcom/liulishuo/filedownloader/IFileDownloadMessenger;->handoverMessage()V
 
