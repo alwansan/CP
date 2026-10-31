@@ -1837,7 +1837,10 @@
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->hasWork()Z
     move-result v0
     if-eqz v0, :audit_idle
-    const-wide/16 v0, 0x1388
+    # PATCH319: busy work directory checks every 1.5s instead of 5s.
+    # Still a single scheduled audit, 8 candidates maximum, and no disk
+    # scanning when no MP4/.temp or active mux job exists.
+    const-wide/16 v0, 0x5dc
     invoke-static {v0, v1}, Lcom/shabakaty/cinemana/features/MkvReconciler;->scheduleAudit(J)V
     :audit_idle
     return-void

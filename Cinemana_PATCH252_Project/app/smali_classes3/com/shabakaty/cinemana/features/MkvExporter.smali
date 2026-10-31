@@ -13294,6 +13294,8 @@
 .method public static runRecovered(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/lang/String;)V
     .locals 4
     :try_start_run_recovered
+    const-string v2, "PATCH319_EXPORT_JOB_START"
+    invoke-static {p0, v2}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->check(Ljava/lang/Object;Ljava/lang/Object;)V
     invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Queue110;->mayRepairCompleted(Ljava/lang/Object;)Z
     move-result v0
@@ -13302,6 +13304,8 @@
     const-string v1, "PROCESSING"
     invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
     invoke-static {p0, p2, p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->waitAndExport(Landroid/content/Context;Ljava/io/File;Ljava/lang/Object;)V
+    const-string v2, "PATCH319_EXPORT_JOB_RETURN"
+    invoke-static {p0, v2}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
     :try_end_run_recovered
     .catch Ljava/lang/Throwable; {:try_start_run_recovered .. :try_end_run_recovered} :run_recovered_failed
     goto :run_recovered_finish
