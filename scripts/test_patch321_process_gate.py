@@ -23,7 +23,7 @@ assert "MKV_STARTUP_PROCESS_CHECK_FAILED" in startup
 # rejects DownloadRepair129.startup() even if baksmali and DEX compilation pass.
 assert "invoke-virtual {v1}, Ljava/lang/Thread;->start()V" in startup
 normal_return_jump = startup.index("goto :startup_done", startup.index("->start()V"))
-handler = startup.index(":startup_gate_failed")
+handler = startup.index("\n    :startup_gate_failed\n")
 exception = startup.index("move-exception v0", handler)
 done = startup.index(":startup_done", exception)
 assert startup.index("->start()V") < normal_return_jump < handler < exception < done
