@@ -86,31 +86,31 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH325_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH325_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH325_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH325_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH325_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH326_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH326_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH326_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH326_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH326_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-Stable-Core-PATCH325
+          name: Cinemana-Stable-Core-PATCH326
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH325_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH326_signed.apk
             Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: stable-core-PATCH325-${{ github.run_number }}
+          tag_name: stable-core-PATCH326-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana Stable Core PATCH325 #${{ github.run_number }}"
+          name: "Cinemana Stable Core PATCH326 #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            PATCH325 (with fixed source-regression label matcher) fixes PATCH324 accepted-but-still-starved interrupted FFmpeg tasks: keeps one mux worker and single FFmpeg permit but allows bounded queued-only old-to-new promotion ahead of the normal FIFO, without duplicate jobs or deleting media. Protected regression tests now validate the same single worker via the explicit ThreadPoolExecutor(1,1) deque constructor rather than relying on the previous newFixedThreadPool factory name. The later PATCH318 initializer test now uses a literal method-section split so special-character escaping cannot misidentify the constructor. Android 15 device runtime is not proven by CI. Preserves main-process-only watcher, immediate cold-start and delayed sidecar recovery, manual repair parity, one FFmpeg worker, strict video/subtitle safety gates and all prior downloader, notification and UI fixes. Original app-data and upgrade signing key maintained. CI/DEX verification is not real-device startup proof.
+            PATCH326 builds on functional PATCH325. After validated MP4/subtitle/Room recovery and the original single-worker/FFmpeg path acquire the exclusive per-target Lease115 lock, obsolete exact UUID .mkv.cnm115-*.part stages are removed before fresh MKV remux. If old-stage deletion fails, fail closed: do not create a second conflicting stage. STAGE_ORPHAN_REMOVED and STAGE_REBUILD_STARTED are traced. Cold-start delayed and manual repair passes re-promote the existing oldest queued interrupted tasks after regular scan/sidecar replay; never interrupt live FFmpeg, remove live stages, delete MP4/subtitles, bypass database/manifest checks, or start more than one mux worker. Protected regressions, Smali/DEX verification and APK signing required. Android runtime E42/E49 completion is not proven by CI. Install without clearing app data and upload CL/LogFox.
             Uses existing checkpoint145 signing key. Verify compatibility and test downloads on device before relying on this build.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH325_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH326_signed.apk
             Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
           fail_on_unmatched_files: true

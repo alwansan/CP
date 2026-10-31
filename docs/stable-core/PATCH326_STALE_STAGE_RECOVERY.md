@@ -22,3 +22,8 @@
 ## First regression correction
 - PATCH326 run [#46](https://github.com/alwansan/CP/actions/runs/41244467769) failed in the newly extended `test_patch324_interrupted_part_recovery.py` because its `stage.index("move-result v6")` picked an unrelated earlier register result, not the delete result. All pre-existing static tests passed before that assertion; no Smali/DEX compilation ran.
 - Commit `1c5ea616b6be9fea0f52084f0a9b972dec460e43` scopes the assertion search after the `File.delete()` call, no runtime code changed. New protected CI is required.
+
+## Verified CI #47 (first successful source build)
+- [Run #47](https://github.com/alwansan/CP/actions/runs/41244559455) **SUCCESS** for commit `5885550050d8560fa5e3aba3d45274dc3220f202`. Protected tests, Java helper compilation, Smali/DEX APK assembly, signing and verification passed; direct APK **actually uploaded** (56,347,676 bytes).
+- The workflow inherited PATCH325 naming; this APK contains PATCH326 source but was published under `stable-core-PATCH325-47` and `Cinemana_Stable_Core_PATCH325_signed.apk`. This is a naming issue, not missing build output. Signed source file: https://github.com/alwansan/CP/releases/download/stable-core-PATCH325-47/Cinemana_Stable_Core_PATCH325_signed.apk
+- Next workflow revision corrects tag, title, artifact and direct APK filename to PATCH326. **New label-specific CI/release is not yet confirmed here.**
