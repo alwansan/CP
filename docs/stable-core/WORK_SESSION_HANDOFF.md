@@ -259,3 +259,8 @@ After force stop, background work cannot execute until app reopened; FFmpeg rest
 - **P0 next:** verify successful full PATCH322 CI (including ART startup guard), then the user should install new signed APK and confirm real Android 15 startup before any deeper runtime stress/recovery tests. Do not claim static CI proves real runtime. If still failing, inspect bytecode verifier and isolate control-flow fallthrough; keep user data. Report version/install constraints honestly.
 - **P1 after boot:** compare durable recovery receipts to 65 MP4, 3 temps, 31 MKV under actual persisted state, oldest-first one-mux worker, duplicate process gate, immediate + 8s delayed recovery, manual Repair Downloads, subtitles, queue, one FFmpeg, callbacks, database, memory/UI; logfox may add newer crashes any time.
 
+### PATCH322 final verified CI / APK checkpoint
+- Protected GitHub Actions run **41231465688 SUCCESS** from functional HEAD **2618d97079f46630503e7dd5e44c91b5b835f993**, including Smali/DEX rebuild, original guard tests, signing, and direct GitHub Release.
+- **Direct signed APK:** https://github.com/alwansan/CP/releases/download/stable-core-PATCH322-37/Cinemana_Stable_Core_PATCH322_signed.apk ; release https://github.com/alwansan/CP/releases/tag/stable-core-PATCH322-37 . Prior failed workflow 41231412538 was a test-label locator mistake, fixed in commit 5139c6d1f18a615953a2e20ee678ba174d70710d.
+- **No on-device PATCH322 confirmation yet.** Obtain new CL/LogFox after installing APK and opening app on Android 15; do not recommend PATCH321, which repeatedly startup-crashed. Preserve user data, MP4 and sidecars.
+- Full latest handoff: [WORK_SESSION_HANDOFF_2026-10-31_PATCH322.md](WORK_SESSION_HANDOFF_2026-10-31_PATCH322.md).
