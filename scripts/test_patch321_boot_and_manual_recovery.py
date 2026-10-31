@@ -16,7 +16,7 @@ startup=read("smali_classes3/com/shabakaty/cinemana/features/MkvRepairStartup.sm
 run=method(startup,"run()V")
 first=run.index(":try_start_immediate")
 first_end=run.index(":try_end_immediate")
-delay=run.index(":try_start_delay")
+delay=run.index("\n    :try_start_delay\n")
 second=run.index(":try_start_second_pass")
 assert first<first_end<delay<second
 assert "DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;" in run[first:first_end]

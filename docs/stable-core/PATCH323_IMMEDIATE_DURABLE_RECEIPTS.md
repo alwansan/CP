@@ -28,3 +28,6 @@ In the existing immediate try region, **after** `DownloadRepair129.execute()`, i
 - Workflow run [#41231886718](https://github.com/alwansan/CP/actions/runs/41231886718) failed at the *new static test only*; existing PATCH302–PATCH320 feature regressions passed before it.
 - The first new assertion used `.index(":patch323_immediate_sidecars_done")` and matched the label operand of `if-lez` before its actual definition. It was corrected to match the newline-delimited label declaration in commit `3993e9c18dcb44f540b4cadb0188837c7c38b1c2`.
 - No evidence of a Smali compilation, DEX or runtime failure was obtained from failed run #38, because those stages were skipped. New CI must run from the corrected commit; runtime remains unverified.
+
+## Second CI attempt (run #39)
+- [Run 41231948635](https://github.com/alwansan/CP/actions/runs/41231948635) again ended in the new test before any Smali/DEX build. The second positional assertion accidentally defined `delay` using the `goto :try_start_delay` operand instead of the newline-delimited actual label, so the asserted range was empty. Fixed the test's `delay` anchor only; the functional PATCH323 Smali remains unchanged. The third CI run must be checked live.
