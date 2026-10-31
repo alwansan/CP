@@ -13415,3 +13415,38 @@
     monitor-exit v1
     throw v0
 .end method
+
+# PATCH328: read-only snapshot of queue backlog and active worker, sampled
+# only by boot/manual orphan priority logs (never each frame or MP4 progress).
+.method public static queueTelemetry()Ljava/lang/String;
+    .locals 6
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
+    instance-of v1, v0, Ljava/util/concurrent/ThreadPoolExecutor;
+    if-eqz v1, :p328_telemetry_unknown
+    check-cast v0, Ljava/util/concurrent/ThreadPoolExecutor;
+    invoke-virtual {v0}, Ljava/util/concurrent/ThreadPoolExecutor;->getQueue()Ljava/util/concurrent/BlockingQueue;
+    move-result-object v1
+    invoke-interface {v1}, Ljava/util/concurrent/BlockingQueue;->size()I
+    move-result v2
+    invoke-virtual {v0}, Ljava/util/concurrent/ThreadPoolExecutor;->getActiveCount()I
+    move-result v3
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v5, " queue_depth="
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v4
+    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v4
+    const-string v5, " active_workers="
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v4
+    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v4
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v0
+    return-object v0
+    :p328_telemetry_unknown
+    const-string v0, " queue_depth=unavailable active_workers=unavailable"
+    return-object v0
+.end method
+
