@@ -18,6 +18,16 @@ assert "Restart108;->main(Ljava/lang/Object;)Z" in startup
 assert "if-eqz v0, :startup_done" in startup
 assert startup.index("Restart108;->main")<startup.index("MkvRepairStartup;-><init>")
 assert "MKV_STARTUP_PROCESS_CHECK_FAILED" in startup
+# PATCH322 / Android 15 ART regression: move-exception must be entered only via .catch.
+# A successful Thread.start MUST skip the exception handler, otherwise ART VerifyError
+# rejects DownloadRepair129.startup() even if baksmali and DEX compilation pass.
+assert "invoke-virtual {v1}, Ljava/lang/Thread;->start()V" in startup
+normal_return_jump = startup.index("goto :startup_done", startup.index("->start()V"))
+handler = startup.index(":startup_gate_failed")
+exception = startup.index("move-exception v0", handler)
+done = startup.index(":startup_done", exception)
+assert startup.index("->start()V") < normal_return_jump < handler < exception < done
+assert ".catch Ljava/lang/Throwable;" in startup
 restart=method("smali_classes6/com/shabakaty/cinemana/ca1/Restart108.smali"," main(Ljava/lang/Object;)Z")
 assert "getProcessName" in restart
 assert "getPackageName" in restart
