@@ -22,7 +22,7 @@ jobs:
           curl -fsSL --retry 3 https://api.github.com/repos/alwansan/CL/commits/main -o "$RUNNER_TEMP/cl-logs/commit.json"
           CL_SHA="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["sha"])' "$RUNNER_TEMP/cl-logs/commit.json")"
           echo "CL source commit: $CL_SHA"
-          for file in downloads.log diagnostics.log .mkv_export.log ui95.log ui_performance.jsonl; do
+          for file in downloads.log diagnostics.log .mkv_export.log ui95.log ui_performance.jsonl load_diagnostics.main.jsonl load_diagnostics.filedownloader.jsonl tree.txt; do
             curl -fsSL --retry 3 "https://raw.githubusercontent.com/alwansan/CL/$CL_SHA/log/$file" -o "$RUNNER_TEMP/cl-logs/$file"
           done
           # These are genuinely optional: CL's current sync no longer has the
@@ -42,6 +42,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/audit_download_logs.py "$RUNNER_TEMP/cl-logs" | tee "$RUNNER_TEMP/stable-core-audit.txt"
+          python3 scripts/audit_stress_compare.py "$RUNNER_TEMP/cl-logs" | tee -a "$RUNNER_TEMP/stable-core-audit.txt"
       - uses: actions/upload-artifact@v4
         with:
           name: stable-core-download-audit

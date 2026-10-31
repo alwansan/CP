@@ -160,3 +160,11 @@ PATCH313 UI metrics still show serious Downloads lag and high CPU (28,304 proces
 
 ### PATCH314 CI gate correction
 The first PATCH314 build (GitHub Actions `41220856590`) failed its **protected file allowlist**, because the new `MkvLogGate314.java` and its standalone test were not yet explicitly listed. This is a CI allowlist failure, **not** a Smali/DEX or Android runtime failure. A subsequent workflow-only correction explicitly allows exactly those two audited files without opening the rest of the functional core. Check the corrected build's actual status and direct signed release before installing.
+
+## 13. User clarification and new independent PATCH313 / PATCH314 stress (31 Oct 2026)
+
+**The user explicitly confirmed the OLD stress test and its files were deliberately deleted.** The previous 217-sidecar deletion / 66-old-MP4 disappearance is not an unexplained app deletion and must no longer be called a P0 regression. Closed issue #4 accordingly. Do not conflate older and new test sessions.
+
+**New CL SHA:** `d78a4fbc5ae80a6ce9701093e0444f2473200796`, Oct 31 16:47:51 UTC. Current tree (19:47 local) shows **36 MP4, 2 MP4.temp, 10 MKV**, in a NEW separate pressure test on versions PATCH313 and PATCH314. New `mkv_repair_pending.properties` reports `ITEM_SCAN_FAILED` when matching Naruto S01 E32; this is unresolved, not proven unrecoverable. PATCH314 measurements show up to ~1.65 GB main process RSS, 1,337.95ms UI frame and 804.08ms main thread stall in downloads. A new LogFox report shows FileDownloader's `interceptBlockCompleteMessage` null `IFileDownloadMessenger` crash on the main thread. Do not assume every current MP4 is fully downloaded; correlate native receipts and MKV queue.
+
+The CL audit workflow was enhanced to fetch its logs at **one pinned CL SHA**, summarize PATCH313 vs PATCH314 by exact process-start timestamps, compare distinct MP4 completion callbacks against the current tree, count MKV diagnostics and report UI CPU/GC. See `scripts/audit_stress_compare.py` and its Actions output.
