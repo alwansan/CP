@@ -20,6 +20,17 @@ delay=run.index(":try_start_delay")
 second=run.index(":try_start_second_pass")
 assert first<first_end<delay<second
 assert "DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;" in run[first:first_end]
+# PATCH323: process-restart receipts/queued native tasks must not wait for
+# the delayed eight-second DB/subtitle retry. Preserve execute-first startup.
+immediate_body = run[first:first_end]
+assert immediate_body.index("DownloadRepair129;->execute(") < immediate_body.index("RecoveryCapsule;->recoverPending(")
+assert immediate_body.index("RecoveryCapsule;->recoverPending(") < immediate_body.index("Queue110;->scan()V")
+assert immediate_body.index("Queue110;->scan()V") < immediate_body.index("MkvReconciler;->requestAudit()V")
+assert "if-lez v1, :patch323_immediate_sidecars_done" in immediate_body
+assert immediate_body.index("Queue110;->scan()V") < immediate_body.index(":patch323_immediate_sidecars_done")
+assert "goto :try_start_delay" in run[first_end:delay]
+assert run.index(":startup_immediate_failed") < delay
+assert run.index("move-exception v1",run.index(":startup_immediate_failed")) < delay
 assert "const-wide/16 v0, 0x1f40" in run[delay:second]  # delayed DB/sidecar retry
 assert "STARTUP_IMMEDIATE_SCAN_FAILED" in run and "STARTUP_DELAYED_RECOVERY_FAILED" in run
 second_body=run[second:run.index(":try_end_second_pass")]
@@ -63,4 +74,4 @@ assert "Queue110;->mayRepairCompleted" in exp
 assert 'const/4 v1, 0x1' in method(exp,"<clinit>()V")
 assert "FFMPEG_SLOTS" in exp
 assert "SHARED_DOWNLOADS_DAO318" in exp
-print("PASS PATCH321: immediate startup / delayed retry, manual sidecar parity, oldest-first 8 candidate scan, dedupe, sanitized audit errors and one mux worker")
+print("PASS PATCH321/323: immediate startup / delayed retry, manual sidecar parity, oldest-first 8 candidate scan, dedupe, sanitized audit errors and one mux worker")

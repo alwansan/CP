@@ -22,6 +22,15 @@
     const-string v2, "PATCH321_BOOT_IMMEDIATE_AUDIT"
     invoke-static {v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;
+    # PATCH323: recover durable native receipts at first boot pass as well,
+    # instead of waiting eight seconds for the only initial sidecar scan.
+    # The existing guarded Queue110 path never trusts partial .mp4/.temp.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverPending(Landroid/content/Context;)I
+    move-result v1
+    if-lez v1, :patch323_immediate_sidecars_done
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->scan()V
+    :patch323_immediate_sidecars_done
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
     :try_end_immediate
     .catch Ljava/lang/Throwable; {:try_start_immediate .. :try_end_immediate} :startup_immediate_failed
     goto :try_start_delay
