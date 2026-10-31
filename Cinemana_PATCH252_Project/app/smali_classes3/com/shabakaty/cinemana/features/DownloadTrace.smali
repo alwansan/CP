@@ -702,6 +702,16 @@
 .method public static task(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Throwable;)V
     .locals 9
 
+    # PATCH312: only a genuine native successful completion may update the
+    # durable video receipt. The bounded worker ignores subtitles and .temp.
+    if-nez p3, :patch312_no_video_completion
+    const-string v0, "DOWNLOAD_COMPLETED"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :patch312_no_video_completion
+    invoke-static {p0, p2}, Lcom/shabakaty/cinemana/local/MkvCompletion312;->completed(Landroid/content/Context;Ljava/lang/Object;)V
+    :patch312_no_video_completion
+
     invoke-static {p0, p2, p3}, Lcom/shabakaty/cinemana/local/ExpiredLink269;->failed(Landroid/content/Context;Ljava/lang/Object;Ljava/lang/Throwable;)V
 
     .line 47
