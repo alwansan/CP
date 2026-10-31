@@ -34,7 +34,7 @@ assert 'const-string v2, "|"' in record
 assert "Ljava/lang/String;->equals(Ljava/lang/Object;)Z" in record
 assert record.index(":patch319_record_changed")<record.index("MkvRepairLedger;->save(")
 assert "invoke-virtual {v0, p1, v1}, Ljava/util/Properties;->setProperty" in record
-assert "return-void" in record[:record.index(":patch319_record_changed")]
+assert "    return-void\n\n    :patch319_record_changed" in record
 clear=method(ledger,"clear(Landroid/content/Context;Ljava/lang/String;)V")
 assert "remove(Ljava/lang/Object;)Ljava/lang/Object;" in clear
 assert "if-eqz v1, :clear_done" in clear
