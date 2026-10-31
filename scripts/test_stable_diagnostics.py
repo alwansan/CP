@@ -123,7 +123,7 @@ assert "LoadDiag307;->note(Ljava/lang/String;)V" in on_create
 # the saved-state guard. Restored paths keep both nav listeners.
 detach=on_create.index("Landroidx/fragment/app/Fragment;->onDetach()V")
 clear=on_create.index("Ljava/util/List;->clear()V")
-saved=on_create.index(":patch310_keep_restored_fragments")
+saved=on_create.index("\n    :patch310_keep_restored_fragments\n")
 assert detach < clear < saved
 assert on_create.index("if-nez v5, :patch310_keep_restored_fragments") < detach
 assert on_create.index(":patch310_initialize_fresh_tabs") > on_create.index("setOnNavigationItemSelectedListener")
