@@ -27,3 +27,8 @@
 - [Run #47](https://github.com/alwansan/CP/actions/runs/41244559455) **SUCCESS** for commit `5885550050d8560fa5e3aba3d45274dc3220f202`. Protected tests, Java helper compilation, Smali/DEX APK assembly, signing and verification passed; direct APK **actually uploaded** (56,347,676 bytes).
 - The workflow inherited PATCH325 naming; this APK contains PATCH326 source but was published under `stable-core-PATCH325-47` and `Cinemana_Stable_Core_PATCH325_signed.apk`. This is a naming issue, not missing build output. Signed source file: https://github.com/alwansan/CP/releases/download/stable-core-PATCH325-47/Cinemana_Stable_Core_PATCH325_signed.apk
 - Next workflow revision corrects tag, title, artifact and direct APK filename to PATCH326. **New label-specific CI/release is not yet confirmed here.**
+
+## Final correctly named CI and direct Release
+- [GitHub Actions #48](https://github.com/alwansan/CP/actions/runs/41244703708) **SUCCESS**, code/documentation/workflow source commit `7e3584303989659e9e135b537e583524826affb0`. Protected regressions and Smali/DEX build, zipalign, APK signing, verification and direct release publishing succeeded.
+- [Direct PATCH326 signed APK](https://github.com/alwansan/CP/releases/download/stable-core-PATCH326-48/Cinemana_Stable_Core_PATCH326_signed.apk) — 56,347,676 bytes, upload state `uploaded`. Tag `stable-core-PATCH326-48`; signed filename correctly reflects the patch.
+- IMPORTANT: CI and packaging prove build correctness, not live device conversion recovery. E42/E49 must still show actual cleanup + fresh FFmpeg + MKV+subtitle+Room finalization after Poco F5 Pro testing. E74 per-file success requires final DB proof. The 87 queued/64 waiting/4 rejected statuses and UI/memory performance issues are still open.
