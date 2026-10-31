@@ -38,7 +38,7 @@ stage=method("smali_classes6/com/shabakaty/cinemana/ca1/Lease115.smali","stage(L
 assert stage.index("FileLock;->isValid()Z") < stage.index("Ljava/util/UUID;->fromString(") < stage.index("->delete()Z")
 assert "getCanonicalFile()Ljava/io/File;" in stage
 assert "getAbsoluteFile()Ljava/io/File;" in stage
-assert stage.index("->delete()Z") < stage.index("move-result v6") < stage.index("if-nez v6, :p326_removed") < stage.index("STAGE_REBUILD_STARTED")
+assert stage.index("->delete()Z") < stage.index("move-result v6", stage.index("->delete()Z")) < stage.index("if-nez v6, :p326_removed") < stage.index("STAGE_REBUILD_STARTED")
 assert "STAGE_ORPHAN_REMOVED part=" in stage
 assert "STAGE_CLEANUP_SKIPPED delete_failed_under_lease" in stage
 assert "new-instance v6, Ljava/io/IOException;" in stage
