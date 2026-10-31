@@ -6513,8 +6513,21 @@
 
     const-string p1, "QUEUED"
 
+    # PATCH327: a transient busy-state persistence exception must not strand
+    # ACTIVE_JOB_KEYS without ever submitting the already accepted mux task.
+    :try_start_p327_busy
     invoke-static {v1, p2, p0, p1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    :try_end_p327_busy
+    .catch Ljava/lang/Throwable; {:try_start_p327_busy .. :try_end_p327_busy} :p327_busy_failed
+    goto :p327_enqueue
 
+    :p327_busy_failed
+    move-exception p0
+    const-string p1, "CNM_MKV"
+    const-string v0, "QUEUE_STATE_WRITE_FAILED_CONTINUING"
+    invoke-static {p1, v0, p0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :p327_enqueue
     sget-object p0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
 
     new-instance p1, Lcom/shabakaty/cinemana/features/MkvExporter$2;
@@ -13313,6 +13326,18 @@
     :try_start_run_recovered
     const-string v2, "PATCH319_EXPORT_JOB_START"
     invoke-static {p0, v2}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
+    # PATCH327: correlate recovered worker START to its dedupe key; previous
+    # marker lacked any identifier and could not prove E42/E49 execution.
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v3, "QUEUE_START recovered key="
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2, p3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    invoke-static {p0, v2}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->check(Ljava/lang/Object;Ljava/lang/Object;)V
     invoke-static {p1}, Lcom/shabakaty/cinemana/ca1/Queue110;->mayRepairCompleted(Ljava/lang/Object;)Z
     move-result v0
@@ -13331,9 +13356,23 @@
     const-string v1, "RECOVERED_EXPORT_FAILED"
     invoke-static {p0, v1, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     :run_recovered_finish
+    # PATCH327: always release the in-memory dedupe key even if a Room/UI
+    # busy-state write fails during cleanup. No user media is touched here.
+    :try_start_p327_idle
     const/4 v0, 0x0
     const-string v1, "IDLE"
     invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    :try_end_p327_idle
+    .catch Ljava/lang/Throwable; {:try_start_p327_idle .. :try_end_p327_idle} :p327_idle_failed
+    goto :p327_release_key
+
+    :p327_idle_failed
+    move-exception v0
+    const-string v1, "CNM_MKV"
+    const-string v2, "RECOVERED_IDLE_UPDATE_FAILED_CONTINUING"
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :p327_release_key
     sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_LOCK:Ljava/lang/Object;
     monitor-enter v0
     :try_start_run_release
