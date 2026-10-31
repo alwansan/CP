@@ -25,3 +25,6 @@ Date 2026-10-31, only `feature/stable-core-ui-performance`
 
 ## Second CI regression assertion correction
 - Run [#43 (41237636217)](https://github.com/alwansan/CP/actions/runs/41237636217) failed at the same PATCH318 static regression **before APK compilation** because an over-escaped `<clinit>` regex matched nothing. Replaced the regex with a literal method substring split, preserving the one-worker/FFmpeg checks. This is a test-only correction; functional Smali remains exactly PATCH325 `d8fb89aa63cdb5a0677c4d121b892631ad21bd1f`. Full protected CI must now be rerun.
+
+## Third CI correction / verification status
+- [Run #44 (41237737638)](https://github.com/alwansan/CP/actions/runs/41237737638) passed every static regression PATCH312–PATCH324 but the *new PATCH325 test* used a substring search for `:p324_report` and matched a branch operand rather than its actual Smali label declaration. Fixed to `\\n    :p324_report\\n`. No runtime/Smali code changed by this correction. Re-run CI for actual signed APK.

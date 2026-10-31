@@ -22,7 +22,7 @@ repair=meth(read("smali_classes6/com/shabakaty/cinemana/ca1/DownloadRepair129.sm
 assert "MkvRepairAgeComparator" in repair
 assert "const/16 v7, 0x10" in repair
 assert "reconcileDiskVideo(" in repair
-assert repair.index("reconcileDiskVideo(") < repair.index("ArrayList;->add(") < repair.index(":p324_report\n") < repair.index("promoteQueuedSource(")
+assert repair.index("reconcileDiskVideo(") < repair.index("ArrayList;->add(") < repair.index("\n    :p324_report\n") < repair.index("promoteQueuedSource(")
 assert "priority_promoted=" in repair
 assert "add-int/lit8 v8, v8, -0x1" in repair
 assert "const/16 v12, 0x35" in repair and ".mkv.cnm115-" in repair
