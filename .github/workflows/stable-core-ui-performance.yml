@@ -43,7 +43,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Run pure Java PATCH321 MKV log sampling regression
+      - name: Run pure Java PATCH322 MKV log sampling regression
         shell: bash
         run: |
           set -euo pipefail
@@ -84,31 +84,31 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH321_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH321_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH321_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH321_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH321_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH322_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH322_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH322_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH322_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH322_signed.apk > Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-Stable-Core-PATCH321
+          name: Cinemana-Stable-Core-PATCH322
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH321_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH322_signed.apk
             Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: stable-core-PATCH321-${{ github.run_number }}
+          tag_name: stable-core-PATCH322-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana Stable Core PATCH321 #${{ github.run_number }}"
+          name: "Cinemana Stable Core PATCH322 #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            Baseline PATCH274 with reviewed layout-only optimization (PATCH298). PATCH321 preserves PATCH313/314 MKV behavior, filters only invalid null FileDownloader UI messenger deliveries that caused an observed main-thread NPE, and retains every valid downloader completion and notification. No recovery gates relaxed. Original downloader, notification, subtitle validation and MKV exporter remain unchanged. Static/build checks are not device/runtime evidence.
+            PATCH322 fixes an Android 15 ART VerifyError introduced by PATCH321: successful DownloadRepair129.startup now branches past the move-exception catch handler. Preserves main-process-only watcher, immediate cold-start and delayed sidecar recovery, manual repair parity, one FFmpeg worker, strict video/subtitle safety gates and all prior downloader, notification and UI fixes. Original app-data and upgrade signing key maintained. CI/DEX verification is not real-device startup proof.
             Uses existing checkpoint145 signing key. Verify compatibility and test downloads on device before relying on this build.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH321_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_Stable_Core_PATCH322_signed.apk
             Cinemana_PATCH252_Project/output/STABLE_CORE_SHA256SUMS.txt
           fail_on_unmatched_files: true
