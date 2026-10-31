@@ -191,3 +191,10 @@ After fixing test-method regex in `d173dd15cf5a87872484b3ffe1bd657e8b80d4a4` and
 Latest CL SHA d44ff7cd0a31834cb8f50f211d3b8644651c77ca: 13 MKV, 38 MP4, 2 .mp4.temp, and 16 MKV ledger entries: 8 MKV_QUEUED, 3 EXPORT_STILL_MP4, 3 DISCOVERED_MP4, 1 ITEM_MATCHED, 1 ITEM_SCAN_FAILED E32. This is a NEW pressure test. Previous old stress deleted intentionally by user. Latest CL still PATCH314; PATCH315 not yet verified on phone. Main process peak native heap 1,508,498 KB and RSS 1,782,356 KB; separate filedownloader RSS ~173MB.
 
 PATCH316: serialize *only MKV muxing* with MkvExporter worker pool and FFmpeg semaphore each 1 instead of 3; preserve network download concurrency and strict MP4, subtitle, DB, job lease, callback, notification safeguards. Report previously swallowed reconciling exceptions using class names only (never URL, token or file path), persisted to Cinemana/work/log/download_repair_unresolved.log; diagnose E32 without bypassing guards. See docs/stable-core/PATCH316_MKV_SINGLE_FLIGHT_EXCEPTION_DIAG.md and scripts/test_patch316_mkv_singleflight.py. Build APK in protected CI, test on Android without clearing work, compare throughput + native heap and rollback if worse.
+
+### PATCH316 verified CI/release checkpoint
+- Source commit: 474c7e25037b515f7005b3e9d00e918f99949e56.
+- Full protected CI **SUCCESS**: https://github.com/alwansan/CP/actions/runs/41225105320 ; source/Smali/DEX builds, regression checks, signing and direct GitHub Release all succeeded.
+- Signed direct APK: https://github.com/alwansan/CP/releases/download/stable-core-PATCH316-28/Cinemana_Stable_Core_PATCH316_signed.apk (56,343,580 bytes).
+- Issue #5 updated with detailed latest ledger, heap, poster-load telemetry: https://github.com/alwansan/CP/issues/5#issuecomment-6546821523.
+- **Still no on-device PATCH315/PATCH316 log verification**; newest CL is PATCH314. Next test APK316 without deleting existing work/data, record true conversion success, outstanding queue, exceptions via download_repair_unresolved.log, CPU+native heap, UI frames, all functional flows. Do not assume single-flight addresses native-heap leak. No main merges.
