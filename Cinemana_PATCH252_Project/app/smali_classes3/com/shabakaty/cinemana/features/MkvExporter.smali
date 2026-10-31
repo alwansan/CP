@@ -75,7 +75,7 @@
 
     invoke-direct {v0}, Lcom/shabakaty/cinemana/features/MkvExporter$1;-><init>()V
 
-    const/4 v1, 0x3
+    const/4 v1, 0x1
 
     invoke-static {v1, v0}, Ljava/util/concurrent/Executors;->newFixedThreadPool(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
 
@@ -86,7 +86,7 @@
     .line 71
     new-instance v0, Ljava/util/concurrent/Semaphore;
 
-    const/4 v1, 0x3
+    const/4 v1, 0x1
 
     const/4 v2, 0x1
 

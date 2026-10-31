@@ -457,6 +457,13 @@
     goto :token_done
 
     :token_scan_failed_write
+    # PATCH316: sanitized exception class only; no URL, path or user data.
+    invoke-virtual {v2}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v4
+    invoke-virtual {v4}, Ljava/lang/Class;->getName()Ljava/lang/String;
+    move-result-object v4
+    const-string v3, "MKV_ITEM_SCAN_EXCEPTION_CLASS"
+    invoke-static {v1, v3, v4}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
     const-string v3, "ITEM_SCAN_FAILED"
     const-string v4, "exception_during_item_or_mp4_identity_lookup"
     move-object v5, v1
@@ -1131,6 +1138,12 @@
 
     :find_db_item_failed
     move-exception v1
+    invoke-virtual {v1}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/Class;->getName()Ljava/lang/String;
+    move-result-object v2
+    const-string v3, "MKV_TOKEN_DAO_LOOKUP_EXCEPTION_CLASS"
+    invoke-static {p0, v3, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
 
     :find_db_item_done
     return-object v0
@@ -1374,6 +1387,12 @@
 
     :disk_item_failed
     move-exception v1
+    invoke-virtual {v1}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v2
+    invoke-virtual {v2}, Ljava/lang/Class;->getName()Ljava/lang/String;
+    move-result-object v2
+    const-string v3, "MKV_DISK_ITEM_LOOKUP_EXCEPTION_CLASS"
+    invoke-static {p0, v3, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
 
     :disk_item_not_found
     const/4 v0, 0x0
@@ -1474,6 +1493,12 @@
 
     :disk_one_exception
     move-exception v0
+    invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/Class;->getName()Ljava/lang/String;
+    move-result-object v1
+    const-string v2, "MKV_DISK_ONE_EXCEPTION_CLASS"
+    invoke-static {p0, v2, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
     const/4 v0, 0x0
     return v0
 .end method
@@ -1542,6 +1567,12 @@
 
     :disk_inputs_exception
     move-exception v0
+    invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+    move-result-object v1
+    invoke-virtual {v1}, Ljava/lang/Class;->getName()Ljava/lang/String;
+    move-result-object v1
+    const-string v2, "MKV_DISK_INPUTS_EXCEPTION_CLASS"
+    invoke-static {p0, v2, v1}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
 
     :disk_inputs_no
     const/4 v0, 0x0
