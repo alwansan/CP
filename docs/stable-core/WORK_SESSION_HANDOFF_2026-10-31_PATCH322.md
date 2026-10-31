@@ -77,3 +77,11 @@ File `Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Do
 ## 7. User-facing Work prompt guidance
 
 Ask user to switch to **ChatGPT Work**, paste a message referring to both handoffs. Work should execute tasks using the connected GitHub repository and GitHub Actions, not merely send plans. Developer should inspect current branch and pending Actions first; no reason for user to upload tools/PC files. Do not promise unattended background operation in ordinary chat.
+
+## 8. VERIFIED PATCH322 full CI / signed release (2026-10-31 21:53 Baghdad)
+
+- **PATCH322 protected CI SUCCESS:** [GitHub Actions run #41231465688](https://github.com/alwansan/CP/actions/runs/41231465688), source SHA `2618d97079f46630503e7dd5e44c91b5b835f993`. Static original-feature regression guards including process-gate normal branch, Java checks, Smali/DEX rebuild, zipalign, APK signing, APK verification and release upload succeeded.
+- **Signed direct APK now published:** https://github.com/alwansan/CP/releases/download/stable-core-PATCH322-37/Cinemana_Stable_Core_PATCH322_signed.apk (56,343,580 bytes). Tag: https://github.com/alwansan/CP/releases/tag/stable-core-PATCH322-37 . Uses same existing checkpoint145 signing key.
+- The first PATCH322 workflow [#41231412538](https://github.com/alwansan/CP/actions/runs/41231412538) failed **only the new static test assertion** because it matched the earlier `.catch` label operand instead of the actual handler label. This test was corrected in `5139c6d1f18a615953a2e20ee678ba174d70710d`, and the corrected source passed full CI at #37.
+- **ANDROID 15 RUNTIME IS NOT YET VERIFIED.** PATCH321 had passed CI but crashed at startup, so require the user to install PATCH322 **without deleting work or app data** and confirm app opens; investigate immediately if the VerifyError repeats. Do not promise 100% from CI alone. Only then stress-test cold recovery / MKV.
+- No merges or updates to main/reference branches. The next work session must check if there are newer CL uploads than `1342ac414dca89d0b96526f8b336bf63ab022c9a`, and whether PATCH322 actually boots.
