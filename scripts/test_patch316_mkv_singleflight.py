@@ -14,9 +14,10 @@ def method(source, needle):
     return selected[0]
 
 init = method(export, "<clinit>()V")
-assert "newFixedThreadPool" in init
+assert "ThreadPoolExecutor;-><init>(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V" in init
+assert "LinkedBlockingDeque" in init
 assert "Ljava/util/concurrent/Semaphore;-><init>(IZ)V" in init
-assert init.count("const/4 v1, 0x1") == 2
+assert "const/4 v1, 0x1" in init and "const/4 v2, 0x1" in init
 assert "const/4 v1, 0x3" not in init
 assert "JOB_EXECUTOR" in init and "FFMPEG_SLOTS" in init
 recovered = method(export, "onRecoveredVideo(")

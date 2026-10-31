@@ -70,19 +70,21 @@
 
 # direct methods
 .method static constructor <clinit>()V
-    .locals 3
+    .locals 8
 
     .line 63
-    new-instance v0, Lcom/shabakaty/cinemana/features/MkvExporter$1;
-
-    invoke-direct {v0}, Lcom/shabakaty/cinemana/features/MkvExporter$1;-><init>()V
-
+    # PATCH325: same exactly one worker and the same thread factory,
+    # but a deque permits safely promoting already-queued interrupted remuxes.
+    new-instance v7, Lcom/shabakaty/cinemana/features/MkvExporter$1;
+    invoke-direct {v7}, Lcom/shabakaty/cinemana/features/MkvExporter$1;-><init>()V
     const/4 v1, 0x1
-
-    invoke-static {v1, v0}, Ljava/util/concurrent/Executors;->newFixedThreadPool(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
-
-    move-result-object v0
-
+    const/4 v2, 0x1
+    const-wide/16 v3, 0x0
+    sget-object v5, Ljava/util/concurrent/TimeUnit;->MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+    new-instance v6, Ljava/util/concurrent/LinkedBlockingDeque;
+    invoke-direct {v6}, Ljava/util/concurrent/LinkedBlockingDeque;-><init>()V
+    new-instance v0, Ljava/util/concurrent/ThreadPoolExecutor;
+    invoke-direct/range {v0 .. v7}, Ljava/util/concurrent/ThreadPoolExecutor;-><init>(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V
     sput-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
 
     .line 71
@@ -13223,6 +13225,21 @@
     move-exception v1
     monitor-exit v0
     throw v1
+.end method
+
+
+# PATCH325: only reorder queued Runnables. Never interrupt a running FFmpeg,
+# clone tasks, alter persisted download state, or add a worker.
+.method public static promoteQueuedSource(Ljava/io/File;)Z
+    .locals 2
+    if-eqz p0, :p325_promote_no
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
+    invoke-static {v0, p0}, Lcom/shabakaty/cinemana/features/MkvPriority325;->promote(Ljava/util/concurrent/ExecutorService;Ljava/io/File;)Z
+    move-result v1
+    return v1
+    :p325_promote_no
+    const/4 v0, 0x0
+    return v0
 .end method
 
 .method public static onRecoveredVideo(Landroid/content/Context;Lcom/shabakaty/cinemana/data/db/downloads/CinemanaDownloadItem;Ljava/io/File;)Z

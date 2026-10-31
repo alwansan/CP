@@ -163,7 +163,7 @@
 # to the pre-existing guarded reconciler; .part, MP4 and subtitles are NOT
 # deleted or treated as complete outputs.
 .method public static prioritizeInterruptedParts(Landroid/content/Context;)V
-    .locals 13
+    .locals 15
     if-eqz p0, :p324_done
     new-instance v0, Ljava/io/File;
     invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
@@ -180,6 +180,9 @@
     const/4 v4, 0x0
     const/4 v5, 0x0
     const/4 v6, 0x0
+    new-instance v13, Ljava/util/ArrayList;
+    invoke-direct {v13}, Ljava/util/ArrayList;-><init>()V
+    const/4 v14, 0x0
     const/16 v7, 0x10
     :p324_loop
     if-ge v4, v3, :p324_report
@@ -224,9 +227,26 @@
     move-result v9
     if-eqz v9, :p324_loop
     add-int/lit8 v6, v6, 0x1
+    invoke-virtual {v13, v12}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z
     goto :p324_loop
 
     :p324_report
+    # Reverse promotions because addFirst reverses insertion order. The
+    # oldest staged source, collected first, ends up closest to the head.
+    invoke-virtual {v13}, Ljava/util/ArrayList;->size()I
+    move-result v8
+    :p325_promote_reverse
+    add-int/lit8 v8, v8, -0x1
+    if-ltz v8, :p325_promote_done
+    invoke-virtual {v13, v8}, Ljava/util/ArrayList;->get(I)Ljava/lang/Object;
+    move-result-object v9
+    check-cast v9, Ljava/io/File;
+    invoke-static {v9}, Lcom/shabakaty/cinemana/features/MkvExporter;->promoteQueuedSource(Ljava/io/File;)Z
+    move-result v10
+    if-eqz v10, :p325_promote_reverse
+    add-int/lit8 v14, v14, 0x1
+    goto :p325_promote_reverse
+    :p325_promote_done
     new-instance v8, Ljava/lang/StringBuilder;
     invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
     const-string v9, "PATCH324_INTERRUPTED_PART_AUDIT candidates="
@@ -238,6 +258,11 @@
     invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
     move-result-object v8
     invoke-virtual {v8, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v8
+    const-string v9, " priority_promoted="
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8, v14}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
     move-result-object v8
     const-string v9, " cap=16; no_parts_deleted"
     invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;

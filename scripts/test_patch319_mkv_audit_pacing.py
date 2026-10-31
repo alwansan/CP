@@ -40,8 +40,9 @@ assert "remove(Ljava/lang/Object;)Ljava/lang/Object;" in clear
 assert "if-eqz v1, :clear_done" in clear
 assert clear.index("if-eqz v1, :clear_done")<clear.index("MkvRepairLedger;->save(")
 init=method(export,"<clinit>()V")
-assert init.count("const/4 v1, 0x1")==2
-assert "newFixedThreadPool" in init
+assert "const/4 v1, 0x1" in init and "const/4 v2, 0x1" in init
+assert "ThreadPoolExecutor;-><init>(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V" in init
+assert "LinkedBlockingDeque" in init
 assert "FFMPEG_SLOTS" in init
 run=method(export,"runRecovered(")
 assert "PATCH319_EXPORT_JOB_START" in run

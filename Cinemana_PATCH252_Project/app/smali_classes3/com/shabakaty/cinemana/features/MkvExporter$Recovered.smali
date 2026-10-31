@@ -23,3 +23,11 @@
     invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvExporter;->runRecovered(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/lang/String;)V
     return-void
 .end method
+
+
+# PATCH325: read-only access to source of an already queued recovered Runnable.
+.method public sourceForPriority()Ljava/io/File;
+    .locals 1
+    iget-object v0, p0, Lcom/shabakaty/cinemana/features/MkvExporter$Recovered;->source:Ljava/io/File;
+    return-object v0
+.end method
