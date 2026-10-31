@@ -63,6 +63,8 @@
     new-instance v1, Ljava/lang/Thread;
     invoke-direct {v1, v0}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
     invoke-virtual {v1}, Ljava/lang/Thread;->start()V
+    # PATCH322: normal execution must never fall through into move-exception.
+    goto :startup_done
 
     :startup_gate_failed
     move-exception v0
