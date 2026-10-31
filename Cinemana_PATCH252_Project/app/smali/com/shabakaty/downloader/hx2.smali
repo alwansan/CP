@@ -498,8 +498,14 @@
 .method public onCreate(Landroid/os/Bundle;)V
     .locals 6
 
+    # PATCH310: remember whether Android restored a saved fragment/NavHost state.
+    # Never clear the restored detail back stack while returning from the player.
+    move-object v5, p1
+
     .line 1
     invoke-super {p0, p1}, Lcom/shabakaty/downloader/xi;->onCreate(Landroid/os/Bundle;)V
+
+    if-nez v5, :patch310_keep_restored_fragments
 
     .line 2
     invoke-virtual {p0}, Lcom/shabakaty/downloader/ji1;->getSupportFragmentManager()Landroidx/fragment/app/q;
@@ -634,6 +640,8 @@
 
     invoke-virtual {p1}, Landroid/widget/FrameLayout;->requestLayout()V
 
+    :patch310_keep_restored_fragments
+    # Both fresh and restored paths install the bottom navigation listeners.
     .line 16
     invoke-virtual {p0}, Lcom/shabakaty/downloader/hx2;->m0()Lcom/google/android/material/bottomnavigation/BottomNavigationView;
 
@@ -647,6 +655,15 @@
 
     invoke-virtual {p1, v1}, Lcom/google/android/material/bottomnavigation/BottomNavigationView;->setOnNavigationItemSelectedListener(Lcom/google/android/material/bottomnavigation/BottomNavigationView$b;)V
 
+    # Saved back stack: do not reset selected tabs or schedule a Home navigation.
+    # v2 is zero from listener setup; v1 must be one for reselection listener.
+    if-eqz v5, :patch310_initialize_fresh_tabs
+    const-string v3, "home_saved_backstack_preserved"
+    invoke-static {v3}, Lcom/shabakaty/cinemana/local/LoadDiag307;->note(Ljava/lang/String;)V
+    const/4 v1, 0x1
+    goto :goto_3
+
+    :patch310_initialize_fresh_tabs
     .line 17
     invoke-virtual {p0}, Lcom/shabakaty/downloader/hx2;->k0()Ljava/util/Stack;
 

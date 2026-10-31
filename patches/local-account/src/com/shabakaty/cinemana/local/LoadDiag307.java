@@ -82,7 +82,7 @@ public final class LoadDiag307 {
         if (!started || event == null || worker == null) return;
         if (!("app_create_finished".equals(event) || "downloads_tab_enter".equals(event) ||
               "downloads_tab_exit".equals(event) || "player_enter".equals(event) ||
-              "player_exit".equals(event))) return;
+              "player_exit".equals(event) || "home_saved_backstack_preserved".equals(event))) return;
         try { worker.execute(() -> eventNow(event)); } catch (Throwable ignored) {}
     }
 
@@ -298,7 +298,7 @@ public final class LoadDiag307 {
 
     private static JSONObject base(String event) throws Exception {
         JSONObject o = new JSONObject();
-        o.put("schema",1);o.put("build","PATCH309");
+        o.put("schema",1);o.put("build","PATCH310");
         o.put("event",event);o.put("utc_ms",System.currentTimeMillis());
         o.put("pid",pid);o.put("process",process);
         o.put("screen",screen);o.put("foreground",foreground);o.put("downloads_tab",downloadsTab);

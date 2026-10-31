@@ -16,9 +16,9 @@ assert "UiPerfDiag;->install(Landroid/app/Activity;)V" in method(home,"onStart()
 assert 'const-string v0, "downloads_visible"' in method(downloads,"onResume()V")
 assert 'const-string v0, "downloads_hidden"' in method(downloads,"onPause()V")
 assert "UiPerfDiag;->mark(Ljava/lang/String;)V" in downloads
-assert ui.count('private static final String BUILD = "PATCH309";')==1
+assert ui.count('private static final String BUILD = "PATCH310";')==1
 for marker in ("attach_base_enter","app_create_enter","app_super_completed","local_init_returned","repair_startup_begin","app_create_finished"):
-    assert ("PATCH309 "+marker) in startup, marker
+    assert ("PATCH310 "+marker) in startup, marker
 assert "registerActivityLifecycleCallbacks" in ui
 assert "FrameMetrics" in ui and "probeMainThread" in ui
 assert "newSingleThreadScheduledExecutor" in ui
@@ -91,7 +91,7 @@ assert 'private static final int MAX_TASKS = 256' in prof
 assert '/proc/self/task' in prof and 'cpu_ticks_delta' in prof and 'tasks_capped' in prof
 assert 'if(i>=6)continue;' in prof
 assert 'ThreadCpuDiag308.sample()' in load
-assert '"PATCH309"' in load
+assert '"PATCH310"' in load
 assert 'TrafficStats.getUidRxBytes' in load and 'TrafficStats.getUidTxBytes' in load
 assert 'uid_network_rx_delta' in load and 'uid_network_tx_delta' in load
 assert 'proc_io_accessible' in load
@@ -109,3 +109,30 @@ for key in ('"VideoPlayerActivity"', '"HomeActivity"', '"SettingsActivity"',
             'note("player_enter")', 'note("player_exit")'):
     assert key in load, key
 print("PASS PATCH309: main thread PID and player vs details attribution")
+
+# PATCH310: never wipe restored detail/NavHost fragments on saved Activity recreation.
+navigation=(app/"downloader/hx2.smali").read_text()
+on_create=method(navigation,"onCreate(Landroid/os/Bundle;)V")
+assert "move-object v5, p1" in on_create
+assert "if-nez v5, :patch310_keep_restored_fragments" in on_create
+assert "if-eqz v5, :patch310_initialize_fresh_tabs" in on_create
+assert "goto :goto_3" in on_create
+assert "home_saved_backstack_preserved" in on_create
+assert "LoadDiag307;->note(Ljava/lang/String;)V" in on_create
+# Destructive detach/list-clear and default Home selection must be behind
+# the saved-state guard. Restored paths keep both nav listeners.
+detach=on_create.index("Landroidx/fragment/app/Fragment;->onDetach()V")
+clear=on_create.index("Ljava/util/List;->clear()V")
+saved=on_create.index(":patch310_keep_restored_fragments")
+assert detach < clear < saved
+assert on_create.index("if-nez v5, :patch310_keep_restored_fragments") < detach
+assert on_create.index(":patch310_initialize_fresh_tabs") > on_create.index("setOnNavigationItemSelectedListener")
+assert on_create.index(":goto_3",on_create.index(":patch310_initialize_fresh_tabs")) < on_create.index("setOnNavigationItemReselectedListener")
+assert '"home_saved_backstack_preserved".equals(event)' in load
+details=(app/"downloader/d15.smali").read_text()
+assert "Lcom/shabakaty/cinemana/player/VideoPlayerActivity;" in details
+assert "startActivityForResult(Landroid/content/Intent;I)V" in details
+assert "startActivity(Landroid/content/Intent;)V" in details
+manifest=(root/"Cinemana_PATCH252_Project/app/AndroidManifest.xml").read_text()
+assert 'android:name="com.shabakaty.cinemana.player.VideoPlayerActivity"' in manifest
+print("PASS PATCH310 saved-backstack preservation, player launch and navigation diagnostics")
