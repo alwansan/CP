@@ -6,7 +6,7 @@ root = Path(__file__).resolve().parents[1] / "Cinemana_PATCH252_Project/app/smal
 station = (root/"FileDownloadMessageStation.smali").read_text()
 callback = (root/"FileDownloadMessageStation$UIHandlerCallback.smali").read_text()
 def method(source, signature):
-    m = re.search(r"(?ms)^\\.method [^\\n]*"+re.escape(signature)+r"\\n.*?^\\.end method", source)
+    m = re.search(r"(?ms)^\.method [^\n]*"+re.escape(signature)+r"\n.*?^\.end method", source)
     assert m, signature
     return m.group()
 block=method(station,"interceptBlockCompleteMessage(Lcom/liulishuo/filedownloader/IFileDownloadMessenger;)Z")
