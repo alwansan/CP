@@ -18,3 +18,7 @@
 - Android runtime unverified: after installing without clearing app data, inspect E42/E49 for `STAGE_ORPHAN_REMOVED`, new unique `STAGE_REBUILD_STARTED`, FFmpeg success, subtitle tracks, DB promotion and final one MKV; no E74 active stage deleted.
 - If E42/E49 still lack `QUEUE_START`, investigate queue-task identity/liveness rather than deleting files outside `Lease115.stage`.
 - Backlog `87 MKV_QUEUED` / `64 WAITING_PLAN_OR_SUBTITLES` / `4 MKV_QUEUE_REJECTED` still needs per-token classification.
+
+## First regression correction
+- PATCH326 run [#46](https://github.com/alwansan/CP/actions/runs/41244467769) failed in the newly extended `test_patch324_interrupted_part_recovery.py` because its `stage.index("move-result v6")` picked an unrelated earlier register result, not the delete result. All pre-existing static tests passed before that assertion; no Smali/DEX compilation ran.
+- Commit `1c5ea616b6be9fea0f52084f0a9b972dec460e43` scopes the assertion search after the `File.delete()` call, no runtime code changed. New protected CI is required.
