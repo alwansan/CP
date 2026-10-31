@@ -25,13 +25,13 @@ assert m.index(":p330_processing_done") < m.index("QUEUE_ATTEMPT=")
 
 # On both success and failure, optional Room/ledger writes must not hide
 # the native mux result or prevent MkvCancel262.clearCurrent().
-ok=m[m.index(":cond_3\n"):m.index(":catchall_1\n")]
+ok=m[m.index("\n    :cond_3\n"):m.index("\n    :catchall_1\n")]
 assert ".catch Ljava/lang/Throwable; {:try_start_p330_ok_cleanup .. :try_end_p330_ok_cleanup} :p330_ok_cleanup_failed" in ok
 assert "goto :p330_ok_clear_current\n\n    :p330_ok_cleanup_failed\n    move-exception v5" in ok
 assert "PATCH330_NORMAL_CLEANUP_WRITE_FAILED_CONTINUING" in ok
 assert ok.index(":p330_ok_clear_current") < ok.index("MkvCancel262;->clearCurrent()V")
 assert ok.index("MkvCancel262;->clearCurrent()V") < ok.index("return-void",ok.index(":p330_ok_clear_current"))
-fail=m[m.index(":catchall_2\n"):m.index(":catchall_3\n")]
+fail=m[m.index("\n    :catchall_2\n"):m.index("\n    :catchall_3\n")]
 assert "move-exception v0" in fail
 assert ".catch Ljava/lang/Throwable; {:try_start_p330_failed_cleanup .. :try_end_p330_failed_cleanup} :p330_failed_cleanup_failed" in fail
 assert "goto :p330_failed_clear_current\n\n    :p330_failed_cleanup_failed\n    move-exception v5" in fail
