@@ -28,3 +28,8 @@ Date 2026-10-31, only `feature/stable-core-ui-performance`
 
 ## Third CI correction / verification status
 - [Run #44 (41237737638)](https://github.com/alwansan/CP/actions/runs/41237737638) passed every static regression PATCH312–PATCH324 but the *new PATCH325 test* used a substring search for `:p324_report` and matched a branch operand rather than its actual Smali label declaration. Fixed to `\\n    :p324_report\\n`. No runtime/Smali code changed by this correction. Re-run CI for actual signed APK.
+
+## Final CI & signed APK
+- **SUCCESS** https://github.com/alwansan/CP/actions/runs/41237836457 — full protected run #45, source commit `8108e663ec343cba3bf6d3fadbd7031202ebb619`, passed prior download/notification/Smali protections, new priority-deque regression, Smali/DEX compilation, zipalign, APK signing + verification and direct GitHub Releases publication.
+- [Signed PATCH325 APK](https://github.com/alwansan/CP/releases/download/stable-core-PATCH325-45/Cinemana_Stable_Core_PATCH325_signed.apk), 56,347,676 bytes. Previous runs #42–#44 failed only test-source assertions before DEX. Functional Smali is from `d8fb89aa63cdb5a0677c4d121b892631ad21bd1f`.
+- Latest CL `194891ba0a2ff7efb0064c3d99ae3c34daca625e` predates PATCH325; **no real-device proof of E42 new conversion yet**. Next: safely install without clearing files or data, obtain `priority_promoted` and E42 post-restart FFmpeg/Room confirmation.
