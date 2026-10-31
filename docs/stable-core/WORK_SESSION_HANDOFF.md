@@ -138,3 +138,12 @@ E. Test small 2–5 download batch first, then user may stress again. Verify con
 - All steps have reproducible tests, identifiable commit, passing signed build, direct GitHub Release APK, and honest device-test status.
 
 **Critical:** This handoff is documentation, not evidence of a successful repair of the entire old stress test. User instruction is to continue fixing ALL demonstrated issues, one by one, using current logs and code while maintaining existing features.
+## 10. Follow-up session update — PATCH313 safety correction (31 October 2026)
+
+Latest CP HEAD **before** this follow-up: `795f5fcf1bc6d0d0ea22432cb153e6202616bf0e`; signed docs-only release `stable-core-PATCH312-21` succeeded at Actions run `41216381638`. Last fetched CL commit remained `ed3dce9fbe1d96aa24fef6272088f120dc5a15fa`. No new post-PATCH312 CL upload was available during this investigation.
+
+New explicit evidence found in recent PATCH312 CL diagnostics: `queue_terminal_error` with `completion receipt identity/length mismatch`, plus `inputs114_deferred` with `subtitle not committed: 1` and `subtitle plan count mismatch`. These safety checks must remain active. `Queue110.committed` already requires positive exact native byte length, but the extra PATCH312 `MkvCompletion312` completion bridge did not. The new PATCH313 change adds that gate to **the same helper before writing sourceComplete=true**, keeping Queue110's stricter path/URL checks unchanged. See `docs/stable-core/PATCH313_NATIVE_COMPLETION_LENGTH_GUARD.md`.
+
+This session also reconfirmed that the old 66 MP4 + 2 temp snapshot and later 10 MKV/no-MP4 snapshot are different; the commit deletes 217 old sidecars, but the reason cannot be proven from Git mirroring alone. Newest logs have 27 native DOWNLOAD_COMPLETED events, 10 MKV_UI_QUEUED_IMMEDIATE events, and actual successful exports. No proof all old 66 files recovered. Repeat the 2–5 download trial then pressure trial; capture the full tree, sidecars and LogFox.
+
+**Build status at write:** PATCH313 commit and its GitHub Actions result must be checked live; documentation written as part of the corrective commit. Do not infer successful CI or Android runtime before checking the workflow and device logs. Work only on `feature/stable-core-ui-performance`; do not touch reference branches or main.

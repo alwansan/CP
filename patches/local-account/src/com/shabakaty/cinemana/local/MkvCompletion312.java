@@ -66,6 +66,18 @@ public final class MkvCompletion312 {
             if (!lower.endsWith(".mp4") || lower.endsWith(".tmp.mp4")
                     || lower.endsWith(".cnm-recovery.tmp.mp4")) return;
             if (!file.isFile() || file.length() <= 1024L) return;
+            // PATCH313: the successful native event alone does not prove that
+            // this on-disk file has the download's complete byte count.
+            // Match Queue110.committed's exact known-length safety rule before
+            // writing a durable DOWNLOAD_COMPLETE receipt. A mismatched task
+            // must remain recoverable, never be promoted as complete by size.
+            Object total = task.getClass().getMethod("getLargeFileTotalBytes").invoke(task);
+            long expectedBytes = total instanceof Number ? ((Number) total).longValue() : -1L;
+            long actualBytes = file.length();
+            if (expectedBytes <= 0L || expectedBytes != actualBytes) {
+                Log.w(TAG, "native_receipt_length_mismatch");
+                return;
+            }
             Method getId = task.getClass().getMethod("getId");
             Object id = getId.invoke(task);
             if (!(id instanceof Number)) return;
@@ -79,7 +91,7 @@ public final class MkvCompletion312 {
             // The watcher/audit will enforce exact database and subtitle plan
             // verification. Never invoke ffmpeg directly.
             reconciler.getMethod("requestAudit").invoke(null);
-            Log.i(TAG, "verified_native_video_completion_audit_requested");
+            Log.i(TAG, "native_verified_length_receipt_attempted_audit_requested");
         } catch (Throwable error) {
             Log.w(TAG, "completion_bridge_failed type=" + error.getClass().getSimpleName());
         }

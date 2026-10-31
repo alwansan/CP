@@ -23,6 +23,14 @@ assert 'getCanonicalFile().getParentFile().equals(root.getCanonicalFile())' in b
 assert 'lower.endsWith(".mp4")' in bridge
 assert 'lower.endsWith(".tmp.mp4")' in bridge
 assert "file.length() <= 1024L" in bridge
+# PATCH313: a callback may only create a durable completion receipt when the
+# native expected byte count matches the actual source. Queue110 already
+# rejects these mismatches; the new callback bridge must never bypass it.
+assert '"getLargeFileTotalBytes"' in bridge
+assert "expectedBytes <= 0L || expectedBytes != actualBytes" in bridge
+assert '"native_receipt_length_mismatch"' in bridge
+assert bridge.index('expectedBytes != actualBytes') < bridge.index('capsule.getMethod("completeDownload"')
+assert '"verified_native_video_completion_audit_requested"' not in bridge
 assert 'capsule.getMethod("completeDownload", Object.class, int.class)' in bridge
 assert 'reconciler.getMethod("requestAudit")' in bridge
 assert '"DOWNLOAD_COMPLETE"' in capsule
