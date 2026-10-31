@@ -28,9 +28,9 @@ assert "iput-object p1, p0, Lcom/shabakaty/downloader/lz0;->a:Lcom/shabakaty/dow
 # PATCH325 keeps exactly one worker, but uses a deque so stopped MKV jobs
 # can move ahead of FIFO backlog. Verify the actual worker parameters.
 assert "FFMPEG_SLOTS" in export
-init=re.search(r"(?ms)^\\.method static constructor <clinit>\\(\\)V\\n.*?^\\.end method", export)
-assert init, "MkvExporter static initializer missing"
-assert "ThreadPoolExecutor;-><init>(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V" in init.group()
-assert "const/4 v1, 0x1" in init.group() and "const/4 v2, 0x1" in init.group()
-assert "LinkedBlockingDeque" in init.group()
+assert ".method static constructor <clinit>()V" in export
+init=export.split(".method static constructor <clinit>()V",1)[1].split(".end method",1)[0]
+assert "ThreadPoolExecutor;-><init>(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V" in init
+assert "const/4 v1, 0x1" in init and "const/4 v2, 0x1" in init
+assert "LinkedBlockingDeque" in init
 print("PASS PATCH318: synchronized one-time DAO cache, original DB/DAO resolution and queries retained")

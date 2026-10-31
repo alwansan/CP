@@ -22,3 +22,6 @@ Date 2026-10-31, only `feature/stable-core-ui-performance`
 ## Initial CI result / test correction
 - [Run #42, 41237503076](https://github.com/alwansan/CP/actions/runs/41237503076) failed **before Smali/DEX** at `scripts/test_patch318_room_dao_cache.py`: legacy static assertion required the literal `newFixedThreadPool` text. PATCH325's equivalent `ThreadPoolExecutor(1,1,...,LinkedBlockingDeque,...)` correctly retains one worker but no longer contains that name.
 - Updated that regression in commit `5a237141923a685d468f2c7fb058e57c4d21cfa3`, verifying actual one-worker constructor, queue type and semaphore. Re-run full protected CI from the next source commit; **first failure does not imply APK/runtime success or failure**.
+
+## Second CI regression assertion correction
+- Run [#43 (41237636217)](https://github.com/alwansan/CP/actions/runs/41237636217) failed at the same PATCH318 static regression **before APK compilation** because an over-escaped `<clinit>` regex matched nothing. Replaced the regex with a literal method substring split, preserving the one-worker/FFmpeg checks. This is a test-only correction; functional Smali remains exactly PATCH325 `d8fb89aa63cdb5a0677c4d121b892631ad21bd1f`. Full protected CI must now be rerun.
