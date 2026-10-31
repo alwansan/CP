@@ -17,3 +17,6 @@ A root cause contributing to gap: in `MkvReconciler.auditFinished` the only back
 
 ## Validation and limitations
 New `scripts/test_patch319_mkv_audit_pacing.py` checks audit schedule/limit/sorting, ledger skip-if-identical, one FFmpeg worker, stream-copy and safety checks. CI builds signed release. Real device must measure stage/gap times, RSS/native/Java heap, frame stalls and final MKV rate. Faster audit cadence increases background checks, but avoiding repeated ledger writes and retaining 8-scan cap should contain I/O. If CPU/frames worsen, prefer reverting timing change, while keeping no-op ledger-write improvement. **Physical media remux I/O cannot be reduced to zero; do not claim a 10x speedup.**
+
+## CI note
+PATCH319 static regression was corrected to match the actual Smali branch label rather than its earlier jump operand; this is a test-only fix. Re-run the full protected build against the corrected test before accepting a signed APK.
