@@ -40,3 +40,23 @@ assert "MkvRepairAgeComparator" in priority
 assert "const/16 v7, 0x10" in priority
 assert "reconcileDiskVideo(" in priority and "promoteQueuedSource(" in priority
 print("PASS PATCH328: 15s max callback wait, serialized MKV, safe guarded retries, sampled queue health, no source cleanup")
+
+# Single native FFmpeg can itself hang even with a fast callback worker:
+# watch only stage-byte progress and terminate a stalled child process.
+locked = method(exp, "exportLocked(Landroid/content/Context;Ljava/io/File;Ljava/util/List;Ljava/io/File;Ljava/lang/Object;)V")
+guardcall = "MkvProcessGuard328;->watch(Ljava/lang/Process;Ljava/io/File;)V"
+assert locked.count(guardcall) == 1
+assert locked.index("Lease115;->stage(Ljava/io/File;)Ljava/io/File;") < locked.index(guardcall)
+assert locked.index("MkvCancel262;->register(Ljava/lang/Process;)V") < locked.index(guardcall) < locked.index("Process;->getInputStream()Ljava/io/InputStream;")
+assert "invoke-static {v8, v14}, Lcom/shabakaty/cinemana/local/MkvProcessGuard328;->watch(" in locked
+java = (root.parent.parent / "patches/local-account/src/com/shabakaty/cinemana/local/MkvProcessGuard328.java").read_text()
+assert "private static final long STALL_MS = 120000L" in java
+assert "private static final long POLL_MS = 5000L" in java
+assert "SystemClock.elapsedRealtime()" in java
+assert "size != previous" in java
+assert "process.destroy();" in java and "process.destroyForcibly();" in java
+assert "Thread.MIN_PRIORITY" in java and "thread.setDaemon(true)" in java
+assert "PATCH328_FFMPEG_STALL" in java
+for forbidden in (".delete(", ".renameTo(", "FileOutputStream", "FileInputStream", "MkvManifestStore", "RecoveryCapsule", "Runtime.getRuntime()"):
+    assert forbidden not in java, forbidden
+print("PASS PATCH328: FFmpeg watchdog watches same leased stage and never deletes user media")
