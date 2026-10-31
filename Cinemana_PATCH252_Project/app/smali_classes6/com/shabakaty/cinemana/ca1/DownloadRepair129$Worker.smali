@@ -22,6 +22,7 @@
     # PATCH321: manual Repair Downloads uses the same durable sidecar
     # recovery+native queue rescan as cold app startup, before oldest-first
     # MKV auditing. No source files deleted; retries remain guarded.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->prioritizeInterruptedParts(Landroid/content/Context;)V
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/RecoveryCapsule;->recoverPending(Landroid/content/Context;)I
     move-result v3
     if-lez v3, :patch321_manual_sidecars_done

@@ -21,6 +21,7 @@
     const-string v1, "download_repair_actions.log"
     const-string v2, "PATCH321_BOOT_IMMEDIATE_AUDIT"
     invoke-static {v0, v1, v2}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->prioritizeInterruptedParts(Landroid/content/Context;)V
     invoke-static {v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->execute(Landroid/content/Context;)Ljava/lang/String;
     # PATCH323: recover durable native receipts at first boot pass as well,
     # instead of waiting eight seconds for the only initial sidecar scan.

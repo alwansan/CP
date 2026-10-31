@@ -157,6 +157,99 @@
     return-void
 .end method
 
+
+# PATCH324: at cold boot or manual repair, prioritize a small number of
+# interrupted FFmpeg attempts. Only the exact matching source MP4 is offered
+# to the pre-existing guarded reconciler; .part, MP4 and subtitles are NOT
+# deleted or treated as complete outputs.
+.method public static prioritizeInterruptedParts(Landroid/content/Context;)V
+    .locals 13
+    if-eqz p0, :p324_done
+    new-instance v0, Ljava/io/File;
+    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
+    move-result-object v1
+    const-string v2, "Cinemana/work"
+    invoke-direct {v0, v1, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v0}, Ljava/io/File;->listFiles()[Ljava/io/File;
+    move-result-object v1
+    if-eqz v1, :p324_done
+    new-instance v2, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;
+    invoke-direct {v2}, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;-><init>()V
+    invoke-static {v1, v2}, Ljava/util/Arrays;->sort([Ljava/lang/Object;Ljava/util/Comparator;)V
+    array-length v3, v1
+    const/4 v4, 0x0
+    const/4 v5, 0x0
+    const/4 v6, 0x0
+    const/16 v7, 0x10
+    :p324_loop
+    if-ge v4, v3, :p324_report
+    if-ge v5, v7, :p324_report
+    aget-object v8, v1, v4
+    add-int/lit8 v4, v4, 0x1
+    if-eqz v8, :p324_loop
+    invoke-virtual {v8}, Ljava/io/File;->isFile()Z
+    move-result v9
+    if-eqz v9, :p324_loop
+    invoke-virtual {v8}, Ljava/io/File;->getName()Ljava/lang/String;
+    move-result-object v9
+    const-string v11, ".part"
+    invoke-virtual {v9, v11}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v12
+    if-eqz v12, :p324_loop
+    const-string v11, ".mkv.cnm115-"
+    invoke-virtual {v9, v11}, Ljava/lang/String;->lastIndexOf(Ljava/lang/String;)I
+    move-result v10
+    if-lez v10, :p324_loop
+    # Exact staged name: <source-base>.mkv.cnm115-<36-char UUID>.part
+    invoke-virtual {v9}, Ljava/lang/String;->length()I
+    move-result v11
+    sub-int/2addr v11, v10
+    const/16 v12, 0x35
+    if-ne v11, v12, :p324_loop
+    const/4 v11, 0x0
+    invoke-virtual {v9, v11, v10}, Ljava/lang/String;->substring(II)Ljava/lang/String;
+    move-result-object v9
+    const-string v11, ".mp4"
+    invoke-virtual {v9, v11}, Ljava/lang/String;->concat(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v9
+    new-instance v12, Ljava/io/File;
+    invoke-direct {v12, v0, v9}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
+    invoke-virtual {v12}, Ljava/io/File;->isFile()Z
+    move-result v9
+    if-eqz v9, :p324_loop
+    add-int/lit8 v5, v5, 0x1
+    # All native completion/paused/deleted, subtitle and database gates
+    # remain in reconcileDiskVideo -> onRecoveredVideo -> exporter.
+    invoke-static {p0, v12}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
+    move-result v9
+    if-eqz v9, :p324_loop
+    add-int/lit8 v6, v6, 0x1
+    goto :p324_loop
+
+    :p324_report
+    new-instance v8, Ljava/lang/StringBuilder;
+    invoke-direct {v8}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v9, "PATCH324_INTERRUPTED_PART_AUDIT candidates="
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8, v5}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v8
+    const-string v9, " accepted_or_owned="
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    move-result-object v8
+    const-string v9, " cap=16; no_parts_deleted"
+    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v8
+    invoke-virtual {v8}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v8
+    const-string v9, "download_repair_actions.log"
+    invoke-static {p0, v9, v8}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->log(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V
+    :p324_done
+    return-void
+.end method
+
 .method public static execute(Landroid/content/Context;)Ljava/lang/String;
     .locals 3
     :try_start_ordered_repair
