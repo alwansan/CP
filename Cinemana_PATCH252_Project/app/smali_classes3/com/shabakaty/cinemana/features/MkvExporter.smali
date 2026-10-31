@@ -12289,7 +12289,11 @@
 
     sub-long/2addr v11, v3
 
-    const-wide/32 v13, 0x1d4c0
+    # PATCH328: normal-callback Runnable must not monopolize the only mux
+    # worker for 120s while waiting for a source already considered ready at
+    # enqueue. Cap this wait at 15s; periodic guarded reconcile will retry
+    # complete MP4 later without deleting or converting partial media.
+    const-wide/32 v13, 0x3a98
 
     cmp-long v11, v11, v13
 
@@ -12779,7 +12783,7 @@
 
     .line 248
     :cond_d
-    const-string v0, "TIMEOUT: final video file was not stable within 2 minutes"
+    const-string v0, "TIMEOUT: callback source not ready within 15s; preserving MP4 for guarded recovery audit"
 
     invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
 
