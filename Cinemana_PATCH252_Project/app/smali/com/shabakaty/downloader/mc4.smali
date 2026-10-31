@@ -374,23 +374,9 @@
 
     invoke-static {v0, p1, p2, v1, v2}, Lcom/shabakaty/cinemana/features/DownloadTrace;->progress(Landroid/content/Context;Ljava/lang/Object;IJ)V
 
-    .line 1
-    invoke-static {}, Lcom/shabakaty/downloader/mw0;->a()Lcom/shabakaty/downloader/lw0;
-
-    move-result-object p2
-
-    const-string p3, "download listener progress callback with task:\n"
-
-    invoke-static {p3, p1}, Lcom/shabakaty/downloader/j32;->j(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/String;
-
-    move-result-object p3
-
-    invoke-virtual {p2, p3, p0}, Lcom/shabakaty/downloader/lw0;->c(Ljava/lang/String;Ljava/lang/Object;)Lcom/shabakaty/downloader/lw0$a;
-
-    move-result-object p2
-
-    invoke-virtual {p2}, Lcom/shabakaty/downloader/lw0$a;->b()V
-
+    # PATCH317: skip redundant unbounded "task.toString" debug formatting
+    # for every progress callback. DownloadTrace.progress above remains,
+    # and the original UI/notification progress coroutine below is untouched.
     .line 2
     new-instance p2, Lcom/shabakaty/downloader/mc4$e;
 

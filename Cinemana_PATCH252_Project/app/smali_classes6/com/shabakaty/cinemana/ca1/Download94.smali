@@ -108,6 +108,38 @@
 .method static find(Landroid/view/View;Ljava/lang/String;)Landroid/view/View;
     .locals 2
 
+    # PATCH317: real id values are pinned in res/values/public.xml.
+    # Native findViewById avoids repeated recursive getResourceEntryName
+    # under the heavy downloads RecyclerView load.
+    const-string v0, "downloads_recycler"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :patch317_try_collections
+    const v0, 0x7f0a014e
+    goto :patch317_fast_id
+
+    :patch317_try_collections
+    const-string v0, "collections_recycler"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :patch317_try_nav
+    const v0, 0x7f0a00f9
+    goto :patch317_fast_id
+
+    :patch317_try_nav
+    const-string v0, "home_bottom_nav"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :patch317_legacy
+    const v0, 0x7f0a0204
+
+    :patch317_fast_id
+    invoke-virtual {p0, v0}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v0
+    return-object v0
+
+    # Unrecognized future names retain exact original recursive behavior.
+    :patch317_legacy
     .line 6
     :try_start_0
     invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;
