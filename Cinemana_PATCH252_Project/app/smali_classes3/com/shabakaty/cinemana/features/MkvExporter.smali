@@ -2185,6 +2185,9 @@
 
     move-result-object v8
     invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->register(Ljava/lang/Process;)V
+    # PATCH328: daemon watchdog only interrupts a verified 120s native
+    # stage-progress stall. It never mutates MP4, subtitle or database state.
+    invoke-static {v8, v14}, Lcom/shabakaty/cinemana/local/MkvProcessGuard328;->watch(Ljava/lang/Process;Ljava/io/File;)V
 
     .line 450
     invoke-virtual {v8}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
