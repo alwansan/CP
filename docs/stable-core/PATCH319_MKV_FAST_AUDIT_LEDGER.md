@@ -20,3 +20,6 @@ New `scripts/test_patch319_mkv_audit_pacing.py` checks audit schedule/limit/sort
 
 ## CI note
 PATCH319 static regression was corrected to match the actual Smali branch label rather than its earlier jump operand; this is a test-only fix. Re-run the full protected build against the corrected test before accepting a signed APK.
+
+## Recovery flow regression synchronization
+After changing the intended active-work audit cadence to 1500 ms, the interpreted Smali flow test `scripts/test_recovery_flow.py` was updated from its previous 5000 ms expectation. The same safety properties and no-work scheduling assertions remain; full CI still required before release.
