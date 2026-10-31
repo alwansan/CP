@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [feature/stable-core-ui-performance]
-    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/stable-core-ui-performance.yml', 'scripts/test_stable_core_layout.py', 'docs/stable-core/**']
+    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/stable-core-ui-performance.yml', 'scripts/test_stable_core_layout.py', 'scripts/test_stable_diagnostics.py', 'docs/stable-core/**']
 permissions:
   contents: write
 concurrency:
