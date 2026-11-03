@@ -24,6 +24,7 @@ public final class LegacyDownloadIdentityResolver {
         DUPLICATE_COMPOSITE_KEY,
         SOURCE_PATH_MISMATCH,
         SOURCE_PATH_COLLISION,
+        INVALID_SNAPSHOT_ROW,
         POSSIBLE_RECOVERY_REQUIRES_REVIEW,
         AMBIGUOUS_RECOVERY,
         NOT_FOUND
@@ -90,6 +91,11 @@ public final class LegacyDownloadIdentityResolver {
             // authorize a mutation from a partially materialized row set.
             if (row == null) {
                 return result(Reason.INCOMPLETE_SNAPSHOT, null, Collections.emptyList());
+            }
+            // A materialized DAO row with missing identity or path cannot
+            // prove that no other row refers to the same source file.
+            if (row.taskId < 0 || !hasText(row.externalId) || !hasText(row.path)) {
+                return result(Reason.INVALID_SNAPSHOT_ROW, null, Collections.emptyList());
             }
             if (taskId == row.taskId && externalId.equals(row.externalId)) {
                 exact = row;
