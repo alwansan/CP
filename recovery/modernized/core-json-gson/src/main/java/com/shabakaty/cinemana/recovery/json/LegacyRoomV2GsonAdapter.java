@@ -59,6 +59,10 @@ public final class LegacyRoomV2GsonAdapter {
         for (int i = 0; i < raw.length(); i++) {
             char c = raw.charAt(i);
             if (quoted) {
+                // Raw JSON string control characters are invalid. Gson's
+                // historical lenient reader can otherwise accept them, so
+                // reject before creating a tree for a database migration.
+                if (c < 0x20) return false;
                 if (escaped) escaped = false;
                 else if (c == '\\') escaped = true;
                 else if (c == '"') quoted = false;
