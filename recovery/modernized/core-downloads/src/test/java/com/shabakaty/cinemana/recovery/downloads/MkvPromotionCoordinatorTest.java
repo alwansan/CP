@@ -13,11 +13,13 @@ public final class MkvPromotionCoordinatorTest {
             "/sdcard/Cinemana/work/Episode.mkv", 5000L);
 
     static final class FakePort implements IdentitySnapshotPort {
+        boolean identitySnapshotRead;
         List<LegacyDownloadIdentityResolver.Candidate> identityRows = Arrays.asList(
                 new LegacyDownloadIdentityResolver.Candidate(17, "external1",
                         "/sdcard/Cinemana/work/Episode.mp4", "Episode", 4200L));
         @Override public List<LegacyDownloadIdentityResolver.Candidate> readAllDownloads() throws Exception {
             step("readAllDownloads");
+            identitySnapshotRead = true;
             return identityRows;
         }
         String download = "Episode.mp4";
@@ -45,7 +47,9 @@ public final class MkvPromotionCoordinatorTest {
             step("readDownload");
             return new DownloadRow(wrongIdentity ? 18 : 17, "external1",
                     wrongDownloadDirectory ? "/sdcard/Other/work/Episode.mp4"
-                            : staleIdentityRead ? "/sdcard/Cinemana/work/Changed.mp4" : download, size);
+                            : staleIdentityRead ? "/sdcard/Cinemana/work/Changed.mp4"
+                            : identitySnapshotRead && "Episode.mp4".equals(download)
+                                    ? "/sdcard/Cinemana/work/Episode.mp4" : download, size);
         }
 
         @Override public CinemanaRow readCinemanaItem() throws Exception {
