@@ -34,6 +34,8 @@ public final class MkvPromotionCoordinatorTest {
         boolean noSubtitles;
         boolean wrongIdentity;
         boolean staleIdentityRead;
+        boolean changeOnCoordinatorResnapshot;
+        int downloadReads;
         boolean wrongDownloadDirectory;
         boolean wrongCinemanaDirectory;
         final List<String> calls = new ArrayList<>();
@@ -45,8 +47,11 @@ public final class MkvPromotionCoordinatorTest {
 
         @Override public DownloadRow readDownload() throws Exception {
             step("readDownload");
+            downloadReads++;
             return new DownloadRow(wrongIdentity ? 18 : 17, "external1",
-                    wrongDownloadDirectory ? "/sdcard/Other/work/Episode.mp4"
+                    changeOnCoordinatorResnapshot && downloadReads >= 2
+                            ? "/sdcard/Cinemana/work/Raced.mp4"
+                            : wrongDownloadDirectory ? "/sdcard/Other/work/Episode.mp4"
                             : staleIdentityRead ? "/sdcard/Cinemana/work/Changed.mp4"
                             : identitySnapshotRead && "Episode.mp4".equals(download)
                                     ? "/sdcard/Cinemana/work/Episode.mp4" : download, size);
@@ -237,6 +242,16 @@ public final class MkvPromotionCoordinatorTest {
         ok(result.status == Status.SUCCESS, "unique composite Downloads identity promotes");
         ok(port.calls.indexOf("readAllDownloads") < port.calls.indexOf("writeDownload"),
                 "full identity snapshot checked before writes");
+
+        port = new FakePort();
+        port.changeOnCoordinatorResnapshot = true;
+        result = promoteWithIdentitySnapshot(REQUEST, port);
+        ok(result.status == Status.REJECTED
+                        && "identity_snapshot_changed_before_write".equals(result.phase),
+                "DAO row changed during coordinator resnapshot must reject");
+        ok(port.downloadReads == 2, "both DAO reads observed");
+        ok(!port.calls.contains("writeDownload") && !port.calls.contains("writeCinemana"),
+                "no database writes after resnapshot race");
 
         port = new FakePort();
         port.staleIdentityRead = true;
