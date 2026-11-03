@@ -62,6 +62,38 @@ public final class MkvPromotionCoordinator {
         public boolean safeSuccess() { return status == Status.SUCCESS; }
     }
 
+    /** A consistent full Downloads snapshot is required to rule out path collisions. */
+    public interface IdentitySnapshotPort extends Port {
+        List<LegacyDownloadIdentityResolver.Candidate> readAllDownloads() throws Exception;
+    }
+
+    /**
+     * Safer integration entry point: reject a missing, ambiguous or colliding
+     * composite Downloads identity BEFORE invoking the three-store coordinator.
+     * The DAO adapter must hold the same serialization lock from the full-row
+     * read through promote(); this method alone is NOT a database transaction
+     * or a durable crash journal. The original promote() remains diagnostic.
+     */
+    public static synchronized Result promoteWithIdentitySnapshot(
+            MkvPromotionPreflight.Request request, IdentitySnapshotPort port) {
+        if (request == null || port == null) {
+            return new Result(Status.REJECTED, null, "identity_snapshot", Collections.emptyList());
+        }
+        final List<LegacyDownloadIdentityResolver.Candidate> rows;
+        try {
+            rows = port.readAllDownloads();
+        } catch (Exception failure) {
+            return new Result(Status.REJECTED, null, "identity_snapshot", Collections.emptyList());
+        }
+        LegacyDownloadIdentityResolver.Selection selection = LegacyDownloadIdentityResolver.resolve(
+                request.downloadTaskId, request.externalId, request.sourceMp4, rows);
+        if (!selection.canWrite()) {
+            return new Result(Status.REJECTED, null,
+                    "identity_" + selection.reason.name(), Collections.emptyList());
+        }
+        return promote(request, port);
+    }
+
     /**
      * Returns success ONLY after all writes and an independent readback check.
      * Write intent is recorded before each operation, so a partially applied
