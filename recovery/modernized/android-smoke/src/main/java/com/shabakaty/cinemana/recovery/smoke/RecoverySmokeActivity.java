@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -132,7 +133,12 @@ public final class RecoverySmokeActivity extends Activity {
         openSearch.setOnClickListener(view ->
                 startActivity(new Intent(this, SearchFlowActivity.class)));
         container.addView(openSearch);
-        setContentView(container);
+        // The CI emulator is only 320x640: diagnostic rows must be reachable
+        // through a real scroll container, not off-screen TextView content.
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.addView(container);
+        setContentView(scroll);
     }
 
     private boolean verifyOriginalSearchXml() {
