@@ -141,6 +141,15 @@ public final class MkvPromotionPreflight {
                 || isTemp(request.sourceMp4) || isTemp(request.finalMkv)) {
             return reject(Reason.INVALID_VIDEO_PATH);
         }
+        // A promotion renames the completed MP4 in place. Do not authorize a
+        // same-basename target in another directory: it may overwrite an
+        // unrelated file even when both DAO identities are correct.
+        String sourceParent = new File(request.sourceMp4).getParent();
+        String targetParent = new File(request.finalMkv).getParent();
+        if (sourceParent == null ? targetParent != null
+                : !sourceParent.equals(targetParent)) {
+            return reject(Reason.INVALID_VIDEO_PATH);
+        }
         if (request.bytes < 1024L) {
             return reject(Reason.INVALID_VIDEO_SIZE);
         }
