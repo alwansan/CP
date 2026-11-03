@@ -81,6 +81,12 @@ public final class LegacyDownloadIdentityResolverTest {
         rejected(Reason.INCOMPLETE_SNAPSHOT, Arrays.asList(null, exact));
         rejected(Reason.INCOMPLETE_SNAPSHOT, Arrays.asList(exact, null));
         rejected(Reason.INCOMPLETE_SNAPSHOT, Collections.singletonList(null));
+        rejected(Reason.INVALID_SNAPSHOT_ROW, Arrays.asList(exact,
+                row(25, null, "/diagnostic/Other.mp4", "Other")));
+        rejected(Reason.INVALID_SNAPSHOT_ROW, Arrays.asList(
+                row(25, "other", null, "Other"), exact));
+        rejected(Reason.INVALID_SNAPSHOT_ROW, Arrays.asList(exact,
+                row(-1, "other", "/diagnostic/Other.mp4", "Other")));
         System.out.println("PASS: " + checks + " fail-closed legacy Downloads selection checks");
     }
 }
