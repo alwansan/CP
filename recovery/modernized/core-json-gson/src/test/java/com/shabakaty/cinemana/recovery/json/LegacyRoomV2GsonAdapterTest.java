@@ -85,6 +85,13 @@ public final class LegacyRoomV2GsonAdapterTest {
         refused("{\"title\":", ParseStatus.REJECTED_SYNTAX);
         refused("{\"title\":\"Episode\"} garbage", ParseStatus.REJECTED_SYNTAX);
         refused("}{", ParseStatus.REJECTED_SYNTAX);
+        // Malformed nesting is rejected by the bounded scanner before Gson allocation.
+        refused("{]", ParseStatus.REJECTED_LIMIT);
+        refused("[}", ParseStatus.REJECTED_LIMIT);
+        refused("{", ParseStatus.REJECTED_LIMIT);
+        refused("{\"title\":\"unterminated}", ParseStatus.REJECTED_LIMIT);
+        refused("}".repeat(MAX_NESTING + 1), ParseStatus.REJECTED_LIMIT);
+        refused("{\"title\":\"escaped \\\" [ { ]\",\"videoModel\":{]", ParseStatus.REJECTED_LIMIT);
 
         series = parsed("{\"title\":\"S\",\"videoModel\":{\"kind\":\"2\"}}",
                 LegacyRoomV2EpisodeMetadata.Status.SELECTED);
