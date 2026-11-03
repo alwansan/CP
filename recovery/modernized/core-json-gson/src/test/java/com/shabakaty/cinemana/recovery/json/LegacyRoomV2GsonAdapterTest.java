@@ -82,7 +82,7 @@ public final class LegacyRoomV2GsonAdapterTest {
         refused("", ParseStatus.REJECTED_LIMIT);
         refused(" ".repeat(MAX_SOURCE_CHARS + 1), ParseStatus.REJECTED_LIMIT);
         refused("{".repeat(MAX_NESTING + 1), ParseStatus.REJECTED_LIMIT);
-        refused("{\"title\":", ParseStatus.REJECTED_SYNTAX);
+        refused("{\"title\":", ParseStatus.REJECTED_LIMIT);
         refused("{\"title\":\"Episode\"} garbage", ParseStatus.REJECTED_SYNTAX);
         refused("}{", ParseStatus.REJECTED_LIMIT);
         // Malformed nesting is rejected by the bounded scanner before Gson allocation.
