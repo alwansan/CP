@@ -130,6 +130,12 @@ public final class RecoverySmokeActivity extends Activity {
                 "Legacy Room collection SQL: " + legacyCollectionCheck,
                 "This APK is NOT the original Cinemana application."
         };
+        // Keep the complete result in Logcat even when UIAutomator cannot
+        // reach an off-screen TextView on a small emulator display.
+        // These are disposable diagnostic statuses, never user data.
+        for (String row : diagnosticRows) {
+            android.util.Log.i("CinemanaRecoveryStatus", row);
+        }
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
         for (String row : diagnosticRows) {
