@@ -51,6 +51,9 @@ public final class LegacyRoomV2GsonAdapter {
      */
     private static boolean withinLimits(String raw) {
         if (raw == null || raw.isEmpty() || raw.length() > MAX_SOURCE_CHARS) return false;
+        // A typed stack rejects mismatched delimiters before constructing a Gson tree.
+        // This is a conservative diagnostic limit, not a claim of jt2 parser parity.
+        char[] open = new char[MAX_NESTING];
         int depth = 0;
         boolean quoted = false, escaped = false;
         for (int i = 0; i < raw.length(); i++) {
@@ -62,12 +65,15 @@ public final class LegacyRoomV2GsonAdapter {
             } else if (c == '"') {
                 quoted = true;
             } else if (c == '{' || c == '[') {
-                if (++depth > MAX_NESTING) return false;
+                if (depth == MAX_NESTING) return false;
+                open[depth++] = c;
             } else if (c == '}' || c == ']') {
-                if (--depth < 0) return true; // Delegate malformed structure to Gson.
+                if (depth == 0) return false;
+                char expected = c == '}' ? '{' : '[';
+                if (open[--depth] != expected) return false;
             }
         }
-        return true;
+        return !quoted && depth == 0;
     }
 
     /** Preserve Gson JsonPrimitive.getAsString() numeric/boolean spelling. */
