@@ -12,7 +12,14 @@ public final class MkvPromotionCoordinatorTest {
             "/sdcard/Cinemana/work/Episode.mp4",
             "/sdcard/Cinemana/work/Episode.mkv", 5000L);
 
-    static final class FakePort implements Port {
+    static final class FakePort implements IdentitySnapshotPort {
+        List<LegacyDownloadIdentityResolver.Candidate> identityRows = Arrays.asList(
+                new LegacyDownloadIdentityResolver.Candidate(17, "external1",
+                        "/sdcard/Cinemana/work/Episode.mp4", "Episode", 4200L));
+        @Override public List<LegacyDownloadIdentityResolver.Candidate> readAllDownloads() throws Exception {
+            step("readAllDownloads");
+            return identityRows;
+        }
         String download = "Episode.mp4";
         String item = "Episode.mp4";
         String subtitle = "Episode.mp4";
@@ -218,6 +225,32 @@ public final class MkvPromotionCoordinatorTest {
         ok(result.status == Status.REJECTED && "download_size_snapshot".equals(result.phase),
                 "incomplete byte count snapshot rejected before writes");
         ok(!port.calls.contains("writeDownload"), "incomplete download snapshot never mutates DB");
+
+        port = new FakePort();
+        result = promoteWithIdentitySnapshot(REQUEST, port);
+        ok(result.status == Status.SUCCESS, "unique composite Downloads identity promotes");
+        ok(port.calls.indexOf("readAllDownloads") < port.calls.indexOf("writeDownload"),
+                "full identity snapshot checked before writes");
+
+        port = new FakePort();
+        port.identityRows = Arrays.asList(
+                new LegacyDownloadIdentityResolver.Candidate(17, "external1",
+                        "/sdcard/Cinemana/work/Episode.mp4", "Episode", 4200L),
+                new LegacyDownloadIdentityResolver.Candidate(19, "other",
+                        "/sdcard/Cinemana/work/Episode.mp4", "Other", 4000L));
+        result = promoteWithIdentitySnapshot(REQUEST, port);
+        ok(result.status == Status.REJECTED &&
+                result.phase.equals("identity_SOURCE_PATH_COLLISION"),
+                "competing row sharing source path rejected");
+        ok(!port.calls.contains("writeDownload"), "collision cannot mutate Downloads");
+
+        port = new FakePort();
+        port.identityRows = Arrays.asList(
+                new LegacyDownloadIdentityResolver.Candidate(18, "external1",
+                        "/sdcard/Cinemana/work/Episode.mp4", "Episode", 4200L));
+        result = promoteWithIdentitySnapshot(REQUEST, port);
+        ok(result.status == Status.REJECTED && !port.calls.contains("writeDownload"),
+                "possible recovered task ID requires review, not automatic promotion");
 
         System.out.println("PASS: " + tests
                 + " MKV promotion coordinator rollback, isolation, verification and failure-injection checks");
