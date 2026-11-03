@@ -20,6 +20,7 @@ public final class LegacyDownloadIdentityResolver {
     public enum Reason {
         EXACT_IDENTITY,
         INVALID_REQUEST,
+        INCOMPLETE_SNAPSHOT,
         DUPLICATE_COMPOSITE_KEY,
         SOURCE_PATH_MISMATCH,
         SOURCE_PATH_COLLISION,
@@ -85,7 +86,11 @@ public final class LegacyDownloadIdentityResolver {
         List<Candidate> samePath = new ArrayList<>();
         List<Candidate> sameExternal = new ArrayList<>();
         for (Candidate row : allRows) {
-            if (row == null) continue;
+            // A null entry means the DAO snapshot may be incomplete. Do not
+            // authorize a mutation from a partially materialized row set.
+            if (row == null) {
+                return result(Reason.INCOMPLETE_SNAPSHOT, null, Collections.emptyList());
+            }
             if (taskId == row.taskId && externalId.equals(row.externalId)) {
                 exact = row;
                 exactCount++;
