@@ -40,6 +40,17 @@ public final class MkvPromotionPreflightTest {
                 "/sdcard/Cinemana/work/Episode.mp4","Episode.mkv",2048),d,v);
         is(Reason.INVALID_VIDEO_PATH,req("item-1",12,"external-4",
                 "Episode.mp4","/sdcard/Cinemana/work/Episode.mkv",2048),d,v);
+        is(Reason.INVALID_VIDEO_PATH,req("item-1",12,"external-4",".mp4",".mkv",2048),d,v);
+        is(Reason.INVALID_VIDEO_PATH,req("item-1",12,"external-4",
+                "/sdcard/work/../work/Episode.mp4",
+                "/sdcard/work/../work/Episode.mkv",2048),d,v);
+        is(Reason.INVALID_VIDEO_PATH,req("item-1",12,"external-4",
+                "/sdcard/work/./Episode.mp4",
+                "/sdcard/work/./Episode.mkv",2048),d,v);
+        is(Reason.INVALID_VIDEO_PATH,req("item-1",12,"external-4",
+                "work\\..\\Episode.mp4","work\\..\\Episode.mkv",2048),d,v);
+        is(Reason.INVALID_VIDEO_PATH,req("item-1",12,"external-4",
+                "Episode.mp4\\u0000","Episode.mkv",2048),d,v);
         is(Reason.INVALID_VIDEO_SIZE,req("item-1",12,"external-4","Episode.mp4","Episode.mkv",100),d,v);
         is(Reason.UNEXPECTED_SOURCE,req("item-1",12,"external-4","Episode.mp4","Another.mkv",2048),d,v);
         is(Reason.DOWNLOAD_ROW_MISSING,valid,null,v);
