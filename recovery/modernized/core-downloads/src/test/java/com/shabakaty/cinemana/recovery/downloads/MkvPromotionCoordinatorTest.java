@@ -31,6 +31,7 @@ public final class MkvPromotionCoordinatorTest {
         boolean readback = true;
         boolean noSubtitles;
         boolean wrongIdentity;
+        boolean staleIdentityRead;
         boolean wrongDownloadDirectory;
         boolean wrongCinemanaDirectory;
         final List<String> calls = new ArrayList<>();
@@ -43,7 +44,8 @@ public final class MkvPromotionCoordinatorTest {
         @Override public DownloadRow readDownload() throws Exception {
             step("readDownload");
             return new DownloadRow(wrongIdentity ? 18 : 17, "external1",
-                    wrongDownloadDirectory ? "/sdcard/Other/work/Episode.mp4" : download, size);
+                    wrongDownloadDirectory ? "/sdcard/Other/work/Episode.mp4"
+                            : staleIdentityRead ? "/sdcard/Cinemana/work/Changed.mp4" : download, size);
         }
 
         @Override public CinemanaRow readCinemanaItem() throws Exception {
@@ -231,6 +233,20 @@ public final class MkvPromotionCoordinatorTest {
         ok(result.status == Status.SUCCESS, "unique composite Downloads identity promotes");
         ok(port.calls.indexOf("readAllDownloads") < port.calls.indexOf("writeDownload"),
                 "full identity snapshot checked before writes");
+
+        port = new FakePort();
+        port.staleIdentityRead = true;
+        result = promoteWithIdentitySnapshot(REQUEST, port);
+        ok(result.status == Status.REJECTED && "identity_snapshot_changed".equals(result.phase),
+                "changed DAO source after full-row selection rejected");
+        ok(!port.calls.contains("writeDownload"), "changed DAO source cannot mutate");
+
+        port = new FakePort();
+        port.size = 4300L;
+        result = promoteWithIdentitySnapshot(REQUEST, port);
+        ok(result.status == Status.REJECTED && "identity_snapshot_changed".equals(result.phase),
+                "changed byte count after selection rejected");
+        ok(!port.calls.contains("writeDownload"), "changed size cannot mutate");
 
         port = new FakePort();
         port.identityRows = Arrays.asList(
