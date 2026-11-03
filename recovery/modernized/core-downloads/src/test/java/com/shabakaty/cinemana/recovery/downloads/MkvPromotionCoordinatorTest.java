@@ -195,6 +195,12 @@ public final class MkvPromotionCoordinatorTest {
         result = promote(REQUEST, null);
         ok(result.status == Status.REJECTED, "null adapter rejected");
 
+        port = new FakePort();
+        result = promote(null, port);
+        ok(result.status == Status.REJECTED && "no_request".equals(result.phase),
+                "null promotion request rejected before DAO reads");
+        ok(port.calls.isEmpty(), "null request must not access DAO");
+
         for (String failing : Arrays.asList("restoreSubtitles","restoreCinemana","restoreDownload")) {
             port = new FakePort();port.fail = "verify";port.restoreFail = failing;
             result = promote(REQUEST, port);
