@@ -110,24 +110,34 @@ public final class RecoverySmokeActivity extends Activity {
             android.util.Log.e("CinemanaRecoverySmoke", "Official Gson probe failed", failure);
             gsonCheck = "FAIL (" + failure.getClass().getSimpleName() + ")";
         }
-        TextView message = new TextView(this);
-        message.setPadding(48, 64, 48, 64);
-        message.setText("Cinemana source recovery diagnostic host\n"
-                + "Media3 High 10 adapter: " + (high10 ? "PASS" : "FAIL") + "\n"
-                + "MKV promotion preflight: " + (preflight ? "PASS" : "FAIL") + "\n"
-                + "Original search layout: " + (searchXml ? "PASS" : "FAIL") + "\n"
-                + "SQLite rollback readback: " + sqliteCheck + "\n"
-                + "SQLite file reopen probe: " + sqliteDiskCheck + "\n"
-                + "SQLite journal restart probe: " + journalCheck + "\n"
-                + "Original Room schema probe: " + realRoomCheck + "\n"
-                + "Original Room coordinator: " + roomCoordinatorCheck + "\n"
-                + "Legacy Room JSON projection: " + legacyJsonCheck + "\n"
-                + "Official Gson JSON adapter: " + gsonCheck + "\n"                + "Legacy Room JSON SQLite identity: " + guardedJsonSqlCheck + "\n"
-                + "Legacy Room collection SQL: " + legacyCollectionCheck + "\n"
-                + "This APK is NOT the original Cinemana application.");
+        // A single TextView containing all diagnostics is truncated by the
+        // accessibility/UIAutomator text serializer on small emulators. Scrolling
+        // that one view does not expose the hidden lines as independent nodes.
+        // Give every status its own accessible node so failures remain visible.
+        String[] diagnosticRows = {
+                "Cinemana source recovery diagnostic host",
+                "Media3 High 10 adapter: " + (high10 ? "PASS" : "FAIL"),
+                "MKV promotion preflight: " + (preflight ? "PASS" : "FAIL"),
+                "Original search layout: " + (searchXml ? "PASS" : "FAIL"),
+                "SQLite rollback readback: " + sqliteCheck,
+                "SQLite file reopen probe: " + sqliteDiskCheck,
+                "SQLite journal restart probe: " + journalCheck,
+                "Original Room schema probe: " + realRoomCheck,
+                "Original Room coordinator: " + roomCoordinatorCheck,
+                "Legacy Room JSON projection: " + legacyJsonCheck,
+                "Official Gson JSON adapter: " + gsonCheck,
+                "Legacy Room JSON SQLite identity: " + guardedJsonSqlCheck,
+                "Legacy Room collection SQL: " + legacyCollectionCheck,
+                "This APK is NOT the original Cinemana application."
+        };
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
-        container.addView(message);
+        for (String row : diagnosticRows) {
+            TextView status = new TextView(this);
+            status.setText(row);
+            status.setPadding(24, 12, 24, 12);
+            container.addView(status);
+        }
         Button openSearch = new Button(this);
         openSearch.setText("Open search flow diagnostic");
         openSearch.setOnClickListener(view ->
