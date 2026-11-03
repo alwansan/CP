@@ -78,8 +78,9 @@ public final class LegacyDownloadIdentityResolverTest {
                 == Reason.INVALID_REQUEST, "missing path");
         ok(resolve(17, "external1", PATH, null).reason
                 == Reason.INVALID_REQUEST, "missing snapshot");
-        ok(resolve(17, "external1", PATH, Arrays.asList(null, exact)).canWrite(),
-                "null row cannot produce a phantom collision");
+        rejected(Reason.INCOMPLETE_SNAPSHOT, Arrays.asList(null, exact));
+        rejected(Reason.INCOMPLETE_SNAPSHOT, Arrays.asList(exact, null));
+        rejected(Reason.INCOMPLETE_SNAPSHOT, Collections.singletonList(null));
         System.out.println("PASS: " + checks + " fail-closed legacy Downloads selection checks");
     }
 }
