@@ -125,6 +125,14 @@ public final class MkvPromotionPreflight {
         return recorded.equals(source);
     }
 
+    private static boolean hasDotSegment(String path) {
+        String normalizedSeparators = path.replace('\\', '/');
+        for (String part : normalizedSeparators.split("/", -1)) {
+            if (".".equals(part) || "..".equals(part)) return true;
+        }
+        return false;
+    }
+
     /**
      * Reject ambiguous or mismatched rows before any of the multi-table writes.
      * Task-ID recovery, database writes, and rollback still belong to the
@@ -150,11 +158,19 @@ public final class MkvPromotionPreflight {
                 : !sourceParent.equals(targetParent)) {
             return reject(Reason.INVALID_VIDEO_PATH);
         }
+        // Reject empty stems and lexical traversal before any database write.
+        // Production also requires canonical-path and symlink verification.
+        String sourceName = name(request.sourceMp4);
+        String mkvName = name(request.finalMkv);
+        if (sourceName.length() <= 4 || mkvName.length() <= 4
+                || hasDotSegment(request.sourceMp4) || hasDotSegment(request.finalMkv)
+                || request.sourceMp4.indexOf('\0') >= 0
+                || request.finalMkv.indexOf('\0') >= 0) {
+            return reject(Reason.INVALID_VIDEO_PATH);
+        }
         if (request.bytes < 1024L) {
             return reject(Reason.INVALID_VIDEO_SIZE);
         }
-        String sourceName = name(request.sourceMp4);
-        String mkvName = name(request.finalMkv);
         if (!mkvName.substring(0, mkvName.length() - 4)
                 .equalsIgnoreCase(sourceName.substring(0, sourceName.length() - 4))) {
             return reject(Reason.UNEXPECTED_SOURCE);
