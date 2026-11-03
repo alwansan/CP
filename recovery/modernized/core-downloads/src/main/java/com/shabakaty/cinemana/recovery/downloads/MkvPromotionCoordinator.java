@@ -91,6 +91,24 @@ public final class MkvPromotionCoordinator {
             return new Result(Status.REJECTED, null,
                     "identity_" + selection.reason.name(), Collections.emptyList());
         }
+        // A full-row selection is only useful if the row read for the actual
+        // mutation is the same one. Reject a stale or independently queried
+        // DAO snapshot before any write (including a changed original size).
+        // This is NOT a substitute for holding a database serialization lock.
+        final MkvPromotionPreflight.DownloadRow current;
+        try {
+            current = port.readDownload();
+        } catch (Exception failure) {
+            return new Result(Status.REJECTED, null, "identity_readback", Collections.emptyList());
+        }
+        LegacyDownloadIdentityResolver.Candidate selected = selection.selected;
+        if (current == null || current.taskId != selected.taskId
+                || !selected.externalId.equals(current.externalId)
+                || !selected.path.equals(current.path)
+                || selected.sizeBytes != current.originalBytes) {
+            return new Result(Status.REJECTED, null, "identity_snapshot_changed",
+                    Collections.emptyList());
+        }
         return promote(request, port);
     }
 
