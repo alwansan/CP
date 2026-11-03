@@ -109,7 +109,7 @@ public final class MkvPromotionCoordinator {
             return new Result(Status.REJECTED, null, "identity_snapshot_changed",
                     Collections.emptyList());
         }
-        return promote(request, port);
+        return promoteChecked(request, port, current);
     }
 
     /**
@@ -118,6 +118,12 @@ public final class MkvPromotionCoordinator {
      * write that throws will still be restored.
      */
     public static synchronized Result promote(MkvPromotionPreflight.Request request, Port port) {
+        return promoteChecked(request, port, null);
+    }
+
+    /** The expected row pins the identity gate to the snapshot used for writes. */
+    private static Result promoteChecked(MkvPromotionPreflight.Request request, Port port,
+                                         MkvPromotionPreflight.DownloadRow expected) {
         if (port == null) {
             return new Result(Status.REJECTED, null, "no_port", Collections.emptyList());
         }
@@ -130,6 +136,17 @@ public final class MkvPromotionCoordinator {
             subtitles = port.snapshotSubtitles();
         } catch (Exception error) {
             return new Result(Status.REJECTED, null, "snapshot", Collections.emptyList());
+        }
+        // The DAO may change between identity selection and the coordinator's
+        // second snapshot. Never authorize writes against that different row.
+        // This check is NOT a substitute for a DAO lock or conditional UPDATE.
+        if (expected != null && (download == null
+                || download.taskId != expected.taskId
+                || !expected.externalId.equals(download.externalId)
+                || !expected.path.equals(download.path)
+                || download.originalBytes != expected.originalBytes)) {
+            return new Result(Status.REJECTED, null, "identity_snapshot_changed_before_write",
+                    Collections.emptyList());
         }
         // A null snapshot cannot prove that subtitle restoration is possible.
         if (subtitles == null) {
