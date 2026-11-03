@@ -16,35 +16,62 @@ adb shell pm path "$package" | tee "$report/package.txt"
 adb shell am start -W -n "$activity" | tee "$report/activity-start.txt"
 sleep 4
 
-for attempt in 1 2 3; do
+# UIAutomator reports only currently visible nodes. The diagnostic host has more
+# status rows than fit on the 320x640 CI emulator, so checking a single dump
+# falsely reports failure when lower rows are simply off-screen.
+# Check every required label separately and scroll in both directions.
+required_diagnostic_labels=(
+    'Cinemana source recovery diagnostic host'
+    'Media3 High 10 adapter: PASS'
+    'MKV promotion preflight: PASS'
+    'Original search layout: PASS'
+    'SQLite rollback readback: PASS (6 in-memory SQLite cases)'
+    'SQLite file reopen probe: PASS (6 file-backed reopen cases)'
+    'SQLite journal restart probe: PASS (6 journal restart cases)'
+    'Original Room schema probe: PASS (3 original Room tables, 2 subtitle rows)'
+    'Original Room coordinator: PASS (7 Room coordinator scenarios)'
+    'Legacy Room JSON projection: PASS (8 Android JSON fixture scenarios)'
+    'Official Gson JSON adapter: PASS (Gson Maven parser)'
+    'Legacy Room JSON SQLite identity: PASS (10 SQLite JSON row-identity scenarios)'
+    'Legacy Room collection SQL: PASS ('
+)
+dump_diagnostic_window() {
     adb shell uiautomator dump /sdcard/cinemana_recovery_window.xml > "$report/uiautomator.txt" 2>&1 || true
     adb pull /sdcard/cinemana_recovery_window.xml "$report/window.xml" >/dev/null 2>&1 || true
-    if test -s "$report/window.xml" \
-        && grep -Fq 'Media3 High 10 adapter: PASS' "$report/window.xml" \
-        && grep -Fq 'MKV promotion preflight: PASS' "$report/window.xml" \
-        && grep -Fq 'Original search layout: PASS' "$report/window.xml"; then
-        break
+}
+check_diagnostic_label() {
+    local wanted="$1" attempt
+    # First move toward the top, then scan down and back up.
+    adb shell input swipe 160 220 160 560 200 || true
+    for attempt in {1..14}; do
+        dump_diagnostic_window
+        if test -s "$report/window.xml" && grep -Fq "$wanted" "$report/window.xml"; then
+            echo "DIAGNOSTIC_LABEL_PASS: $wanted" | tee -a "$report/diagnostic-labels.txt"
+            return 0
+        fi
+        if (( attempt <= 7 )); then
+            adb shell input swipe 160 520 160 190 220 || true
+        else
+            adb shell input swipe 160 190 160 520 220 || true
+        fi
+        sleep 1
+    done
+    echo "DIAGNOSTIC_LABEL_MISSING: $wanted" | tee -a "$report/diagnostic-labels.txt"
+    return 1
+}
+diagnostic_failure=0
+for label in "${required_diagnostic_labels[@]}"; do
+    if ! check_diagnostic_label "$label"; then
+        diagnostic_failure=1
     fi
-    sleep 2
 done
-
 adb exec-out screencap -p > "$report/screenshot.png" || true
 adb logcat -d -t 1500 > "$report/logcat-tail.txt" || true
 adb shell dumpsys activity activities > "$report/activities.txt" || true
-test -s "$report/window.xml"
-grep -q 'Cinemana source recovery diagnostic host' "$report/window.xml"
-grep -q 'Media3 High 10 adapter: PASS' "$report/window.xml"
-grep -q 'MKV promotion preflight: PASS' "$report/window.xml"
-grep -q 'Original search layout: PASS' "$report/window.xml"
-grep -q 'SQLite rollback readback: PASS (6 in-memory SQLite cases)' "$report/window.xml"
-grep -q 'SQLite file reopen probe: PASS (6 file-backed reopen cases)' "$report/window.xml"
-grep -q 'SQLite journal restart probe: PASS (6 journal restart cases)' "$report/window.xml"
-grep -q 'Original Room schema probe: PASS (3 original Room tables, 2 subtitle rows)' "$report/window.xml"
-grep -q 'Original Room coordinator: PASS (7 Room coordinator scenarios)' "$report/window.xml"
-grep -q 'Legacy Room JSON projection: PASS (8 Android JSON fixture scenarios)' "$report/window.xml"
-grep -q 'Official Gson JSON adapter: PASS (Gson Maven parser)' "$report/window.xml"
-grep -q 'Legacy Room JSON SQLite identity: PASS (10 SQLite JSON row-identity scenarios)' "$report/window.xml"
-grep -Fq 'Legacy Room collection SQL: PASS (' "$report/window.xml"
+if (( diagnostic_failure != 0 )); then
+    echo "DIAGNOSTIC_STATUS_FAILED: inspect diagnostic-labels.txt, window.xml, screenshot.png and logcat-tail.txt"
+    exit 1
+fi
 adb shell pidof "$package" | tee "$report/process.txt"
 test -s "$report/process.txt"
 echo "EMULATOR_PASS: source-first diagnostic APK installed, launched and displayed expected Media3 result"
