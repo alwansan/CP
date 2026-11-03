@@ -84,6 +84,13 @@ public final class LegacyRoomV2GsonAdapterTest {
         refused("{".repeat(MAX_NESTING + 1), ParseStatus.REJECTED_LIMIT);
         refused("{\"title\":", ParseStatus.REJECTED_LIMIT);
         refused("{\"title\":\"Episode\"} garbage", ParseStatus.REJECTED_SYNTAX);
+        // Gson can parse some malformed strings leniently: do not accept
+        // unescaped control characters in a migration's videoFile JSON.
+        refused("{\"title\":\"raw\nnewline\"}", ParseStatus.REJECTED_LIMIT);
+        refused("{\"title\":\"raw\ttab\"}", ParseStatus.REJECTED_LIMIT);
+        refused("{\"title\":\"raw\rreturn\"}", ParseStatus.REJECTED_LIMIT);
+        parsed("{\"title\":\"escaped\\nnewline\",\"videoModel\":{\"kind\":\"1\"}}",
+                LegacyRoomV2EpisodeMetadata.Status.IGNORED_NON_SERIES);
         refused("}{", ParseStatus.REJECTED_LIMIT);
         // Malformed nesting is rejected by the bounded scanner before Gson allocation.
         refused("{]", ParseStatus.REJECTED_LIMIT);
