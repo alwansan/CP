@@ -127,6 +127,11 @@ public final class MkvPromotionCoordinator {
         if (port == null) {
             return new Result(Status.REJECTED, null, "no_port", Collections.emptyList());
         }
+        // Never touch DAO state when the promotion request is absent.
+        // The public promote() entry point also reaches this method.
+        if (request == null) {
+            return new Result(Status.REJECTED, null, "no_request", Collections.emptyList());
+        }
         MkvPromotionPreflight.DownloadRow download;
         MkvPromotionPreflight.CinemanaRow cinemana;
         Object subtitles;
