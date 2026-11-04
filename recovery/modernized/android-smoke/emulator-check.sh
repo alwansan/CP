@@ -13,6 +13,8 @@ adb shell getprop ro.build.version.sdk | tee "$report/emulator-api.txt"
 adb shell getprop ro.product.cpu.abi | tee "$report/emulator-abi.txt"
 adb install -r "$apk" | tee "$report/install.txt"
 adb shell pm path "$package" | tee "$report/package.txt"
+# Avoid matching statuses left by a previous app launch in this emulator.
+adb logcat -c
 adb shell am start -W -n "$activity" | tee "$report/activity-start.txt"
 sleep 4
 
@@ -41,24 +43,23 @@ dump_diagnostic_window() {
 }
 check_diagnostic_label() {
     local wanted="$1" attempt
-    # First move toward the top, then scan down and back up.
-    adb shell input swipe 160 220 160 560 200 || true
-    for attempt in {1..14}; do
-        dump_diagnostic_window
-        if test -s "$report/window.xml" && grep -Fq "$wanted" "$report/window.xml"; then
-            echo "DIAGNOSTIC_LABEL_PASS: $wanted" | tee -a "$report/diagnostic-labels.txt"
+    # RecoverySmokeActivity logs every complete status as its own Logcat line.
+    # Prefer the actual app result over accessibility visibility: UIAutomator
+    # may omit off-screen TextViews even when their checks passed.
+    for attempt in {1..10}; do
+        adb logcat -d -s CinemanaRecoveryStatus:I '*:S' > "$report/diagnostic-logcat.txt" || true
+        if grep -Fq "CinemanaRecoveryStatus: $wanted" "$report/diagnostic-logcat.txt"; then
+            echo "DIAGNOSTIC_LABEL_PASS: $wanted (Logcat)" | tee -a "$report/diagnostic-labels.txt"
             return 0
-        fi
-        if (( attempt <= 7 )); then
-            adb shell input swipe 160 520 160 190 220 || true
-        else
-            adb shell input swipe 160 190 160 520 220 || true
         fi
         sleep 1
     done
+    # Preserve UI evidence for diagnostics without accepting a missing result.
+    dump_diagnostic_window
     echo "DIAGNOSTIC_LABEL_MISSING: $wanted" | tee -a "$report/diagnostic-labels.txt"
     return 1
 }
+
 diagnostic_failure=0
 for label in "${required_diagnostic_labels[@]}"; do
     if ! check_diagnostic_label "$label"; then
