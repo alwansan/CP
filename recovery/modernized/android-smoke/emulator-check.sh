@@ -48,7 +48,7 @@ check_diagnostic_label() {
     # may omit off-screen TextViews even when their checks passed.
     for attempt in {1..10}; do
         adb logcat -d -s CinemanaRecoveryStatus:I '*:S' > "$report/diagnostic-logcat.txt" || true
-        if grep -Fq "CinemanaRecoveryStatus: $wanted" "$report/diagnostic-logcat.txt"; then
+        if grep -F "CinemanaRecoveryStatus" "$report/diagnostic-logcat.txt" | grep -Fq "$wanted"; then
             echo "DIAGNOSTIC_LABEL_PASS: $wanted (Logcat)" | tee -a "$report/diagnostic-labels.txt"
             return 0
         fi
