@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "project": "Cinemana Pro",
+  "repository": "alwansan/CP",
+  "writable_branch": "experiment/rea-source-recovery",
+  "status": "exploration_complete_awaiting_owner_issue_details",
+  "created_at_date": "2026-11-09",
+  "snapshot_source_head_before_docs": "21ac2a7c73b84bfb3122f413d5acc8ab15302941",
+  "source_head_committed_at": "2026-11-04T00:32:06Z",
+  "origin": "chat",
+  "session_id": "cp-20261109-chat-exploration-01",
+  "session_file": "memory/sessions/2026-11-09_cp-chat-exploration-01.md",
+  "latest_verified_actions": {
+    "java_modules": {
+      "run_id": 41747546214,
+      "conclusion": "success"
+    },
+    "android_bridge": {
+      "run_id": 41747546178,
+      "conclusion": "success"
+    },
+    "diagnostic_smoke_apk": {
+      "run_id": 41747546217,
+      "conclusion": "success"
+    },
+    "emulator_install_launch": {
+      "run_id": 41747546165,
+      "conclusion": "failure"
+    }
+  },
+  "known_unresolved": [
+    "MkvExporter.promoteDatabase production DAO/Room integration",
+    "gk1 generated search Data Binding integration",
+    "end-to-end original app Android Gradle build and on-device confirmation",
+    "Room v2 to v3 JSON parser parity and safe migrations",
+    "emulator diagnostic run failure needs log-level analysis"
+  ],
+  "external_logs": {
+    "repo": "alwansan/CL",
+    "available": [
+      "log/tree.txt"
+    ],
+    "not_found_when_checked": [
+      "data",
+      "Clog"
+    ],
+    "note": "tree.txt is an index, not actual log files"
+  },
+  "last_session_result": "Documentation and recovery scaffold only; no application code change, app build, or device test.",
+  "next_step": "Receive owner's current reproducible problem and new logs, refresh HEAD and Actions, then investigate one bounded issue with evidence.",
+  "references": [
+    "AGENTS.md",
+    "memory/MEMORY.md",
+    "prompt/RESTORE_SESSION_AR.md",
+    "docs/CL_LOG_SOURCES_AR.md"
+  ]
+}
