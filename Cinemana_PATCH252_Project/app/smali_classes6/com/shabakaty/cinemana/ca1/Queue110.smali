@@ -25,6 +25,8 @@
 
 .field static volatile pendingCount:I
 
+.field private static DL_REPLAY_BUDGET:I
+
 .field static final phases:Ljava/util/Map;
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -687,6 +689,14 @@
 
     invoke-static {p0, v0, v1}, Lcom/shabakaty/cinemana/ca1/Restart108;->put(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V
 
+    invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/Queue110;->isSubtitleTask(Ljava/lang/Object;)Z
+    move-result p0
+    if-eqz p0, :dl_video_ack
+    const-string p0, "SUBTITLE_TRANSFER_RECEIPT_ACK"
+    invoke-static {p1, p0}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
+    return-void
+    :dl_video_ack
     const-string p0, "DB_COMMIT_ACKNOWLEDGED"
 
     invoke-static {p1, p0}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
@@ -3396,6 +3406,8 @@
 
     .line 57
     :cond_2
+    const/16 v0, 0x8
+    sput v0, Lcom/shabakaty/cinemana/ca1/Queue110;->DL_REPLAY_BUDGET:I
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->quarantineLegacy()V
 
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->migrate()V
@@ -3872,6 +3884,9 @@
 
     .line 68
     :cond_f
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/Queue110;->takeReplayBudget()Z
+    move-result v13
+    if-eqz v13, :cond_3
     invoke-static {v10}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
 
     move-result-object v10
@@ -4166,7 +4181,8 @@
 
     move-result-object v2
 
-    invoke-interface {v1, v2}, Ljava/util/Map;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+    # A late terminal callback cannot evict a newer task object.
+    invoke-interface {v1, v2, p0}, Ljava/util/Map;->remove(Ljava/lang/Object;Ljava/lang/Object;)Z
 
     new-instance v1, Ljava/lang/StringBuilder;
 
@@ -4188,6 +4204,17 @@
 
     invoke-static {v0, v1}, Lcom/shabakaty/cinemana/ca1/Queue110;->phase(ILjava/lang/String;)V
 
+    # Native COMPLETED for subtitle is a transport receipt, not video DB completion.
+    const-string v1, "COMPLETED"
+    invoke-virtual {v1, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v1
+    if-eqz v1, :dl_terminal_db
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Queue110;->isSubtitleTask(Ljava/lang/Object;)Z
+    move-result v1
+    if-eqz v1, :dl_terminal_db
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ca1/Queue110;->committed(Ljava/lang/Object;I)V
+    goto :cond_1
+    :dl_terminal_db
     const-string v1, "DB_COMMITTED"
 
     invoke-virtual {v1, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -4418,6 +4445,57 @@
     :may_repair_failed
     move-exception v0
     :repair_not_allowed
+    const/4 v0, 0x0
+    return v0
+.end method
+
+
+.method static isSubtitleTask(Ljava/lang/Object;)Z
+    .locals 4
+    const/4 v0, 0x0
+    if-eqz p0, :dl_sub_no
+    :try_start_dl_sub
+    const-string v1, "getPath"
+    new-array v2, v0, [Ljava/lang/Object;
+    invoke-static {p0, v1, v2}, Lcom/shabakaty/cinemana/ca1/Queue110;->call(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Ljava/lang/String;
+    if-eqz v1, :dl_sub_no
+    sget-object v2, Ljava/util/Locale;->ROOT:Ljava/util/Locale;
+    invoke-virtual {v1, v2}, Ljava/lang/String;->toLowerCase(Ljava/util/Locale;)Ljava/lang/String;
+    move-result-object v1
+    const-string v2, ".srt"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v3
+    if-nez v3, :dl_sub_yes
+    const-string v2, ".ass"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v3
+    if-nez v3, :dl_sub_yes
+    const-string v2, ".vtt"
+    invoke-virtual {v1, v2}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
+    move-result v3
+    if-eqz v3, :dl_sub_no
+    :dl_sub_yes
+    const/4 v0, 0x1
+    :try_end_dl_sub
+    .catch Ljava/lang/Exception; {:try_start_dl_sub .. :try_end_dl_sub} :dl_sub_fail
+    return v0
+    :dl_sub_fail
+    move-exception v1
+    :dl_sub_no
+    return v0
+.end method
+
+.method private static takeReplayBudget()Z
+    .locals 2
+    sget v0, Lcom/shabakaty/cinemana/ca1/Queue110;->DL_REPLAY_BUDGET:I
+    if-lez v0, :dl_no_budget
+    add-int/lit8 v0, v0, -0x1
+    sput v0, Lcom/shabakaty/cinemana/ca1/Queue110;->DL_REPLAY_BUDGET:I
+    const/4 v0, 0x1
+    return v0
+    :dl_no_budget
     const/4 v0, 0x0
     return v0
 .end method

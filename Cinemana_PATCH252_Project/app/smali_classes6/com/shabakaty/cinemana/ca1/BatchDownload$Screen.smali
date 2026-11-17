@@ -27,7 +27,7 @@
 
 .field allButton:Landroid/widget/Button;
 
-.field busy:Z
+.field volatile busy:Z
 
 .field cap:I
 
@@ -1671,6 +1671,17 @@
     .locals 10
 
     .line 196
+    iget-boolean v0, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z
+    if-nez v0, :dl_skip_preview
+    iget-boolean v0, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->closed:Z
+    if-eqz v0, :dl_preview_run
+    :dl_skip_preview
+    const/4 v0, 0x0
+    iput-boolean v0, p2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Variant;->probing:Z
+    const/4 v0, 0x0
+    iput-object v0, p2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Variant;->sizeJob:Lcom/shabakaty/cinemana/ca1/BatchDownload$Job;
+    return-void
+    :dl_preview_run
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -2471,7 +2482,7 @@
 
     invoke-direct {v1, p0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda8;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
-    const-wide/16 v2, 0x78
+    const-wide/16 v2, 0x1f4
 
     invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 
@@ -3707,6 +3718,8 @@
     .locals 4
 
     .line 195
+    iget-boolean v0, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z
+    if-nez v0, :cond_4
     invoke-virtual {p0, p1}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->effective(Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;)Lcom/shabakaty/cinemana/ca1/BatchDownload$Variant;
 
     move-result-object v0

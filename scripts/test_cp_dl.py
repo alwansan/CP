@@ -33,3 +33,14 @@ assert "DL_PENDING:Z" in u and "postDelayed(Ljava/lang/Runnable;J)" in u
 assert "->clearPending()V" in read(f+"MkvUiRefresh$1.smali")
 assert "->notifyDataSetChanged()V" in read(f+"MkvUiRefresh$1.smali")
 print("CP-DL A2 bounded audit, unchanged ledger, UI refresh, worker cleanup guards: PASS")
+
+q=read("smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali")
+assert "SUBTITLE_TRANSFER_RECEIPT_ACK" in q and "->isSubtitleTask(" in q
+assert "->remove(Ljava/lang/Object;Ljava/lang/Object;)Z" in q
+assert "->takeReplayBudget()Z" in q and "DL_REPLAY_BUDGET:I" in q
+assert q.index("completion receipt identity/length mismatch")>q.index("SUBTITLE_TRANSFER_RECEIPT_ACK")
+d=read("smali_classes6/com/shabakaty/cinemana/ca1/Dependencies112.smali")
+assert "const/16 v11, 0x8" in d and "const-wide/16 v11, 0x7530" in d
+p=read("smali_classes6/com/shabakaty/cinemana/ca1/BatchDownload$Screen.smali")
+assert "volatile busy:Z" in p and ":dl_skip_preview" in p and "const-wide/16 v2, 0x1f4" in p
+print("CP-DL A3 source guards PASS")

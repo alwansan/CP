@@ -12,12 +12,12 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "a2_signed_apk_published_awaiting_device",
-  "last_session": "memory/sessions/2026-11-17_cp-dl-a2-implementation-07.md",
+  "status": "a3_implementation_ci_pending",
+  "last_session": "memory/sessions/2026-11-17_cp-dl-a3-implementation-08.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
   "new_build_triggered": true,
-  "device_test": "A1 tested; A2 pending",
+  "device_test": "A2 observed; A3 pending",
   "cl": {
     "repo": "alwansan/CL",
     "branch": "main",
@@ -27,11 +27,11 @@
       "Clog"
     ],
     "inventory_only": false,
-    "pinned_sha": "0a9ff937794376130b07691b9a2f48398fbd7f79",
+    "pinned_sha": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0",
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "A2 phone test existing A1 backlog (no wipe), analyze CLog; B1/B2 durable admission/incremental scheduler and idempotent DB/receipt/UI state remain",
+  "next": "Verify A3 CI; test subtitle dedup and overlapping batches; B1 durable admission/error filter and link recovery next",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "ce67debfb802de548a4edf22395d3989f972452b",
+  "last_verified_head": "fc602e1539d3b70578319b7f9bda444ecaff159d",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -122,5 +122,6 @@
     "apk_size": 56290332,
     "apk_sha256": "sha256:b84ab2ffeeb8b14374d72934afc83cbcfc2975c44786846f0b74f83c46e22e0e",
     "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-A2-3/Cinemana_CP_DL_A2_signed.apk"
-  }
+  },
+  "a3": "docs/CP_DL_A3_AR.md"
 }

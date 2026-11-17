@@ -52,3 +52,5 @@ A1 evidence: DL-010/011 no observed leak/ANR in 273 samples (keep regression tes
 Run 44149109180 فشل في test_recovery_flow.py بسبب Unmodeled instruction: if-lez v2, :ordered_done؛ المحاكي لم يدعم شروط/حقل cursor الجديدة. وسّع المحاكي لدعم sget/sput AUDIT_CURSOR, if-lez/ltz, if-ge/lt؛ اختبار 25 ملفات يثبت أول 24 بالترتيب ضمن 8/دورة ووصول 25، واختبار تقلص المجلد وإعادة المؤشر؛ لا تعطيل أو تخفيض اختبارات التحقق. البناء الجديد مطلوب.
 
 A2 compiled/signed/published, phone gate pending. DL-002: 220 ->200 accepted,20 existing; 34.367s main dispatch span vs detail2.178s. DL-006 full CL198 promote successes/44 IDs; DL-007 E23/E24 native DB completed before screenshots; no late video starts in captured log; state race not yet proven. DL-005 recovery max25.168s. Keep A1 no observed ANR/leak as regression gate.
+
+A2 observed work backlog clears, startup ANR0 but 2 SQLite leak markers in first session; stress subtitle 1056 repeat submits/receipt mismatch, 7 HTTP403 E87/96/118/122/132/155/167; 197+35 admitted but no proof UI visibility. A3 mitigations pending CI/device. docs/CP_DL_A3_AR.md.

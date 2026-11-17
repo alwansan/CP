@@ -3246,7 +3246,7 @@
 
     sub-long v9, v6, v9
 
-    const-wide/16 v11, 0x2710
+    const-wide/16 v11, 0x7530
 
     cmp-long v9, v9, v11
 
@@ -3254,6 +3254,10 @@
 
     :cond_7
     sget-object v9, Lcom/shabakaty/cinemana/ca1/Dependencies112;->working:Ljava/util/Set;
+    invoke-interface {v9}, Ljava/util/Set;->size()I
+    move-result v10
+    const/16 v11, 0x8
+    if-ge v10, v11, :cond_1
 
     invoke-interface {v9, v4}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
 

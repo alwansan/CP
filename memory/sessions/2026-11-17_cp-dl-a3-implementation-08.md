@@ -1,0 +1,2 @@
+# CP-DL A3
+Owner A2 tested recovery and overlapping batches. Read both ZIPs, full CL pinned 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0. A2 clears work MP4 to0; seven HTTP403; severe repeated subtitle submits, receipt mismatch. A3 changes in docs/CP_DL_A3_AR.md. CI pending, no UI replacement. Preserve backlog.
