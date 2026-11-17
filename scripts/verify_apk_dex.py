@@ -9,7 +9,14 @@ import zlib
 from pathlib import Path
 
 
-def dex_classes(data):
+BATCH_PREFIX = "Lcom/shabakaty/cinemana/ca1/BatchDownload"
+
+def require_batch_types(referenced, defined):
+    missing = {name for name in referenced if name.lstrip('[').startswith(BATCH_PREFIX) and name.lstrip('[') not in defined}
+    if missing:
+        raise ValueError("unresolved BatchDownload DEX type references: " + str(sorted(missing)))
+
+def dex_classes(data, batch_types=None):
     def require(ok, message):
         if not ok:
             raise ValueError(message)
@@ -42,6 +49,26 @@ def dex_classes(data):
     strings_n, strings_off = sections[0]
     types_n, types_off = sections[1]
     classes_n, classes_off = sections[5]
+    if batch_types is not None:
+        # Inspect actual type_ids, not merely class_defs. Assembly can succeed with an undefined type.
+        for i in range(types_n):
+            string_idx = struct.unpack_from('<I', data, types_off + i * 4)[0]
+            require(string_idx < strings_n, 'invalid type descriptor string index')
+            offset = struct.unpack_from('<I', data, strings_off + string_idx * 4)[0]
+            require(data_off <= offset < len(data), 'invalid type descriptor offset')
+            for _ in range(5):
+                require(offset < len(data), 'truncated type descriptor length')
+                byte = data[offset]
+                offset += 1
+                if byte < 128:
+                    break
+            else:
+                raise ValueError('invalid type descriptor length')
+            end = data.find(b'\x00', offset)
+            require(end >= offset, 'unterminated type descriptor')
+            descriptor = data[offset:end]
+            if descriptor.lstrip(b'[').startswith(BATCH_PREFIX.encode('ascii')):
+                batch_types.add(descriptor.decode('ascii'))
     result = set()
     for i in range(classes_n):
         type_idx = struct.unpack_from('<I', data, classes_off + i * 32)[0]
@@ -82,13 +109,14 @@ def verify(apk, smali_root):
             raise ValueError('duplicate Smali class in ' + folder.name)
         expected[name] = set(definitions)
     total = set()
+    batch_types = set()
     with zipfile.ZipFile(apk) as archive:
         names = [n for n in archive.namelist() if re.fullmatch(r'classes(?:[2-9]|[1-9][0-9]+)?\.dex', n)]
         if len(names) != len(set(names)) or set(names) != set(expected):
             raise ValueError('APK DEX entries differ from Smali directories')
         for name in sorted(names):
             try:
-                classes = dex_classes(archive.read(name))
+                classes = dex_classes(archive.read(name), batch_types)
                 if classes != expected[name]:
                     raise ValueError('class inventory mismatch: missing=' + str(sorted(expected[name] - classes)[:5]) + ' extra=' + str(sorted(classes - expected[name])[:5]))
                 if total & classes:
@@ -100,6 +128,8 @@ def verify(apk, smali_root):
     for name in ['Lcom/shabakaty/downloader/j32;', 'Lcom/shabakaty/cinemana/CinemanaApplication;']:
         if name not in total:
             raise ValueError('missing startup class: ' + name)
+    require_batch_types(batch_types, total)
+    print('PASS packaged BatchDownload type references:', len(batch_types))
     print('PASS packaged DEX integrity:', len(names), 'DEX files,', len(total), 'classes')
 
 

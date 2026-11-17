@@ -492,9 +492,9 @@
 
     new-instance v6, Lcom/shabakaty/cinemana/ca1/BatchDownload$Job;
 
-    new-instance v7, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda12;
+    new-instance v7, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda12;
 
-    invoke-direct {v7, p0, v4, v2, v1}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda12;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/List;)V
+    invoke-direct {v7, p0, v4, v2, v1}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda12;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/List;)V
 
     const/4 v4, -0x1
 
@@ -1212,9 +1212,9 @@
 
     sget-object v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Ui;->MAIN:Landroid/os/Handler;
 
-    new-instance v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda0;
+    new-instance v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda0;
 
-    invoke-direct {v1, p0, p1, p2, p3}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda0;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Ljava/util/List;II)V
+    invoke-direct {v1, p0, p1, p2, p3}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda0;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Ljava/util/List;II)V
 
     const-wide/16 p1, 0x8
 
@@ -5327,9 +5327,9 @@
 
     invoke-virtual {v5, v12, v13}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    new-instance v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda15;
+    new-instance v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda15;
 
-    invoke-direct {v4, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda15;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v4, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda15;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v12, v4}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
@@ -5427,9 +5427,9 @@
     invoke-virtual {v4, v8}, Landroid/widget/EditText;->setVisibility(I)V
 
     .line 151
-    new-instance v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda16;
+    new-instance v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda16;
 
-    invoke-direct {v4, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda16;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v4, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda16;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v6, v4}, Landroid/widget/ImageButton;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
@@ -5786,41 +5786,41 @@
     .line 161
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->seasonButton:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda17;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda17;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda17;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda17;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->qualityButton:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda18;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda18;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda18;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda18;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->allButton:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda19;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda19;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda19;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda19;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->clearButton:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda20;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda20;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda20;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda20;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->start:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda21;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda21;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda21;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda21;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
@@ -5831,9 +5831,9 @@
 
     iget-object v1, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->dialog:Landroid/app/Dialog;
 
-    new-instance v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda22;
+    new-instance v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda22;
 
-    invoke-direct {v2, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda22;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v2, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda22;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v1, v2}, Landroid/app/Dialog;->setOnDismissListener(Landroid/content/DialogInterface$OnDismissListener;)V
 

@@ -57,3 +57,28 @@ refresh=p.split(".method refresh()V",1)[1].split(".end method",1)[0]
 assert "if-nez v10, :cond_17" not in refresh
 assert "if-nez v9, :cond_17" in refresh
 print("CP-DL B1a failure isolation source guards PASS")
+
+# B1a hotfix: source references must match exact class names (including $$).
+import re
+family = root / "smali_classes6/com/shabakaty/cinemana/ca1"
+pattern = re.compile(r"Lcom/shabakaty/cinemana/ca1/BatchDownload[^;\s]*;")
+sources = {x.name: x.read_text() for x in family.glob("BatchDownload*.smali")}
+defs = {re.search(r"^\.class\s+.*?(L[^\s]+;)", t, re.M)[1] for t in sources.values()}
+def check_batch_refs(t):
+    missing = set(pattern.findall(t)) - defs
+    if missing:
+        raise ValueError("undefined batch classes: " + ", ".join(sorted(missing)))
+for name, source in sources.items():
+    check_batch_refs(source)
+screen = sources["BatchDownload$Screen.smali"]
+assert "BatchDownload$Screen$$ExternalSyntheticLambda15;" in screen
+assert "BatchDownload$Screen$ExternalSyntheticLambda15;" not in screen
+# Reproduce the exact missing-dollar regression and prove this gate rejects it.
+broken = screen.replace("BatchDownload$Screen$$ExternalSyntheticLambda15;", "BatchDownload$Screen$ExternalSyntheticLambda15;", 1)
+try:
+    check_batch_refs(broken)
+except ValueError as error:
+    assert "BatchDownload$Screen$ExternalSyntheticLambda15;" in str(error)
+else:
+    raise AssertionError("regression fixture unexpectedly passed")
+print("CP-DL B1a hotfix: all BatchDownload class references resolve; negative regression rejected")

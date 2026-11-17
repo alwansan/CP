@@ -4,7 +4,7 @@ import hashlib
 import struct
 import unittest
 import zlib
-from verify_apk_dex import dex_classes
+from verify_apk_dex import dex_classes, require_batch_types
 
 
 def reseal(data):
@@ -26,6 +26,14 @@ def empty_dex():
 
 
 class DexIntegrityTests(unittest.TestCase):
+    def test_batch_reference_resolution(self):
+        prefix = 'Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen'
+        good = prefix + '$$ExternalSyntheticLambda15;'
+        bad = prefix + '$ExternalSyntheticLambda15;'
+        require_batch_types({good, '[' + good}, {good})
+        with self.assertRaisesRegex(ValueError, 'unresolved BatchDownload'):
+            require_batch_types({good, bad}, {good})
+
     def test_valid_fixture(self):
         self.assertEqual(dex_classes(empty_dex()), set())
 

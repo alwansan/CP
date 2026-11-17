@@ -12,12 +12,12 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1a_signed_apk_published_awaiting_device",
-  "last_session": "memory/sessions/2026-11-17_cp-dl-b1a-11.md",
+  "status": "b1a_hotfix_ci_pending",
+  "last_session": "memory/sessions/2026-11-17_cp-dl-b1a-hotfix-12.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
   "new_build_triggered": true,
-  "device_test": "A2 only; A3 and B1a pending",
+  "device_test": "B1a clean test failed open (22/22); hotfix pending",
   "cl": {
     "repo": "alwansan/CL",
     "branch": "main",
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "Isolated CP-DL workflow verified signed A3; inherited workflow unchanged.",
-  "next": "B1a phone verification; B1b durable admission + real receipt + existing worker ownership; benchmark optional preview; then authorized HTTP retry and MKV/DB idempotency/idle. HTML deferred.",
+  "next": "Verify hotfix CI/release, phone open multi-download and selected failures, then B1b durable admission.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "baec38e3d2fb741094cf237ab944b83d3a01ee64",
+  "last_verified_head": "68a5fa435581ce64b9f4a0ad693dea491b83cf6f",
   "branch_actions": {
     "total_count": 5,
     "latest_run_id": 44166130522,
@@ -155,5 +155,12 @@
     "tests": 6,
     "passed": 6,
     "scope": "synthetic SQLite, not APK"
+  },
+  "b1a_hotfix": {
+    "report": "docs/CP_DL_B1A_HOTFIX_AR.md",
+    "open_attempts": 22,
+    "failed_attempts": 22,
+    "corrected_references": 20,
+    "kind": "missing synthetic listener descriptor"
   }
 }

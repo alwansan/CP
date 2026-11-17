@@ -19,7 +19,10 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف الفعلية — 2026-11-17 | B1a منشور بنجاح، B1b متبقٍ
+## نقطة الاستئناف الفعلية — 2026-11-17 | B1a hotfix، CI pending
+آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1a-hotfix-12.md
+التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1A_HOTFIX_AR.md
+B1a-5 فشل فتح النافذة 22/22 في تجربة هاتف جديدة؛ NoClassDefFoundError من فقدان $ في listener names. استعدنا 20 مرجعاً وفعّلنا source/DEX type reference gates. لا تعتمد B1a-5؛ تحقق CI hotfix ثم اختبر فتح النافذة دون حذف البيانات. B1b مؤجل حتى إثبات فتح النافذة.
 آخر جلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1a-11.md
 التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1A_AR.md
 B1a فصل الحلقات المحددة الفاشلة عن الجاهزة، زر أخطاء ومعلومات السبب وإعادة التجهيز، إبقاء النافذة عند أخطاء مختارة. لا durable admission أو DB ACK جديد بعد، لا تغيير في queue/MKV/HTTP أو HTML. CI https://github.com/alwansan/CP/actions/runs/44166130522 completed/success؛ APK https://github.com/alwansan/CP/releases/download/cp-dl-B1a-5/Cinemana_CP_DL_B1a_signed.apk. محاكاة docs/fixtures/cp_dl_b1_contract.py نجحت 6/6 محلياً فقط؛ لا طابور B1b مدمج. اختبر الهاتف دون مسح البيانات. الأرقام من A1/A2؛ لا A3/B1a هاتف مثبت.
