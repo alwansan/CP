@@ -19,9 +19,14 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف (2026-11-17 — ترقية CLog)
-الجلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-clog-upgrade-05.md
-التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md
-المالك كلف تطوير أداة CLog منفصلة على raf/clog فقط لهذه الجولة. build8 https://github.com/alwansan/raf/actions/runs/44140583807 نجاح ونشر clog-8؛ build9 https://github.com/alwansan/raf/actions/runs/44141066327 completed/success؛ تحقق حياً من أحدث release. auto paths + permissions, resource metrics/coverage, LMK distinction. لا اختبار هاتف بعد؛ CP code/CI لم يتغير. المالك سيجرب CLog أولاً ثم CP DL-A0 isolated CI/fixtures/markers ثم A1 Room/A2 bind/A3 logs وB–D وفق docs/DOWNLOAD_EXECUTION_DESIGN_AR.md وdocs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md. لا delete أو نشر حساب/URL؛ CL read-only. حافظ على سجل الاختبارات السابقة.
-
-تحديث تلقائي إلزامي:** في كل دفعة وفي كل جلسة، حتى عند الفشل، حدّث MEMORY وSTATE وPLAN وISSUES وسجل جلسة مستقل وهذه الرسالة نفسها حسب التقدم، واحفظها في الفرع دون أن يطلب المالك ذلك. اجعل رسالة الاستعادة دائماً تشير إلى أحدث نقطة عمل مثبتة، لا إلى لقطة تأسيس جامدة.
+## نقطة الاستئناف الفعلية — 2026-11-17 | A3 منشور، B1 قيد التحليل
+اقرأ أولاً التقرير الجديد كاملاً: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1_HANDOFF_AR.md
+ثم أحدث سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1-handoff-09.md
+وتقرير A2/A3: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_A3_AR.md
+تأكد من آخر HEAD وActions وCL قبل التنفيذ. CL evidence pinned 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0.
+A3 build 44163124193 ناجح موقّع ومنشور: https://github.com/alwansan/CP/releases/download/cp-dl-A3-4/Cinemana_CP_DL_A3_signed.apk
+SHA الكود cc4576f122edfdbf1905f3e5cc36f0707ba36f79. اختبار A3 على الهاتف غير مثبت بعد. آخر اختبار A2: backlog 19 MP4 ->0، ANR0، ضغط batch جديد peak382 threads، 1056 excess subtitle submit markers، 7 أخطاء HTTP403. A3 خفف replay والـdependencies وpreview أثناء الإرسال، لا إعادة هيكلة كاملة بعد.
+B1: begin ينتظر كل metadata، enqueue على MAIN، NativeBatchScope.m يرجع void قبل إثبات DB، dialog close يوقف work، selected errors تمنع زر البدء، catch لا يضع episode.error. راجع التقرير؛ نفذ durable admission مع scheduler واحد وack حقيقي وfailed-only button، فصل preview الاختياري عن القبول، علاج retry من المصدر المصرّح به، ثم DB/MKV idempotency وidle. لا تدّع سبب invisibility مؤكداً دون ربط DB. لا تمسح الملفات؛ اختبر backlog ودفعتين متداخلتين وforce-stop. فكرة HTML/WebView للنقاش المستقبلي فقط، لا تطبقها الآن. لا تغيّر فروعاً أخرى أو CL. لم يحدث تعديل runtime في handoff09.
+ 
+## تحديث تلقائي إلزامي
+في كل دفعة وفي كل جلسة، حتى الفشل، حدّث MEMORY وSTATE وPLAN وISSUES وسجل جلسة مستقل وهذه الرسالة نفسها حسب التقدم، واحفظها في الفرع دون أن يطلب المالك ذلك. تحقّق بعد الدفع من HEAD واقرأ RESTORE_SESSION_AR.md فعلياً لتثبت أن نقطة الاستئناف الجديدة ظهرت فيه وليست نصاً قديماً. لا تخزّن SHA commit الذاكرة نفسه في داخله ولا تدّع اختباراً غير منفذ.

@@ -12,12 +12,12 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "a3_signed_apk_published_awaiting_device",
-  "last_session": "memory/sessions/2026-11-17_cp-dl-a3-implementation-08.md",
+  "status": "a3_published_b1_handoff_ready",
+  "last_session": "memory/sessions/2026-11-17_cp-dl-b1-handoff-09.md",
   "verified_at": "2026-11-17",
-  "app_code_changed": true,
-  "new_build_triggered": true,
-  "device_test": "A2 tested; A3 pending",
+  "app_code_changed": false,
+  "new_build_triggered": false,
+  "device_test": "A2 observed; A3 phone verification pending",
   "cl": {
     "repo": "alwansan/CL",
     "branch": "main",
@@ -31,7 +31,7 @@
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "A3 phone test existing 197+35 batch, verify subtitle receipts and UI; B1 durable batch admission + failure filter, HTTP403 authorized recovery, DB dedup/idle remain",
+  "next": "Verify newest CL/owner A3 version; implement B1 durable admission/receipt and failed-only UI with bounded preview, then authorized retry and DB/MKV idempotency; HTML deferred",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "cc4576f122edfdbf1905f3e5cc36f0707ba36f79",
+  "last_verified_head": "6a97c27565b06741e90f4751943af9d36cf9f67f",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -133,5 +133,6 @@
     "apk_size": 56290332,
     "apk_sha256": "sha256:1a990a2492f99367f138ee44b9c6fcb11b059158e3e27ea4d50f863465d1673c",
     "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-A3-4/Cinemana_CP_DL_A3_signed.apk"
-  }
+  },
+  "b1_handoff": "docs/CP_DL_B1_HANDOFF_AR.md"
 }

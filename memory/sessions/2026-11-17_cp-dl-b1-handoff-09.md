@@ -1,0 +1,2 @@
+# CP-DL handoff 09
+2026-11-17. Owner interrupted ongoing B1 review to request new-session restoration. A3 independent release verified cp-dl-A3-4, CI 44163124193 success; no A3 device proof yet. Current B1 code review and evidence in docs/CP_DL_B1_HANDOFF_AR.md. No runtime modifications / new build for this handoff. Resume with durable admission and selected failure UI, bounded preview, authorized link recovery; HTML discussion only.
