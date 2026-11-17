@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "execution_design_ready_planning_only",
-  "last_session": "memory/sessions/2026-11-17_cp-download-plan-03.md",
+  "status": "idle_resource_design_ready_planning_only",
+  "last_session": "memory/sessions/2026-11-17_cp-download-idle-audit-04.md",
   "verified_at": "2026-11-17",
   "app_code_changed": false,
   "new_build_triggered": false,
@@ -31,7 +31,7 @@
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "Await owner direction to implement DL-A0 isolated CI/fixtures then DL-A1 DAO ownership, DL-A2 service startup/binding, DL-A3 diagnostics; follow test gates",
+  "next": "Await implementation direction; DL-A0 comparable idle/stress fixture/CI, A1 DAO, A2 process/binding, A3 logs, B2 event-driven scheduler/persistence and D1 scoped UI; exact prior lightweight APK optional",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "1007edaed682b4f289562853274bc6dc6b5ffa24",
+  "last_verified_head": "ba6702407b0a9b3f2d1a22386d83705e7552c490",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -64,5 +64,6 @@
     "peak_main_threads": 360
   },
   "execution_design": "docs/DOWNLOAD_EXECUTION_DESIGN_AR.md",
-  "device_test_matrix": "docs/DOWNLOAD_DEVICE_TEST_MATRIX_AR.md"
+  "device_test_matrix": "docs/DOWNLOAD_DEVICE_TEST_MATRIX_AR.md",
+  "idle_resource_design": "docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md"
 }

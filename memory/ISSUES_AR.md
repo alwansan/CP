@@ -34,3 +34,6 @@ DL-009 تصحيح: 4 am_kill هي force-stop x2 + ANR x2، لا LMK مثبت. DL
 
 ## توضيح أدلة التصميم
 DL-002: all-ready AtomicLong barrier + main dispatch؛ per-screen pools shutdown موجود، queue unbounded، لا إثبات thread leak من هذه وحدها. DL-005: bind throttle 5s موجود؛ bindingResult مجرد accepted log، لا READY ack. DL-010: Queue110.scanBody calls Restart108.exp -> MkvExporter.getDownloadsDao؛ يمتد أثر Room ownership إلى scheduler. DL-006: AUDIT_PENDING coalescing و5s hasWork polling موجودان؛ تحسين incremental لا إلغاء حماية. DL-004/DL-009: durable commit موجود لكنه synchronous per change؛ لا استبداله بapply. docs/DOWNLOAD_EXECUTION_DESIGN_AR.md.
+
+## تحقيق الخمول
+DL-013: Persistence123 fixed 5s checks + Performance116 fixed 2s heartbeat مثبتة؛ no-op guards موجودة؛ قياس الكلفة قبل تعديل. DL-014: MKV hasWork MP4/temp قد يبقي polling رغم blocked؛ Restart108 pending=0 backoff موجود؛ wake/deadline/idle race tests. DL-015: Native98/Download94 recursive resource lookup مثبت، mc4 coroutine update، إعادة تحميل الصور نفسها غير مثبتة؛ profile adapter/image lifecycle. DL-016: LocalRuntime foreground scan/network and dual-process initialization inspect؛ preserve subscription notifications. docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md.

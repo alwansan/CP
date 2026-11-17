@@ -19,3 +19,6 @@ docs/DOWNLOAD_RESOURCE_AUDIT_AR.md. P0A lifecycle Room/DAO per process والت�
 
 ## تصميم التنفيذ التفصيلي ومصفوفة الاختبار
 docs/DOWNLOAD_EXECUTION_DESIGN_AR.md وdocs/DOWNLOAD_DEVICE_TEST_MATRIX_AR.md. التخطيط فقط. الإصدارات المقترحة DL-A0 CI/fixtures؛ DL-A1 DAO؛ DL-A2 service; DL-A3 diagnostic; DL-B1 admission/B2 scheduler; DL-C1 resolver/C2 MKV; DL-D1 downloads UI/D2 soak. تحقق من حراسات موجودة قبل التعديل (bind throttle 5s، no-op put/phase، AUDIT_PENDING، shutdownNow). حدد بعد إذن المالك، لا بناء قبل التنفيذ. اختبارات الهاتف T01–T14 والـforce-stop gates؛ preserve data/signature.
+
+## سياسة الخمول وكلفة الواجهات
+docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md. أضف إلى A0 baseline idle الحقيقي/no player والضغط والـlarge library، A3 مراقبة مقتصدة، B2 dirty event scheduler + backup coalescing لا فقد critical writes، C2 MKV readiness and blocked deadline، D1 card diff/lifecycle/artwork cache بعد إثبات. حافظ JobScheduler/account/notifications. No continuous full scans idle after bounded boot, no lost wakeups, no blanket shutdown. مرحلة تخطيط فقط.
