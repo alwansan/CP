@@ -12,9 +12,9 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "bootstrap_complete_awaiting_owner_reproduction",
-  "last_session": "memory/sessions/2026-11-17_cp-download-bootstrap.md",
-  "verified_at": "2026-11-17",
+  "status": "context_restored_awaiting_owner_issue",
+  "last_session": "memory/sessions/2026-11-17_cp-download-restore-01.md",
+  "verified_at": "2026-11-17T19:30:00+03:00",
   "app_code_changed": false,
   "new_build_triggered": false,
   "device_test": "not yet verified",
@@ -37,5 +37,10 @@
     "memory/ISSUES_AR.md",
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
-  ]
+  ],
+  "last_verified_head": "7d8ab7b2a7be802e37da85e24096504780ba69b7",
+  "branch_actions": {
+    "total_count": 0,
+    "verified_at": "2026-11-17T19:30:00+03:00"
+  }
 }
