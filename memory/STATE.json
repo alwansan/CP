@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "a2_implementation_ci_pending",
+  "status": "a2_signed_apk_published_awaiting_device",
   "last_session": "memory/sessions/2026-11-17_cp-dl-a2-implementation-07.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
@@ -31,7 +31,7 @@
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "Verify rebuilt A2 CI and release; test existing backlog on phone",
+  "next": "A2 phone test existing A1 backlog (no wipe), analyze CLog; B1/B2 durable admission/incremental scheduler and idempotent DB/receipt/UI state remain",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "c8d3c0ec6dea509b0df3f2b6b3581717a839b936",
+  "last_verified_head": "ce67debfb802de548a4edf22395d3989f972452b",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -102,11 +102,25 @@
     "anr_markers": 0,
     "peak_threads": 447,
     "unique_promotions": 42,
-    "total_promotions": 183
+    "total_promotions": 183,
+    "full_cl_unique_promotions": 44,
+    "full_cl_total_promotions": 198,
+    "recovery_max_ms": 25168,
+    "full_cl_unique_video_completion_ids": 63
   },
   "a2_first_ci": {
     "run_id": 44149109180,
     "status": "failure",
     "reason": "old emulator unmodeled if-lez; extended test coverage"
+  },
+  "a2_build": {
+    "run_id": 44149544059,
+    "code_sha": "ce67debfb802de548a4edf22395d3989f972452b",
+    "status": "completed",
+    "conclusion": "success",
+    "release": "cp-dl-A2-3",
+    "apk_size": 56290332,
+    "apk_sha256": "sha256:b84ab2ffeeb8b14374d72934afc83cbcfc2975c44786846f0b74f83c46e22e0e",
+    "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-A2-3/Cinemana_CP_DL_A2_signed.apk"
   }
 }

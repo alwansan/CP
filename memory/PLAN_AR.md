@@ -36,3 +36,5 @@ docs/CP_DL_A2_AR.md. A1 phone gate improved leaks/startup but heavy stress remai
 
 ## أول محاولة CI لـA2
 Run 44149109180 فشل في test_recovery_flow.py بسبب Unmodeled instruction: if-lez v2, :ordered_done؛ المحاكي لم يدعم شروط/حقل cursor الجديدة. وسّع المحاكي لدعم sget/sput AUDIT_CURSOR, if-lez/ltz, if-ge/lt؛ اختبار 25 ملفات يثبت أول 24 بالترتيب ضمن 8/دورة ووصول 25، واختبار تقلص المجلد وإعادة المؤشر؛ لا تعطيل أو تخفيض اختبارات التحقق. البناء الجديد مطلوب.
+
+A2 CI 44149544059 success, published cp-dl-A2-3. Owner phone test next: preserve backlog, old/new progress and flicker, then 5/20/200 only if stable. B1/B2 incremental scheduler, durable source receipt, idempotent DB promotion and UI state generation still open. Full CL max recovery25.168s, 198 promotes/44 IDs; 21 selection skips all existing.
