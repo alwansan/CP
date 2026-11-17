@@ -20,7 +20,8 @@ https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
 ## نقطة الاستئناف الفعلية — 2026-11-18 | B1b2 منشور — اختبار الهاتف مطلوب
-آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-18_cp-dl-b1b2-anr-14.md
+آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-18_cp-dl-restore-15.md
+سجل الإصلاح السابق: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-18_cp-dl-b1b2-anr-14.md
 التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1B2_ANR_AR.md
 B1b1 هاتفياً أصلح إرسال الفيديوهات (416 VIDEO_NATIVE_DISPATCH_RETURN) واختفت أخطاء جدول Downloads وقفل الصيانة خلال CLog000550، لكن إرسال الدفعتين 50.45s/88.82s وANR واحد. B1b2: فتحة MKV واحدة/عملية مع عاملَي تجهيز، async trace bounded، إلغاء تكرار admission في c->q فقط، تقليل refresh أثناء الإرسال. CI https://github.com/alwansan/CP/actions/runs/44182076388 completed/success؛ APK https://github.com/alwansan/CP/releases/download/cp-dl-B1b2-9/Cinemana_CP_DL_B1b2_signed.apk؛ لا مسح بيانات. B1b2 لم يُختبر على الهاتف بعد. التالي durable batch transaction وDB ACK وactual UI sync وbounded recovery؛ HTML مؤجل.
 
@@ -34,3 +35,8 @@ Run 44181479070: source gates PASS; smali main DEX failed unsigned short 65536 a
 
 ## نتيجة البناء والنشر — B1b2
 CI 44182076388 completed/success, tested code b9ed569950e5af7c70c2cd6a1474d4e2006f085c, release cp-dl-B1b2-9, APK 56302620 bytes, sha256:6773048d3c9f5dc011c4c3ac5f9a608eef7eae53e4414295c5089ab94097c7f3, https://github.com/alwansan/CP/releases/download/cp-dl-B1b2-9/Cinemana_CP_DL_B1b2_signed.apk. Source tests, rebalanced DEX assembly, inventory, signing, upload and release succeeded. Additional h64 timing: 54 exec-to-exit=0 FFmpeg pairs median7.54s (0.713–13.084); 51 matched slot acquisitions/releases median11.901s (0.872–22.609), includes postprocessing/DB, four acquisitions unpaired in capture including process death/boundary; samples not paired across both sets, do not subtract as per-task measurement. Tree 40→53 MKV. B1b2 phone validation not yet done. Main first-admission still synchronous, durable full-batch atomic queue and ViewModel/Room cancellation/real state invalidation remain unfinished. Next verify native admissions, pause/delete/cancel, foreground exit, recover after process kill, one mux permit, trace overflow count, ANR, time to accept 219+197 and compare. HTML later, one page at a time after stable backend. No CL edits.
+
+
+## استعادة CP-DL — 2026-11-18، 00:48 بغداد (جلسة 15)
+HEAD عند البدء 9e64b5891666a6a0c04f2f053924b6fcc8ba8149؛ CL/main 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0 بلا تغيير منذ آخر جرد؛ لا سجل B1b2 جديد في هذه الرسالة. قائمة Actions للفرع 9 runs، أحدثها 44182076388 completed/success؛ تحقق job steps وrelease API cp-dl-B1b2-9 وتطابق target b9ed569950e5af7c70c2cd6a1474d4e2006f085c، الحجم 56302620 وdigest sha256:6773048d3c9f5dc011c4c3ac5f9a608eef7eae53e4414295c5089ab94097c7f3. بيانات device السابقة في STATE.b1b2.device تخص B1b1 (h63/h64/CLog000550)، لا B1b2. لا تعديل runtime أو build جديد أو اختبار هاتف في هذه الجلسة. اختبار B1b2 كتحديث دون مسح بيانات هو البوابة التالية. قارن dispatch 47.325s/82.683s وtotal 50.450s/88.821s، native video return != durable ACK، single mux per process، ANR/trace overflow، DB/Room/إغلاق الشاشة والاسترداد. بعدها durable batch transaction خارج main مع serial native composer، DB ACK وإبطال UI واسترداد bounded؛ لا ادعاء حل ANR أو تعميم mux عبر العمليات. HTML مؤجل؛ لا CL edits.
+سجل الجلسة: memory/sessions/2026-11-18_cp-dl-restore-15.md.

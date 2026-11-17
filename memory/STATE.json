@@ -13,10 +13,10 @@
     "release": "local-account-PATCH274-10"
   },
   "status": "b1b2_published_awaiting_device",
-  "last_session": "memory/sessions/2026-11-18_cp-dl-b1b2-anr-14.md",
-  "verified_at": "2026-11-17",
-  "app_code_changed": true,
-  "new_build_triggered": true,
+  "last_session": "memory/sessions/2026-11-18_cp-dl-restore-15.md",
+  "verified_at": "2026-11-18",
+  "app_code_changed": false,
+  "new_build_triggered": false,
   "device_test": "B1b1 416 native video dispatch return, zero missing Downloads and storage lock warnings; one ANR; MKV recovery progressed after restart",
   "cl": {
     "repo": "alwansan/CL",
@@ -31,7 +31,7 @@
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8",
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
-  "build_note": "Isolated CP-DL workflow verified signed A3; inherited workflow unchanged.",
+  "build_note": "B1b2 signed release verified; no new build in restoration session",
   "next": "Install B1b2 as update; verify single mux, acceptance/ANR, UI refresh. Implement durable admission and ViewModel/Room cancellation fix; HTML later.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
@@ -41,9 +41,9 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "b9ed569950e5af7c70c2cd6a1474d4e2006f085c",
+  "last_verified_head": "9e64b5891666a6a0c04f2f053924b6fcc8ba8149",
   "branch_actions": {
-    "total_count": 7,
+    "total_count": 9,
     "latest_run_id": 44182076388,
     "latest_status": "completed",
     "latest_conclusion": "success"
@@ -244,6 +244,16 @@
       "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-B1b2-9/Cinemana_CP_DL_B1b2_signed.apk",
       "apk_size": 56302620,
       "apk_sha256": "sha256:6773048d3c9f5dc011c4c3ac5f9a608eef7eae53e4414295c5089ab94097c7f3"
-    }
+    },
+    "device_evidence_version": "B1b1; not B1b2",
+    "device_validation": "pending"
+  },
+  "restore_session": {
+    "id": "15",
+    "origin": "chat",
+    "runtime_changed": false,
+    "device_test": "not performed",
+    "release_verified": true,
+    "cl_head_unchanged": true
   }
 }
