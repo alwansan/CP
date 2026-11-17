@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1b2_art_hotfix_ci_pending",
+  "status": "b1b2_art_hotfix_emulator_retry_pending",
   "last_session": "memory/sessions/2026-11-18_cp-dl-b1b2-art-hotfix-16.md",
   "verified_at": "2026-11-18",
   "app_code_changed": true,
@@ -45,8 +45,8 @@
   "branch_actions": {
     "total_count": 10,
     "latest_run_id": 44185130936,
-    "latest_status": "in_progress",
-    "latest_conclusion": null
+    "latest_status": "completed",
+    "latest_conclusion": "failure"
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -270,15 +270,22 @@
       "run_number": 10,
       "job_id": 134399516013,
       "code_sha": "7eba85ff22fdfd99ed1a3c1b27d5b9096f0567cc",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "release_verified": false,
-      "art_verified": false
+      "art_verified": false,
+      "source_tests": "pass",
+      "sign_dex": "pass",
+      "failure": "KVM setup exit1; ART/release skipped"
     },
     "static_check": {
       "fixed": true,
       "old_actual_rejected": true,
       "injected_high_half_rejected": true
+    },
+    "emulator_retry": {
+      "status": "pending",
+      "fallback": "software -accel off; strict ART gate retained"
     }
   }
 }

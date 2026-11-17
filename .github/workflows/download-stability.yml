@@ -13,7 +13,7 @@ jobs:
   verify-build:
     if: github.ref == 'refs/heads/feature/download-stability'
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -68,14 +68,27 @@ jobs:
             Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
           if-no-files-found: error
 
-      - name: Enable KVM for mandatory Android ART smoke test
+      - name: Detect emulator acceleration (ART gate still mandatory)
+        id: emulator_accel
         shell: bash
         run: |
           set -euo pipefail
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-          test -w /dev/kvm
+          opts="-no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim"
+          if [[ ! -c /dev/kvm ]]; then
+            sudo modprobe kvm || true
+            if grep -qm1 vmx /proc/cpuinfo; then sudo modprobe kvm_intel || true; fi
+            if grep -qm1 svm /proc/cpuinfo; then sudo modprobe kvm_amd || true; fi
+          fi
+          if [[ -c /dev/kvm ]]; then
+            sudo chmod a+rw /dev/kvm
+          fi
+          if [[ -c /dev/kvm && -r /dev/kvm && -w /dev/kvm ]]; then
+            echo "KVM device accessible"
+          else
+            echo "KVM unavailable; use software Android emulator, do not skip ART test"
+            opts="$opts -accel off"
+          fi
+          echo "options=$opts" >> "$GITHUB_OUTPUT"
       - name: Verify signed APK on Android 15 ART and open batch dialog
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -84,6 +97,8 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
+          emulator-boot-timeout: 1800
+          emulator-options: ${{ steps.emulator_accel.outputs.options }}
           script: bash scripts/cp_dl_art/run.sh Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk
 
       - name: Publish direct APK release
