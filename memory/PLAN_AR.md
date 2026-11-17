@@ -22,3 +22,6 @@ docs/DOWNLOAD_EXECUTION_DESIGN_AR.md وdocs/DOWNLOAD_DEVICE_TEST_MATRIX_AR.md. �
 
 ## سياسة الخمول وكلفة الواجهات
 docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md. أضف إلى A0 baseline idle الحقيقي/no player والضغط والـlarge library، A3 مراقبة مقتصدة، B2 dirty event scheduler + backup coalescing لا فقد critical writes، C2 MKV readiness and blocked deadline، D1 card diff/lifecycle/artwork cache بعد إثبات. حافظ JobScheduler/account/notifications. No continuous full scans idle after bounded boot, no lost wakeups, no blanket shutdown. مرحلة تخطيط فقط.
+
+## أداة التشخيص قبل أول APK تجريبي
+docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md. CLog منفصل raf/clog بتكليف المالك؛ build8 success وbuild9 completed/success. فحص release حي، اختبار الهاتف CLog أولاً، ثم CP A0 isolated workflow/signed fixture/runtime markers، A1/A2/A3 وB–D. لا حذف بيانات تلقائياً، fresh لا يغني recovery/legacy tests.

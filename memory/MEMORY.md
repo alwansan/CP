@@ -40,3 +40,6 @@ docs/DOWNLOAD_EXECUTION_DESIGN_AR.md وdocs/DOWNLOAD_DEVICE_TEST_MATRIX_AR.md. �
 
 ## سياسة الخمول والموارد 2026-11-17
 docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md: Persistence123 5s cycle checks prefs/stamps، existing no-op guards وchanged/inventoryChanged; Performance116 2s heartbeat؛ CacheCleaner124 first2min/6h؛ Restart108 backoff حتى120s ولو pending=0؛ MKV hasWork active OR MP4/temp وAUDIT_PENDING. LocalRuntime hourly notifications + foreground min60s, preserve account. Profiles historical PATCH307 queue0 threads50->184; PATCH308 mixed player not true idle; PATCH317/320 recursive UI lookup. Event-driven idle/wake and blocked deadline, preserve critical commits, no forced GC or cancel active; UI delta, thumbnail cache proposal not proven cause. memory/sessions/2026-11-17_cp-download-idle-audit-04.md. No runtime/build changes.
+
+## تحديث أداة CLog 2026-11-17
+بتكليف منفصل للمالك: raf/clog only، dfe70d60 CI 44140583807 success published clog-8، 034f2b51 CI 44141066327 completed/success. مسارا Cinemana/work وDownload/Games/cl/Clog تلقائيان بصلاحية all-files، SAF fallback، raw source logs/census/coverage، CPU/RSS/PSS/threads/FD/IO/rates/disk/gateway/UI metrics وLMK classification؛ لا قراءة media/private DB، لا ضمان كل /proc/dumpsys metrics؛ docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md. CP runtime untouched no build. memory/sessions/2026-11-17_cp-dl-clog-upgrade-05.md.

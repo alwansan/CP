@@ -37,3 +37,6 @@ DL-002: all-ready AtomicLong barrier + main dispatch؛ per-screen pools shutdown
 
 ## تحقيق الخمول
 DL-013: Persistence123 fixed 5s checks + Performance116 fixed 2s heartbeat مثبتة؛ no-op guards موجودة؛ قياس الكلفة قبل تعديل. DL-014: MKV hasWork MP4/temp قد يبقي polling رغم blocked؛ Restart108 pending=0 backoff موجود؛ wake/deadline/idle race tests. DL-015: Native98/Download94 recursive resource lookup مثبت، mc4 coroutine update، إعادة تحميل الصور نفسها غير مثبتة؛ profile adapter/image lifecycle. DL-016: LocalRuntime foreground scan/network and dual-process initialization inspect؛ preserve subscription notifications. docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md.
+
+## CLog
+DIAG-001: automatic paths/permissions/coverage/metric attribution implemented in raf/clog؛ build8 success، build9 completed/success؛ device permission/paths/collector load validation open. DIAG-002: Android restricted readings and backlog/rotation may prevent full visibility؛ mark null/coverage limits; CP internal lifecycle markers still required. docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md. DL issues not closed.
