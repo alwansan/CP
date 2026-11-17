@@ -1,0 +1,7 @@
+# B1b2 ART hotfix
+
+
+## B1b2 ART hotfix — 2026-11-18 (جلسة 16)
+Owner h65.zip and CLog-20261118-004905-259: 14 call_error, zero dialog_open; root exact VerifyError BatchDownload$Screen.laterRefresh() [0x1C] wide register v2 has type Low-half Constant/Zero/null. B1b2 wrote boolean then scalar zero to v3, clobbering wide pair v2:v3; ART rejects entire class. Previous DEX inventory and symbol tests cannot validate register type flow. Fix: read busy before either const-wide/16, branch to complete 500/1000ms wide definitions, no scalar write between wide definition and Handler.postDelayed. Source gate asserts control-flow and rejects exact h65 regression + direct high-half clobber. Mandatory release gate: Android 15 emulator/x86_64 isolated offline instrumentation loads exact signed candidate APK via DexClassLoader, checks BatchDownload family, opens actual Screen.show twice using synthetic blank fixture, tests both delayed callbacks, closes dialog; no real account, download, native ABI or full production app startup/network tested. CI pending; no phone proof; no release if ART gate fails. Do not use B1b2-9. Preserve previous fixes and app data. docs/CP_DL_B1B2_ART_HOTFIX_AR.md; memory/sessions/2026-11-18_cp-dl-b1b2-art-hotfix-16.md. No edits to CL or other branches.
+
+Acceptance: source regression fixtures must fail on malformed pairs; actual signed-candidate runtime dialog and refresh paths must succeed before release; actual user device reopening remains a separate gate.

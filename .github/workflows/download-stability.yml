@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [feature/download-stability]
-    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/download-stability.yml', 'scripts/test_cp_dl.py', 'scripts/test_recovery_flow.py', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py']
+    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/download-stability.yml', 'scripts/test_cp_dl.py', 'scripts/test_recovery_flow.py', 'scripts/verify_apk_dex.py', 'scripts/test_apk_dex.py', 'scripts/cp_dl_art/**']
 permissions:
   contents: write
 concurrency:
@@ -13,7 +13,7 @@ jobs:
   verify-build:
     if: github.ref == 'refs/heads/feature/download-stability'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
       - uses: android-actions/setup-android@v3
         with:
-          packages: 'build-tools;35.0.0'
+          packages: 'build-tools;35.0.0 platforms;android-35'
       - name: Download pinned compiler and test dependencies
         shell: bash
         run: |
@@ -55,31 +55,49 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2_signed.apk > Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk > Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-CP-DL-B1b2
+          name: Cinemana-CP-DL-B1b2-fix
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk
             Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
           if-no-files-found: error
+
+      - name: Enable KVM for mandatory Android ART smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          test -w /dev/kvm
+      - name: Verify signed APK on Android 15 ART and open batch dialog
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash scripts/cp_dl_art/run.sh Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: cp-dl-B1b2-${{ github.run_number }}
+          tag_name: cp-dl-B1b2-fix-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana CP-DL B1b2 #${{ github.run_number }}"
+          name: "Cinemana CP-DL B1b2-fix #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            CP-DL B1b2: single mux permit, bounded async diagnostics, eliminate duplicate immediate composer admission, slower busy-dialog redraw. B1b1 preserved; durable whole-batch admission and real UI synchronization pending.
+            CP-DL B1b2-fix: repair ART VerifyError in BatchDownload.Screen.laterRefresh; mandatory Android 15 signed-DEX dialog smoke test before release. Preserve single mux, diagnostics and admission improvements. Durable whole-batch admission and real UI synchronization pending.
             Install the APK directly as an update; preserve app data.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1b2-fix_signed.apk
             Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
           fail_on_unmatched_files: true

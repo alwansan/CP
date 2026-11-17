@@ -19,8 +19,10 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف الفعلية — 2026-11-18 | B1b2 منشور — اختبار الهاتف مطلوب
-آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-18_cp-dl-restore-15.md
+## نقطة الاستئناف الفعلية — 2026-11-18 | B1b2 ART hotfix قيد البناء
+آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-18_cp-dl-b1b2-art-hotfix-16.md
+التقرير الجديد: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1B2_ART_HOTFIX_AR.md
+تحذير: B1b2-9 فشل فتح التحميل المتعدد هاتفياً؛ لا تستخدمه. انتظر نجاح بوابة ART للإصلاح الجديد؛ تفاصيل أدناه.
 سجل الإصلاح السابق: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-18_cp-dl-b1b2-anr-14.md
 التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1B2_ANR_AR.md
 B1b1 هاتفياً أصلح إرسال الفيديوهات (416 VIDEO_NATIVE_DISPATCH_RETURN) واختفت أخطاء جدول Downloads وقفل الصيانة خلال CLog000550، لكن إرسال الدفعتين 50.45s/88.82s وANR واحد. B1b2: فتحة MKV واحدة/عملية مع عاملَي تجهيز، async trace bounded، إلغاء تكرار admission في c->q فقط، تقليل refresh أثناء الإرسال. CI https://github.com/alwansan/CP/actions/runs/44182076388 completed/success؛ APK https://github.com/alwansan/CP/releases/download/cp-dl-B1b2-9/Cinemana_CP_DL_B1b2_signed.apk؛ لا مسح بيانات. B1b2 لم يُختبر على الهاتف بعد. التالي durable batch transaction وDB ACK وactual UI sync وbounded recovery؛ HTML مؤجل.
@@ -40,3 +42,7 @@ CI 44182076388 completed/success, tested code b9ed569950e5af7c70c2cd6a1474d4e200
 ## استعادة CP-DL — 2026-11-18، 00:48 بغداد (جلسة 15)
 HEAD عند البدء 9e64b5891666a6a0c04f2f053924b6fcc8ba8149؛ CL/main 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0 بلا تغيير منذ آخر جرد؛ لا سجل B1b2 جديد في هذه الرسالة. قائمة Actions للفرع 9 runs، أحدثها 44182076388 completed/success؛ تحقق job steps وrelease API cp-dl-B1b2-9 وتطابق target b9ed569950e5af7c70c2cd6a1474d4e2006f085c، الحجم 56302620 وdigest sha256:6773048d3c9f5dc011c4c3ac5f9a608eef7eae53e4414295c5089ab94097c7f3. بيانات device السابقة في STATE.b1b2.device تخص B1b1 (h63/h64/CLog000550)، لا B1b2. لا تعديل runtime أو build جديد أو اختبار هاتف في هذه الجلسة. اختبار B1b2 كتحديث دون مسح بيانات هو البوابة التالية. قارن dispatch 47.325s/82.683s وtotal 50.450s/88.821s، native video return != durable ACK، single mux per process، ANR/trace overflow، DB/Room/إغلاق الشاشة والاسترداد. بعدها durable batch transaction خارج main مع serial native composer، DB ACK وإبطال UI واسترداد bounded؛ لا ادعاء حل ANR أو تعميم mux عبر العمليات. HTML مؤجل؛ لا CL edits.
 سجل الجلسة: memory/sessions/2026-11-18_cp-dl-restore-15.md.
+
+
+## B1b2 ART hotfix — 2026-11-18 (جلسة 16)
+Owner h65.zip and CLog-20261118-004905-259: 14 call_error, zero dialog_open; root exact VerifyError BatchDownload$Screen.laterRefresh() [0x1C] wide register v2 has type Low-half Constant/Zero/null. B1b2 wrote boolean then scalar zero to v3, clobbering wide pair v2:v3; ART rejects entire class. Previous DEX inventory and symbol tests cannot validate register type flow. Fix: read busy before either const-wide/16, branch to complete 500/1000ms wide definitions, no scalar write between wide definition and Handler.postDelayed. Source gate asserts control-flow and rejects exact h65 regression + direct high-half clobber. Mandatory release gate: Android 15 emulator/x86_64 isolated offline instrumentation loads exact signed candidate APK via DexClassLoader, checks BatchDownload family, opens actual Screen.show twice using synthetic blank fixture, tests both delayed callbacks, closes dialog; no real account, download, native ABI or full production app startup/network tested. CI pending; no phone proof; no release if ART gate fails. Do not use B1b2-9. Preserve previous fixes and app data. docs/CP_DL_B1B2_ART_HOTFIX_AR.md; memory/sessions/2026-11-18_cp-dl-b1b2-art-hotfix-16.md. No edits to CL or other branches.

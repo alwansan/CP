@@ -120,3 +120,50 @@ assert "invoke-direct {p0, p1, p2, v4}, Lcom/shabakaty/downloader/ey0;->dlStart"
 assert "if-nez p3, :dl_already_admitted" in ey
 assert "invoke-direct {p0, p1, p2, v0}, Lcom/shabakaty/downloader/ey0;->dlStart" in ey
 print("CP-DL B1b2 source gates PASS")
+
+# B1b2 hotfix: ART wide types are indivisible; numeric zero is not a long high-half.
+# Constrain this small control-flow region to a boolean test before either atomic
+# wide definition. Both incoming edges at postDelayed carry a valid J pair.
+def check_refresh_wide_pair(source):
+    region = source.split(".method laterRefresh()V",1)[1].split(".end method",1)[0]
+    insns = [l.strip() for l in region.splitlines()
+             if l.strip() and not l.lstrip().startswith(("#", "."))]
+    start = insns.index("iget-boolean v2, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z")
+    expected = [
+        "iget-boolean v2, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z",
+        "if-eqz v2, :dl_refresh_idle_delay",
+        "const-wide/16 v2, 0x3e8",
+        "goto :dl_refresh_delay_ready",
+        ":dl_refresh_idle_delay",
+        "const-wide/16 v2, 0x1f4",
+        ":dl_refresh_delay_ready",
+        "invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z",
+    ]
+    if insns[start:start+len(expected)] != expected:
+        raise ValueError("invalid laterRefresh wide-pair control flow")
+    if insns.count(expected[-1]) != 1:
+        raise ValueError("unexpected additional delay path")
+
+check_refresh_wide_pair(screen)
+# Recreate the exact h65 failure: write scalar into high half on both paths.
+start = screen.index("    iget-boolean v2, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z", screen.index(".method laterRefresh()V"))
+end = screen.index("    invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed", start)
+bad_delay = """    const-wide/16 v2, 0x1f4
+    iget-boolean v3, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z
+    if-eqz v3, :dl_refresh_delay_ready
+    const-wide/16 v2, 0x3e8
+    :dl_refresh_delay_ready
+    const/4 v3, 0x0
+
+"""
+for broken in (
+    screen[:start] + bad_delay + screen[end:],
+    screen[:end] + "    const/4 v3, 0x0\n" + screen[end:],
+):
+    try:
+        check_refresh_wide_pair(broken)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("h65 wide-pair regression unexpectedly accepted")
+print("CP-DL B1b2 hotfix wide-pair control-flow and both negative cases PASS")

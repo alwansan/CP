@@ -1,0 +1,139 @@
+package cpdl.artprobe;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.Instrumentation;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.widget.Button;
+import dalvik.system.DexClassLoader;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+/** Isolated, offline test of the exact signed release APK's classes.
+ * No target app install/start, account, server or download. */
+public final class Probe extends Instrumentation {
+    public static final class ScreenActivity extends Activity {}
+    public static final class Item {
+        public final String kind = "series", enTitle = "CP-DL synthetic fixture";
+    }
+    public static final class Vm {
+        public final Cache v = new Cache();
+    }
+    public static final class Cache {
+        public List<Object> a() { return Collections.emptyList(); }
+    }
+    interface Checked { void run() throws Throwable; }
+    @Override public void onCreate(Bundle args) {
+        super.onCreate(args);
+        start();
+    }
+    private void main(Checked action) throws Throwable {
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        runOnMainSync(() -> {
+            try { action.run(); } catch (Throwable t) { failure.set(t); }
+        });
+        if (failure.get() != null) throw failure.get();
+    }
+    private static void require(boolean ok, String msg) {
+        if (!ok) throw new AssertionError(msg);
+    }
+    private static Field field(Class<?> c, String name) throws Exception {
+        Field f = c.getDeclaredField(name); f.setAccessible(true); return f;
+    }
+    private static Method method(Class<?> c, String name) throws Exception {
+        Method m = c.getDeclaredMethod(name); m.setAccessible(true); return m;
+    }
+    private void awaitRefresh(Object screen, Field posted) throws Throwable {
+        long until = SystemClock.uptimeMillis() + 5000;
+        while (SystemClock.uptimeMillis() < until) {
+            final boolean[] pending = new boolean[1];
+            main(() -> pending[0] = posted.getBoolean(screen));
+            if (!pending[0]) return;
+            SystemClock.sleep(100);
+        }
+        throw new AssertionError("refresh callback did not complete");
+    }
+    @Override public void onStart() {
+        Bundle result = new Bundle();
+        try {
+            Context ctx = getTargetContext();
+            File apk = new File(ctx.getCodeCacheDir(), "candidate.apk");
+            if (apk.exists() && !apk.delete()) throw new IOException("stale candidate");
+            try (InputStream in = ctx.getAssets().open("candidate.apk");
+                 FileOutputStream out = new FileOutputStream(apk)) {
+                // Android 14+ requires dynamically loaded DEX files to be read-only.
+                require(apk.setReadOnly(), "candidate must be read-only");
+                byte[] buf = new byte[65536]; int n;
+                while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+            }
+            ClassLoader cl = new DexClassLoader(apk.getPath(), ctx.getCodeCacheDir().getPath(), null, ctx.getClassLoader());
+            int classes = 0;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(ctx.getAssets().open("family.txt")))) {
+                String name;
+                while ((name = reader.readLine()) != null) {
+                    Class<?> c = Class.forName(name, false, cl);
+                    require(c.getClassLoader() == cl, "wrong class loader: " + name);
+                    c.getDeclaredMethods();
+                    c.getDeclaredConstructors();
+                    classes++;
+                }
+            }
+            require(classes >= 20, "incomplete BatchDownload inventory");
+            Class<?> c = Class.forName("com.shabakaty.cinemana.ca1.BatchDownload$Screen", true, cl);
+            Constructor<?> ctor = c.getDeclaredConstructor(Object.class,Object.class,Object.class,Object.class,Context.class);
+            ctor.setAccessible(true);
+            Field posted = field(c,"refreshPosted"), busy = field(c,"busy"), closed = field(c,"closed");
+            Method show = method(c,"show"), refresh = method(c,"laterRefresh");
+            Intent launch = new Intent(ctx, ScreenActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Activity activity = startActivitySync(launch);
+            try {
+                for (int attempt = 0; attempt < 2; attempt++) {
+                    final Object[] holder = new Object[1];
+                    main(() -> {
+                        Object s = ctor.newInstance(new Object(),new Vm(),new Object(),new Item(),activity);
+                        holder[0] = s;
+                        show.invoke(s);
+                        Dialog d = (Dialog)field(c,"dialog").get(s);
+                        require(d.isShowing(), "batch dialog not visible");
+                        for (String name : new String[]{"start","closeButton","allButton","qualityButton","failedButton"}) {
+                            Button b = (Button)field(c,name).get(s);
+                            require(b != null && b.hasOnClickListeners(), "missing button callback: "+name);
+                        }
+                    });
+                    Object s = holder[0];
+                    try {
+                        awaitRefresh(s,posted);
+                        for (boolean active : new boolean[]{false,true}) {
+                            main(() -> {
+                                busy.setBoolean(s,active);
+                                refresh.invoke(s);
+                                require(posted.getBoolean(s),"refresh not scheduled: busy="+active);
+                            });
+                            awaitRefresh(s,posted);
+                        }
+                    } finally {
+                        main(() -> {
+                            busy.setBoolean(s,false);
+                            Button close = (Button)field(c,"closeButton").get(s);
+                            require(close.performClick(),"close callback missing");
+                            require(!((Dialog)field(c,"dialog").get(s)).isShowing(),"dialog did not close");
+                        });
+                        waitForIdleSync();
+                        main(() -> require(closed.getBoolean(s),"screen close lifecycle incomplete"));
+                    }
+                }
+            } finally { main(activity::finish); }
+            result.putString("stream","\nCPDL_ART_PASS family="+classes+" opens=2 refresh_paths=4 closes=2\n");
+            finish(Activity.RESULT_OK,result);
+        } catch (Throwable t) {
+            StringWriter trace = new StringWriter(); t.printStackTrace(new PrintWriter(trace));
+            result.putString("stream","\nCPDL_ART_FAIL\n"+trace+"\n");
+            finish(Activity.RESULT_CANCELED,result);
+        }
+    }
+}
