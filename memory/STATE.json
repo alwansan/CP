@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1b2_ci_pending",
+  "status": "b1b2_dex_rebalance_ci_pending",
   "last_session": "memory/sessions/2026-11-18_cp-dl-b1b2-anr-14.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "Isolated CP-DL workflow verified signed A3; inherited workflow unchanged.",
-  "next": "Verify B1b2 CI/release and device; durable whole-batch acceptance (one atomic transaction), explicit DB receipt, UI actual state sync, bounded recovery scan. HTML later.",
+  "next": "Verify rebalanced B1b2 build and device; fix ViewModel cancellation/Room observers, durable batch admission and UI sync. No HTML migration yet.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -212,13 +212,24 @@
       "mkv_tree_h63": 40,
       "mkv_tree_h64": 53,
       "missing_downloads_errors": 0,
-      "storage_lock_warnings": 0
+      "storage_lock_warnings": 0,
+      "native_shippuden_mp4_admissions": 197,
+      "mp4_completions_raw": 88,
+      "mp4_db_ack_raw": 88,
+      "sqlite_leak_markers": 2
     },
     "changes": [
       "one mux permit per process",
       "async diagnostic sink",
       "dedup immediate native admission",
       "busy dialog redraw throttle"
-    ]
+    ],
+    "first_build": {
+      "run_id": 44181479070,
+      "code_sha": "35d7066989217724d8fb37c8cc4c08e3140dcd76",
+      "status": "completed",
+      "conclusion": "failure",
+      "reason": "primary DEX method ref 65536; tests passed"
+    }
   }
 }

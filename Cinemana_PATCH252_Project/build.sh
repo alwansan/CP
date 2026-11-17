@@ -16,6 +16,26 @@ if [[ ! -f "$APKTOOL" || ! -f "$FRAME_DIR/1.apk" || ! -f "$APP_DIR/apktool.yml" 
   echo "ERROR: Missing project or bundled build tool. Re-extract the complete ZIP." >&2
   exit 1
 fi
+# CP-DL B1b2: primary dex is at the 16-bit method-reference ceiling.
+# Keep the download manager and its nested classes together in the roomy classes6.dex.
+# Android minSdk21 loads secondary dex natively; descriptors and code are unchanged.
+python3 - "$APP_DIR" <<'PY'
+from pathlib import Path
+import sys
+root = Path(sys.argv[1])
+src = root / "smali/com/shabakaty/downloader"
+dst = root / "smali_classes6/com/shabakaty/downloader"
+family = sorted([p for p in src.glob("ey0*.smali") if p.name == "ey0.smali" or p.name.startswith("ey0$")])
+existing = sorted([p for p in dst.glob("ey0*.smali") if p.name == "ey0.smali" or p.name.startswith("ey0$")])
+if family:
+    assert len(family) == 14 and not existing, "unexpected manager dex placement"
+    dst.mkdir(parents=True, exist_ok=True)
+    for p in family:
+        p.rename(dst / p.name)
+    print("CP-DL relocated", len(family), "manager classes to classes6.dex")
+else:
+    assert len(existing) == 14, "missing manager classes"
+PY
 echo "Building project: $APP_DIR"
 "$JAVA_BIN" -jar "$APKTOOL" b -f -j 1 -p "$FRAME_DIR" -o "$UNSIGNED" "$APP_DIR"
 python3 "$ROOT/../scripts/verify_apk_dex.py" "$UNSIGNED" --smali-root "$APP_DIR"

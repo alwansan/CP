@@ -33,6 +33,8 @@ def dex_classes(data, batch_types=None):
         count, offset = struct.unpack_from('<II', data, header)
         require((count == 0 and offset == 0) or (count > 0 and offset >= 112 and offset % 4 == 0 and offset + count * width <= len(data)), 'invalid DEX section bounds')
         sections.append((count, offset))
+    require(sections[4][0] <= 65536, 'DEX method_ids exceeds 16-bit reference capacity')
+    require(sections[3][0] <= 65536, 'DEX field_ids exceeds 16-bit reference capacity')
     data_size, data_off = struct.unpack_from('<II', data, 104)
     require(data_off >= 112 and data_off + data_size == len(data), 'invalid data section')
     map_off = struct.unpack_from('<I', data, 52)[0]
