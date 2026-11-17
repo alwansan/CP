@@ -21,7 +21,8 @@ https://github.com/alwansan/CL/tree/main/Clog
 
 ## نقطة الاستئناف الفعلية — 2026-11-17 | A3 منشور، B1 قيد التحليل
 اقرأ أولاً التقرير الجديد كاملاً: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1_HANDOFF_AR.md
-ثم أحدث سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1-handoff-09.md
+جلسة الاستعادة الحالية: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-restore-10.md
+ثم سجل تسليم B1: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1-handoff-09.md
 وتقرير A2/A3: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_A3_AR.md
 تأكد من آخر HEAD وActions وCL قبل التنفيذ. CL evidence pinned 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0.
 A3 build 44163124193 ناجح موقّع ومنشور: https://github.com/alwansan/CP/releases/download/cp-dl-A3-4/Cinemana_CP_DL_A3_signed.apk

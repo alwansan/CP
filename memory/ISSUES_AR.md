@@ -60,3 +60,6 @@ CI 44163124193 completed/success، A3 APK signed published https://github.com/al
 
 ## B1 source review
 DL batch: full preparation barrier, main dispatch8ms, accepted=void return not durable; closed screen drops pending work, per-episode Fragment lifecycle observer (possible cost). No exact proof second batch invisibility writer. DL failure UI: any selected error disables start, enqueue catch no episode.error. DL 403: existing helper bounded but cross-DB migration/retry trigger needs audit; 7 failures unresolved. docs/CP_DL_B1_HANDOFF_AR.md. No B1 patch yet.
+
+## استعادة CP-DL — 2026-11-17، 22:59 بغداد
+قرئت نقطة التسليم B1 الجديدة في docs/CP_DL_B1_HANDOFF_AR.md (HEAD 350bac2909337b40b89517141a90d31b161cb5a4 قبل توثيق الاستعادة)؛ CL/main ظل 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0. آخر CI 44163124193 success وrelease cp-dl-A3-4 وتطابق SHA/الحجم من release API؛ CLog9 success ومنشور. أربعة runs CP بينها فشل محاكي A2 المعالج. لا دليل هاتف A3 جديد؛ لا تغيير كود أو build أو بيانات، لا قراءة raw logs جديدة. B1 التالي durable admission/ACK مستقل عن dialog، failed-only، preview bounded، حسب handoff09. سجل الاستعادة memory/sessions/2026-11-17_cp-dl-restore-10.md.

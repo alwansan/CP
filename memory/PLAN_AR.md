@@ -46,3 +46,6 @@ CI 44163124193 completed/success، A3 APK signed published https://github.com/al
 
 ## B1 handoff09
 docs/CP_DL_B1_HANDOFF_AR.md: durable single scheduler admission and DB acknowledgement, independence from screen lifetime, ready rows not blocked, failed-only button with retry/quality, optional bounded preview, safe 403 recovery; deterministic failure injection. A3 signed published cp-dl-A3-4; phone pending. HTML A/B deferred. Preserve user data and all previous protections.
+
+## استعادة CP-DL — 2026-11-17، 22:59 بغداد
+قرئت نقطة التسليم B1 الجديدة في docs/CP_DL_B1_HANDOFF_AR.md (HEAD 350bac2909337b40b89517141a90d31b161cb5a4 قبل توثيق الاستعادة)؛ CL/main ظل 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0. آخر CI 44163124193 success وrelease cp-dl-A3-4 وتطابق SHA/الحجم من release API؛ CLog9 success ومنشور. أربعة runs CP بينها فشل محاكي A2 المعالج. لا دليل هاتف A3 جديد؛ لا تغيير كود أو build أو بيانات، لا قراءة raw logs جديدة. B1 التالي durable admission/ACK مستقل عن dialog، failed-only، preview bounded، حسب handoff09. سجل الاستعادة memory/sessions/2026-11-17_cp-dl-restore-10.md.

@@ -13,7 +13,7 @@
     "release": "local-account-PATCH274-10"
   },
   "status": "a3_published_b1_handoff_ready",
-  "last_session": "memory/sessions/2026-11-17_cp-dl-b1-handoff-09.md",
+  "last_session": "memory/sessions/2026-11-17_cp-dl-restore-10.md",
   "verified_at": "2026-11-17",
   "app_code_changed": false,
   "new_build_triggered": false,
@@ -28,9 +28,10 @@
     ],
     "inventory_only": false,
     "pinned_sha": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0",
-    "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
+    "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8",
+    "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
-  "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
+  "build_note": "Isolated CP-DL workflow verified signed A3; inherited workflow unchanged.",
   "next": "Verify newest CL/owner A3 version; implement B1 durable admission/receipt and failed-only UI with bounded preview, then authorized retry and DB/MKV idempotency; HTML deferred",
   "mandatory_handoff": [
     "memory/MEMORY.md",
@@ -40,10 +41,12 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "6a97c27565b06741e90f4751943af9d36cf9f67f",
+  "last_verified_head": "350bac2909337b40b89517141a90d31b161cb5a4",
   "branch_actions": {
-    "total_count": 0,
-    "verified_at": "2026-11-17T19:30:00+03:00"
+    "total_count": 4,
+    "verified_at": "2026-11-17T22:59:00+03:00",
+    "latest_run_id": 44163124193,
+    "latest_conclusion": "success"
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -78,7 +81,8 @@
     },
     "build9": {
       "run_id": 44141066327,
-      "status": "completed/success"
+      "status": "completed/success",
+      "release": "clog-9"
     },
     "device_test": "Build9 ZIP confirms automatic capture; coverage incomplete",
     "automatic_source": "/storage/emulated/0/Cinemana/work/",
