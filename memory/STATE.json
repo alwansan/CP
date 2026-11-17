@@ -12,12 +12,12 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "a1_implementation_ci_pending",
+  "status": "a1_signed_apk_published_awaiting_device",
   "last_session": "memory/sessions/2026-11-17_cp-dl-a1-implementation-06.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
   "new_build_triggered": true,
-  "device_test": "A1 not yet tested",
+  "device_test": "A1 pending",
   "cl": {
     "repo": "alwansan/CL",
     "branch": "main",
@@ -31,7 +31,7 @@
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "Verify A1 CI job and signed release, phone tests then A2/A3/B-D",
+  "next": "Owner tests A1 with CLog9 then analyze sanitized results; A2/A3 and B-D remain open",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "b6fe79feb4226c7b06ff6afad1a81a7ab9b3fba3",
+  "last_verified_head": "af61b15396502d517ff5c9b71c78eb010810505e",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -84,5 +84,15 @@
     "automatic_source": "/storage/emulated/0/Cinemana/work/",
     "automatic_output": "/storage/emulated/0/Download/Games/cl/Clog/"
   },
-  "a1": "docs/CP_DL_A1_AR.md"
+  "a1": "docs/CP_DL_A1_AR.md",
+  "a1_build": {
+    "run_id": 44143681956,
+    "code_sha": "af61b15396502d517ff5c9b71c78eb010810505e",
+    "status": "completed",
+    "conclusion": "success",
+    "release": "cp-dl-A1-1",
+    "apk_size": 56290332,
+    "apk_sha256": "sha256:b4e106499ab5f0cc57772ea340acefabaaecc9dab136365a8ace8d00f903cedd",
+    "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-A1-1/Cinemana_CP_DL_A1_signed.apk"
+  }
 }

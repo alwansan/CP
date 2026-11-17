@@ -28,3 +28,5 @@ docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md. CLog منفصل raf/clog بتكليف ال�
 
 ## التنفيذ بدأ
 A1 scoped implementation + isolated CI، docs/CP_DL_A1_AR.md. بعدها تحقق CI والهاتف، A2/A3 ثم B–D. لا حذف بيانات ولا اعتبار A1 حل كامل.
+
+A1 APK منشور، CI completed/success. جرب الهاتف حسب docs/CP_DL_A1_AR.md ثم A2/A3/B–D.

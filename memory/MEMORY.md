@@ -46,3 +46,6 @@ docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md: Persistence123 5s cycle checks prefs/s
 
 ## تنفيذ A1
 انظر docs/CP_DL_A1_AR.md. CLog9 جهازياً يعمل، 5 startup ANR و1790 raw SQLite warnings. نفذ A1 DAO cache/main guard/markers/fast lookup/monotonic bind throttle/progress log reduction; isolated workflow. CI pending عند commit؛ لا إثبات هاتف.
+
+## نتيجة البناء A1
+CI 44143681956 completed/success؛ compile/tests/sign/verify/upload ناجحة حسب jobs، release cp-dl-A1-1 asset verified 56290332 bytes sha256:b4e106499ab5f0cc57772ea340acefabaaecc9dab136365a8ace8d00f903cedd. APK: https://github.com/alwansan/CP/releases/download/cp-dl-A1-1/Cinemana_CP_DL_A1_signed.apk. code SHA af61b15396502d517ff5c9b71c78eb010810505e. لا اختبار CP على الهاتف بعد. CLog new raw 1790 leaks all main PID6094؛ 388 Queue110 lock samples matching tag (markers not unique locks), 6 DownloadTrace. CLog interval 3004–5528ms, median3117; shell CPU median3.705% one core, not total collector. gfxinfo final P95 20ms/P99 93ms, 251 janky markers out of 4228 cumulative frames, scope not pure idle. New dataset still legacy backlog; do not compare directly with fresh A1. CL log full size larger than ZIP tail. Next phone T01/03/04 then stress and force-stop; do not claim complete fix.

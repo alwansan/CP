@@ -43,3 +43,5 @@ DIAG-001: automatic paths/permissions/coverage/metric attribution implemented in
 
 ## A1
 DL-010/011/015: mitigation implemented, pending CI/device; DL-005 throttle synchronized monotonic only; remaining issues open. ZIP new 5 startup ANR / 1790 raw warnings; CLog verified, coverage behind 6.6 MB. BUILD-001 isolated workflow added; pending run. docs/CP_DL_A1_AR.md.
+
+BUILD-001: verified signed A1 APK published; runtime gate pending. DL-010/011/015 remain open until device evidence.
