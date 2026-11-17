@@ -77,3 +77,6 @@ Owner clean-data phone test: multi-download button does not open. Direct uploade
 
 ## تحقق ما بعد الدفع
 CI https://github.com/alwansan/CP/actions/runs/44168809268 على 152a9c134e7ae56ea44c011e18a5d1dac9838dc9: in_progress/pending. فحص 10 تعريفات الأصناف المتضررة وconstructor matching و20 references، و38 مرجعاً لعائلة BatchDownload في Screen تطابقت مع جرد الشجرة. لم يثبت نشر APK hotfix بعد؛ لا تثبيت B1a-5 المعطوب. لا إثبات هاتف للـhotfix بعد؛ لا حاجة لمسح بيانات المستخدم. اختبر فتح النافذة أولاً ثم زر الأخطاء وبعدها B1b. 
+
+## النتيجة النهائية للـhotfix
+CI 44168809268 completed/success؛ code 152a9c134e7ae56ea44c011e18a5d1dac9838dc9؛ release cp-dl-B1a-fix-6؛ APK 56294428 bytes؛ sha256:c8479eaadb9e91d3b301526bc7af249f04ea4c5893cf05b16485c4f2c33959fe؛ https://github.com/alwansan/CP/releases/download/cp-dl-B1a-fix-6/Cinemana_CP_DL_B1a_fix_signed.apk. اختبارات المصدر وDEX والتوقيع نجحت ضمن CI؛ لا إثبات هاتف بعد. لا تستخدم B1a-5. لا حاجة لمسح البيانات؛ اختبار فتح متعدد Naruto وShippuden ثم B1b. 

@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1a_hotfix_ci_pending",
+  "status": "b1a_hotfix_published_awaiting_device",
   "last_session": "memory/sessions/2026-11-17_cp-dl-b1a-hotfix-12.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "Isolated CP-DL workflow verified signed A3; inherited workflow unchanged.",
-  "next": "Verify hotfix CI/release, phone open multi-download and selected failures, then B1b durable admission.",
+  "next": "Install hotfix as update; verify multi-download dialog opens on phone, then B1b durable admission.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,12 +41,12 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "152a9c134e7ae56ea44c011e18a5d1dac9838dc9",
+  "last_verified_head": "d86cdb6e65990762ea58a6901272d7e0a2c272e5",
   "branch_actions": {
     "total_count": 6,
     "latest_run_id": 44168809268,
-    "latest_conclusion": null,
-    "latest_status": "in_progress"
+    "latest_conclusion": "success",
+    "latest_status": "completed"
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -165,8 +165,12 @@
     "build": {
       "run_id": 44168809268,
       "code_sha": "152a9c134e7ae56ea44c011e18a5d1dac9838dc9",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success",
+      "release": "cp-dl-B1a-fix-6",
+      "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-B1a-fix-6/Cinemana_CP_DL_B1a_fix_signed.apk",
+      "apk_size": 56294428,
+      "apk_sha256": "sha256:c8479eaadb9e91d3b301526bc7af249f04ea4c5893cf05b16485c4f2c33959fe"
     }
   }
 }
