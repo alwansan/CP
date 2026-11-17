@@ -44,3 +44,16 @@ assert "const/16 v11, 0x8" in d and "const-wide/16 v11, 0x7530" in d
 p=read("smali_classes6/com/shabakaty/cinemana/ca1/BatchDownload$Screen.smali")
 assert "volatile busy:Z" in p and ":dl_skip_preview" in p and "const-wide/16 v2, 0x1f4" in p
 print("CP-DL A3 source guards PASS")
+
+# B1a: scoped UI failure isolation, not a durable queue proof.
+assert "->hasReadySelected()Z" in p and "->refreshFailedButton()V" in p
+assert "->failedSelected()Ljava/util/List;" in p and ":dl_error_kept" in p
+assert "BatchDownload$Screen$FailedClick;" in p
+click=read("smali_classes6/com/shabakaty/cinemana/ca1/BatchDownload$Screen$FailedClick.smali")
+assert "->quality(" in click and "->submitted:Z" in click and "->existing:Z" in click
+begin=p.split(".method begin()V",1)[1].split(".end method",1)[0]
+assert "->error:Ljava/lang/String;\n    if-nez v6, :cond_2" in begin
+refresh=p.split(".method refresh()V",1)[1].split(".end method",1)[0]
+assert "if-nez v10, :cond_17" not in refresh
+assert "if-nez v9, :cond_17" in refresh
+print("CP-DL B1a failure isolation source guards PASS")

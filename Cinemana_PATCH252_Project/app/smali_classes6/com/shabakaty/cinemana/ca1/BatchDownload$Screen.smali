@@ -33,6 +33,8 @@
 
 .field clearButton:Landroid/widget/Button;
 
+.field failedButton:Landroid/widget/Button;
+
 .field closeButton:Landroid/widget/Button;
 
 .field volatile closed:Z
@@ -380,6 +382,11 @@
 
     if-nez v6, :cond_2
 
+    iget-object v6, v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->error:Ljava/lang/String;
+    if-nez v6, :cond_2
+    iget-boolean v6, v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->loading:Z
+    if-nez v6, :cond_2
+
     invoke-interface {v1, v4}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
     goto :goto_0
@@ -485,9 +492,9 @@
 
     new-instance v6, Lcom/shabakaty/cinemana/ca1/BatchDownload$Job;
 
-    new-instance v7, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda12;
+    new-instance v7, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda12;
 
-    invoke-direct {v7, p0, v4, v2, v1}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda12;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/List;)V
+    invoke-direct {v7, p0, v4, v2, v1}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda12;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/List;)V
 
     const/4 v4, -0x1
 
@@ -859,6 +866,12 @@
 
     if-nez p1, :cond_2
 
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->failedSelected()Ljava/util/List;
+    move-result-object p1
+    invoke-interface {p1}, Ljava/util/List;->isEmpty()Z
+    move-result p1
+    if-eqz p1, :cond_2
+
     iget-object p1, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->dialog:Landroid/app/Dialog;
 
     invoke-virtual {p1}, Landroid/app/Dialog;->dismiss()V
@@ -1126,6 +1139,13 @@
     :catch_1
     move-exception v2
 
+    iget-object v3, v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->error:Ljava/lang/String;
+    if-nez v3, :dl_error_kept
+    const-string v3, "\u062a\u0639\u0630\u0631 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0637\u0644\u0628\u061b \u0623\u0639\u062f \u062a\u062c\u0647\u064a\u0632 \u0627\u0644\u062d\u0644\u0642\u0629"
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/I18n161;->t(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    iput-object v3, v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->error:Ljava/lang/String;
+    :dl_error_kept
     iget v3, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->enqueueFailures:I
 
     add-int/2addr v3, v4
@@ -1192,9 +1212,9 @@
 
     sget-object v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Ui;->MAIN:Landroid/os/Handler;
 
-    new-instance v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda0;
+    new-instance v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda0;
 
-    invoke-direct {v1, p0, p1, p2, p3}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda0;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Ljava/util/List;II)V
+    invoke-direct {v1, p0, p1, p2, p3}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda0;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Ljava/util/List;II)V
 
     const-wide/16 p1, 0x8
 
@@ -4830,6 +4850,8 @@
 
     invoke-virtual {v1, v3}, Landroid/app/Dialog;->setCancelable(Z)V
 
+    invoke-virtual {v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->refreshFailedButton()V
+
     .line 212
     iget-object v1, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->start:Landroid/widget/Button;
 
@@ -4837,7 +4859,9 @@
 
     if-nez v9, :cond_17
 
-    if-nez v10, :cond_17
+    invoke-virtual {v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->hasReadySelected()Z
+    move-result v3
+    if-eqz v3, :cond_17
 
     iget-boolean v3, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z
 
@@ -5303,9 +5327,9 @@
 
     invoke-virtual {v5, v12, v13}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    new-instance v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda15;
+    new-instance v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda15;
 
-    invoke-direct {v4, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda15;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v4, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda15;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v12, v4}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
@@ -5403,9 +5427,9 @@
     invoke-virtual {v4, v8}, Landroid/widget/EditText;->setVisibility(I)V
 
     .line 151
-    new-instance v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda16;
+    new-instance v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda16;
 
-    invoke-direct {v4, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda16;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v4, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda16;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v6, v4}, Landroid/widget/ImageButton;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
@@ -5546,6 +5570,25 @@
     iget-object v4, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->clearButton:Landroid/widget/Button;
 
     invoke-virtual {v4, v8}, Landroid/widget/Button;->setVisibility(I)V
+
+    const-string v4, "\u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u0645\u062d\u062f\u062f\u0629 \u0627\u0644\u062a\u064a \u062a\u0639\u0630\u0631\u062a"
+    invoke-static {v4}, Lcom/shabakaty/cinemana/ca1/I18n161;->t(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v0, v4}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->button(Ljava/lang/String;)Landroid/widget/Button;
+    move-result-object v4
+    iput-object v4, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->failedButton:Landroid/widget/Button;
+    new-instance v5, Landroid/widget/LinearLayout$LayoutParams;
+    const/16 v6, 0x24
+    invoke-virtual {v0, v6}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->dp(I)I
+    move-result v6
+    invoke-direct {v5, v7, v6}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+    invoke-virtual {v1, v4, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+    const/16 v5, 0x8
+    invoke-virtual {v4, v5}, Landroid/widget/Button;->setVisibility(I)V
+    new-instance v5, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$FailedClick;
+    const/4 v6, 0x0
+    invoke-direct {v5, v0, v6}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$FailedClick;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Ljava/util/List;)V
+    invoke-virtual {v4, v5}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     .line 156
     const-string v4, "\u062c\u0627\u0631\u064d \u062c\u0644\u0628 \u0627\u0644\u0645\u0648\u0627\u0633\u0645 \u0648\u0627\u0644\u062d\u0644\u0642\u0627\u062a\u2026"
@@ -5743,41 +5786,41 @@
     .line 161
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->seasonButton:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda17;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda17;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda17;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda17;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->qualityButton:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda18;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda18;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda18;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda18;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->allButton:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda19;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda19;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda19;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda19;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->clearButton:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda20;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda20;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda20;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda20;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
     iget-object v2, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->start:Landroid/widget/Button;
 
-    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda21;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda21;
 
-    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda21;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v3, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda21;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v2, v3}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
@@ -5788,9 +5831,9 @@
 
     iget-object v1, v0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->dialog:Landroid/app/Dialog;
 
-    new-instance v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda22;
+    new-instance v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda22;
 
-    invoke-direct {v2, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda22;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
+    invoke-direct {v2, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$ExternalSyntheticLambda22;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     invoke-virtual {v1, v2}, Landroid/app/Dialog;->setOnDismissListener(Landroid/content/DialogInterface$OnDismissListener;)V
 
@@ -6196,4 +6239,147 @@
 
     :cond_1
     return-object v0
+.end method
+
+# CP-DL B1a: keep selected errors actionable without blocking ready items.
+.method hasReadySelected()Z
+    .locals 3
+    iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->episodes:Ljava/util/List;
+    invoke-interface {v0}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+    move-result-object v0
+    :loop
+    invoke-interface {v0}, Ljava/util/Iterator;->hasNext()Z
+    move-result v1
+    if-eqz v1, :none
+    invoke-interface {v0}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;
+    iget-boolean v2, v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->selected:Z
+    if-eqz v2, :loop
+    iget-boolean v2, v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->submitted:Z
+    if-nez v2, :loop
+    iget-boolean v2, v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->existing:Z
+    if-nez v2, :loop
+    iget-boolean v2, v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->loading:Z
+    if-nez v2, :loop
+    iget-object v2, v1, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->error:Ljava/lang/String;
+    if-nez v2, :loop
+    const/4 v0, 0x1
+    return v0
+    :none
+    const/4 v0, 0x0
+    return v0
+.end method
+
+.method failedSelected()Ljava/util/List;
+    .locals 4
+    new-instance v0, Ljava/util/ArrayList;
+    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
+    iget-object v1, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->episodes:Ljava/util/List;
+    invoke-interface {v1}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+    move-result-object v1
+    :loop
+    invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
+    move-result v2
+    if-eqz v2, :done
+    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+    move-result-object v2
+    check-cast v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;
+    iget-boolean v3, v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->selected:Z
+    if-eqz v3, :loop
+    iget-boolean v3, v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->submitted:Z
+    if-nez v3, :loop
+    iget-boolean v3, v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->existing:Z
+    if-nez v3, :loop
+    iget-object v3, v2, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->error:Ljava/lang/String;
+    if-eqz v3, :loop
+    invoke-interface {v0, v2}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    goto :loop
+    :done
+    return-object v0
+.end method
+
+.method refreshFailedButton()V
+    .locals 5
+    iget-object v0, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->failedButton:Landroid/widget/Button;
+    if-eqz v0, :done
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->failedSelected()Ljava/util/List;
+    move-result-object v1
+    invoke-interface {v1}, Ljava/util/List;->size()I
+    move-result v1
+    if-nez v1, :visible
+    const/16 v2, 0x8
+    invoke-virtual {v0, v2}, Landroid/widget/Button;->setVisibility(I)V
+    return-void
+    :visible
+    const/4 v2, 0x0
+    invoke-virtual {v0, v2}, Landroid/widget/Button;->setVisibility(I)V
+    iget-boolean v2, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z
+    xor-int/lit8 v2, v2, 0x1
+    invoke-virtual {v0, v2}, Landroid/widget/Button;->setEnabled(Z)V
+    new-instance v2, Ljava/lang/StringBuilder;
+    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v3, "\u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u0645\u062d\u062f\u062f\u0629 \u0627\u0644\u062a\u064a \u062a\u0639\u0630\u0631\u062a: "
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/I18n161;->t(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v0, v4}, Landroid/widget/Button;->setText(Ljava/lang/CharSequence;)V
+    :done
+    return-void
+.end method
+
+.method showFailed()V
+    .locals 7
+    iget-boolean v0, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z
+    if-nez v0, :done
+    iget-boolean v0, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->closed:Z
+    if-nez v0, :done
+    invoke-virtual {p0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->failedSelected()Ljava/util/List;
+    move-result-object v0
+    invoke-interface {v0}, Ljava/util/List;->size()I
+    move-result v1
+    if-eqz v1, :done
+    new-array v2, v1, [Ljava/lang/CharSequence;
+    const/4 v3, 0x0
+    :loop
+    if-ge v3, v1, :display
+    invoke-interface {v0, v3}, Ljava/util/List;->get(I)Ljava/lang/Object;
+    move-result-object v4
+    check-cast v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v6, "S"
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-object v6, v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->season:Ljava/lang/String;
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v6, " E"
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-object v6, v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->number:Ljava/lang/String;
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v6, " — "
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-object v6, v4, Lcom/shabakaty/cinemana/ca1/BatchDownload$Episode;->error:Ljava/lang/String;
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v5
+    aput-object v5, v2, v3
+    add-int/lit8 v3, v3, 0x1
+    goto :loop
+    :display
+    new-instance v1, Landroid/app/AlertDialog$Builder;
+    iget-object v3, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->context:Landroid/content/Context;
+    invoke-direct {v1, v3}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+    const-string v3, "\u0627\u0644\u062d\u0644\u0642\u0627\u062a \u0627\u0644\u0641\u0627\u0634\u0644\u0629 \u2014 \u0627\u0636\u063a\u0637 \u0644\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u062a\u062c\u0647\u064a\u0632"
+    invoke-static {v3}, Lcom/shabakaty/cinemana/ca1/I18n161;->t(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v3
+    invoke-virtual {v1, v3}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+    new-instance v3, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$FailedClick;
+    invoke-direct {v3, p0, v0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$FailedClick;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;Ljava/util/List;)V
+    invoke-virtual {v1, v2, v3}, Landroid/app/AlertDialog$Builder;->setItems([Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+    invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/Dialogs;->show(Landroid/app/AlertDialog$Builder;)Landroid/app/AlertDialog;
+    :done
+    return-void
 .end method

@@ -55,31 +55,31 @@ jobs:
           set -euo pipefail
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_CP_DL_A3_signed.apk "$RUNNER_TEMP/local-aligned.apk"
-          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_CP_DL_A3_signed.apk
-          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_CP_DL_A3_signed.apk
-          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_CP_DL_A3_signed.apk --smali-root Cinemana_PATCH252_Project/app
-          sha256sum Cinemana_PATCH252_Project/output/Cinemana_CP_DL_A3_signed.apk > Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1a_signed.apk "$RUNNER_TEMP/local-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1a_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1a_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1a_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1a_signed.apk > Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: Cinemana-CP-DL-A3
+          name: Cinemana-CP-DL-B1a
           path: |
-            Cinemana_PATCH252_Project/output/Cinemana_CP_DL_A3_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1a_signed.apk
             Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Publish direct APK release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: cp-dl-A3-${{ github.run_number }}
+          tag_name: cp-dl-B1a-${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          name: "Cinemana CP-DL A3 #${{ github.run_number }}"
+          name: "Cinemana CP-DL B1a #${{ github.run_number }}"
           prerelease: true
           make_latest: "false"
           body: |
-            CP-DL A3 A1/A2 + strict subtitle transfer receipts, bounded replay/dependency work and optional preview suspension. Device validation required.
+            CP-DL B1a preserves A3 and isolates selected preparation/dispatch failures; durable admission is not yet implemented. Device validation required.
             Install the APK directly as an update; preserve app data.
           files: |
-            Cinemana_PATCH252_Project/output/Cinemana_CP_DL_A3_signed.apk
+            Cinemana_PATCH252_Project/output/Cinemana_CP_DL_B1a_signed.apk
             Cinemana_PATCH252_Project/output/CP_DL_SHA256SUMS.txt
           fail_on_unmatched_files: true

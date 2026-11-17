@@ -19,7 +19,10 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف الفعلية — 2026-11-17 | A3 منشور، B1 قيد التحليل
+## نقطة الاستئناف الفعلية — 2026-11-17 | B1a منفذ جزئياً، CI بانتظار التحقق
+آخر جلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1a-11.md
+التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1A_AR.md
+B1a فصل الحلقات المحددة الفاشلة عن الجاهزة، زر أخطاء ومعلومات السبب وإعادة التجهيز، إبقاء النافذة عند أخطاء مختارة. لا durable admission أو DB ACK جديد بعد، لا تغيير في queue/MKV/HTTP أو HTML. تحقق من CI الجديد قبل الاختبار. الأرقام من A1/A2؛ لا A3/B1a هاتف مثبت.
 اقرأ أولاً التقرير الجديد كاملاً: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1_HANDOFF_AR.md
 جلسة الاستعادة الحالية: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-restore-10.md
 ثم سجل تسليم B1: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1-handoff-09.md
