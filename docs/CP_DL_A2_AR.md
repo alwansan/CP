@@ -12,3 +12,6 @@ MKV internal tail: 183 DB_PROMOTE_SUCCESS for 42 unique external IDs; 42 QUEUE_S
 - Version A2 release namespace dedicated. CI and actual phone validation required. No claim stale status or all MKV blocked fixed. 
 ## Next
 A2 test same existing backlog (backup; don't wipe), verify watch UI state and progress without reopen, compare unique MKV rate and repeated DB promotions, SQLite_BUSY and wait time, startup ANR/leaks. Then DL-B1/B2 durable batch + incremental queue/recovery, verified source receipt, DB promotion idempotency, UI status generation; logging optimization after call graph. Need actual direct downloader callbacks and per-task state mapping before changing status authority. 
+
+## أول محاولة CI لـA2
+Run 44149109180 فشل في test_recovery_flow.py بسبب Unmodeled instruction: if-lez v2, :ordered_done؛ المحاكي لم يدعم شروط/حقل cursor الجديدة. وسّع المحاكي لدعم sget/sput AUDIT_CURSOR, if-lez/ltz, if-ge/lt؛ اختبار 25 ملفات يثبت أول 24 بالترتيب ضمن 8/دورة ووصول 25، واختبار تقلص المجلد وإعادة المؤشر؛ لا تعطيل أو تخفيض اختبارات التحقق. البناء الجديد مطلوب.

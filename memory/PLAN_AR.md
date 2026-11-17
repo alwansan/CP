@@ -33,3 +33,6 @@ A1 APK منشور، CI completed/success. جرب الهاتف حسب docs/CP_DL_
 
 ## A2
 docs/CP_DL_A2_AR.md. A1 phone gate improved leaks/startup but heavy stress remains. A2 reduce MKV worker/scan and UI refresh cost; then B1/B2 durable batch and queue, source receipts, DB idempotency + state authority. No full scheduler rewrite this batch.
+
+## أول محاولة CI لـA2
+Run 44149109180 فشل في test_recovery_flow.py بسبب Unmodeled instruction: if-lez v2, :ordered_done؛ المحاكي لم يدعم شروط/حقل cursor الجديدة. وسّع المحاكي لدعم sget/sput AUDIT_CURSOR, if-lez/ltz, if-ge/lt؛ اختبار 25 ملفات يثبت أول 24 بالترتيب ضمن 8/دورة ووصول 25، واختبار تقلص المجلد وإعادة المؤشر؛ لا تعطيل أو تخفيض اختبارات التحقق. البناء الجديد مطلوب.

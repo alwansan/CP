@@ -52,3 +52,6 @@ CI 44143681956 completed/success؛ compile/tests/sign/verify/upload ناجحة �
 
 ## A1 تجربة الهاتف وA2
 A1 CLog session 210751: 0 SQLite leak, 0 ANR, 0 startup timeout; peak447 threads,42 unique MKV/183 DB promotes, 2 SQLITE_BUSY, 120s source wait, UI oscillation. CL tree44 MKV/19 MP4/2 temp. A2 scoped: 2 mux slots, 15s wait, safe advisory state cleanup, bounded8 rotating audit, no-op ledger, coalesced UI. docs/CP_DL_A2_AR.md; memory/sessions/2026-11-17_cp-dl-a2-implementation-07.md. pending CI/device.
+
+## أول محاولة CI لـA2
+Run 44149109180 فشل في test_recovery_flow.py بسبب Unmodeled instruction: if-lez v2, :ordered_done؛ المحاكي لم يدعم شروط/حقل cursor الجديدة. وسّع المحاكي لدعم sget/sput AUDIT_CURSOR, if-lez/ltz, if-ge/lt؛ اختبار 25 ملفات يثبت أول 24 بالترتيب ضمن 8/دورة ووصول 25، واختبار تقلص المجلد وإعادة المؤشر؛ لا تعطيل أو تخفيض اختبارات التحقق. البناء الجديد مطلوب.

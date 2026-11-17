@@ -16,6 +16,7 @@ class Flow:
         self.scheduled = []
         self.dispatched = []
         self.files = []
+        self.cursor = 0
 
     def run(self, method, *args):
         block = re.search(r'\.method [^\n]*\b' + re.escape(method) + r'\([^\n]+\n(.*?)\.end method', SOURCE, re.S)[1]
@@ -44,6 +45,8 @@ class Flow:
                 put(parts[0], get(parts[1]))
             elif op == 'sget-boolean': put(parts[0], self.pending)
             elif op == 'sput-boolean': self.pending = bool(get(parts[0]))
+            elif op == 'sget' and 'AUDIT_CURSOR:I' in operands: put(parts[0], self.cursor)
+            elif op == 'sput' and 'AUDIT_CURSOR:I' in operands: self.cursor = get(parts[0])
             elif op.startswith('sget-object'): put(parts[0], operands.split('->')[1].split(':')[0])
             elif op == 'new-instance': put(parts[0], {})
             elif op == 'check-cast': pass
@@ -70,8 +73,12 @@ class Flow:
             elif op in ('if-eqz','if-nez'):
                 condition = bool(get(parts[0]))
                 if condition == (op == 'if-nez'): pc = labels[parts[1]]
-            elif op == 'if-ge':
-                if get(parts[0]) >= get(parts[1]): pc = labels[parts[2]]
+            elif op in ('if-lez','if-ltz'):
+                value = get(parts[0])
+                if (value <= 0 if op == 'if-lez' else value < 0): pc = labels[parts[1]]
+            elif op in ('if-ge','if-lt'):
+                x,y = get(parts[0]),get(parts[1])
+                if (x >= y if op == 'if-ge' else x < y): pc = labels[parts[2]]
             elif op.startswith('goto'): pc = labels[operands]
             elif op == 'return-void': return None
             elif op.startswith('return'): return get(parts[0])
@@ -106,6 +113,30 @@ class RecoveryFlowTests(unittest.TestCase):
             ('same-B.mp4',20),('same-A.mp4',20),('already.mkv',4)]]
         f.run('scanExistingRoot', 'work')
         self.assertEqual(f.dispatched, ['old.mp4','same-A.mp4','same-B.mp4','new.mp4'])
+
+    def test_bounded_rotation_and_no_starvation(self):
+        f = Flow()
+        f.files = [dict(name=f'{i:02d}.mp4',mtime=i) for i in range(25)]
+        f.files += [dict(name='active.mp4.temp',mtime=-5),dict(name='mux.cnm-recovery.tmp.mp4',mtime=-4)]
+        for _ in range(3):
+            before=len(f.dispatched)
+            f.run('scanExistingRoot','work')
+            self.assertEqual(len(f.dispatched)-before, 8)
+        self.assertEqual(f.dispatched,[f'{i:02d}.mp4' for i in range(24)])
+        f.run('scanExistingRoot','work')
+        self.assertEqual(f.dispatched[24], '24.mp4')
+        self.assertLessEqual(len(f.dispatched)-24,8)
+        self.assertEqual(len(set(f.dispatched)),25)
+
+    def test_cursor_adjusts_after_files_removed(self):
+        f=Flow()
+        f.files=[dict(name=f'{i:02d}.mp4',mtime=i) for i in range(20)]
+        f.run('scanExistingRoot','work')
+        self.assertEqual(len(f.dispatched),8)
+        f.files=[dict(name='remaining.mp4',mtime=99)]
+        f.run('scanExistingRoot','work')
+        self.assertEqual(f.dispatched[-1],'remaining.mp4')
+        self.assertEqual(f.cursor,0)
 
     def test_empty_work(self):
         f = Flow(); f.run('scanExistingRoot','work')

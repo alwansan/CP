@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [feature/download-stability]
-    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/download-stability.yml', 'scripts/test_cp_dl.py']
+    paths: ['Cinemana_PATCH252_Project/**', 'patches/local-account/**', '.github/workflows/download-stability.yml', 'scripts/test_cp_dl.py', 'scripts/test_recovery_flow.py']
 permissions:
   contents: write
 concurrency:

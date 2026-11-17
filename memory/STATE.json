@@ -31,7 +31,7 @@
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "Verify A2 CI/release; owner preserve A1 backlog for test; analyze before B stages",
+  "next": "Verify rebuilt A2 CI and release; test existing backlog on phone",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -103,5 +103,10 @@
     "peak_threads": 447,
     "unique_promotions": 42,
     "total_promotions": 183
+  },
+  "a2_first_ci": {
+    "run_id": 44149109180,
+    "status": "failure",
+    "reason": "old emulator unmodeled if-lez; extended test coverage"
   }
 }

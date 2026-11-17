@@ -47,3 +47,6 @@ DL-010/011/015: mitigation implemented, pending CI/device; DL-005 throttle synch
 BUILD-001: verified signed A1 APK published; runtime gate pending. DL-010/011/015 remain open until device evidence.
 
 A1 evidence: DL-010/011 no observed leak/ANR in 273 samples (keep regression tests). DL-006/007/012/005 open: 183 promotes/42 IDs, SQLITE_BUSY x2, 120s source wait, 447 threads, UI state oscillation, long recovery ticks. A2 mitigations pending CI/device; no proven root for status oscillation. docs/CP_DL_A2_AR.md
+
+## أول محاولة CI لـA2
+Run 44149109180 فشل في test_recovery_flow.py بسبب Unmodeled instruction: if-lez v2, :ordered_done؛ المحاكي لم يدعم شروط/حقل cursor الجديدة. وسّع المحاكي لدعم sget/sput AUDIT_CURSOR, if-lez/ltz, if-ge/lt؛ اختبار 25 ملفات يثبت أول 24 بالترتيب ضمن 8/دورة ووصول 25، واختبار تقلص المجلد وإعادة المؤشر؛ لا تعطيل أو تخفيض اختبارات التحقق. البناء الجديد مطلوب.
