@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1b2_dex_rebalance_ci_pending",
+  "status": "b1b2_published_awaiting_device",
   "last_session": "memory/sessions/2026-11-18_cp-dl-b1b2-anr-14.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "Isolated CP-DL workflow verified signed A3; inherited workflow unchanged.",
-  "next": "Verify rebalanced B1b2 build and device; fix ViewModel cancellation/Room observers, durable batch admission and UI sync. No HTML migration yet.",
+  "next": "Install B1b2 as update; verify single mux, acceptance/ANR, UI refresh. Implement durable admission and ViewModel/Room cancellation fix; HTML later.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,10 +41,10 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "b37dcd1bf089f7a5bee1fc193b803ab9c5952b9c",
+  "last_verified_head": "b9ed569950e5af7c70c2cd6a1474d4e2006f085c",
   "branch_actions": {
     "total_count": 7,
-    "latest_run_id": 44173935320,
+    "latest_run_id": 44182076388,
     "latest_status": "completed",
     "latest_conclusion": "success"
   },
@@ -216,7 +216,11 @@
       "native_shippuden_mp4_admissions": 197,
       "mp4_completions_raw": 88,
       "mp4_db_ack_raw": 88,
-      "sqlite_leak_markers": 2
+      "sqlite_leak_markers": 2,
+      "ffmpeg_pairs": 54,
+      "ffmpeg_median_ms": 7540,
+      "slot_pairs": 51,
+      "slot_median_ms": 11901
     },
     "changes": [
       "one mux permit per process",
@@ -230,6 +234,16 @@
       "status": "completed",
       "conclusion": "failure",
       "reason": "primary DEX method ref 65536; tests passed"
+    },
+    "build": {
+      "run_id": 44182076388,
+      "code_sha": "b9ed569950e5af7c70c2cd6a1474d4e2006f085c",
+      "status": "completed",
+      "conclusion": "success",
+      "release": "cp-dl-B1b2-9",
+      "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-B1b2-9/Cinemana_CP_DL_B1b2_signed.apk",
+      "apk_size": 56302620,
+      "apk_sha256": "sha256:6773048d3c9f5dc011c4c3ac5f9a608eef7eae53e4414295c5089ab94097c7f3"
     }
   }
 }
