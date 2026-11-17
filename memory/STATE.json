@@ -12,12 +12,12 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "a3_implementation_ci_pending",
+  "status": "a3_signed_apk_published_awaiting_device",
   "last_session": "memory/sessions/2026-11-17_cp-dl-a3-implementation-08.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
   "new_build_triggered": true,
-  "device_test": "A2 observed; A3 pending",
+  "device_test": "A2 tested; A3 pending",
   "cl": {
     "repo": "alwansan/CL",
     "branch": "main",
@@ -31,7 +31,7 @@
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "Verify A3 CI; test subtitle dedup and overlapping batches; B1 durable admission/error filter and link recovery next",
+  "next": "A3 phone test existing 197+35 batch, verify subtitle receipts and UI; B1 durable batch admission + failure filter, HTTP403 authorized recovery, DB dedup/idle remain",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "fc602e1539d3b70578319b7f9bda444ecaff159d",
+  "last_verified_head": "cc4576f122edfdbf1905f3e5cc36f0707ba36f79",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -123,5 +123,15 @@
     "apk_sha256": "sha256:b84ab2ffeeb8b14374d72934afc83cbcfc2975c44786846f0b74f83c46e22e0e",
     "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-A2-3/Cinemana_CP_DL_A2_signed.apk"
   },
-  "a3": "docs/CP_DL_A3_AR.md"
+  "a3": "docs/CP_DL_A3_AR.md",
+  "a3_build": {
+    "run_id": 44163124193,
+    "code_sha": "cc4576f122edfdbf1905f3e5cc36f0707ba36f79",
+    "status": "completed",
+    "conclusion": "success",
+    "release": "cp-dl-A3-4",
+    "apk_size": 56290332,
+    "apk_sha256": "sha256:1a990a2492f99367f138ee44b9c6fcb11b059158e3e27ea4d50f863465d1673c",
+    "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-A3-4/Cinemana_CP_DL_A3_signed.apk"
+  }
 }
