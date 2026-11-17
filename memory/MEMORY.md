@@ -28,3 +28,6 @@ CL/main يحوي log وdata وClog فعلياً بتاريخ 2026-11-17؛ لم �
 
 ## استعادة السياق — 2026-11-17
 قرئت ملفات الذاكرة والبروتوكول والخرائط وسجل التأسيس، وفُحص HEAD 7d8ab7b2a7be802e37da85e24096504780ba69b7 قبل توثيق الجلسة. CI الأساس مؤكد success؛ Actions الفرع الجديد صفر عند الفحص. CL/log,data,Clog موجودة؛ جرد فقط. لم يصف المالك فكرة الإصلاح بعد؛ لا تعديل كود أو تشغيل بناء. سجل الجلسة: memory/sessions/2026-11-17_cp-download-restore-01.md.
+
+## تحقيق ضغط التنزيلات 2026-11-17
+راجع docs/DOWNLOAD_PRESSURE_AUDIT_AR.md للتفاصيل المثبتة والخطة. CA1 220/496 جودة مكتشفة؛ Shippuden 197 ضمن 1–200 والأرقام المفقودة من سجل الجودة 120/128/130. admission 41.484/59.686s مقابل 2.654/7.728s metadata، dispatch على main. Queue110 scan full snapshot وbind لكل task disconnected؛ 612 requests، 415 bind results، 1257 WAIT_SERVICE_BEFORE_DB events، recovery إلى 9.938s في عينة. MKV 4 مكتملة/16 MP4/2 temp، 16407 DB discovery logs، 4 acquire/2 release markers لا تثبت leak وحدها. main threads peak 360، RAM متاحة min نحو 2.85GiB، لا OOM مثبت. 216 recovery entries، 4 proofs، عينة 8 queued. CL internal log decode failed. الفروع السابقة مراجع قراءة لا دمج. الحالة: تحليل وخطة قبل التنفيذ؛ لا سبب واحد مؤكد لكل الأعراض. الجلسة memory/sessions/2026-11-17_cp-download-pressure-audit-01.md.

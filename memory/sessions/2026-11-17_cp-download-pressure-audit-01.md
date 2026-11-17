@@ -1,0 +1,3 @@
+# جلسة تحليل ضغط التحميلات
+session_id=cp-dl-20261117-pressure-audit-01 | origin=chat | date=2026-11-17 Asia/Baghdad
+طلب المالك تحليل الصور وCL/log,data,Clog وtree والفروع السابقة ورسم خطة قبل التنفيذ. HEAD قبل التوثيق beefc6de7f914646bbd8c6ea5a01e4e03f3dec93، Actions الفرع صفر. CL pinned b0b4e6721dd8dac0e2e74acd80a889dfc5b461ed. قرئت CA1/downloads/diagnostics/mkv_export/tree وmetrics/summary وعيّنة recovery وجرد الفروع والكود Smali الفعلي. CLog internal UTF-8 decode failed؛ raw stack غير متاح. نتائج وإثباتات وخطة: docs/DOWNLOAD_PRESSURE_AUDIT_AR.md. لا تعديل runtime أو workflow أو CL ولا بناء. أولوية P0 ثم P1/P2؛ المالك لم يطلب تنفيذ إصلاح بعد. لا نقرأ بيانات الحساب أو ننشر URL. حدثت ملفات الذاكرة ورسالة الاستعادة.

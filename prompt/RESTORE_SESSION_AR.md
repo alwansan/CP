@@ -19,9 +19,9 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف (2026-11-17 — استعادة السياق)
-الجلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-download-restore-01.md
-قرئت الذاكرة والخطة والبروتوكول والخرائط وأعيد فحص HEAD قبل توثيق هذه الجلسة (7d8ab7b2a7be802e37da85e24096504780ba69b7) وActions وCL. لا عمليات بناء للفرع الجديد عند الفحص. الأساس PATCH274، CI 40839279548 ناجح على SHA الأساس؛ لا تعديل كود أو workflow ولا بناء جديد. جرد CL/log,data,Clog مؤكد؛ لم نقرأ سجلات خاماً أو حساباً. workflow الموروث يقيد push بالفرع الأصلي؛ افحص إعداد بناء ونشر مستقل قبل أول إصلاح.
-المالك طلب استعادة السياق قبل تقديم الفكرة. انتظر وصفه؛ اثبت السبب واصلح بأمان واختبر. لا تمسح التنزيلات أو تستبدل ملفاتها أو DB المستخدم.
+## نقطة الاستئناف (2026-11-17 — تحقيق الضغط)
+الجلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-download-pressure-audit-01.md
+التقرير والخطة: https://github.com/alwansan/CP/blob/feature/download-stability/docs/DOWNLOAD_PRESSURE_AUDIT_AR.md
+المالك وصف ضغط 200–500 حلقة/lag/فقد ظاهري/توقف/MP4-MKV/عدم تشغيل/force-stop. أدلة CL pinned b0b4e6721dd8dac0e2e74acd80a889dfc5b461ed: CA1 220/496 جودة، 197 ضمن 1–200 لأن 120/128/130 غير موجودة بسجل الجودات، 41.5/59.7s admission main؛ 612 queue requests و415 bind result، 4 MKV/16 MP4/2 temp، peak 360 threads، لا OOM مثبت. راجع التقرير للحدود؛ CLog internal decode failed. لا تعديل كود أو workflow ولا بناء. مرحلة تحليل فقط؛ الخطوة التالية توجيه المالك ثم P0/P1/P2. لا تدمج فروعاً ولا تمس بيانات المستخدم.
 
 **تحديث تلقائي إلزامي:** في كل دفعة وفي كل جلسة، حتى عند الفشل، حدّث MEMORY وSTATE وPLAN وISSUES وسجل جلسة مستقل وهذه الرسالة نفسها حسب التقدم، واحفظها في الفرع دون أن يطلب المالك ذلك. اجعل رسالة الاستعادة دائماً تشير إلى أحدث نقطة عمل مثبتة، لا إلى لقطة تأسيس جامدة.
