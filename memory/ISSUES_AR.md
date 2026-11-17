@@ -22,3 +22,12 @@
 | DL-008 | link retry وparallel cap | desired=2 applied=false x3؛ يحتاج إثبات first failure/validator/alternate |
 | DL-009 | force-stop resilience/resource pressure | peak 360 threads؛ 216 journals و4 proofs؛ recovery identity/acks غير مكتملة |
 انظر docs/DOWNLOAD_PRESSURE_AUDIT_AR.md. DL-001 الآن umbrella للتحقيق، لا إغلاق قبل اختبار الهاتف. BUILD-001 مفتوح.
+
+## أدلة إضافية (ZIP)
+| ID | المشكلة | حالة |
+|---|---|---|
+| DL-010 | SQLite connection leak / Room lifecycle | 8188 warnings وكرر builder في PATCH274؛ P0A، PATCH318 مرجع |
+| DL-011 | startup ANR في :filedownloader | حالتان مؤكدتان بعد force-stop؛ stack غير متاح؛ P0B |
+| DL-012 | synchronous logging / lock contention | 24 UID samples DownloadTrace.log + code open/flush/close؛ P0C |
+| DL-008 | retry/cap | 156 disconnected cap requests، HTTP403 E12 مثبت؛ لا تعميم |
+DL-009 تصحيح: 4 am_kill هي force-stop x2 + ANR x2، لا LMK مثبت. DL-006 يبقى مفتوحاً. docs/DOWNLOAD_RESOURCE_AUDIT_AR.md.

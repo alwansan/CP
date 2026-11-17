@@ -19,9 +19,10 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف (2026-11-17 — تحقيق الضغط)
-الجلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-download-pressure-audit-01.md
-التقرير والخطة: https://github.com/alwansan/CP/blob/feature/download-stability/docs/DOWNLOAD_PRESSURE_AUDIT_AR.md
-المالك وصف ضغط 200–500 حلقة/lag/فقد ظاهري/توقف/MP4-MKV/عدم تشغيل/force-stop. أدلة CL pinned b0b4e6721dd8dac0e2e74acd80a889dfc5b461ed: CA1 220/496 جودة، 197 ضمن 1–200 لأن 120/128/130 غير موجودة بسجل الجودات، 41.5/59.7s admission main؛ 612 queue requests و415 bind result، 4 MKV/16 MP4/2 temp، peak 360 threads، لا OOM مثبت. راجع التقرير للحدود؛ CLog internal decode failed. لا تعديل كود أو workflow ولا بناء. مرحلة تحليل فقط؛ الخطوة التالية توجيه المالك ثم P0/P1/P2. لا تدمج فروعاً ولا تمس بيانات المستخدم.
+## نقطة الاستئناف (2026-11-17 — التحقيق المتقدم)
+الجلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-download-resource-audit-02.md
+التقرير الجديد: https://github.com/alwansan/CP/blob/feature/download-stability/docs/DOWNLOAD_RESOURCE_AUDIT_AR.md
+التقرير الأول: https://github.com/alwansan/CP/blob/feature/download-stability/docs/DOWNLOAD_PRESSURE_AUDIT_AR.md
+CLog ZIP المالك قرئ محلياً؛ 8188 SQLite leak warnings downloads DB؛ PATCH274 repeated Room builder، PATCH318 reference. حالتا startup ANR في :filedownloader بعد force-stop (4 markers؛ 4 kills ليست LMK)، 156 max-network requests disconnected، native 403 E12. stack ANR غير متاح. تمت مراجعة استراتيجية stable-core PATCH301–330 والفروع المبكرة للقراءة فقط، لا نقل/دمج. P0A Room lifetime، P0B startup/bind، P0C logging، ثم P1–P7. مرحلة تحليل فقط؛ لا runtime أو workflow أو build. انتظر توجيه المالك التالي، ولا تمس بياناته.
 
 **تحديث تلقائي إلزامي:** في كل دفعة وفي كل جلسة، حتى عند الفشل، حدّث MEMORY وSTATE وPLAN وISSUES وسجل جلسة مستقل وهذه الرسالة نفسها حسب التقدم، واحفظها في الفرع دون أن يطلب المالك ذلك. اجعل رسالة الاستعادة دائماً تشير إلى أحدث نقطة عمل مثبتة، لا إلى لقطة تأسيس جامدة.

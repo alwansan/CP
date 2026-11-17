@@ -1,0 +1,3 @@
+# جلسة CP-DL — تحليل CLog المضغوط والفروع
+session_id=cp-dl-20261117-resource-audit-02 | origin=chat | date=2026-11-17 Asia/Baghdad
+المالك قدم ZIP وطلب استمرار التحليل ومراجعة استراتيجيات الفروع. HEAD fd95d21976f2088e967db50cfefc3f44de8fb159، Actions 0. قرئت سجلات ZIP مباشرة (8 invalid UTF-8 replacement chars في internal؛ Android raw صحيح)، قورنت PATCH274 وstable-core PATCH301–330 وفروع الإصلاح. أدلة: 8188 SQLite leak warnings، 2 startup ANR in :filedownloader بعد force-stop، 156 max-network requests disconnected، 54 frame skip warnings، native 403 E12. التقرير docs/DOWNLOAD_RESOURCE_AUDIT_AR.md. لا raw logs أو بيانات حساب، لا runtime/CI تغييرات. ترتيب P0A DAO/P0B process+binding/P0C diagnostics ثم بقية الخطة. لا stack كامل للـANR. next: اعتماد المالك والتنفيذ المرحلي.

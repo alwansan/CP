@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "pressure_audit_complete_awaiting_implementation_direction",
-  "last_session": "memory/sessions/2026-11-17_cp-download-pressure-audit-01.md",
+  "status": "resource_audit_complete_awaiting_implementation_direction",
+  "last_session": "memory/sessions/2026-11-17_cp-download-resource-audit-02.md",
   "verified_at": "2026-11-17",
   "app_code_changed": false,
   "new_build_triggered": false,
@@ -28,10 +28,10 @@
     ],
     "inventory_only": false,
     "pinned_sha": "b0b4e6721dd8dac0e2e74acd80a889dfc5b461ed",
-    "internal_log_decode": "failed_invalid_utf8"
+    "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "Owner review plan; P0 observability and fixtures, P1 durable admission then P2 scheduler/recovery; isolated CI before first APK",
+  "next": "P0A Room ownership, P0B service startup/single-flight binding, P0C bounded diagnostic I/O; isolated CI before APK; proceed when owner directs",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "beefc6de7f914646bbd8c6ea5a01e4e03f3dec93",
+  "last_verified_head": "fd95d21976f2088e967db50cfefc3f44de8fb159",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -55,5 +55,12 @@
     "DL-007",
     "DL-008",
     "DL-009"
-  ]
+  ],
+  "resource_audit": "docs/DOWNLOAD_RESOURCE_AUDIT_AR.md",
+  "resource_findings": {
+    "sqlite_leak_warning_events": 8188,
+    "service_startup_anr_incidents": 2,
+    "max_network_requests_disconnected": 156,
+    "peak_main_threads": 360
+  }
 }

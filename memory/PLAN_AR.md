@@ -13,3 +13,6 @@
 
 ## خطة الضغط المحدثة
 المصدر التفصيلي: docs/DOWNLOAD_PRESSURE_AUDIT_AR.md. المالك طلب مرحلة تحليل فقط، لا تنفيذ runtime بعد. ترتيب P0 القياسات والاختبارات الاصطناعية، P1 قبول دائم/اختيار/ACK، P2 scheduler/recovery single-flight، P3 resolver/size/links bounded، P4 MKV oldest-ready/lease/DB/observer، P5 تنزيلات UI diff/playback، P6 force-stop recovery، P7 soak وCI مستقل. الأهداف المبدئية قابلة للقياس وليست وعوداً. حافظ على PATCH274 وملفات المستخدم.
+
+## تعديل الأولوية بعد CLog ZIP
+docs/DOWNLOAD_RESOURCE_AUDIT_AR.md. P0A lifecycle Room/DAO per process والتسرب؛ P0B startup minimal service, main-only repair, single-flight bind والحد بعد connected؛ P0C bounded diagnostic logger/قياسات per-thread. ثم P1–P7 السابقة؛ التخطيط فقط. لا نسخ كامل الفروع ولا حذف ملفات المستخدم، لا اعتماد نجاح CI كاختبار هاتف.
