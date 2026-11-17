@@ -19,10 +19,10 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف الفعلية — 2026-11-17 | B1b1 قيد البناء
+## نقطة الاستئناف الفعلية — 2026-11-17 | B1b1 منشور؛ بانتظار الهاتف
 آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1b-pressure-13.md
 التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1B_PRESSURE_AR.md
-B1a hotfix فتح النافذة مؤكد هاتفياً في العملين. أحدث ZIP h62 وCLog232929: دفعتا219+197، الشيبودن صفر native MP4 و362 subtitle رغم UI dispatch. MKV 7 وMP4 20 في tree؛ آخر mux release23:32:58 و15 video completes بعده. 1978 SQL errors و6.368s storage lock. B1b1 exact Downloads DB lookup + async coalesced storage worker + batch app context and stage markers. CI pending; تحقق من البناء قبل اختبار الهاتف. Next B1b durable DB ACK and independent fair queue, real cross-process UI refresh and MKV readiness. لا HTML migration حالياً.
+B1a hotfix فتح النافذة مؤكد هاتفياً في العملين. أحدث ZIP h62 وCLog232929: دفعتا219+197، الشيبودن صفر native MP4 و362 subtitle رغم UI dispatch. MKV 7 وMP4 20 في tree؛ آخر mux release23:32:58 و15 video completes بعده. 1978 SQL errors و6.368s storage lock. B1b1 exact Downloads DB lookup + async coalesced storage worker + batch app context and stage markers. CI https://github.com/alwansan/CP/actions/runs/44173935320 completed/success؛ APK https://github.com/alwansan/CP/releases/download/cp-dl-B1b1-7/Cinemana_CP_DL_B1b1_signed.apk Next B1b durable DB ACK and independent fair queue, real cross-process UI refresh and MKV readiness. لا HTML migration حالياً.
 آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1a-hotfix-12.md
 التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1A_HOTFIX_AR.md
 B1a-5 فشل فتح النافذة 22/22 في تجربة هاتف جديدة؛ NoClassDefFoundError من فقدان $ في listener names. استعدنا 20 مرجعاً وفعّلنا source/DEX type reference gates. لا تعتمد B1a-5؛ CI https://github.com/alwansan/CP/actions/runs/44168809268 (completed/success). APK https://github.com/alwansan/CP/releases/download/cp-dl-B1a-fix-6/Cinemana_CP_DL_B1a_fix_signed.apk اختبر فتح النافذة دون حذف البيانات. B1b مؤجل حتى إثبات فتح النافذة.

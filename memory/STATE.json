@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1b1_mitigation_ci_pending",
+  "status": "b1b1_published_awaiting_device",
   "last_session": "memory/sessions/2026-11-17_cp-dl-b1b-pressure-13.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
@@ -41,12 +41,12 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "a2ada57ea9d3168dfc70d8f7d0145b58aa9d09de",
+  "last_verified_head": "dbe7aa850697185d7f95cebecb444ab48ad3c8b3",
   "branch_actions": {
-    "total_count": 6,
-    "latest_run_id": 44168809268,
-    "latest_conclusion": "success",
-    "latest_status": "completed"
+    "total_count": 7,
+    "latest_run_id": 44173935320,
+    "latest_status": "completed",
+    "latest_conclusion": "success"
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -186,6 +186,17 @@
       "sqlite_missing_downloads": 1978,
       "storage_lock_max_ms": 6368,
       "ui_p99_ms": 350
+    },
+    "build": {
+      "run_id": 44173935320,
+      "code_sha": "dbe7aa850697185d7f95cebecb444ab48ad3c8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "compile_sign_dex": "pass",
+      "release": "cp-dl-B1b1-7",
+      "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-B1b1-7/Cinemana_CP_DL_B1b1_signed.apk",
+      "apk_sha256": "sha256:ed60b69cdb249aab5deabe5d0d36baf2d3066471fc6b28b34df0fcd586084bf5",
+      "apk_size": 56294428
     }
   }
 }
