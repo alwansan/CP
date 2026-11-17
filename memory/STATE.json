@@ -41,12 +41,12 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "7eba85ff22fdfd99ed1a3c1b27d5b9096f0567cc",
+  "last_verified_head": "f53bd49293ca173adc104277288182c36c37bd2b",
   "branch_actions": {
-    "total_count": 10,
-    "latest_run_id": 44185130936,
-    "latest_status": "completed",
-    "latest_conclusion": "failure"
+    "total_count": 11,
+    "latest_run_id": 44185564726,
+    "latest_status": "in_progress",
+    "latest_conclusion": null
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -284,8 +284,13 @@
       "injected_high_half_rejected": true
     },
     "emulator_retry": {
-      "status": "pending",
-      "fallback": "software -accel off; strict ART gate retained"
+      "status": "in_progress",
+      "run_id": 44185564726,
+      "run_number": 11,
+      "code_sha": "f53bd49293ca173adc104277288182c36c37bd2b",
+      "fallback": "software -accel off; strict ART gate retained",
+      "art_verified": false,
+      "release_verified": false
     }
   }
 }

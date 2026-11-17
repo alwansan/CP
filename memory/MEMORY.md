@@ -118,3 +118,7 @@ HEAD code 7eba85ff22fdfd99ed1a3c1b27d5b9096f0567cc; independently inspected actu
 
 ## CI run 10 — infrastructure failure and strict fallback
 44185130936 completed/failure. Job134399516013: source tests including actual Python h65 guard and both negatives PASS; APKTool assembly, signing, final DEX checks and artifact upload success. Step9 KVM setup exit1 at test -w /dev/kvm; emulator and release skipped. No ART result or published fix. New workflow probes KVM device and permissions, tries module loading when absent, software emulation (-accel off) if unavailable, larger bounded boot/job timeout; explicit runtime probe still required and release remains after it. No continue-on-error for smoke or release; no runtime logic changes in this follow-up. Next run required. Do not use unsigned/unverified or gate-failed artifact.
+
+
+## إعادة البناء بعد تعديل بيئة المحاكي
+Run https://github.com/alwansan/CP/actions/runs/44185564726 (number11, code/workflow SHA f53bd49293ca173adc104277288182c36c37bd2b) in_progress at verification. Branch run count11. Previous run10 source/assembly/sign gates passed but ART did not run. No published hotfix yet; verify live ART result before recommending APK. CL unchanged/read-only.
