@@ -102,3 +102,21 @@ dv=read("smali/com/shabakaty/downloader/dv0.smali")
 for stage in ("VIDEO_COROUTINE_ENTER","VIDEO_METADATA_COLLECTION_READY","VIDEO_PERMISSION_MISSING","VIDEO_NATIVE_DISPATCH","VIDEO_NATIVE_DISPATCH_RETURN","VIDEO_EXISTING_ROW"):
     assert stage in dv
 print("CP-DL B1b-1 storage, DB and detached batch scope source guards PASS")
+
+# B1b2: single mux slot while two preparation workers remain; bounded async telemetry.
+mkv=read("smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali")
+assert "MAX_CONCURRENT_FFMPEG:I = 0x1" in mkv
+clinit=mkv.split(".method static constructor <clinit>()V",1)[1].split(".end method",1)[0]
+assert "const/4 v1, 0x2\n\n    invoke-static {v1, v0}, Ljava/util/concurrent/Executors;->newFixedThreadPool" in clinit
+assert "const/4 v1, 0x1\n\n    const/4 v2, 0x1\n\n    invoke-direct {v0, v1, v2}, Ljava/util/concurrent/Semaphore;-><init>(IZ)V" in clinit
+trace=read("smali_classes3/com/shabakaty/cinemana/features/DownloadTrace.smali")
+sink=trace.split(".method public static log(Landroid/content/Context;Ljava/lang/String;)V",1)[1].split(".end method",1)[0]
+assert "TraceWriterDL;->offer(Ljava/lang/String;)V" in sink and "monitor-enter" not in sink and "FileOutputStream" not in sink
+writer=(root.parents[1]/"patches/local-account/src/com/shabakaty/cinemana/local/TraceWriterDL.java").read_text()
+assert "CAP=4096" in writer and "Q.offer(" in writer and "Q.drainTo(" in writer and "allowCoreThreadTimeOut(true)" in writer
+assert "THREAD="+"" in writer and "diagnostic_queue_full" in writer
+ey=read("smali/com/shabakaty/downloader/ey0.smali")
+assert "invoke-direct {p0, p1, p2, v4}, Lcom/shabakaty/downloader/ey0;->dlStart" in ey
+assert "if-nez p3, :dl_already_admitted" in ey
+assert "invoke-direct {p0, p1, p2, v0}, Lcom/shabakaty/downloader/ey0;->dlStart" in ey
+print("CP-DL B1b2 source gates PASS")

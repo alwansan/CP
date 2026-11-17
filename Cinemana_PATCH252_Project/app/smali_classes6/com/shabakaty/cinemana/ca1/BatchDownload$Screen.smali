@@ -2503,6 +2503,12 @@
     invoke-direct {v1, p0}, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen$$ExternalSyntheticLambda8;-><init>(Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;)V
 
     const-wide/16 v2, 0x1f4
+    iget-boolean v3, p0, Lcom/shabakaty/cinemana/ca1/BatchDownload$Screen;->busy:Z
+    if-eqz v3, :dl_refresh_delay_ready
+    const-wide/16 v2, 0x3e8
+    :dl_refresh_delay_ready
+    # v3 was used for the flag; restore the high part of the wide delay.
+    const/4 v3, 0x0
 
     invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 

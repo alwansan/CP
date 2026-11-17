@@ -858,6 +858,7 @@
     invoke-static {v0, v1, v3, v2}, Lcom/shabakaty/cinemana/features/RenameAssets;->trace(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Throwable;)V
 
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->admitted(Ljava/lang/Object;Ljava/lang/Object;)Z
+    move-result v4
 
     .line 3
     invoke-interface {p6, p1}, Lcom/shabakaty/downloader/tm1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
@@ -911,7 +912,8 @@
     invoke-static {p1, p3}, Lcom/shabakaty/downloader/j32;->e(Ljava/lang/Object;Ljava/lang/String;)V
 
     .line 14
-    invoke-virtual {p0, p1, p2}, Lcom/shabakaty/downloader/ey0;->q(Lcom/shabakaty/downloader/a90;Z)V
+    # This exact new composer already passed admission above, unless the write failed.
+    invoke-direct {p0, p1, p2, v4}, Lcom/shabakaty/downloader/ey0;->dlStart(Lcom/shabakaty/downloader/a90;ZZ)V
 
     const/4 p1, 0x0
 
@@ -2072,6 +2074,13 @@
 .end method
 
 .method public final q(Lcom/shabakaty/downloader/a90;Z)V
+    .locals 1
+    const/4 v0, 0x0
+    invoke-direct {p0, p1, p2, v0}, Lcom/shabakaty/downloader/ey0;->dlStart(Lcom/shabakaty/downloader/a90;ZZ)V
+    return-void
+.end method
+
+.method private dlStart(Lcom/shabakaty/downloader/a90;ZZ)V
     .locals 3
 
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Final100;->skip(Ljava/lang/Object;Ljava/lang/Object;)Z
@@ -2083,9 +2092,10 @@
     return-void
 
     :cond_0
+    if-nez p3, :dl_already_admitted
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ca1/Restart108;->admitted(Ljava/lang/Object;Ljava/lang/Object;)Z
-
     move-result v0
+    :dl_already_admitted
 
     .line 1
     invoke-static {}, Lcom/shabakaty/downloader/mw0;->a()Lcom/shabakaty/downloader/lw0;

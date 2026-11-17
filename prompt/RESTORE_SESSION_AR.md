@@ -19,24 +19,10 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف الفعلية — 2026-11-17 | B1b1 منشور؛ بانتظار الهاتف
-آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1b-pressure-13.md
-التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1B_PRESSURE_AR.md
-B1a hotfix فتح النافذة مؤكد هاتفياً في العملين. أحدث ZIP h62 وCLog232929: دفعتا219+197، الشيبودن صفر native MP4 و362 subtitle رغم UI dispatch. MKV 7 وMP4 20 في tree؛ آخر mux release23:32:58 و15 video completes بعده. 1978 SQL errors و6.368s storage lock. B1b1 exact Downloads DB lookup + async coalesced storage worker + batch app context and stage markers. CI https://github.com/alwansan/CP/actions/runs/44173935320 completed/success؛ APK https://github.com/alwansan/CP/releases/download/cp-dl-B1b1-7/Cinemana_CP_DL_B1b1_signed.apk Next B1b durable DB ACK and independent fair queue, real cross-process UI refresh and MKV readiness. لا HTML migration حالياً.
-آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1a-hotfix-12.md
-التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1A_HOTFIX_AR.md
-B1a-5 فشل فتح النافذة 22/22 في تجربة هاتف جديدة؛ NoClassDefFoundError من فقدان $ في listener names. استعدنا 20 مرجعاً وفعّلنا source/DEX type reference gates. لا تعتمد B1a-5؛ CI https://github.com/alwansan/CP/actions/runs/44168809268 (completed/success). APK https://github.com/alwansan/CP/releases/download/cp-dl-B1a-fix-6/Cinemana_CP_DL_B1a_fix_signed.apk اختبر فتح النافذة دون حذف البيانات. B1b مؤجل حتى إثبات فتح النافذة.
-آخر جلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1a-11.md
-التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1A_AR.md
-B1a فصل الحلقات المحددة الفاشلة عن الجاهزة، زر أخطاء ومعلومات السبب وإعادة التجهيز، إبقاء النافذة عند أخطاء مختارة. لا durable admission أو DB ACK جديد بعد، لا تغيير في queue/MKV/HTTP أو HTML. CI https://github.com/alwansan/CP/actions/runs/44166130522 completed/success؛ APK https://github.com/alwansan/CP/releases/download/cp-dl-B1a-5/Cinemana_CP_DL_B1a_signed.apk. محاكاة docs/fixtures/cp_dl_b1_contract.py نجحت 6/6 محلياً فقط؛ لا طابور B1b مدمج. اختبر الهاتف دون مسح البيانات. الأرقام من A1/A2؛ لا A3/B1a هاتف مثبت.
-اقرأ أولاً التقرير الجديد كاملاً: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1_HANDOFF_AR.md
-جلسة الاستعادة الحالية: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-restore-10.md
-ثم سجل تسليم B1: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-dl-b1-handoff-09.md
-وتقرير A2/A3: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_A3_AR.md
-تأكد من آخر HEAD وActions وCL قبل التنفيذ. CL evidence pinned 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0.
-A3 build 44163124193 ناجح موقّع ومنشور: https://github.com/alwansan/CP/releases/download/cp-dl-A3-4/Cinemana_CP_DL_A3_signed.apk
-SHA الكود cc4576f122edfdbf1905f3e5cc36f0707ba36f79. اختبار A3 على الهاتف غير مثبت بعد. آخر اختبار A2: backlog 19 MP4 ->0، ANR0، ضغط batch جديد peak382 threads، 1056 excess subtitle submit markers، 7 أخطاء HTTP403. A3 خفف replay والـdependencies وpreview أثناء الإرسال، لا إعادة هيكلة كاملة بعد.
-B1: begin ينتظر كل metadata، enqueue على MAIN، NativeBatchScope.m يرجع void قبل إثبات DB، dialog close يوقف work، selected errors تمنع زر البدء، catch لا يضع episode.error. راجع التقرير؛ نفذ durable admission مع scheduler واحد وack حقيقي وfailed-only button، فصل preview الاختياري عن القبول، علاج retry من المصدر المصرّح به، ثم DB/MKV idempotency وidle. لا تدّع سبب invisibility مؤكداً دون ربط DB. لا تمسح الملفات؛ اختبر backlog ودفعتين متداخلتين وforce-stop. فكرة HTML/WebView للنقاش المستقبلي فقط، لا تطبقها الآن. لا تغيّر فروعاً أخرى أو CL. لم يحدث تعديل runtime في handoff09.
- 
+## نقطة الاستئناف الفعلية — 2026-11-18 | B1b2 قيد البناء
+آخر سجل: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-18_cp-dl-b1b2-anr-14.md
+التقرير: https://github.com/alwansan/CP/blob/feature/download-stability/docs/CP_DL_B1B2_ANR_AR.md
+B1b1 هاتفياً أصلح إرسال الفيديوهات (416 VIDEO_NATIVE_DISPATCH_RETURN) واختفت أخطاء جدول Downloads وقفل الصيانة خلال CLog000550، لكن إرسال الدفعتين 50.45s/88.82s وANR واحد. B1b2: فتحة MKV واحدة/عملية مع عاملَي تجهيز، async trace bounded، إلغاء تكرار admission في c->q فقط، تقليل refresh أثناء الإرسال. تحقق من CI قبل تجربة الهاتف؛ لا مسح بيانات. التالي durable batch transaction وDB ACK وactual UI sync وbounded recovery؛ HTML مؤجل.
+
 ## تحديث تلقائي إلزامي
 في كل دفعة وفي كل جلسة، حتى الفشل، حدّث MEMORY وSTATE وPLAN وISSUES وسجل جلسة مستقل وهذه الرسالة نفسها حسب التقدم، واحفظها في الفرع دون أن يطلب المالك ذلك. تحقّق بعد الدفع من HEAD واقرأ RESTORE_SESSION_AR.md فعلياً لتثبت أن نقطة الاستئناف الجديدة ظهرت فيه وليست نصاً قديماً. لا تخزّن SHA commit الذاكرة نفسه في داخله ولا تدّع اختباراً غير منفذ.

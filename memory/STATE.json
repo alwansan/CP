@@ -12,12 +12,12 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1b1_published_awaiting_device",
-  "last_session": "memory/sessions/2026-11-17_cp-dl-b1b-pressure-13.md",
+  "status": "b1b2_ci_pending",
+  "last_session": "memory/sessions/2026-11-18_cp-dl-b1b2-anr-14.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
   "new_build_triggered": true,
-  "device_test": "B1a hotfix: multi-download open verified in both works; pressure regression remains",
+  "device_test": "B1b1 416 native video dispatch return, zero missing Downloads and storage lock warnings; one ANR; MKV recovery progressed after restart",
   "cl": {
     "repo": "alwansan/CL",
     "branch": "main",
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "Isolated CP-DL workflow verified signed A3; inherited workflow unchanged.",
-  "next": "Verify B1b1 CI/device; correlate native video stage markers and DB ACK, implement durable B1b admission and fair scheduler; inspect cross-process UI data invalidation and MKV readiness independently. HTML not migrated.",
+  "next": "Verify B1b2 CI/release and device; durable whole-batch acceptance (one atomic transaction), explicit DB receipt, UI actual state sync, bounded recovery scan. HTML later.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "dbe7aa850697185d7f95cebecb444ab48ad3c8b3",
+  "last_verified_head": "b37dcd1bf089f7a5bee1fc193b803ab9c5952b9c",
   "branch_actions": {
     "total_count": 7,
     "latest_run_id": 44173935320,
@@ -198,5 +198,27 @@
       "apk_sha256": "sha256:ed60b69cdb249aab5deabe5d0d36baf2d3066471fc6b28b34df0fcd586084bf5",
       "apk_size": 56294428
     }
+  },
+  "b1b2": {
+    "report": "docs/CP_DL_B1B2_ANR_AR.md",
+    "device": {
+      "ui_dispatches": 416,
+      "video_dispatch_return": 416,
+      "naruto_total_ms": 50450,
+      "shippuden_total_ms": 88821,
+      "anr_incidents": 1,
+      "thread_peak": 290,
+      "cpu_peak_one_core": 499.38,
+      "mkv_tree_h63": 40,
+      "mkv_tree_h64": 53,
+      "missing_downloads_errors": 0,
+      "storage_lock_warnings": 0
+    },
+    "changes": [
+      "one mux permit per process",
+      "async diagnostic sink",
+      "dedup immediate native admission",
+      "busy dialog redraw throttle"
+    ]
   }
 }

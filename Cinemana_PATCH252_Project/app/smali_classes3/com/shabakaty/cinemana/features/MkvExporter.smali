@@ -38,7 +38,7 @@
 
 .field private static final LOG_DIR:Ljava/lang/String; = "log"
 
-.field private static final MAX_CONCURRENT_FFMPEG:I = 0x3
+.field private static final MAX_CONCURRENT_FFMPEG:I = 0x1
 
 .field private static final MAX_JOB_RETRIES:I = 0x3
 
@@ -88,7 +88,8 @@
     .line 71
     new-instance v0, Ljava/util/concurrent/Semaphore;
 
-    const/4 v1, 0x2
+    # CP-DL B1b2: one active conversion per exporter process; preparation remains separate.
+    const/4 v1, 0x1
 
     const/4 v2, 0x1
 
