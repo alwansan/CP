@@ -43,3 +43,6 @@ docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md: Persistence123 5s cycle checks prefs/s
 
 ## تحديث أداة CLog 2026-11-17
 بتكليف منفصل للمالك: raf/clog only، dfe70d60 CI 44140583807 success published clog-8، 034f2b51 CI 44141066327 completed/success. مسارا Cinemana/work وDownload/Games/cl/Clog تلقائيان بصلاحية all-files، SAF fallback، raw source logs/census/coverage، CPU/RSS/PSS/threads/FD/IO/rates/disk/gateway/UI metrics وLMK classification؛ لا قراءة media/private DB، لا ضمان كل /proc/dumpsys metrics؛ docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md. CP runtime untouched no build. memory/sessions/2026-11-17_cp-dl-clog-upgrade-05.md.
+
+## تنفيذ A1
+انظر docs/CP_DL_A1_AR.md. CLog9 جهازياً يعمل، 5 startup ANR و1790 raw SQLite warnings. نفذ A1 DAO cache/main guard/markers/fast lookup/monotonic bind throttle/progress log reduction; isolated workflow. CI pending عند commit؛ لا إثبات هاتف.

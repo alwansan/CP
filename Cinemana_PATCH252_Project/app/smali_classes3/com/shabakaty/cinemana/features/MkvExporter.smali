@@ -26,6 +26,8 @@
 
 .field private static final FFMPEG_NATIVE_NAME:Ljava/lang/String; = "libffmpeg.so"
 
+.field private static volatile DL_SHARED_DAO:Ljava/lang/Object;
+
 .field private static final FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
 
 .field private static final JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
@@ -4017,7 +4019,7 @@
     return-object p0
 .end method
 
-.method private static getDownloadsDao(Landroid/content/Context;Landroid/content/Context;)Ljava/lang/Object;
+.method private static declared-synchronized getDownloadsDao(Landroid/content/Context;Landroid/content/Context;)Ljava/lang/Object;
     .locals 6
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -4025,6 +4027,12 @@
         }
     .end annotation
 
+    # CP-DL A1: cache successful DAO only; one custom Room owner per process.
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->DL_SHARED_DAO:Ljava/lang/Object;
+    if-eqz v0, :dl_build_dao
+    return-object v0
+
+    :dl_build_dao
     .line 1164
     invoke-virtual {p0}, Landroid/content/Context;->getPackageName()Ljava/lang/String;
 
@@ -4245,6 +4253,12 @@
     invoke-static {p1, p0}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
 
     .line 1180
+    if-eqz v0, :dl_return_dao
+    sput-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->DL_SHARED_DAO:Ljava/lang/Object;
+    const-string v1, "CinemanaStartupTrace"
+    const-string v2, "CPDL_A1 downloads_dao_created"
+    invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+    :dl_return_dao
     return-object v0
 .end method
 

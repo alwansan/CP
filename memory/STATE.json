@@ -12,12 +12,12 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "clog_upgrade_ci_checked_awaiting_phone_test",
-  "last_session": "memory/sessions/2026-11-17_cp-dl-clog-upgrade-05.md",
+  "status": "a1_implementation_ci_pending",
+  "last_session": "memory/sessions/2026-11-17_cp-dl-a1-implementation-06.md",
   "verified_at": "2026-11-17",
-  "app_code_changed": false,
-  "new_build_triggered": false,
-  "device_test": "not yet verified",
+  "app_code_changed": true,
+  "new_build_triggered": true,
+  "device_test": "A1 not yet tested",
   "cl": {
     "repo": "alwansan/CL",
     "branch": "main",
@@ -27,11 +27,11 @@
       "Clog"
     ],
     "inventory_only": false,
-    "pinned_sha": "b0b4e6721dd8dac0e2e74acd80a889dfc5b461ed",
+    "pinned_sha": "cea2a000271344245d8821daa88e8c107119ec94",
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "Verify latest CLog release and owner's smoke test; CP DL-A0 isolated CI/fixtures/instrumentation then A1/A2/A3 per plan",
+  "next": "Verify A1 CI job and signed release, phone tests then A2/A3/B-D",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "518d0e609c0a822afea2152e6972fee2b15443a0",
+  "last_verified_head": "b6fe79feb4226c7b06ff6afad1a81a7ab9b3fba3",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -80,8 +80,9 @@
       "run_id": 44141066327,
       "status": "completed/success"
     },
-    "device_test": "not verified",
+    "device_test": "Build9 ZIP confirms automatic capture; coverage incomplete",
     "automatic_source": "/storage/emulated/0/Cinemana/work/",
     "automatic_output": "/storage/emulated/0/Download/Games/cl/Clog/"
-  }
+  },
+  "a1": "docs/CP_DL_A1_AR.md"
 }

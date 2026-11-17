@@ -47,6 +47,14 @@
 
     if-eqz p0, :startup_done
 
+    # CP-DL A2: the native downloader must not own a second repair watcher.
+    :dl_gate_start
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ca1/Restart108;->main(Ljava/lang/Object;)Z
+    move-result v0
+    :dl_gate_end
+    .catch Ljava/lang/Throwable; {:dl_gate_start .. :dl_gate_end} :dl_gate_error
+    if-eqz v0, :startup_done
+
     new-instance v0, Lcom/shabakaty/cinemana/features/MkvRepairStartup;
     invoke-direct {v0, p0}, Lcom/shabakaty/cinemana/features/MkvRepairStartup;-><init>(Landroid/content/Context;)V
 
@@ -54,6 +62,12 @@
     invoke-direct {v1, v0}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
     invoke-virtual {v1}, Ljava/lang/Thread;->start()V
 
+    goto :startup_done
+    :dl_gate_error
+    move-exception v0
+    const-string v0, "CinemanaStartupTrace"
+    const-string v1, "CPDL_A2 repair_process_gate_failed"
+    invoke-static {v0, v1}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
     :startup_done
     return-void
 .end method

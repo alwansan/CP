@@ -387,6 +387,20 @@
 .method static find(Landroid/view/View;Ljava/lang/String;)Landroid/view/View;
     .locals 2
 
+    # CP-DL verified IDs; retain original lookup if missing.
+    if-eqz p0, :dl_lookup_done
+    const-string v0, "download_button"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :dl_lookup_0
+    const v0, 0x7f0a0146
+    invoke-virtual {p0, v0}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v0
+    if-eqz v0, :dl_lookup_0
+    return-object v0
+    :dl_lookup_0
+    :dl_lookup_done
+
     .line 5
     :try_start_0
     invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;

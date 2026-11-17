@@ -300,7 +300,7 @@
     return v4
 .end method
 
-.method static bind()V
+.method static declared-synchronized bind()V
     .locals 8
     .annotation system Ldalvik/annotation/Throws;
         value = {
@@ -344,7 +344,7 @@
 
     .line 34
     :cond_1
-    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
 
     move-result-wide v1
 

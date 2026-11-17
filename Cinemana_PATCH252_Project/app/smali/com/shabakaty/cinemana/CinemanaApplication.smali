@@ -529,14 +529,26 @@
 .method public onCreate()V
     .locals 23
 
+    const-string v0, "CinemanaStartupTrace"
+    const-string v2, "CPDL_A1 app_create_enter"
+    invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
     move-object/from16 v1, p0
 
     .line 1
     invoke-super/range {p0 .. p0}, Lcom/shabakaty/downloader/vk0;->onCreate()V
 
+    const-string v0, "CinemanaStartupTrace"
+    const-string v2, "CPDL_A1 app_super_completed"
+    invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
     invoke-static {v1}, Lcom/shabakaty/cinemana/ca1/ThemeEngine142;->install(Landroid/app/Application;)V
 
     invoke-static {v1}, Lcom/shabakaty/cinemana/local/LocalRuntime;->init(Landroid/content/Context;)V
+
+    const-string v0, "CinemanaStartupTrace"
+    const-string v2, "CPDL_A1 local_init_returned"
+    invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     const-string v0, "APP_ONCREATE"
 
@@ -1383,9 +1395,17 @@
 
     invoke-virtual {v2, v0}, Lzendesk/support/Support;->init(Lzendesk/core/Zendesk;)V
 
+    const-string v0, "CinemanaStartupTrace"
+    const-string v2, "CPDL_A1 native_init_completed"
+    invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
     invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/ca1/Restart108;->bootstrap(Ljava/lang/Object;)V
 
     invoke-static/range {p0 .. p0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->startup(Landroid/content/Context;)V
+
+    const-string v0, "CinemanaStartupTrace"
+    const-string v2, "CPDL_A1 app_create_finished"
+    invoke-static {v0, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     return-void
 

@@ -108,6 +108,42 @@
 .method static find(Landroid/view/View;Ljava/lang/String;)Landroid/view/View;
     .locals 2
 
+    # CP-DL verified IDs; retain original lookup if missing.
+    if-eqz p0, :dl_lookup_done
+    const-string v0, "downloads_recycler"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :dl_lookup_0
+    const v0, 0x7f0a014e
+    invoke-virtual {p0, v0}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v0
+    if-eqz v0, :dl_lookup_0
+    return-object v0
+    :dl_lookup_0
+
+    const-string v0, "collections_recycler"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :dl_lookup_1
+    const v0, 0x7f0a00f9
+    invoke-virtual {p0, v0}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v0
+    if-eqz v0, :dl_lookup_1
+    return-object v0
+    :dl_lookup_1
+
+    const-string v0, "home_bottom_nav"
+    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v0
+    if-eqz v0, :dl_lookup_2
+    const v0, 0x7f0a0204
+    invoke-virtual {p0, v0}, Landroid/view/View;->findViewById(I)Landroid/view/View;
+    move-result-object v0
+    if-eqz v0, :dl_lookup_2
+    return-object v0
+    :dl_lookup_2
+    :dl_lookup_done
+
     .line 6
     :try_start_0
     invoke-virtual {p0}, Landroid/view/View;->getResources()Landroid/content/res/Resources;

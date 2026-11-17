@@ -1,0 +1,2 @@
+# CP-DL A1 implementation
+Owner authorized execution. Read CLog9 ZIP and live CL SHA cea2a000271344245d8821daa88e8c107119ec94; 5 startup ANRs 1790 leak markers, see docs/CP_DL_A1_AR.md. CP A1 source edits and isolated CI workflow in this commit; build result pending at creation. No device proof. Preserve all user data.

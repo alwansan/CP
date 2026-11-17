@@ -40,3 +40,6 @@ DL-013: Persistence123 fixed 5s checks + Performance116 fixed 2s heartbeat مث�
 
 ## CLog
 DIAG-001: automatic paths/permissions/coverage/metric attribution implemented in raf/clog؛ build8 success، build9 completed/success؛ device permission/paths/collector load validation open. DIAG-002: Android restricted readings and backlog/rotation may prevent full visibility؛ mark null/coverage limits; CP internal lifecycle markers still required. docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md. DL issues not closed.
+
+## A1
+DL-010/011/015: mitigation implemented, pending CI/device; DL-005 throttle synchronized monotonic only; remaining issues open. ZIP new 5 startup ANR / 1790 raw warnings; CLog verified, coverage behind 6.6 MB. BUILD-001 isolated workflow added; pending run. docs/CP_DL_A1_AR.md.

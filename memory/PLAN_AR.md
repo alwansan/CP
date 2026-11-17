@@ -25,3 +25,6 @@ docs/DOWNLOAD_IDLE_RESOURCE_POLICY_AR.md. أضف إلى A0 baseline idle الح�
 
 ## أداة التشخيص قبل أول APK تجريبي
 docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md. CLog منفصل raf/clog بتكليف المالك؛ build8 success وbuild9 completed/success. فحص release حي، اختبار الهاتف CLog أولاً، ثم CP A0 isolated workflow/signed fixture/runtime markers، A1/A2/A3 وB–D. لا حذف بيانات تلقائياً، fresh لا يغني recovery/legacy tests.
+
+## التنفيذ بدأ
+A1 scoped implementation + isolated CI، docs/CP_DL_A1_AR.md. بعدها تحقق CI والهاتف، A2/A3 ثم B–D. لا حذف بيانات ولا اعتبار A1 حل كامل.
