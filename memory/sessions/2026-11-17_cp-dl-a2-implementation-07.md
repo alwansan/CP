@@ -1,0 +1,2 @@
+# CP-DL A2
+Owner A1 phone test: 0 SQLite leak / ANR markers, peak 447 threads, 42 unique MKV DB successes/183 total, 120s wait timeout, UI oscillation. CL 0a9ff937794376130b07691b9a2f48398fbd7f79, ZIP analyzed. Implement A2 scoped mitigation as docs/CP_DL_A2_AR.md. CI pending at commit. Do not claim full fix.

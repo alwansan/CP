@@ -514,3 +514,19 @@
     :goto_0
     return-void
 .end method
+
+
+.method public static safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    .locals 2
+    :try_start_dl_busy
+    invoke-static {p0, p1, p2, p3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    :try_end_dl_busy
+    .catch Ljava/lang/Throwable; {:try_start_dl_busy .. :try_end_dl_busy} :dl_busy_failed
+    return-void
+    :dl_busy_failed
+    move-exception v0
+    const-string v0, "CinemanaMkv"
+    const-string v1, "CPDL_A2 advisory_state_write_failed"
+    invoke-static {v0, v1}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
+    return-void
+.end method

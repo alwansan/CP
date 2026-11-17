@@ -30,3 +30,6 @@ docs/CLOG_DIAGNOSTICS_HANDOFF_AR.md. CLog منفصل raf/clog بتكليف ال�
 A1 scoped implementation + isolated CI، docs/CP_DL_A1_AR.md. بعدها تحقق CI والهاتف، A2/A3 ثم B–D. لا حذف بيانات ولا اعتبار A1 حل كامل.
 
 A1 APK منشور، CI completed/success. جرب الهاتف حسب docs/CP_DL_A1_AR.md ثم A2/A3/B–D.
+
+## A2
+docs/CP_DL_A2_AR.md. A1 phone gate improved leaks/startup but heavy stress remains. A2 reduce MKV worker/scan and UI refresh cost; then B1/B2 durable batch and queue, source receipts, DB idempotency + state authority. No full scheduler rewrite this batch.

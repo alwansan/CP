@@ -6,6 +6,8 @@
 # static fields
 .field private static final ADAPTERS:Ljava/util/concurrent/CopyOnWriteArrayList;
 
+.field private static DL_PENDING:Z
+
 .field private static final MAIN:Landroid/os/Handler;
 
 
@@ -48,17 +50,21 @@
     return-object v0
 .end method
 
-.method public static notifyChanged()V
-    .locals 2
-
+.method public static declared-synchronized notifyChanged()V
+    .locals 4
+    sget-boolean v0, Lcom/shabakaty/cinemana/features/MkvUiRefresh;->DL_PENDING:Z
+    if-nez v0, :dl_refresh_done
+    const/4 v0, 0x1
+    sput-boolean v0, Lcom/shabakaty/cinemana/features/MkvUiRefresh;->DL_PENDING:Z
     sget-object v0, Lcom/shabakaty/cinemana/features/MkvUiRefresh;->MAIN:Landroid/os/Handler;
-
     new-instance v1, Lcom/shabakaty/cinemana/features/MkvUiRefresh$1;
-
     invoke-direct {v1}, Lcom/shabakaty/cinemana/features/MkvUiRefresh$1;-><init>()V
-
-    invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
-
+    const-wide/16 v2, 0xfa
+    invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    move-result v0
+    if-nez v0, :dl_refresh_done
+    sput-boolean v0, Lcom/shabakaty/cinemana/features/MkvUiRefresh;->DL_PENDING:Z
+    :dl_refresh_done
     return-void
 .end method
 
@@ -114,5 +120,12 @@
     invoke-virtual {v1, v0}, Ljava/util/concurrent/CopyOnWriteArrayList;->add(Ljava/lang/Object;)Z
 
     :cond_3
+    return-void
+.end method
+
+.method static declared-synchronized clearPending()V
+    .locals 1
+    const/4 v0, 0x0
+    sput-boolean v0, Lcom/shabakaty/cinemana/features/MkvUiRefresh;->DL_PENDING:Z
     return-void
 .end method

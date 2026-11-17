@@ -77,7 +77,7 @@
 
     invoke-direct {v0}, Lcom/shabakaty/cinemana/features/MkvExporter$1;-><init>()V
 
-    const/4 v1, 0x3
+    const/4 v1, 0x2
 
     invoke-static {v1, v0}, Ljava/util/concurrent/Executors;->newFixedThreadPool(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
 
@@ -88,7 +88,7 @@
     .line 71
     new-instance v0, Ljava/util/concurrent/Semaphore;
 
-    const/4 v1, 0x3
+    const/4 v1, 0x2
 
     const/4 v2, 0x1
 
@@ -6504,7 +6504,7 @@
 
     const-string p1, "QUEUED"
 
-    invoke-static {v1, p2, p0, p1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    invoke-static {v1, p2, p0, p1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
     sget-object p0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
 
@@ -12267,7 +12267,7 @@
 
     sub-long/2addr v11, v3
 
-    const-wide/32 v13, 0x1d4c0
+    const-wide/32 v13, 0x3a98
 
     cmp-long v11, v11, v13
 
@@ -12757,7 +12757,7 @@
 
     .line 248
     :cond_d
-    const-string v0, "TIMEOUT: final video file was not stable within 2 minutes"
+    const-string v0, "TIMEOUT: CPDL_A2 source not ready in 15s; preserve MP4 for guarded audit"
 
     invoke-static {v1, v0}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
 
@@ -13255,7 +13255,7 @@
     invoke-direct/range {v0 .. v4}, Lcom/shabakaty/cinemana/features/MkvExporter$Recovered;-><init>(Landroid/content/Context;Ljava/lang/Object;Ljava/io/File;Ljava/lang/String;)V
     const/4 v5, 0x1
     const-string v6, "QUEUED"
-    invoke-static {p0, p1, v5, v6}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    invoke-static {p0, p1, v5, v6}, Lcom/shabakaty/cinemana/features/MkvStateStore;->safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
     sget-object v5, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
     invoke-interface {v5, v0}, Ljava/util/concurrent/ExecutorService;->execute(Ljava/lang/Runnable;)V
     :recover_already_owned
@@ -13273,7 +13273,7 @@
     .catchall {:try_start_recover_rollback .. :try_end_recover_rollback} :recover_unlock_failed
     const/4 v1, 0x0
     const-string v2, "FAILED"
-    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    invoke-static {p0, p1, v1, v2}, Lcom/shabakaty/cinemana/features/MkvStateStore;->safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
     const-string v1, "RECOVERED_ENQUEUE_FAILED"
     invoke-static {p0, v1, v0}, Lcom/shabakaty/cinemana/ca1/DownloadRepair129;->recordThrowable(Landroid/content/Context;Ljava/lang/String;Ljava/lang/Throwable;)V
     :recover_rejected
@@ -13293,7 +13293,7 @@
     if-eqz v0, :run_recovered_finish
     const/4 v0, 0x1
     const-string v1, "PROCESSING"
-    invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
     invoke-static {p0, p2, p1}, Lcom/shabakaty/cinemana/features/MkvExporter;->waitAndExport(Landroid/content/Context;Ljava/io/File;Ljava/lang/Object;)V
     :try_end_run_recovered
     .catch Ljava/lang/Throwable; {:try_start_run_recovered .. :try_end_run_recovered} :run_recovered_failed
@@ -13305,7 +13305,7 @@
     :run_recovered_finish
     const/4 v0, 0x0
     const-string v1, "IDLE"
-    invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    invoke-static {p0, p1, v0, v1}, Lcom/shabakaty/cinemana/features/MkvStateStore;->safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
     sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_LOCK:Ljava/lang/Object;
     monitor-enter v0
     :try_start_run_release
@@ -13314,9 +13314,9 @@
     monitor-exit v0
     :try_end_run_release
     .catchall {:try_start_run_release .. :try_end_run_release} :run_release_failed
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     invoke-static {p0, p1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->completeIfFinal(Landroid/content/Context;Ljava/lang/Object;)V
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
-    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
     return-void
     :run_release_failed
     move-exception v1

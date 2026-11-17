@@ -20,6 +20,7 @@
 .method public run()V
     .locals 4
 
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvUiRefresh;->clearPending()V
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvUiRefresh;->adapters()Ljava/util/concurrent/CopyOnWriteArrayList;
 
     move-result-object v0

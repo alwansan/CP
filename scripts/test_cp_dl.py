@@ -18,3 +18,18 @@ assert "DownloadTrace;->progress" in s and "mc4$e;" in s
 q=read("smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali")
 assert "declared-synchronized bind()" in q and "SystemClock;->elapsedRealtime()J" in q
 print("CP-DL A1 source guards: PASS")
+
+f="smali_classes3/com/shabakaty/cinemana/features/"
+m=read(f+"MkvExporter.smali")
+assert "const-wide/32 v13, 0x3a98" in m and "CPDL_A2 source not ready" in m
+assert "->safeSetBusy(" in m and "->safeSetBusy(" in read(f+"MkvExporter$2.smali")
+l=read(f+"MkvRepairLedger.smali")
+assert ":dl_ledger_changed" in l and "if-nez v3, :record_done" in l and "if-eqz v1, :clear_done" in l
+rec=read(f+"MkvReconciler.smali")
+assert "AUDIT_CURSOR:I" in rec and "if-ge v8, v9, :dl_store_cursor" in rec
+assert "->reconcileDiskVideo(" in rec and ".cnm-recovery.tmp.mp4" in rec
+u=read(f+"MkvUiRefresh.smali")
+assert "DL_PENDING:Z" in u and "postDelayed(Ljava/lang/Runnable;J)" in u
+assert "->clearPending()V" in read(f+"MkvUiRefresh$1.smali")
+assert "->notifyDataSetChanged()V" in read(f+"MkvUiRefresh$1.smali")
+print("CP-DL A2 bounded audit, unchanged ledger, UI refresh, worker cleanup guards: PASS")

@@ -30,6 +30,8 @@
     .end annotation
 .end field
 
+.field private static final DL_PROGRESS_LOCK:Ljava/lang/Object;
+
 .field private static final LOCK:Ljava/lang/Object;
 
 .field private static final ROOT:Ljava/lang/String; = "Cinemana/work"
@@ -60,6 +62,9 @@
 
     sput-object v0, Lcom/shabakaty/cinemana/features/DownloadTrace;->LAST_PERCENT:Ljava/util/Map;
 
+    new-instance v0, Ljava/lang/Object;
+    invoke-direct {v0}, Ljava/lang/Object;-><init>()V
+    sput-object v0, Lcom/shabakaty/cinemana/features/DownloadTrace;->DL_PROGRESS_LOCK:Ljava/lang/Object;
     return-void
 .end method
 
@@ -441,7 +446,7 @@
 
     .line 75
     :goto_0
-    sget-object v11, Lcom/shabakaty/cinemana/features/DownloadTrace;->LOCK:Ljava/lang/Object;
+    sget-object v11, Lcom/shabakaty/cinemana/features/DownloadTrace;->DL_PROGRESS_LOCK:Ljava/lang/Object;
 
     monitor-enter v11
     :try_end_0

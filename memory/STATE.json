@@ -12,12 +12,12 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "a1_signed_apk_published_awaiting_device",
-  "last_session": "memory/sessions/2026-11-17_cp-dl-a1-implementation-06.md",
+  "status": "a2_implementation_ci_pending",
+  "last_session": "memory/sessions/2026-11-17_cp-dl-a2-implementation-07.md",
   "verified_at": "2026-11-17",
   "app_code_changed": true,
   "new_build_triggered": true,
-  "device_test": "A1 pending",
+  "device_test": "A1 tested; A2 pending",
   "cl": {
     "repo": "alwansan/CL",
     "branch": "main",
@@ -27,11 +27,11 @@
       "Clog"
     ],
     "inventory_only": false,
-    "pinned_sha": "cea2a000271344245d8821daa88e8c107119ec94",
+    "pinned_sha": "0a9ff937794376130b07691b9a2f48398fbd7f79",
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8"
   },
   "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
-  "next": "Owner tests A1 with CLog9 then analyze sanitized results; A2/A3 and B-D remain open",
+  "next": "Verify A2 CI/release; owner preserve A1 backlog for test; analyze before B stages",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -40,7 +40,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "af61b15396502d517ff5c9b71c78eb010810505e",
+  "last_verified_head": "c8d3c0ec6dea509b0df3f2b6b3581717a839b936",
   "branch_actions": {
     "total_count": 0,
     "verified_at": "2026-11-17T19:30:00+03:00"
@@ -94,5 +94,14 @@
     "apk_size": 56290332,
     "apk_sha256": "sha256:b4e106499ab5f0cc57772ea340acefabaaecc9dab136365a8ace8d00f903cedd",
     "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-A1-1/Cinemana_CP_DL_A1_signed.apk"
+  },
+  "a2": "docs/CP_DL_A2_AR.md",
+  "a1_phone": {
+    "samples": 273,
+    "sqlite_leak_markers": 0,
+    "anr_markers": 0,
+    "peak_threads": 447,
+    "unique_promotions": 42,
+    "total_promotions": 183
   }
 }

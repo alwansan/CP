@@ -4,6 +4,8 @@
 
 
 # static fields
+.field private static AUDIT_CURSOR:I
+
 .field private static AUDIT_PENDING:Z
 
 .field private static final CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
@@ -852,24 +854,38 @@
 .end method
 
 .method private static scanExistingRoot(Ljava/io/File;)V
-    .locals 7
+    .locals 10
     invoke-virtual {p0}, Ljava/io/File;->listFiles()[Ljava/io/File;
     move-result-object v0
     if-eqz v0, :ordered_done
     new-instance v1, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;
     invoke-direct {v1}, Lcom/shabakaty/cinemana/features/MkvRepairAgeComparator;-><init>()V
     invoke-static {v0, v1}, Ljava/util/Arrays;->sort([Ljava/lang/Object;Ljava/util/Comparator;)V
-    const/4 v1, 0x0
     array-length v2, v0
+    if-lez v2, :ordered_done
     sget-object v3, Lcom/shabakaty/cinemana/features/MkvReconciler;->CONTEXT:Ljava/util/concurrent/atomic/AtomicReference;
     invoke-virtual {v3}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
     move-result-object v3
     check-cast v3, Landroid/content/Context;
     if-eqz v3, :ordered_done
+    sget v1, Lcom/shabakaty/cinemana/features/MkvReconciler;->AUDIT_CURSOR:I
+    if-ltz v1, :dl_cursor_reset
+    if-lt v1, v2, :dl_cursor_ready
+    :dl_cursor_reset
+    const/4 v1, 0x0
+    :dl_cursor_ready
+    const/4 v7, 0x0
+    const/4 v8, 0x0
+    const/16 v9, 0x8
     :ordered_next
-    if-ge v1, v2, :ordered_done
+    if-ge v7, v2, :dl_store_cursor
+    if-ge v8, v9, :dl_store_cursor
     aget-object v4, v0, v1
     add-int/lit8 v1, v1, 0x1
+    if-lt v1, v2, :dl_cursor_advanced
+    const/4 v1, 0x0
+    :dl_cursor_advanced
+    add-int/lit8 v7, v7, 0x1
     invoke-virtual {v4}, Ljava/io/File;->isFile()Z
     move-result v5
     if-eqz v5, :ordered_next
@@ -886,9 +902,12 @@
     invoke-virtual {v5, v6}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
     move-result v6
     if-nez v6, :ordered_next
+    add-int/lit8 v8, v8, 0x1
     # Resolve and dispatch this concrete source now; do not rediscover it with a recursive token scan.
     invoke-static {v3, v4}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileDiskVideo(Landroid/content/Context;Ljava/io/File;)Z
     goto :ordered_next
+    :dl_store_cursor
+    sput v1, Lcom/shabakaty/cinemana/features/MkvReconciler;->AUDIT_CURSOR:I
     :ordered_done
     return-void
 .end method

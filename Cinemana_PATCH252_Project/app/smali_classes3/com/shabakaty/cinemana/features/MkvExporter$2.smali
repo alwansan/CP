@@ -102,7 +102,7 @@
 
     const-string v3, "PROCESSING"
 
-    invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
     .line 110
     nop
@@ -448,16 +448,12 @@
 
     const-string v3, "IDLE"
 
-    invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    invoke-static {v0, v1, v2, v3}, Lcom/shabakaty/cinemana/features/MkvStateStore;->safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
-    # Resweep compact pending records after the exporter/promotion attempt. Failed MP4s remain pending.
-    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
-
-    .line 145
-    nop
-
-    .line 146
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
+    # Optional ledger sweep cannot retain a finished worker's ownership.
+    invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
     return-void
 
     .line 143
@@ -530,13 +526,11 @@
 
     const-string v4, "FAILED"
 
-    invoke-static {v1, v2, v3, v4}, Lcom/shabakaty/cinemana/features/MkvStateStore;->setBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
+    invoke-static {v1, v2, v3, v4}, Lcom/shabakaty/cinemana/features/MkvStateStore;->safeSetBusy(Landroid/content/Context;Ljava/lang/Object;ZLjava/lang/String;)V
 
-    # A late successful promotion is cleared; an actual failure remains in the compact ledger.
-    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
-
-    .line 145
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->clearCurrent()V
+    # Preserve the original Throwable; sweep has its own catch guard.
+    invoke-static {v1}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->sweep(Landroid/content/Context;)V
     throw v0
 
     .line 143

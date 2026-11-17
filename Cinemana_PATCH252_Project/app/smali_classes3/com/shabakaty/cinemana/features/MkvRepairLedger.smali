@@ -104,6 +104,7 @@
     # rather than blanking them when recordItem cannot resolve a transient/stale DB identity.
     invoke-virtual {v0, p1}, Ljava/util/Properties;->getProperty(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v1
+    move-object p0, v1
     if-eqz v1, :record_paths_ready
 
     const-string v2, "\\|"
@@ -156,6 +157,25 @@
 
     invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
     move-result-object v1
+    # Compare complete payload after timestamp; unchanged state already persisted.
+    if-eqz p0, :dl_ledger_changed
+    const-string v2, "|"
+    invoke-virtual {p0, v2}, Ljava/lang/String;->indexOf(Ljava/lang/String;)I
+    move-result v3
+    if-ltz v3, :dl_ledger_changed
+    add-int/lit8 v3, v3, 0x1
+    invoke-virtual {p0, v3}, Ljava/lang/String;->substring(I)Ljava/lang/String;
+    move-result-object v4
+    invoke-virtual {v1, v2}, Ljava/lang/String;->indexOf(Ljava/lang/String;)I
+    move-result v5
+    if-ltz v5, :dl_ledger_changed
+    add-int/lit8 v5, v5, 0x1
+    invoke-virtual {v1, v5}, Ljava/lang/String;->substring(I)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v4, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    move-result v3
+    if-nez v3, :record_done
+    :dl_ledger_changed
     invoke-virtual {v0, p1, v1}, Ljava/util/Properties;->setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
     invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->save(Ljava/util/Properties;)V
 
@@ -243,6 +263,8 @@
     invoke-static {}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->load()Ljava/util/Properties;
     move-result-object v0
     invoke-virtual {v0, p1}, Ljava/util/Properties;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v1
+    if-eqz v1, :clear_done
     invoke-static {v0}, Lcom/shabakaty/cinemana/features/MkvRepairLedger;->save(Ljava/util/Properties;)V
 
     :clear_done
