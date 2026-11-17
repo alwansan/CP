@@ -41,12 +41,12 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "68a5fa435581ce64b9f4a0ad693dea491b83cf6f",
+  "last_verified_head": "152a9c134e7ae56ea44c011e18a5d1dac9838dc9",
   "branch_actions": {
-    "total_count": 5,
-    "latest_run_id": 44166130522,
-    "latest_conclusion": "success",
-    "verified_at": "2026-11-17"
+    "total_count": 6,
+    "latest_run_id": 44168809268,
+    "latest_conclusion": null,
+    "latest_status": "in_progress"
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -161,6 +161,12 @@
     "open_attempts": 22,
     "failed_attempts": 22,
     "corrected_references": 20,
-    "kind": "missing synthetic listener descriptor"
+    "kind": "missing synthetic listener descriptor",
+    "build": {
+      "run_id": 44168809268,
+      "code_sha": "152a9c134e7ae56ea44c011e18a5d1dac9838dc9",
+      "status": "in_progress",
+      "conclusion": null
+    }
   }
 }
