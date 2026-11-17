@@ -41,12 +41,12 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "310157ca3f4332246d3bd3020be20f8a1a47d244",
+  "last_verified_head": "7eba85ff22fdfd99ed1a3c1b27d5b9096f0567cc",
   "branch_actions": {
-    "total_count": 9,
-    "latest_run_id": 44182076388,
-    "latest_status": "completed",
-    "latest_conclusion": "success"
+    "total_count": 10,
+    "latest_run_id": 44185130936,
+    "latest_status": "in_progress",
+    "latest_conclusion": null
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -264,6 +264,21 @@
     "source_guard": "exact h65 and scalar high-half negative cases",
     "art_gate": "Android API35 signed candidate DexClassLoader actual dialog smoke, required before release",
     "ci": "pending",
-    "device": "not tested"
+    "device": "not tested",
+    "build": {
+      "run_id": 44185130936,
+      "run_number": 10,
+      "job_id": 134399516013,
+      "code_sha": "7eba85ff22fdfd99ed1a3c1b27d5b9096f0567cc",
+      "status": "in_progress",
+      "conclusion": null,
+      "release_verified": false,
+      "art_verified": false
+    },
+    "static_check": {
+      "fixed": true,
+      "old_actual_rejected": true,
+      "injected_high_half_rejected": true
+    }
   }
 }
