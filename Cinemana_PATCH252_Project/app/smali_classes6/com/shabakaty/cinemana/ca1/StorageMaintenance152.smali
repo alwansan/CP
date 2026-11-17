@@ -10,6 +10,10 @@
 
 .field private static final LOCK:Ljava/lang/Object;
 
+.field private static final DL_EXEC:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+
+.field private static DL_PENDING:Z
+
 .field private static final PROOFS:Ljava/io/File;
 
 .field private static final QUIET_MS:J = 0x7530L
@@ -23,7 +27,7 @@
 
 # direct methods
 .method static constructor <clinit>()V
-    .locals 3
+    .locals 4
 
     .line 14
     new-instance v0, Ljava/io/File;
@@ -85,6 +89,16 @@
 
     sput-object v0, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->LOCK:Ljava/lang/Object;
 
+    new-instance v0, Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+    const/4 v1, 0x1
+    invoke-direct {v0, v1}, Ljava/util/concurrent/ScheduledThreadPoolExecutor;-><init>(I)V
+    sput-object v0, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->DL_EXEC:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+    const-wide/16 v1, 0x1e
+    sget-object v0, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
+    sget-object v3, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->DL_EXEC:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+    invoke-virtual {v3, v1, v2, v0}, Ljava/util/concurrent/ScheduledThreadPoolExecutor;->setKeepAliveTime(JLjava/util/concurrent/TimeUnit;)V
+    const/4 v1, 0x1
+    invoke-virtual {v3, v1}, Ljava/util/concurrent/ScheduledThreadPoolExecutor;->allowCoreThreadTimeOut(Z)V
     return-void
 .end method
 
@@ -2737,44 +2751,35 @@
     throw v1
 .end method
 
-.method public static scanSoon()V
-    .locals 3
-
-    .line 26
-    invoke-static {}, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->scan()V
-
-    .line 28
-    :try_start_0
-    new-instance v0, Ljava/lang/Thread;
-
+.method public static declared-synchronized scanSoon()V
+    .locals 5
+    # CPDL B1b: one delayed maintenance task; no disk scan or sleeping thread on completion caller.
+    sget-boolean v0, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->DL_PENDING:Z
+    if-nez v0, :done
+    const/4 v0, 0x1
+    sput-boolean v0, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->DL_PENDING:Z
+    :try_start
+    sget-object v0, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->DL_EXEC:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
     new-instance v1, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152$1;
-
     invoke-direct {v1}, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152$1;-><init>()V
-
-    const-string v2, "cinemana-work-maintenance"
-
-    invoke-direct {v0, v1, v2}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;Ljava/lang/String;)V
-
-    .line 34
-    const/4 v1, 0x1
-
-    invoke-virtual {v0, v1}, Ljava/lang/Thread;->setDaemon(Z)V
-
-    .line 35
-    invoke-virtual {v0}, Ljava/lang/Thread;->start()V
-    :try_end_0
-    .catchall {:try_start_0 .. :try_end_0} :catchall_0
-
-    goto :goto_0
-
-    .line 36
-    :catchall_0
+    const-wide/16 v2, 0x2
+    sget-object v4, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
+    invoke-virtual {v0, v1, v2, v3, v4}, Ljava/util/concurrent/ScheduledThreadPoolExecutor;->schedule(Ljava/lang/Runnable;JLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+    :try_end
+    .catch Ljava/lang/RuntimeException; {:try_start .. :try_end} :rejected
+    goto :done
+    :rejected
     move-exception v0
+    const/4 v0, 0x0
+    sput-boolean v0, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->DL_PENDING:Z
+    :done
+    return-void
+.end method
 
-    :goto_0
-    nop
-
-    .line 37
+.method static declared-synchronized dlClearPending()V
+    .locals 1
+    const/4 v0, 0x0
+    sput-boolean v0, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->DL_PENDING:Z
     return-void
 .end method
 

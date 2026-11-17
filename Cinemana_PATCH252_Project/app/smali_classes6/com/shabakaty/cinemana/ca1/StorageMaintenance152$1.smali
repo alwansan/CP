@@ -30,25 +30,9 @@
 
 # virtual methods
 .method public run()V
-    .locals 2
-
-    .line 30
-    const-wide/16 v0, 0x7d00
-
-    :try_start_0
-    invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
-    :try_end_0
-    .catchall {:try_start_0 .. :try_end_0} :catchall_0
-
-    goto :goto_0
-
-    :catchall_0
-    move-exception v0
-
-    .line 31
-    :goto_0
+    .locals 0
+    # Clear before scanning: events arriving during a pass can enqueue a second pass.
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->dlClearPending()V
     invoke-static {}, Lcom/shabakaty/cinemana/ca1/StorageMaintenance152;->scan()V
-
-    .line 32
     return-void
 .end method

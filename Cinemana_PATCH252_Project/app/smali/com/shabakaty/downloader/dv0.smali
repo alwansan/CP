@@ -161,6 +161,9 @@
     :cond_3
     invoke-static {p1}, Lcom/shabakaty/downloader/j96;->i(Ljava/lang/Object;)V
 
+    iget-object v5, p0, Lcom/shabakaty/downloader/dv0;->w:Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;
+    const-string v6, "VIDEO_COROUTINE_ENTER"
+    invoke-static {v5, v6}, Lcom/shabakaty/cinemana/ca1/NativeBatchScope;->trace(Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;Ljava/lang/String;)V
     .line 4
     iget-object p1, p0, Lcom/shabakaty/downloader/dv0;->w:Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;
 
@@ -213,6 +216,9 @@
     .line 11
     :cond_6
     :goto_2
+    iget-object v5, p0, Lcom/shabakaty/downloader/dv0;->w:Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;
+    const-string v6, "VIDEO_METADATA_COLLECTION_READY"
+    invoke-static {v5, v6}, Lcom/shabakaty/cinemana/ca1/NativeBatchScope;->trace(Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;Ljava/lang/String;)V
     iget-object p1, p0, Lcom/shabakaty/downloader/dv0;->w:Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;
 
     .line 12
@@ -227,6 +233,13 @@
 
     .line 14
     iput-boolean v4, p1, Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;->v:Z
+    instance-of v5, p1, Lcom/shabakaty/cinemana/ca1/NativeBatchScope;
+    if-eqz v5, :dl_regular_permission
+    const-string v6, "VIDEO_PERMISSION_MISSING"
+    invoke-static {p1, v6}, Lcom/shabakaty/cinemana/ca1/NativeBatchScope;->trace(Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;Ljava/lang/String;)V
+    # Foreground batch button already performs permission UI; never launch it for each background episode.
+    goto/16 :goto_4
+    :dl_regular_permission
 
     .line 15
     invoke-virtual {p1}, Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;->f()Landroid/content/Context;
@@ -258,7 +271,11 @@
 
     :cond_9
     :goto_3
-    if-nez p1, :cond_a
+    if-nez p1, :dl_existing
+
+    iget-object v5, p0, Lcom/shabakaty/downloader/dv0;->w:Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;
+    const-string v6, "VIDEO_NATIVE_DISPATCH"
+    invoke-static {v5, v6}, Lcom/shabakaty/cinemana/ca1/NativeBatchScope;->trace(Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;Ljava/lang/String;)V
 
     .line 17
     invoke-static {}, Lcom/shabakaty/downloader/vy0;->c()Lcom/shabakaty/downloader/i44;
@@ -315,6 +332,14 @@
     .line 27
     invoke-static/range {v0 .. v8}, Lcom/shabakaty/downloader/i44$a;->a(Lcom/shabakaty/downloader/i44;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/shabakaty/downloader/tm1;ILjava/lang/Object;)V
 
+    iget-object v5, p0, Lcom/shabakaty/downloader/dv0;->w:Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;
+    const-string v6, "VIDEO_NATIVE_DISPATCH_RETURN"
+    invoke-static {v5, v6}, Lcom/shabakaty/cinemana/ca1/NativeBatchScope;->trace(Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;Ljava/lang/String;)V
+    goto :goto_4
+    :dl_existing
+    iget-object v5, p0, Lcom/shabakaty/downloader/dv0;->w:Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;
+    const-string v6, "VIDEO_EXISTING_ROW"
+    invoke-static {v5, v6}, Lcom/shabakaty/cinemana/ca1/NativeBatchScope;->trace(Lcom/shabakaty/cinemana/utils/download/DownloadActionsHandlerScope;Ljava/lang/String;)V
     .line 28
     :cond_a
     :goto_4

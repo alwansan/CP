@@ -82,3 +82,23 @@ except ValueError as error:
 else:
     raise AssertionError("regression fixture unexpectedly passed")
 print("CP-DL B1a hotfix: all BatchDownload class references resolve; negative regression rejected")
+
+# B1b-1 performance regression guards. Exact DB naming and no arbitrary DB probe on retry.
+java=(root.parents[1]/"patches/local-account/src/com/shabakaty/cinemana/local/ExpiredLink269.java").read_text()
+row=java.split("static Row row(",1)[1].split("static String status(",1)[0]
+assert "downloadsDatabaseName(c.getPackageName())" in row and "databaseList()" not in row
+assert "OPEN_READONLY" in row and "if(!file.isFile())return null" in row
+storage=read("smali_classes6/com/shabakaty/cinemana/ca1/StorageMaintenance152.smali")
+soon=storage.split(".method public static declared-synchronized scanSoon()V",1)[1].split(".end method",1)[0]
+assert "->schedule(Ljava/lang/Runnable;JLjava/util/concurrent/TimeUnit;)" in soon
+assert "->scan()V" not in soon and "Ljava/lang/Thread;->start" not in soon
+assert "DL_PENDING:Z" in soon and "allowCoreThreadTimeOut(Z)" in storage
+worker=read("smali_classes6/com/shabakaty/cinemana/ca1/StorageMaintenance152$1.smali")
+assert worker.index("->dlClearPending()V") < worker.index("->scan()V") and "Thread;->sleep" not in worker
+native=read("smali_classes6/com/shabakaty/cinemana/ca1/NativeBatchScope.smali")
+assert "getApplicationContext()" in native and "invoke-direct {p0, p1, v0}" in native
+assert "->s:Landroidx/fragment/app/Fragment;" not in native
+dv=read("smali/com/shabakaty/downloader/dv0.smali")
+for stage in ("VIDEO_COROUTINE_ENTER","VIDEO_METADATA_COLLECTION_READY","VIDEO_PERMISSION_MISSING","VIDEO_NATIVE_DISPATCH","VIDEO_NATIVE_DISPATCH_RETURN","VIDEO_EXISTING_ROW"):
+    assert stage in dv
+print("CP-DL B1b-1 storage, DB and detached batch scope source guards PASS")
