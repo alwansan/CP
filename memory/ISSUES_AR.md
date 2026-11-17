@@ -31,3 +31,6 @@
 | DL-012 | synchronous logging / lock contention | 24 UID samples DownloadTrace.log + code open/flush/close؛ P0C |
 | DL-008 | retry/cap | 156 disconnected cap requests، HTTP403 E12 مثبت؛ لا تعميم |
 DL-009 تصحيح: 4 am_kill هي force-stop x2 + ANR x2، لا LMK مثبت. DL-006 يبقى مفتوحاً. docs/DOWNLOAD_RESOURCE_AUDIT_AR.md.
+
+## توضيح أدلة التصميم
+DL-002: all-ready AtomicLong barrier + main dispatch؛ per-screen pools shutdown موجود، queue unbounded، لا إثبات thread leak من هذه وحدها. DL-005: bind throttle 5s موجود؛ bindingResult مجرد accepted log، لا READY ack. DL-010: Queue110.scanBody calls Restart108.exp -> MkvExporter.getDownloadsDao؛ يمتد أثر Room ownership إلى scheduler. DL-006: AUDIT_PENDING coalescing و5s hasWork polling موجودان؛ تحسين incremental لا إلغاء حماية. DL-004/DL-009: durable commit موجود لكنه synchronous per change؛ لا استبداله بapply. docs/DOWNLOAD_EXECUTION_DESIGN_AR.md.

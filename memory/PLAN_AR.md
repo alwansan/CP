@@ -16,3 +16,6 @@
 
 ## تعديل الأولوية بعد CLog ZIP
 docs/DOWNLOAD_RESOURCE_AUDIT_AR.md. P0A lifecycle Room/DAO per process والتسرب؛ P0B startup minimal service, main-only repair, single-flight bind والحد بعد connected؛ P0C bounded diagnostic logger/قياسات per-thread. ثم P1–P7 السابقة؛ التخطيط فقط. لا نسخ كامل الفروع ولا حذف ملفات المستخدم، لا اعتماد نجاح CI كاختبار هاتف.
+
+## تصميم التنفيذ التفصيلي ومصفوفة الاختبار
+docs/DOWNLOAD_EXECUTION_DESIGN_AR.md وdocs/DOWNLOAD_DEVICE_TEST_MATRIX_AR.md. التخطيط فقط. الإصدارات المقترحة DL-A0 CI/fixtures؛ DL-A1 DAO؛ DL-A2 service; DL-A3 diagnostic; DL-B1 admission/B2 scheduler; DL-C1 resolver/C2 MKV; DL-D1 downloads UI/D2 soak. تحقق من حراسات موجودة قبل التعديل (bind throttle 5s، no-op put/phase، AUDIT_PENDING، shutdownNow). حدد بعد إذن المالك، لا بناء قبل التنفيذ. اختبارات الهاتف T01–T14 والـforce-stop gates؛ preserve data/signature.

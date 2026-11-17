@@ -19,10 +19,10 @@ https://github.com/alwansan/CL/tree/main/data
 https://github.com/alwansan/CL/tree/main/Clog
 لا تنشر بيانات الحساب أو الروابط الموقعة أو سجلات خاماً. اقرأ الأدلة المتعلقة بالتجربة فقط.
 
-## نقطة الاستئناف (2026-11-17 — التحقيق المتقدم)
-الجلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-download-resource-audit-02.md
-التقرير الجديد: https://github.com/alwansan/CP/blob/feature/download-stability/docs/DOWNLOAD_RESOURCE_AUDIT_AR.md
-التقرير الأول: https://github.com/alwansan/CP/blob/feature/download-stability/docs/DOWNLOAD_PRESSURE_AUDIT_AR.md
-CLog ZIP المالك قرئ محلياً؛ 8188 SQLite leak warnings downloads DB؛ PATCH274 repeated Room builder، PATCH318 reference. حالتا startup ANR في :filedownloader بعد force-stop (4 markers؛ 4 kills ليست LMK)، 156 max-network requests disconnected، native 403 E12. stack ANR غير متاح. تمت مراجعة استراتيجية stable-core PATCH301–330 والفروع المبكرة للقراءة فقط، لا نقل/دمج. P0A Room lifetime، P0B startup/bind، P0C logging، ثم P1–P7. مرحلة تحليل فقط؛ لا runtime أو workflow أو build. انتظر توجيه المالك التالي، ولا تمس بياناته.
+## نقطة الاستئناف (2026-11-17 — تصميم التنفيذ)
+الجلسة: https://github.com/alwansan/CP/blob/feature/download-stability/memory/sessions/2026-11-17_cp-download-plan-03.md
+التصميم: https://github.com/alwansan/CP/blob/feature/download-stability/docs/DOWNLOAD_EXECUTION_DESIGN_AR.md
+اختبارات الهاتف: https://github.com/alwansan/CP/blob/feature/download-stability/docs/DOWNLOAD_DEVICE_TEST_MATRIX_AR.md
+التقارير: docs/DOWNLOAD_PRESSURE_AUDIT_AR.md وdocs/DOWNLOAD_RESOURCE_AUDIT_AR.md. المالك طلب مواصلة التخطيط قبل التطبيقات التجريبية. P0A: 8188 SQLite leaks، Queue110 يستخدم MkvExporter DAO عبر Restart108.exp؛ P0B: حالتا startup ANR، bind throttle 5s موجود، نحتاج single-flight READY؛ P0C logs. Batch begin all-ready barrier وper-screen pools unbounded queue (shutdown موجود). خطة DL-A0 ثم A1/A2/A3 وبقية B/C/D، test gates T01–T14 + force-stop. لا runtime أو workflow أو build. استلم توجيه بدء التنفيذ؛ لا تمس البيانات أو الفروع الأخرى. اقرأ HEAD الحي قبل العمل.
 
 **تحديث تلقائي إلزامي:** في كل دفعة وفي كل جلسة، حتى عند الفشل، حدّث MEMORY وSTATE وPLAN وISSUES وسجل جلسة مستقل وهذه الرسالة نفسها حسب التقدم، واحفظها في الفرع دون أن يطلب المالك ذلك. اجعل رسالة الاستعادة دائماً تشير إلى أحدث نقطة عمل مثبتة، لا إلى لقطة تأسيس جامدة.
