@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "agent": "CP-DL",
+  "repository": "alwansan/CP",
+  "writable_branch": "feature/download-stability",
+  "source_branch": "feature/local-account",
+  "baseline_sha": "82d7f67037f67659115d41782d3a9b5bf4e0bd02",
+  "baseline_patch": "PATCH274",
+  "baseline_ci": {
+    "run_id": 40839279548,
+    "status": "success",
+    "artifact_id": 12881579576,
+    "release": "local-account-PATCH274-10"
+  },
+  "status": "bootstrap_complete_awaiting_owner_reproduction",
+  "last_session": "memory/sessions/2026-11-17_cp-download-bootstrap.md",
+  "verified_at": "2026-11-17",
+  "app_code_changed": false,
+  "new_build_triggered": false,
+  "device_test": "not yet verified",
+  "cl": {
+    "repo": "alwansan/CL",
+    "branch": "main",
+    "directories": [
+      "log",
+      "data",
+      "Clog"
+    ],
+    "inventory_only": true
+  },
+  "build_note": "Inherited push trigger targets feature/local-account only; isolate new branch workflow before release",
+  "next": "Owner describes download issue; match APK version and logs; investigate actual code and test safely",
+  "mandatory_handoff": [
+    "memory/MEMORY.md",
+    "memory/STATE.json",
+    "memory/PLAN_AR.md",
+    "memory/ISSUES_AR.md",
+    "prompt/RESTORE_SESSION_AR.md",
+    "memory/sessions/"
+  ]
+}
