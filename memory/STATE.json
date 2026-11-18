@@ -12,11 +12,11 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1b3_shared_mux_ci_pending",
-  "last_session": "memory/sessions/2026-11-18_cp-dl-b1b3-mux-17.md",
+  "status": "download_baseline_accepted_html_handoff_waiting_owner",
+  "last_session": "memory/sessions/2026-11-18_cp-dl-h68-html-handoff-18.md",
   "verified_at": "2026-11-18",
-  "app_code_changed": true,
-  "new_build_triggered": true,
+  "app_code_changed": false,
+  "new_build_triggered": false,
   "device_test": "B1b1 416 native video dispatch return, zero missing Downloads and storage lock warnings; one ANR; MKV recovery progressed after restart",
   "cl": {
     "repo": "alwansan/CL",
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify B1b3 CI including JVM/ART gates; phone concurrency, force-stop, one missing proof and DB contention; durable batch ACK and UI separation before HTML",
+  "next": "read latest restore and await owner HTML/UI brief; agree page order and asynchronous bridge; preserve B1b3 regression gates and address backend backlog with UI integration",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "9080d4c3da58ce86fac31abf060c8e770d036f25",
+  "last_verified_head": "bbd5ad1bbc1c53f7a9fffb29662fe04071a8b138",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -334,7 +334,7 @@
       "bounded128 callback token queue on existing reconciler scheduler"
     ],
     "ci": "completed/success; release verified",
-    "device": "pending",
+    "device": "h68 functional acceptance; 35/35 re-download, 3 concurrent FFmpeg, 5 force-stops, residual backend defects",
     "build": {
       "run_id": 44207852201,
       "run_number": 12,
@@ -364,6 +364,61 @@
       "sidecar": "MKV_EXPORT_PREPARING",
       "root_path": "Restart108.repair omits RecoveryCapsule.finalizeMkv/cleanupCompleted",
       "fixed": false
+    },
+    "phone_h68": {
+      "source": "h68 and CLog033637",
+      "window_start_ms": 1794962205823,
+      "mkv": 452,
+      "proofs": 452,
+      "mp4": 0,
+      "repeated_batch_accepted": 35,
+      "failed": 0,
+      "enqueue_ms": 3112,
+      "mp4_db_ack_unique": 35,
+      "actual_ffmpeg_starts": 38,
+      "ffmpeg_exit0": 35,
+      "normal_final_markers": 33,
+      "matched_peak_ffmpeg": 3,
+      "prior_slot_median_ms": 6087.5,
+      "new_slot_median_ms": 5184,
+      "ack_to_first_process_start_median_ms": 22798,
+      "ack_to_start_max_ms": 84624,
+      "actual_ffmpeg_median_ms": 4252,
+      "force_stop_commands": 5,
+      "clog_anr": 0,
+      "clog_fatal": 0,
+      "remaining_recovery_json": 2,
+      "remaining_episodes": [
+        24,
+        26
+      ],
+      "new_sqlite_busy": 1,
+      "new_db_promote_fail": 1,
+      "raw_missing_video_status": 222,
+      "raw_missing_room_table_modification_log": 88,
+      "raw_db_promote_success": 154,
+      "recovery_cycles_over_500ms": 44,
+      "recovery_median_ms": 3034,
+      "recovery_max_ms": 17098,
+      "thread_peak": 249,
+      "cpu_peak_one_core": 456.44
     }
+  },
+  "phase_handoff": {
+    "status": "operational_base_closed_with_backlog",
+    "baseline": "cp-dl-B1b3-12",
+    "report": "docs/CP_DL_H68_CLOSURE_AR.md",
+    "design": "docs/CP_HTML_HANDOFF_AR.md",
+    "session": "memory/sessions/2026-11-18_cp-dl-h68-html-handoff-18.md",
+    "await_owner_ui_brief": true,
+    "additional_apk_required_now": false,
+    "all_defects_closed": false,
+    "open": [
+      "E24/E26 interrupted recovery finalization",
+      "DB dedup/lock/schema",
+      "durable batch ACK and bounded scans",
+      "UI lifecycle state bridge",
+      "pause/delete/cancel, orphan, soak and playback validation"
+    ]
   }
 }
