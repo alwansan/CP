@@ -59,3 +59,7 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 ## آخر CI للبروتوكول
 run 44397348530: bridge protocol unit/syntax passed، browser test لم يبدأ بنجاح لأن workflow لم ينصب npm package playwright؛ أصلحناه بإضافة npm install pinned قبل browser cache/install. تحقق من أحدث run بعد commit. اختبار Continue remove route fix في a80331d ينتظر regression. لا تخلط بين نجاح protocol unit tests ووجود Native bridge فعلي.
+
+
+## أحدث نتيجة — جلسة 23
+HEAD e3b00bce2debdb0f5c7c4eb44888e4e6b803514d. Shell CI 44397753290 SUCCESS: 40 Chromium assertions + bridge protocol 21 assertions. Artifact 14472026955. Motion CI 44392095637 SUCCESS 34 model +24 browser; Navigation CI 44389366278 SUCCESS 70 model +143 browser. راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md وdocs/HTML_BRIDGE_CONTRACT_AR.md. لا Android WebView/Native bridge بعد؛ لا APK ولا تعطيل القديم. الخطوة القادمة exact resume/DAO mapping ثم typed native admission service.

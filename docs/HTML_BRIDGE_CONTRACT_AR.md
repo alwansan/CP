@@ -67,3 +67,7 @@
 
 ## عميل البروتوكول JS (جلسة 23)
 أضيف docs/fixtures/html-shell-lab/bridge-protocol.js وtest-bridge.cjs. هذه طبقة transport-independent غير موصولة بالـHTML أو Android. allowlist للأوامر والأحداث، idempotency keys للأوامر destructive، حد payload، رفض حقول token/cookie/session/path/url، correlation/timeout، event seq gap → resync-required، close يرفض pending. يجب أن يتحقق Native من exact origin وmain frame قبل إرسال أي رد/حدث؛ فحص JS ليس security boundary. CI سيشغّل unit tests قبل Chromium.
+
+
+## تحقق عميل البروتوكول
+run 44397753290 شغّل bridge-protocol.js + test-bridge.cjs ونجح بـ21 assertions. client transport-independent فقط؛ لم يتم ربطه في app.js أو Android. لا تستنتج من نجاحه وجود WebMessageListener أو native facade.

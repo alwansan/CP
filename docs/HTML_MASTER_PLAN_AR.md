@@ -42,3 +42,7 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 ## جلسة 22 — Native download mapping
 راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md: Download94$State is selection/range UI; BatchDownload$Screen.enqueue is UI-coupled and must be refactored into typed Native admission; Queue110.pause writes PAUSE + USER_PAUSED; Restart108.paused mirrors pause marker; Delete94/MkvCancel262 require durable delete intent and recovery journal. Resume and full DAO snapshot remain unresolved. لا bridge/API تنفيذ حتى mapping كامل.
+
+
+## جلسة 23 — shell الموحد والـprotocol
+الاختبار الموحد 44397753290 SUCCESS: 40 Chromium assertions، و21 protocol unit assertions. screenshot artifact 14472026955. motion 44392095637 PASS 34 model+24 browser؛ navigation 44389366278 PASS 70 model+143 browser. HTML mock only؛ no runtime/APK. الخطوة التالية استكمال resume/DAO mapping وtyped Native download admission، ثم WebViewAssetLoader/WebMessageListener بعد dependency/D8 security gates.

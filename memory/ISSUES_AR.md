@@ -169,3 +169,5 @@ HTML-012: JS bridge protocol client added (allowlist/idempotency/payload cap/sen
 HTML-013: unified shell regression 44396266955 failed because test script stayed on Account route before trying to remove Continue cards; product route was behaving correctly. Fixed test navigation order (return to Home before removing cards); rerun pending.
 
 HTML-014: protocol unit/syntax checks passed in run 44397348530; Chromium step failed because workflow cache rewrite omitted npm install of Playwright package (browser binary alone is not npm module). Restored explicit npm install before browser cache/install. Shell test route-order fix is in commit a80331d and awaits CI.
+
+HTML-015: fixed test navigation order; latest shell run 44397753290 SUCCESS with 40 Chromium assertions. Protocol unit tests 21 PASS. Screenshot artifact 14472026955 visually reviewed. Native bridge, WebView, actual catalog/download/account integration and Android device tests remain open.
