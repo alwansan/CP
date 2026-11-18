@@ -1,0 +1,48 @@
+# CP-DL — خريطة عمليات التحميل Native للـHTML (جلسة 22)
+
+هذه مراجعة static من فرع Html؛ لا توجد bridge endpoints منفذة. أسماء الدوال ونتائجها موصوفة كما ظهرت في smali الحالي. لا تفترض أن ظهور method يعني أنه API عام صالح للاستدعاء من WebView.
+
+## 1) اختيار الحلقات والدفعات
+- DownloadsActivity تبني NavController/toolbar وViewPager2/TabLayout؛ الشاشة ليست مجرد list واحدة.
+- Download94$State واجهة اختيار متقدمة فوق التنزيلات: begin/end، items، eligible، inSeason، works/loadWorkNames، range، selectAll102، selectAt، handle/intercept(MotionEvent)، confirm. هذا overlay لإدارة التحديد والنطاق والسحب، وليس manager للتحميل.
+- BatchDownload$Screen يحوي episodes/selection/variants/metadata/sizes executors وenqueue(List,int,int). enqueue يتأكد أن الشاشة ليست closed، يحسب effective variant، يتخطى existing، يرفض بيانات الحلقة الناقصة، ويسجل accepted وenqueueFailures ويعمل refresh/toast/dismiss. التنفيذ مربوط بـScreen وDialog؛ لا يجوز استدعاؤه من JS ولا إرجاع "success" بمجرد وصول الرسالة.
+- واجهة HTML يجب أن ترسل BatchPlan typed إلى Native: stable episode IDs + quality choice + exclusions + selection scope. Native يعيد plan/result لكل عنصر. يلزم فصل admission service من UI قبل ربطها.
+
+## 2) حالة الطابور والتأكيد
+- Queue110.pause(taskId): تحت synchronized lock يقرأ request:<id>، يغير intent إلى PAUSE ويحفظ request record عبر save، ثم يسجل USER_PAUSED. هذا journal state وليس مجرد تغيير لون زر.
+- Restart108.paused(manager,taskId): يستدعي Queue110.pause ويحدّث restart prefs بمؤشر |PAUSE. لا تجعل JS يكتب SharedPreferences أو يقرر أن pause اكتمل.
+- Queue110.submitted(task): يتحقق من manager/task id/URL، يضع المهمة في live map، يسجل NATIVE_SUBMIT، ينفذ bind ويوقظ Restart108. هذه مرحلة إرسال/إعادة ربط، وليست durable completion.
+- Queue110.terminal(task,result): يسجل TERMINAL_* ويزيل نفس task object من live map. يستدعي committed فقط عند DB_COMMITTED، أو COMPLETED لمهمة subtitle فقط (وهو إيصال نقل subtitle لا اكتمال فيديو).
+- Queue110.committed(task,id): يسترجع request:<id>، يقرأ path/url/large-file size من Native task، ثم يتحقق من receipt/file metadata ويكتب done record. لا تعرض path أو URL أو signed URL على JavaScript.
+- لذلك API response يجب أن يميز ACCEPTED وPAUSED_REQUESTED/PAUSED_CONFIRMED وDB_COMMITTED وTERMINAL/FAILED. لا توجد في الواجهة الحالية proof أن PAUSED_REQUESTED يساوي توقف النقل فعلياً؛ نحتاج state callback/DAO snapshot.
+
+## 3) الحذف والإلغاء الآمن
+- Delete94.delete يأخذ MkvExporter.JOB_LOCK، يتحقق من ACTIVE_JOB_KEYS، يقرأ DB عبر readCombinedById، يقارن المسار مع الملف المتوقع ويتحقق من candidate قبل متابعة الحذف. عند اختلاف المسار يمر بفحوص MkvCancel262.
+- MkvCancel262.prepareDelete يكتب ca1_delete_intent باستخدام SharedPreferences.commit قبل الإلغاء. عند وجود task id نشط يستدعي FileDownloader.pause، ويتعامل مع عملية MKV عبر ownership maps/worker registration. هذا intent ضروري لمنع إفساد ملف التحويل.
+- Delete94.run يقبل قائمة، يصنع Snapshot لكل عنصر، ويشغل worker واحداً مع Result callback. عند busy يؤجل نتيجة/محاولة بدلاً من تنفيذ حذف متزامن.
+- Delete94.reenqueue لا يزيل delete intent إذا كان ca1_delete_journal لا يزال يحتوي على السجل؛ يرفض حتى تنتهي عملية الحذف. لا تسمح للـUI بتكرار delete أو reenqueue دون native result.
+- الواجهة لا تملك raw file path. ترسل opaque item id، وNative يقرر إن كان الحذف مسموحاً وما إذا كان الملف قيد التحويل أو الاسترداد.
+
+## 4) ما لم يُحسم بعد
+- المسار الكامل لزر Resume من UI إلى Restart108.start/wake وإزالة PAUSE marker لم يكتمل رسمه؛ لا تنشئ resume endpoint حتى نقرأ جميع callers ونتائج manager.
+- DAO snapshot النهائي لحالات التنزيل والمجموعات والترتيب/الحجم غير معروف بالكامل بعد.
+- Delete94 يغطي مسار حذف خاصاً مع recovery journal، لكن لا يثبت وحده تغطية كل أنواع الحذف/المجموعات.
+- queue admission العام من دون BatchDownload$Screen غير مستخرج بعد.
+- لا نعرف بعد هل توجد callbacks Native موحدة يمكن أن تعطي sequence/revision delta؛ يلزم تصميم observer دون polling كثيف.
+
+## 5) خطة facade قبل bridge
+1. Extract pure batch planner/validator من Download94$State وBatchDownload$Screen؛ لا Android View/Toast/Adapter/Dialog في الطبقة.
+2. Extract Native DownloadCommandService على executor مع idempotency وper-item result؛ لا يغير semantics الحالية.
+3. Define DownloadSnapshot من DAO + Queue110 + Restart108 + MkvExporter/MkvReconciler مع state precedence موثقة، خصوصاً converting/deleting/recovering/DB_COMMITTED.
+4. Implement pause/resume/cancel/remove through exact Native call graph; durable ACK and state callback only.
+5. Run existing h68 tests and 452 MKV + 3 workers + force-stop recovery; verify no duplicates/loss and no orphaned delete intents.
+6. Only then expose allowlisted typed actions through WebMessageListener and test renderer death/reattach.
+
+## Sources inside repo
+- Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/ui/downloads/DownloadsActivity.smali
+- Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Download94$State.smali
+- Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/BatchDownload$Screen.smali
+- Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Queue110.smali
+- Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Restart108.smali
+- Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Delete94.smali
+- Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/MkvCancel262.smali

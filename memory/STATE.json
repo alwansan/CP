@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify latest unified shell CI 443945 and follow-up run after app.js update; continue typed Native facade and exact download DAO/service mapping; Android WebView integration remains gated",
+  "next": "Verify shell CI 44395819123; continue map exact resume/DAO snapshot, build typed admission facade after parity/security tests",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -492,6 +492,9 @@
       "bridge_implemented": false,
       "uses_mock_data": true,
       "android_test": false
-    }
+    },
+    "download_native_map": "docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md",
+    "bridge_contract": "docs/HTML_BRIDGE_CONTRACT_AR.md",
+    "native_bridge_implemented": false
   }
 }

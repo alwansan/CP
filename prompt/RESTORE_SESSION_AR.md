@@ -47,3 +47,7 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 ## آخر تحديث — جلسة 22
 اقرأ docs/HTML_SHELL_LAB_AR.md وdocs/HTML_BRIDGE_CONTRACT_AR.md وmemory/sessions/2026-11-18_cp-dl-html-unified-shell-22.md. تحقق من Actions run 44394539721 ثم أحدث run shell بعد تعديل app.js. Shell lab خمسة تبويبات وبياناته وهمية فقط؛ لا تدمجه كواجهة إنتاج. Motion CI 44392095637 PASS 34 model +24 Chromium؛ Navigation CI 44389366278 PASS 70 model +143 Chromium. لا يوجد Android WebView أو bridge في APK. LocalRuntime ليس JS bridge، BatchDownload.enqueue UI-coupled، Queue110 NATIVE_SUBMIT لا يساوي DB_COMMITTED. لا تعطل الواجهات القديمة ولا تغيّر APK قبل bridge/parity/security/ART gates. فرع الكتابة Html وحده.
+
+
+## خريطة التحميل Native
+اقرأ docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md قبل تصميم downloads bridge. Queue110.pause يكتب PAUSE/USER_PAUSED، وDelete94/MkvCancel262 تتطلب delete intent/journal؛ لا تعاملها كعمليات UI عادية. resume/DAO snapshot ما زالا قيد التتبع.

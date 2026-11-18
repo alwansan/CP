@@ -38,3 +38,7 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 ## جلسة 22 — shell والـbridge
 المختبر الموحد docs/HTML_SHELL_LAB_AR.md وdocs/fixtures/html-shell-lab؛ الاختبار الأول 44394027250 PASS/34 assertions؛ regression 443945 pending. نظام الحركة 44392095637 PASS/34 model +24 browser؛ navigation 44389366278 PASS/70 model +143 browser. لا runtime/APK changes. اقرأ docs/HTML_BRIDGE_CONTRACT_AR.md: لا bridge حالياً، LocalRuntime ليس JS API، Native queue مصدر الحقيقة، لا arbitrary methods، durable ACK بعد DB_COMMITTED، WebViewAssetLoader + WebMessageListener origin/main-frame guard مع fallback Native. Build Apktool + custom D8 وليس Gradle.
+
+
+## جلسة 22 — Native download mapping
+راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md: Download94$State is selection/range UI; BatchDownload$Screen.enqueue is UI-coupled and must be refactored into typed Native admission; Queue110.pause writes PAUSE + USER_PAUSED; Restart108.paused mirrors pause marker; Delete94/MkvCancel262 require durable delete intent and recovery journal. Resume and full DAO snapshot remain unresolved. لا bridge/API تنفيذ حتى mapping كامل.

@@ -59,3 +59,7 @@
 - addWebMessageListener/origin allow rules: https://developer.android.com/reference/androidx/webkit/WebViewCompat
 - bridge security and untrusted frames: https://developer.android.com/develop/ui/views/layout/webapps/native-api-access-jsbridge
 - WebView JavaScript bridge security: https://developer.android.com/privacy-and-security/risks/insecure-webview-native-bridges
+
+
+## خريطة التحميل Native التفصيلية
+راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md للتفاصيل المثبتة من Download94$State وBatchDownload$Screen وQueue110.pause/terminal وRestart108.paused وDelete94/MkvCancel262. أهم نتيجة: pause يكتب PAUSE intent وUSER_PAUSED؛ الحذف يكتب ca1_delete_intent قبل إيقاف FileDownloader/FFmpeg، ثم Delete94 worker/journal. مسار resume والـDAO snapshot الكامل ما زالا غير محسومين. لا تعرض نجاح pause/delete قبل Native result.
