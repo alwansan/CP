@@ -29,6 +29,8 @@ jobs:
           node test-bridge.cjs
           node --check app.js
           node --check test-browser.cjs
+      - name: Install Playwright package
+        run: npm install --no-save --package-lock=false playwright@1.51.1
       - uses: actions/cache@v4
         id: playwright-cache
         with:

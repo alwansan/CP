@@ -36,3 +36,7 @@ Chromium Playwright CI ثم مراجعة بصريّة للـartifact؛ إصلا�
 
 ## Regression 44396266955
 Browser regression reached the long-press/context-menu phase but test attempted to find Continue cards after navigating to Account. This was a test-order bug, not an application route bug. Test now returns to Home before removing all three Continue items; rerun with bridge protocol unit checks pending.
+
+
+## CI 44397348530
+Protocol unit checks and JS syntax all passed. Chromium browser install passed, but test runner failed at require('playwright') because the cache optimization had omitted npm package installation. Workflow now restores explicit pinned npm install before Chromium cache/install; shell test route fix is included in commit a80331d.

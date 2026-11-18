@@ -55,3 +55,7 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 ## JS bridge protocol
 راجع docs/HTML_BRIDGE_CONTRACT_AR.md وdocs/fixtures/html-shell-lab/bridge-protocol.js. عميل JS مستقل، لا Android transport. شغّل test-bridge.cjs. Native origin/main-frame validation والداتا/العمليات والـdurable ACK لم تُنفذ بعد.
+
+
+## آخر CI للبروتوكول
+run 44397348530: bridge protocol unit/syntax passed، browser test لم يبدأ بنجاح لأن workflow لم ينصب npm package playwright؛ أصلحناه بإضافة npm install pinned قبل browser cache/install. تحقق من أحدث run بعد commit. اختبار Continue remove route fix في a80331d ينتظر regression. لا تخلط بين نجاح protocol unit tests ووجود Native bridge فعلي.

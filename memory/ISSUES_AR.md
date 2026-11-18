@@ -167,3 +167,5 @@ HTML-011: download bridge mapping deepened. Queue110.pause persists PAUSE/USER_P
 HTML-012: JS bridge protocol client added (allowlist/idempotency/payload cap/sensitive-key rejection/request correlation/timeout/event sequence gap). Not wired to app/native; unit CI pending. Native must enforce exact origin + main-frame and durable acknowledgements.
 
 HTML-013: unified shell regression 44396266955 failed because test script stayed on Account route before trying to remove Continue cards; product route was behaving correctly. Fixed test navigation order (return to Home before removing cards); rerun pending.
+
+HTML-014: protocol unit/syntax checks passed in run 44397348530; Chromium step failed because workflow cache rewrite omitted npm install of Playwright package (browser binary alone is not npm module). Restored explicit npm install before browser cache/install. Shell test route-order fix is in commit a80331d and awaits CI.
