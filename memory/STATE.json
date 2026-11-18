@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_motion_lab_ci_pending",
-  "last_session": "memory/sessions/2026-11-18_cp-dl-html-motion-21.md",
+  "status": "html_unified_shell_lab_ci_pending",
+  "last_session": "memory/sessions/2026-11-18_cp-dl-html-unified-shell-22.md",
   "verified_at": "2026-11-18",
   "app_code_changed": false,
   "new_build_triggered": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify motion CI 44392095637 and fix; continue shell/router, actual native bridge parity and Android WebView",
+  "next": "Verify latest unified shell CI 443945 and follow-up run after app.js update; continue typed Native facade and exact download DAO/service mapping; Android WebView integration remains gated",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "beaadffcd110702087805fa0cecc1342c23eb452",
+  "last_verified_head": "70931cb1978799d2f7f84e687d92aad27cd8f061",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -473,9 +473,25 @@
       "lab": "docs/fixtures/html-motion-lab/index.html",
       "plan": "docs/HTML_MOTION_SYSTEM_AR.md",
       "run_id": 44392095637,
-      "run_status": "in_progress",
-      "browser_pass": null,
-      "android_pass": null
+      "run_status": "completed",
+      "browser_pass": true,
+      "android_pass": null,
+      "browser_assertions": 24,
+      "run_conclusion": "success"
+    },
+    "shell": {
+      "lab": "docs/fixtures/html-shell-lab/index.html",
+      "plan": "docs/HTML_SHELL_LAB_AR.md",
+      "bridge_contract": "docs/HTML_BRIDGE_CONTRACT_AR.md",
+      "run_initial": 44394027250,
+      "initial_browser_assertions": 34,
+      "initial_pass": true,
+      "run_updated": 44394539721,
+      "updated_status": "in_progress",
+      "latest_app_js_fix": "scroll behavior auto when motion disabled",
+      "bridge_implemented": false,
+      "uses_mock_data": true,
+      "android_test": false
     }
   }
 }

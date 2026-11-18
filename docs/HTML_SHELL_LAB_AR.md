@@ -21,3 +21,10 @@ Chromium Playwright CI ثم مراجعة بصريّة للـartifact؛ إصلا�
 
 ## known gaps
 المحتوى الحقيقي، تفاصيل المواسم والحلقات، multi-select/range download، كل فلاتر المكتبة، إدارة القوائم، account edits/backup، subtitle preview، real queue and recovery states، native player/cast، localization EN، talkback/IME، حفظ scroll/filter، navigation state restoration، virtualized lists/performance، bridge security/CSP وWebViewAssetLoader كلها غير مربوطة بعد.
+
+## نتائج CI
+- 44393863885: فشل syntax أولي بسبب قوس زائد في bindLongPress؛ أصلحناه.
+- 44394027250: SUCCESS، 34 Chromium assertions، artifact screenshot.
+- 44394539721: regression يضيف header actions وcategory filters، pending عند آخر قراءة؛ لا تدّع PASS قبل النتيجة.
+- app.js آخر تعديل يجعل no-motion scrolling behavior=auto ويحتاج run لاحقاً.
+- bridge contract في docs/HTML_BRIDGE_CONTRACT_AR.md؛ لا Android bridge بعد.

@@ -8,3 +8,6 @@ Three continue layouts: landscape card, wide compact row, portrait poster; same 
 References MDN https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API ; https://developer.mozilla.org/en-US/docs/Web/API/Animation/cancel ; https://developer.mozilla.org/en-US/docs/Web/API/Element/pointercancel_event ; https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using ; https://web.dev/articles/animations-overview . Prefer WAAPI as progressive fallback; View Transitions optional after WebView capability, unique names and snapshot cost verified.
 ## Evidence
 Navigation CI 44389366278 completed success including actual Chromium regression. New motion lab docs/fixtures/html-motion-lab independent, 34 model assertions passed in JS isolate; browser pending CI, no Android test. No runtime APK change, no backend/data modifications. 
+
+## نتيجة Chromium النهائية
+run 44392095637 SUCCESS، CP_MOTION_MODEL_PASS assertions=34 وCP_MOTION_BROWSER_PASS assertions=24، artifact 14469408208 وتمت مراجعة screenshot. لا Android WebView/device test.
