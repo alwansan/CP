@@ -174,3 +174,6 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 
 Resume candidate: ey0.l -> q(reuse=true) -> dlStart -> Restart108.admitted -> Queue110.remember(RUN/NATIVE_ADMITTED), but UI caller still unconfirmed. See HTML_DOWNLOAD_NATIVE_MAP_AR.md.
+
+
+WorkManager recovery mapping: CheckDownloadsStatusWorker + jy0 handle stopped-task scan/restore behind DAO and Restart108.canRestore. WebView reattach must not start recovery. See HTML_DOWNLOAD_NATIVE_MAP_AR.md.

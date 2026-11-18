@@ -175,3 +175,5 @@ HTML-015: fixed test navigation order; latest shell run 44397753290 SUCCESS with
 HTML-016: Resume semantics still unresolved. ey0.d is pause; ey0.i is retry after ExpiredLink/DAO reconstruction; yy0 auto-retry gates through Restart108.canRetry. PAUSE marker and Queue110.isPaused block retry. No ResumeDownloadBR found; subtitle-only Dependencies112 resume is not general video resume.
 
 HTML-016 update: found strong re-admit candidate ey0.l(manager,id) -> q(reuse=true) -> dlStart -> Restart108.admitted -> Queue110.remember(intent=RUN, NATIVE_ADMITTED), mechanically clears PAUSE in both journals. UI caller not yet confirmed; do not expose resume API until traced and duplicate/ACK semantics tested.
+
+HTML-017: WorkManager recovery mapped: CheckDownloadsStatusWorker scans downloadsRepo, starts service/rebuilds stopped tasks; jy0 attaches manager and checks DAO + Restart108.canRestore before ey0.o/q. Must not trigger this from WebView renderer recreation. See HTML_DOWNLOAD_NATIVE_MAP_AR.md.

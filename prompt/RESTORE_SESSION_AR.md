@@ -71,3 +71,7 @@ HEAD e3b00bce2debdb0f5c7c4eb44888e4e6b803514d. Shell CI 44397753290 SUCCESS: 40 
 
 ## تحديث Resume candidate
 Queue110.isPaused يقرأ request intent=PAUSE؛ Queue110.remember يكتب RUN/NATIVE_ADMITTED. Restart108.admitted يكتب external|RUN ثم Queue110.remember. ey0.l(manager,id) يعيد بناء composer ثم q(...,true) → dlStart(reuse) → Restart108.admitted. هذا مرشح ميكانيكي قوي لإعادة القبول بعد pause، لكن UI caller لم يثبت؛ لا تعرض endpoint resume قبل tracing caller والتحقق من عدم تكرار المهمة وACK.
+
+
+## WorkManager recovery findings
+CheckDownloadsStatusWorker is androidx.work.Worker; it scans downloadsRepo, detects stopped tasks, starts DownloaderService and rebuilds/restarts through ey0.n/q. jy0 attaches manager, calls Restart108.start, checks DAO rows and Restart108.canRestore before ey0.o/q. This is recovery, not a WebView action. Renderer reattach must subscribe only, never launch recovery again. See docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md.

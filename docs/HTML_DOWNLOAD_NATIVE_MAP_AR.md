@@ -57,3 +57,10 @@
 - Restart108.admitted(manager,composer) يكتب intent:<id> = external|RUN في restart prefs ثم يستدعي Queue110.remember. وهذا يزيل suffix |PAUSE الذي يمنع canRetry.
 - ey0.l(manager,taskId) يعثر على composer الحي، يعيد بناءه من URL/filename/metadata، ثم يستدعي q(composer,true). q يصل إلى dlStart مع reuse=true، وdlStart يمر عبر Restart108.admitted قبل إعادة استخدام DownloadTask. ميكانيكياً هذا مرشح قوي لمسار إعادة القبول بعد pause، لكنه لا يثبت وحده أن زر Resume في واجهة المستخدم يستدعيه؛ لم نعثر بعد على caller UI موثوق له.
 - لذلك صنّفناه Resume/Re-admit candidate فقط. قبل API: تتبع caller، تحقق من حالة task/bytes/file، ومنع duplicate start، وتأكد من ACK بعد Queue110.remember + FileDownloader state. لا تستدع ey0.l من JS مباشرة.
+
+
+## 8) WorkManager / force-stop recovery
+- CheckDownloadsStatusWorker extends androidx.work.Worker. Its logs include starting check downloads worker, no active downloads, found active downloads/starting service, stopped downloads found, updating stopped downloads. It reads downloadsRepo and composersMap, reconstructs composer with ey0.n, and calls ey0.q. This is background stopped-task reconciliation, not UI navigation.
+- jy0 is the downloader-manager attach/restore coroutine: it calls Restart108.start(manager), checks DB has download items, then Restart108.canRestore(manager,row) before rebuilding/reusing a DownloadTask through ey0.o + ey0.q. Thus restore is explicitly gated by pause/delete intent and DAO evidence.
+- ey0$e is a startDownload wrapper that creates a Composer via ey0.c and calls q; treat as admission/start path, not a public API until its callers and validation are mapped.
+- These findings reinforce: WorkManager/DownloaderService own recovery; WebView only subscribes to snapshots/events. Renderer recreation must not start another worker or restart a download.

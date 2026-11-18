@@ -152,3 +152,6 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 
 Resume candidate update: Queue110.isPaused reads request intent=PAUSE; Queue110.remember writes RUN/NATIVE_ADMITTED. Restart108.admitted writes external|RUN then Queue110.remember. ey0.l(manager,id) rebuilds composer and q(reuse=true) -> dlStart -> admitted. This can clear pause state, but its UI caller is not yet verified. Trace caller and confirm idempotency/ACK before bridge API.
+
+
+WorkManager recovery: CheckDownloadsStatusWorker scans downloadsRepo and starts service/rebuilds stopped tasks; jy0 attaches manager and applies DAO + Restart108.canRestore gates before ey0.o/q. Do not couple renderer attach to recovery.
