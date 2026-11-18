@@ -333,19 +333,27 @@
       "original per-source Lease115 and epoch guards retained",
       "bounded128 callback token queue on existing reconciler scheduler"
     ],
-    "ci": "in_progress; mandatory ART pending",
+    "ci": "completed/success; release verified",
     "device": "pending",
     "build": {
       "run_id": 44207852201,
       "run_number": 12,
       "job_id": 134478313978,
       "code_sha": "9511f14a3eb1b7511e453a1931017f495d4208ad",
-      "status": "in_progress",
+      "status": "completed",
       "source_jvm_compile": "success",
       "sign_dex": "success",
       "artifact": "success",
-      "art": "in_progress",
-      "release": "pending"
+      "art": "success",
+      "release": "cp-dl-B1b3-12",
+      "conclusion": "success",
+      "apk_sha256": "sha256:51b60cb77824d0abf1e74ac0111068a6869591e29fa3889f72df294d93ec7f7e",
+      "apk_size": 56306716,
+      "apk_url": "https://github.com/alwansan/CP/releases/download/cp-dl-B1b3-12/Cinemana_CP_DL_B1b3_signed.apk",
+      "artifact_id": 14384941434,
+      "release_verified": true,
+      "cross_process_jvm": "pass",
+      "art_output": "CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1"
     },
     "recovery_gap": {
       "episode": "additional batch E09",
