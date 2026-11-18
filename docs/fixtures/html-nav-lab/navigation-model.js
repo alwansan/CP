@@ -1,0 +1,13 @@
+"use strict";
+// Original CP-DL prototype; no Nuvio source copied.
+const CPNavigationModel = (function navigationModel(){const defaults=Object.freeze({version:1,style:"adaptive",theme:"dark",width:94,height:64,icon:24,label:11,font:"system",text:100,radius:30,glass:"balanced",motion:true,speed:100,glow:true,accent:"#ff786f"});
+const clamp=(v,lo,hi,fallback)=>typeof v==="number"&&Number.isFinite(v)?Math.min(hi,Math.max(lo,v)):fallback;
+const one=(v,allowed,fallback)=>allowed.includes(v)?v:fallback;
+function sanitize(input){const x=input&&typeof input==="object"?input:{};return {version:1,style:one(x.style,["adaptive","expanded","compact","classic"],defaults.style),theme:one(x.theme,["dark","light","oled"],defaults.theme),width:clamp(x.width,72,100,94),height:clamp(x.height,56,84,64),icon:clamp(x.icon,18,30,24),label:clamp(x.label,10,14,11),font:one(x.font,["system","arabic","serif"],"system"),text:clamp(x.text,90,140,100),radius:clamp(x.radius,12,40,30),glass:one(x.glass,["eco","balanced","prism"],"balanced"),motion:typeof x.motion==="boolean"?x.motion:true,speed:clamp(x.speed,50,150,100),glow:typeof x.glow==="boolean"?x.glow:true,accent:typeof x.accent==="string"&&/^#[0-9a-fA-F]{6}$/.test(x.accent)?x.accent:defaults.accent};}
+function logicalToVisual(i,count,rtl){return Number.isInteger(i)&&i>=0&&i<count?(rtl?count-1-i:i):-1;}
+function hit(x,left,width,count,rtl){if(!Number.isFinite(x)||!Number.isFinite(left)||!Number.isFinite(width)||width<=0||!Number.isInteger(count)||count<1)return -1;let visual=Math.max(0,Math.min(count-1,Math.floor((x-left)/width*count)));return logicalToVisual(visual,count,rtl);}
+function geometry(p,viewport,collapsed){const a=sanitize(p);if(!Number.isFinite(viewport)||viewport<1)viewport=320;const available=Math.max(0,viewport-12),desired=a.style==="classic"?available:viewport*a.width/100;const width=Math.min(available,Math.max(5*48+10,desired));const compact=a.style==="compact"||(a.style==="adaptive"&&collapsed);return {width,height:compact?Math.max(56,a.height-10):a.height,labels:!compact,slot:width/5,radius:a.style==="classic"?16:a.radius};}
+function scrollCollapsed(prev,delta,atTop=false){return atTop?false:delta>12?true:delta<-12?false:prev;}
+function releaseGesture(start,end,previous,count,rtl,cancel=false){if(cancel||!start||!end)return previous;const dx=end.x-start.x,dy=end.y-start.y;if(Math.abs(dy)>Math.max(14,Math.abs(dx)))return previous;return hit(end.x,start.left,start.width,count,rtl);}
+return {defaults,sanitize,logicalToVisual,hit,geometry,scrollCollapsed,releaseGesture};})();
+if(typeof module!=="undefined")module.exports=CPNavigationModel;
