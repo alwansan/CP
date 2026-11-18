@@ -1,5 +1,7 @@
 # AGENTS.md — CP-DL | Cinemana Pro Download Stability
 
+**توجيه المالك الأحدث — جلسة 20:** التنفيذ التجريبي مأذون عند الجاهزية الهندسية. تعليمات انتظار الإذن التاريخية لا تمنع التنفيذ المعزول الآن. قبل تعطيل العرض القديم تحقق من التكافؤ والأمان والحفاظ على البيانات، واتبع ART. اقرأ docs/HTML_NUVIO_APPEARANCE_AR.md.
+
 ## الهوية والتكليف
 أنت CP-DL، العميل الهندسي المسؤول عن استقرار تنزيلات Cinemana Pro. احتفظ بالهوية بين الجلسات. المستودع alwansan/CP؛ **فرع الكتابة الوحيد Html** (قرار المالك 2026-11-18؛ feature/download-stability للقراءة فقط). الأساس feature/local-account عند 82d7f67037f67659115d41782d3a9b5bf4e0bd02 (PATCH274). لا تعدل feature/download-stability أو main أو feature/local-account أو experiment/rea-source-recovery أو CL. لا تدمج من فروع أخرى تلقائياً. توجيه المالك 2026-11-17: تأسيس الفرع والذاكرة أولاً، ثم انتظار وصف المشكلة؛ لا تغييرات تشغيلية في جولة التأسيس.
 
@@ -34,3 +36,7 @@
 
 ## جلسة 19 — Html / تخطيط الواجهات 2026-11-18
 قرار المالك الحالي: Html هو فرع الكتابة الوحيد؛ feature/download-stability مرجع read-only، الفرعان مطابقان وقت البداية c68c0d80722765409f8544d499938a656217967b. CP-DL ثابت، baseline B1b3-12 وآخر runtime 9511f14a3eb1b7511e453a1931017f495d4208ad. استلمنا فكرة المالك: إعادة تصميم كل العرض، 5 تبويبات RTL الرئيسية/الأقسام/البحث وسطاً/التحميلات/الحساب. التخطيط فقط؛ لا تعطيل واجهات أو runtime/CI/APK حتى الإذن. جرد 94 صورة و15,766 إطاراً آلياً، 64 عينة بصرية من الفيديو، timestamp تقريبي؛ V4 مرجع اختياري وليس backend. اقرأ docs/HTML_MASTER_PLAN_AR.md وdocs/HTML_UI_AUDIT_AR.md وmemory/sessions/2026-11-18_cp-dl-html-planning-19.md. كل backlog h68 والاختبارات ART محفوظة. الخطوة القادمة استكمال parity وexact call graph ومراجعة قرارات التصميم؛ لا حذف بيانات. تعليمات الفرع السابق تاريخية ولا تمنح صلاحية كتابة.
+
+
+## جلسة 20 — Nuvio وتخصيص الواجهة
+أحدث قرار المالك: إذن مسبق بالبحث والتخطيط والتنفيذ والـAPK التجريبي عند تحقق بوابات الأمان والتكافؤ والـART؛ لا طلب موافقة لكل دفعة. Html الوحيد للكتابة؛ لا تعطل واجهات القديم قبل بديل متحقق ولا تحذف المحرك أو البيانات. فرع NuvioMobile cmp-rewrite b66f7725ca08f0455e5097797253a2d7ac432f84 GPL3: استلهام دون نقل الكود. فيديو 190.713s / 11792 إطار metadata؛ 64 عينة بصرية تغطي التسجيل، لم نفحص كل إطار بسبب مهلة الاستخراج. بحث CSS/SVG/AGSL وفصل opt-in visual modes. راجع docs/HTML_NUVIO_APPEARANCE_AR.md وdocs/fixtures/html-nav-lab/index.html (مختبر محلي مستقل 5 tabs، adaptive/expanded/compact/classic، حجم/خط/لون وحركة/RTL/سحب، demo فقط). commit e17e2dcad0513b06a273e58cec870894a51acf81، 70 assertions pure JS ناجحة، browser/Android غير متحققين (DNS raw GitHub تعذر). Prism الحالي CSS blur/shine فقط لا انكسار فعلي. لا runtime/CI APK/device test. التالي اختبار browser حقيقي ثم exact lifecycle/bridge/parity وoptics، وبعدها APK عندما يحقق البوابات. اقرأ memory/sessions/2026-11-18_cp-dl-html-nuvio-planning-20.md.

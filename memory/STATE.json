@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_owner_brief_planning_only",
-  "last_session": "memory/sessions/2026-11-18_cp-dl-html-planning-19.md",
+  "status": "html_authorized_iterative_research_lab",
+  "last_session": "memory/sessions/2026-11-18_cp-dl-html-nuvio-planning-20.md",
   "verified_at": "2026-11-18",
   "app_code_changed": false,
   "new_build_triggered": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Continue parity and exact lifecycle/call graph; no runtime/build until owner authorizes implementation",
+  "next": "Real browser/device and CP lifecycle/call graph, bridge/parity gates; owner authorized isolated implementation and signed experimental APK when ready",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "7e9420e35a6e1133edf9fb83705c0ac18b47c4c1",
+  "last_verified_head": "e17e2dcad0513b06a273e58cec870894a51acf81",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -420,10 +420,10 @@
       "UI lifecycle state bridge",
       "pause/delete/cancel, orphan, soak and playback validation"
     ],
-    "await_implementation_authorization": true
+    "await_implementation_authorization": false
   },
   "html_phase": {
-    "status": "planning_only",
+    "status": "research_and_isolated_lab",
     "source_branch": "feature/download-stability",
     "initial_head": "c68c0d80722765409f8544d499938a656217967b",
     "plan": "docs/HTML_MASTER_PLAN_AR.md",
@@ -437,6 +437,22 @@
     "old_ui_disabled": false,
     "code_changed": false,
     "build_triggered": false,
-    "workflow_gate": "old branch only"
+    "workflow_gate": "old branch only",
+    "owner_authorized_experimental_replacement_when_ready": true,
+    "nuvio": {
+      "ref": "b66f7725ca08f0455e5097797253a2d7ac432f84",
+      "license": "GPL-3.0",
+      "source_imported": false,
+      "video_duration_s": 190.713,
+      "video_frame_count_metadata": 11792,
+      "visual_samples": 64,
+      "all_frames_decoded": false,
+      "plan": "docs/HTML_NUVIO_APPEARANCE_AR.md",
+      "lab": "docs/fixtures/html-nav-lab/index.html",
+      "model_assertions": 70,
+      "model_pass": true,
+      "real_browser_pass": null,
+      "device_pass": null
+    }
   }
 }
