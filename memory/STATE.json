@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Real browser/device and CP lifecycle/call graph, bridge/parity gates; owner authorized isolated implementation and signed experimental APK when ready",
+  "next": "Review run 44389366278; fix browser lab if needed; deepen CP native entrypoints and bridge/parity; owner authorizes experimental APK once gates ready",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "e17e2dcad0513b06a273e58cec870894a51acf81",
+  "last_verified_head": "77e87221a052fc12f97d3e9b8c2c85f9aac354cb",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -452,7 +452,15 @@
       "model_assertions": 70,
       "model_pass": true,
       "real_browser_pass": null,
-      "device_pass": null
-    }
+      "device_pass": null,
+      "lab_ci": {
+        "run_id": 44389366278,
+        "head_sha": "77e87221a052fc12f97d3e9b8c2c85f9aac354cb",
+        "status": "in_progress",
+        "model_syntax": "success",
+        "chromium": "pending"
+      }
+    },
+    "native_entrypoints": "docs/HTML_NATIVE_ENTRYPOINTS_AR.md"
   }
 }
