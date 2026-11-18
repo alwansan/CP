@@ -46,3 +46,7 @@
 - Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Restart108.smali
 - Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/Delete94.smali
 - Cinemana_PATCH252_Project/app/smali_classes6/com/shabakaty/cinemana/ca1/MkvCancel262.smali
+
+
+## نتيجة تعميق التتبع
+المسار الذي تأكد الآن: ey0.d(taskId) = pause، ويستدعي Restart108.paused ثم Queue110.pause ويوقف FileDownloader؛ ey0.i(taskId) = retry، يمر عبر ExpiredLink269 ثم DAO readDownloadsByTaskId ويعيد بناء composer. DownloaderService coroutine yy0 تجمع download repository وتنفذ Restart108.canRetry قبل retry. canRetry يمنع |PAUSE وQueue110.isPaused ويتطلب DB row وعدم delete intent. Restart108.attach يربط manager/context ثم wake scan/recovery. لا يوجد ResumeDownloadBR في Manifest. Dependencies112/Inputs114 فيها resume خاص باعتماد subtitle فقط. لم نثبت بعد clear PAUSE + resume UI caller؛ لا API resume.

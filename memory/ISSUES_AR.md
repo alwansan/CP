@@ -171,3 +171,5 @@ HTML-013: unified shell regression 44396266955 failed because test script stayed
 HTML-014: protocol unit/syntax checks passed in run 44397348530; Chromium step failed because workflow cache rewrite omitted npm install of Playwright package (browser binary alone is not npm module). Restored explicit npm install before browser cache/install. Shell test route-order fix is in commit a80331d and awaits CI.
 
 HTML-015: fixed test navigation order; latest shell run 44397753290 SUCCESS with 40 Chromium assertions. Protocol unit tests 21 PASS. Screenshot artifact 14472026955 visually reviewed. Native bridge, WebView, actual catalog/download/account integration and Android device tests remain open.
+
+HTML-016: Resume semantics still unresolved. ey0.d is pause; ey0.i is retry after ExpiredLink/DAO reconstruction; yy0 auto-retry gates through Restart108.canRetry. PAUSE marker and Queue110.isPaused block retry. No ResumeDownloadBR found; subtitle-only Dependencies112 resume is not general video resume.

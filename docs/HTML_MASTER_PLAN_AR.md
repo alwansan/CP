@@ -46,3 +46,7 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 ## جلسة 23 — shell الموحد والـprotocol
 الاختبار الموحد 44397753290 SUCCESS: 40 Chromium assertions، و21 protocol unit assertions. screenshot artifact 14472026955. motion 44392095637 PASS 34 model+24 browser؛ navigation 44389366278 PASS 70 model+143 browser. HTML mock only؛ no runtime/APK. الخطوة التالية استكمال resume/DAO mapping وtyped Native download admission، ثم WebViewAssetLoader/WebMessageListener بعد dependency/D8 security gates.
+
+
+## Resume gap — لا تخمّن
+المسار المثبت ey0.d = pause وey0.i = retry. yy0 auto retry يمر عبر Restart108.canRetry الذي يمنع |PAUSE/Queue110.isPaused ويتحقق من DAO/delete intent. Restart108.attach → wake scan. لا ResumeDownloadBR في Manifest. Dependencies112/Inputs114 resume خاص بترجمة/subtitle. راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md؛ generic video resume/clear PAUSE لم يثبت بعد، فلا تنشئ endpoint باسم resume أو تربط retry به.

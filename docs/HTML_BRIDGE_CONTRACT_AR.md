@@ -71,3 +71,7 @@
 
 ## تحقق عميل البروتوكول
 run 44397753290 شغّل bridge-protocol.js + test-bridge.cjs ونجح بـ21 assertions. client transport-independent فقط؛ لم يتم ربطه في app.js أو Android. لا تستنتج من نجاحه وجود WebMessageListener أو native facade.
+
+
+## Resume gap — لا تخمّن
+المسار المثبت ey0.d = pause وey0.i = retry. yy0 auto retry يمر عبر Restart108.canRetry الذي يمنع |PAUSE/Queue110.isPaused ويتحقق من DAO/delete intent. Restart108.attach → wake scan. لا ResumeDownloadBR في Manifest. Dependencies112/Inputs114 resume خاص بترجمة/subtitle. راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md؛ generic video resume/clear PAUSE لم يثبت بعد، فلا تنشئ endpoint باسم resume أو تربط retry به.

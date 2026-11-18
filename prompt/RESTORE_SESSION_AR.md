@@ -63,3 +63,7 @@ run 44397348530: bridge protocol unit/syntax passed، browser test لم يبدأ
 
 ## أحدث نتيجة — جلسة 23
 HEAD e3b00bce2debdb0f5c7c4eb44888e4e6b803514d. Shell CI 44397753290 SUCCESS: 40 Chromium assertions + bridge protocol 21 assertions. Artifact 14472026955. Motion CI 44392095637 SUCCESS 34 model +24 browser; Navigation CI 44389366278 SUCCESS 70 model +143 browser. راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md وdocs/HTML_BRIDGE_CONTRACT_AR.md. لا Android WebView/Native bridge بعد؛ لا APK ولا تعطيل القديم. الخطوة القادمة exact resume/DAO mapping ثم typed native admission service.
+
+
+## Resume gap — لا تخمّن
+المسار المثبت ey0.d = pause وey0.i = retry. yy0 auto retry يمر عبر Restart108.canRetry الذي يمنع |PAUSE/Queue110.isPaused ويتحقق من DAO/delete intent. Restart108.attach → wake scan. لا ResumeDownloadBR في Manifest. Dependencies112/Inputs114 resume خاص بترجمة/subtitle. راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md؛ generic video resume/clear PAUSE لم يثبت بعد، فلا تنشئ endpoint باسم resume أو تربط retry به.

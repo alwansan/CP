@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Continue exact native resume/DAO state mapping, then typed DownloadCommandService extraction; do not disable legacy UI or create APK until bridge/security/parity/ART gates pass",
+  "next": "Trace UI action that clears PAUSE intent and resumes same video task; map full DAO snapshots and service commands before implementing native facade",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -514,6 +514,9 @@
       "sequence_gap_resync": true,
       "unit_ci_pass": true,
       "unit_assertions": 21
-    }
+    },
+    "pause_confirmed": "ey0.d -> Restart108.paused -> Queue110.pause -> FileDownloader.pause",
+    "retry_confirmed": "yy0 -> Restart108.canRetry -> ey0.i -> ExpiredLink269 + DAO restore",
+    "resume_generic": "unresolved; no ResumeDownloadBR in manifest; PAUSE blocks canRetry"
   }
 }
