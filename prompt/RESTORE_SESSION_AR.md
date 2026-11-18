@@ -75,3 +75,7 @@ Queue110.isPaused يقرأ request intent=PAUSE؛ Queue110.remember يكتب RUN
 
 ## WorkManager recovery findings
 CheckDownloadsStatusWorker is androidx.work.Worker; it scans downloadsRepo, detects stopped tasks, starts DownloaderService and rebuilds/restarts through ey0.n/q. jy0 attaches manager, calls Restart108.start, checks DAO rows and Restart108.canRestore before ey0.o/q. This is recovery, not a WebView action. Renderer reattach must subscribe only, never launch recovery again. See docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md.
+
+
+## جلسة 24 — next checkpoint
+اقرأ memory/sessions/2026-11-19_cp-dl-native-download-model-24.md وdocs/HTML_NATIVE_MODEL_AR.md. Java candidate مستقل تحت patches/html-bridge، لا APK ولا Native transport. JS resync now blocks until fresh snapshot; new CI pending. Verify both workflows first. لا تتعامل مع COMPLETED أو NATIVE_ADMITTED كدليل MKV أو ACK دائم. لا endpoint resume حتى معرفة caller. الفرع Html فقط.

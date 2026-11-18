@@ -177,3 +177,6 @@ HTML-016: Resume semantics still unresolved. ey0.d is pause; ey0.i is retry afte
 HTML-016 update: found strong re-admit candidate ey0.l(manager,id) -> q(reuse=true) -> dlStart -> Restart108.admitted -> Queue110.remember(intent=RUN, NATIVE_ADMITTED), mechanically clears PAUSE in both journals. UI caller not yet confirmed; do not expose resume API until traced and duplicate/ACK semantics tested.
 
 HTML-017: WorkManager recovery mapped: CheckDownloadsStatusWorker scans downloadsRepo, starts service/rebuilds stopped tasks; jy0 attaches manager and checks DAO + Restart108.canRestore before ey0.o/q. Must not trigger this from WebView renderer recreation. See HTML_DOWNLOAD_NATIVE_MAP_AR.md.
+
+HTML-016: fixed JS gap/revision/epoch handling, pending CI; no deltas applied until sufficiently fresh snapshot. Native origin/security still open.
+HTML-017: Java read-only projection/planner candidate and synthetic stress tests added; true DAO adapter, coherent facts, admission, durable ACK and Android integration still open.

@@ -64,3 +64,7 @@
 - jy0 is the downloader-manager attach/restore coroutine: it calls Restart108.start(manager), checks DB has download items, then Restart108.canRestore(manager,row) before rebuilding/reusing a DownloadTask through ey0.o + ey0.q. Thus restore is explicitly gated by pause/delete intent and DAO evidence.
 - ey0$e is a startDownload wrapper that creates a Composer via ey0.c and calls q; treat as admission/start path, not a public API until its callers and validation are mapped.
 - These findings reinforce: WorkManager/DownloaderService own recovery; WebView only subscribes to snapshots/events. Renderer recreation must not start another worker or restart a download.
+
+
+## 9) Concrete DAO/transport facts and isolated model
+xc4 enum contains PENDING/STARTED/PROGRESS/RETRY/ERROR/PAUSED/COMPLETED/WARN/UNKNOWN and pw0.z carries it. ey0.f -> ey0$f -> uz0.a -> kz0.b for list; ey0$k reads uz0.e(taskId), reconstructs via ey0.m/q, updates uz0.i(pw0); ey0$l reads uz0.e for subscribing/callback. DownloadStore263.appDao and combined/readCombinedById provide app identity; CinemanaDownloadItem fields include id, downloadTaskId, collectionID, title, qualityName, sizeMB and path (never expose path). Actual coherent snapshot and resume caller unproven. See docs/HTML_NATIVE_MODEL_AR.md.

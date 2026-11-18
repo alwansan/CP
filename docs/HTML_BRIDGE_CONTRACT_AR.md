@@ -83,3 +83,7 @@ Queue110.isPaused يقرأ request intent=PAUSE؛ Queue110.remember يكتب RUN
 
 ## WorkManager recovery findings
 CheckDownloadsStatusWorker is androidx.work.Worker; it scans downloadsRepo, detects stopped tasks, starts DownloaderService and rebuilds/restarts through ey0.n/q. jy0 attaches manager, calls Restart108.start, checks DAO rows and Restart108.canRestore before ey0.o/q. This is recovery, not a WebView action. Renderer reattach must subscribe only, never launch recovery again. See docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md.
+
+
+## Gap hardening (جلسة 24)
+A delta requires initialized snapshot cursor (epoch, seq, revision). Duplicate/out-of-order older seq ignored. Missing seq, epoch change, wrong baseRevision or nonincreasing revision blocks stream until a matching snapshot reaches the highest observed seq. setCursor returns false for stale snapshots; a native adapter must re-fetch if false. RPC replies reject PROGRESS/TERMINAL and inconsistent ok/FAILED; progression is separate events. Incoming sensitive fields are rejected by key, not full data sanitization. Native origin/main-frame checks remain mandatory. No transport implemented.

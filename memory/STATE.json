@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_unified_shell_browser_pass_protocol_pass",
-  "last_session": "memory/sessions/2026-11-18_cp-dl-bridge-protocol-23.md",
+  "status": "html_native_model_and_resync_ci_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-native-download-model-24.md",
   "verified_at": "2026-11-18",
   "app_code_changed": false,
   "new_build_triggered": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Trace UI caller to re-admit helper/startDownload and test pause→re-admit→no duplicate; keep WorkManager recovery independent of WebView",
+  "next": "Verify new Java model and shell/bridge CI; implement bounded real native read adapter and type-safe admission extraction",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "e3b00bce2debdb0f5c7c4eb44888e4e6b803514d",
+  "last_verified_head": "088fdab635a7df102b5c8ec7af1f84b107137396",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -487,7 +487,7 @@
       "initial_browser_assertions": 34,
       "initial_pass": true,
       "run_updated": 44394539721,
-      "updated_status": "in_progress",
+      "updated_status": "completed",
       "latest_app_js_fix": "scroll behavior auto when motion disabled",
       "bridge_implemented": false,
       "uses_mock_data": true,
@@ -512,12 +512,22 @@
       "actions_allowlisted": true,
       "idempotency_for_destructive": true,
       "sequence_gap_resync": true,
-      "unit_ci_pass": true,
-      "unit_assertions": 21
+      "unit_ci_pass": false,
+      "unit_assertions": 21,
+      "resync_hardened": true
     },
     "pause_confirmed": "ey0.d -> Restart108.paused -> Queue110.pause -> FileDownloader.pause",
     "retry_confirmed": "yy0 -> Restart108.canRetry -> ey0.i -> ExpiredLink269 + DAO restore",
     "resume_generic": "candidate ey0.l/re-admit RUN path; UI caller unconfirmed",
-    "recovery_worker": "CheckDownloadsStatusWorker + jy0 manager attach/DAO gated restore"
+    "recovery_worker": "CheckDownloadsStatusWorker + jy0 manager attach/DAO gated restore",
+    "native_model": {
+      "source": "patches/html-bridge/src/com/shabakaty/cinemana/htmlbridge/model/DownloadModel.java",
+      "test": "patches/html-bridge/tests/com/shabakaty/cinemana/htmlbridge/model/DownloadModelTest.java",
+      "workflow": ".github/workflows/html-native-model.yml",
+      "android_adapter": false,
+      "queue_mutation": false,
+      "synthetic_episodes": 452,
+      "ci": "pending"
+    }
   }
 }
