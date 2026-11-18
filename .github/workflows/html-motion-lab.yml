@@ -1,0 +1,38 @@
+name: CP HTML motion lab
+on:
+  push:
+    branches: [Html]
+    paths: ['docs/fixtures/html-motion-lab/**', '.github/workflows/html-motion-lab.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cp-html-motion-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  motion:
+    if: github.ref == 'refs/heads/Html'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: docs/fixtures/html-motion-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          node --check motion-model.js
+          node --check test-motion.cjs
+          node --check test-browser.cjs
+          node test-motion.cjs
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.51.1
+          npx playwright install --with-deps chromium
+      - run: node test-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: cp-html-motion-preview
+          path: docs/fixtures/html-motion-lab/motion-preview.png

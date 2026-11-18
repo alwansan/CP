@@ -1,0 +1,5 @@
+"use strict";const model=require("./motion-model.js");const test=function tests(m){let n=0;function eq(a,b){if(JSON.stringify(a)!==JSON.stringify(b))throw Error(JSON.stringify({a,b}));n++}
+ for(const k of ["press","page","sheet","poster","layout","close"]){eq(m.duration(k,100,true),0);eq(m.duration(k,50),Math.round(m.duration(k)/2));eq(m.duration(k,200),Math.round(m.duration(k)*1.5))}
+ eq(m.duration("poster",NaN),380);eq(m.inverse({x:10,y:20,width:100,height:150},{x:50,y:100,width:200,height:300}),{x:-40,y:-80,sx:.5,sy:.5});eq(m.inverse({x:0,y:0,width:0,height:1},{x:1,y:1,width:2,height:2}),null);eq(m.inverse(null,{}),null);
+ eq(m.validHold({x:0,y:0},{x:0,y:0},449),false);eq(m.validHold({x:0,y:0},{x:3,y:4},450),true);eq(m.validHold({x:0,y:0},{x:13,y:0},800),false);eq(m.validHold(null,{},500),false);
+ for(const x of ["card","wide","poster"])eq(m.style(x),x);eq(m.style("bad"),"card");eq(m.isVisible(true,0),false);eq(m.isVisible(false,2),false);eq(m.isVisible(true,2),true);eq(m.isVisible(true,-1),false);return n};console.log("CP_MOTION_MODEL_PASS assertions="+test(model));
