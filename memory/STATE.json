@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_native_model_and_resync_ci_pending",
+  "status": "html_native_model_and_resync_ci_pass",
   "last_session": "memory/sessions/2026-11-19_cp-dl-native-download-model-24.md",
   "verified_at": "2026-11-18",
   "app_code_changed": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify new Java model and shell/bridge CI; implement bounded real native read adapter and type-safe admission extraction",
+  "next": "Build bounded actual native DAO read adapter with verified evidence, then typed admission extraction; trace actual resume UI caller; no APK before Android transport/security/parity/ART gates",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "088fdab635a7df102b5c8ec7af1f84b107137396",
+  "last_verified_head": "e51912305b0de0e00f5cb67c0df117491e163857",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -493,11 +493,11 @@
       "uses_mock_data": true,
       "android_test": false,
       "run_latest": {
-        "id": 44397753290,
+        "id": 44424763298,
         "conclusion": "success",
         "browser_assertions": 40,
-        "artifact_id": 14472026955,
-        "head_sha": "e3b00bce2debdb0f5c7c4eb44888e4e6b803514d"
+        "artifact_id": 14483751253,
+        "head_sha": "e51912305b0de0e00f5cb67c0df117491e163857"
       }
     },
     "download_native_map": "docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md",
@@ -508,13 +508,14 @@
       "tests": "docs/fixtures/html-shell-lab/test-bridge.cjs",
       "implemented_js": true,
       "native_transport": false,
-      "unit_ci_pending": true,
+      "unit_ci_pending": false,
       "actions_allowlisted": true,
       "idempotency_for_destructive": true,
       "sequence_gap_resync": true,
-      "unit_ci_pass": false,
-      "unit_assertions": 21,
-      "resync_hardened": true
+      "unit_ci_pass": true,
+      "unit_assertions": 47,
+      "resync_hardened": true,
+      "run_id": 44424763298
     },
     "pause_confirmed": "ey0.d -> Restart108.paused -> Queue110.pause -> FileDownloader.pause",
     "retry_confirmed": "yy0 -> Restart108.canRetry -> ey0.i -> ExpiredLink269 + DAO restore",
@@ -527,7 +528,9 @@
       "android_adapter": false,
       "queue_mutation": false,
       "synthetic_episodes": 452,
-      "ci": "pending"
+      "ci": "success",
+      "run_id": 44424763514,
+      "assertions": 8366
     }
   }
 }

@@ -180,3 +180,7 @@ HTML-017: WorkManager recovery mapped: CheckDownloadsStatusWorker scans download
 
 HTML-016: fixed JS gap/revision/epoch handling, pending CI; no deltas applied until sufficiently fresh snapshot. Native origin/security still open.
 HTML-017: Java read-only projection/planner candidate and synthetic stress tests added; true DAO adapter, coherent facts, admission, durable ACK and Android integration still open.
+
+
+## نتيجة جلسة 24 — verified CI
+Runtime source unchanged; laboratory code commit e51912305b0de0e00f5cb67c0df117491e163857. Java native model run 44424763514 SUCCESS (CP_NATIVE_DOWNLOAD_MODEL_PASS assertions=8366 syntheticEpisodes=452). Integrated shell run 44424763298 SUCCESS (CP_BRIDGE_PROTOCOL_PASS assertions=47; CP_SHELL_BROWSER_PASS assertions=40; preview artifact 14483751253). CL main unchanged at 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0. All current tests are isolated JVM/Node/Chromium, no APK, real DB or device. Next: bounded actual app/downloader DAO read adapter, real verified evidence sources, extract typed native admission, complete resume caller tracing; do not claim durable ACK/Android parity yet.

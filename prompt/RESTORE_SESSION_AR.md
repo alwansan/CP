@@ -79,3 +79,7 @@ CheckDownloadsStatusWorker is androidx.work.Worker; it scans downloadsRepo, dete
 
 ## جلسة 24 — next checkpoint
 اقرأ memory/sessions/2026-11-19_cp-dl-native-download-model-24.md وdocs/HTML_NATIVE_MODEL_AR.md. Java candidate مستقل تحت patches/html-bridge، لا APK ولا Native transport. JS resync now blocks until fresh snapshot; new CI pending. Verify both workflows first. لا تتعامل مع COMPLETED أو NATIVE_ADMITTED كدليل MKV أو ACK دائم. لا endpoint resume حتى معرفة caller. الفرع Html فقط.
+
+
+## نتيجة جلسة 24 — verified CI
+Runtime source unchanged; laboratory code commit e51912305b0de0e00f5cb67c0df117491e163857. Java native model run 44424763514 SUCCESS (CP_NATIVE_DOWNLOAD_MODEL_PASS assertions=8366 syntheticEpisodes=452). Integrated shell run 44424763298 SUCCESS (CP_BRIDGE_PROTOCOL_PASS assertions=47; CP_SHELL_BROWSER_PASS assertions=40; preview artifact 14483751253). CL main unchanged at 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0. All current tests are isolated JVM/Node/Chromium, no APK, real DB or device. Next: bounded actual app/downloader DAO read adapter, real verified evidence sources, extract typed native admission, complete resume caller tracing; do not claim durable ACK/Android parity yet.

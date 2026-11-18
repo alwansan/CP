@@ -14,3 +14,7 @@ DownloadModel.plan receives opaque requested IDs and trusted Native facts alread
 
 ## Test gates
 Plain Java 8 target/JDK17 CI compiles isolated class and synthetic 452-item planner, verifies conflicting evidence combinations, no false READY, per-item outcomes, size unknown/overflow and cap. No network/media/file/DB touched. Next actual adapter must use native callbacks and consistent read snapshot, not scan entire DB repeatedly; account/UI and signature remain unchanged. Resume UI caller unproven; no live action endpoint. No build of APK until actual transport/security/ART gates.
+
+
+## نتيجة جلسة 24 — verified CI
+Runtime source unchanged; laboratory code commit e51912305b0de0e00f5cb67c0df117491e163857. Java native model run 44424763514 SUCCESS (CP_NATIVE_DOWNLOAD_MODEL_PASS assertions=8366 syntheticEpisodes=452). Integrated shell run 44424763298 SUCCESS (CP_BRIDGE_PROTOCOL_PASS assertions=47; CP_SHELL_BROWSER_PASS assertions=40; preview artifact 14483751253). CL main unchanged at 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0. All current tests are isolated JVM/Node/Chromium, no APK, real DB or device. Next: bounded actual app/downloader DAO read adapter, real verified evidence sources, extract typed native admission, complete resume caller tracing; do not claim durable ACK/Android parity yet.

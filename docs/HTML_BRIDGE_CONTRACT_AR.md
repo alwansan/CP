@@ -87,3 +87,7 @@ CheckDownloadsStatusWorker is androidx.work.Worker; it scans downloadsRepo, dete
 
 ## Gap hardening (جلسة 24)
 A delta requires initialized snapshot cursor (epoch, seq, revision). Duplicate/out-of-order older seq ignored. Missing seq, epoch change, wrong baseRevision or nonincreasing revision blocks stream until a matching snapshot reaches the highest observed seq. setCursor returns false for stale snapshots; a native adapter must re-fetch if false. RPC replies reject PROGRESS/TERMINAL and inconsistent ok/FAILED; progression is separate events. Incoming sensitive fields are rejected by key, not full data sanitization. Native origin/main-frame checks remain mandatory. No transport implemented.
+
+
+## نتيجة جلسة 24 — verified CI
+Runtime source unchanged; laboratory code commit e51912305b0de0e00f5cb67c0df117491e163857. Java native model run 44424763514 SUCCESS (CP_NATIVE_DOWNLOAD_MODEL_PASS assertions=8366 syntheticEpisodes=452). Integrated shell run 44424763298 SUCCESS (CP_BRIDGE_PROTOCOL_PASS assertions=47; CP_SHELL_BROWSER_PASS assertions=40; preview artifact 14483751253). CL main unchanged at 4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0. All current tests are isolated JVM/Node/Chromium, no APK, real DB or device. Next: bounded actual app/downloader DAO read adapter, real verified evidence sources, extract typed native admission, complete resume caller tracing; do not claim durable ACK/Android parity yet.
