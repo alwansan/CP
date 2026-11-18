@@ -18,3 +18,12 @@ node test-browser.cjs
 
 ## حدود مهمة
 لا Android WebView ولا Native bridge ولا مصدر محتوى أو تنزيل فعلي ولا تشغيل فيديو. لا تستخدم بيانات النموذج كحالة إنتاج. يجب ربط كل مسار بعقد Native مصادق عليه، ACK دائم، واختبارات تكافؤ قبل استبدال أي واجهة قديمة.
+
+
+## اختبارات البروتوكول
+```sh
+node --check bridge-protocol.js
+node --check test-bridge.cjs
+node test-bridge.cjs
+```
+هذه وحدة JavaScript مستقلة ولا تنشئ اتصال Native. اختبارات Chromium منفصلة.

@@ -28,3 +28,7 @@ Chromium Playwright CI ثم مراجعة بصريّة للـartifact؛ إصلا�
 - 44394539721: regression يضيف header actions وcategory filters، pending عند آخر قراءة؛ لا تدّع PASS قبل النتيجة.
 - app.js آخر تعديل يجعل no-motion scrolling behavior=auto ويحتاج run لاحقاً.
 - bridge contract في docs/HTML_BRIDGE_CONTRACT_AR.md؛ لا Android bridge بعد.
+
+
+## عميل البروتوكول JS (جلسة 23)
+أضيف docs/fixtures/html-shell-lab/bridge-protocol.js وtest-bridge.cjs. هذه طبقة transport-independent غير موصولة بالـHTML أو Android. allowlist للأوامر والأحداث، idempotency keys للأوامر destructive، حد payload، رفض حقول token/cookie/session/path/url، correlation/timeout، event seq gap → resync-required، close يرفض pending. يجب أن يتحقق Native من exact origin وmain frame قبل إرسال أي رد/حدث؛ فحص JS ليس security boundary. CI سيشغّل unit tests قبل Chromium.

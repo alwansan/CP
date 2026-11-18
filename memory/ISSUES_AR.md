@@ -163,3 +163,5 @@ HTML-006: nav Chromium regression PASS; Android performance/accessibility pendin
 HTML-009: unified shell first browser pass 34 assertions (44394027250); updated regression 443945 pending. Mock UI only. Header actions/category filters fixed. HTML-010: Native bridge not present; no androidx.webkit/WebMessageListener. Build chain Apktool + custom javac/D8 helper. Need pin dependency, feature detect, verify DEX. Bridge contract documented, not implemented. BatchDownload enqueue UI-coupled; Queue110 NATIVE_SUBMIT is not durable DB_COMMITTED.
 
 HTML-011: download bridge mapping deepened. Queue110.pause persists PAUSE/USER_PAUSED; Restart108.paused mirrors marker; Delete94/MkvCancel262 use committed delete intent + worker/journal; resume mapping and full DAO snapshot still open. See docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md. Do not expose path/url or claim pause/delete complete before native result.
+
+HTML-012: JS bridge protocol client added (allowlist/idempotency/payload cap/sensitive-key rejection/request correlation/timeout/event sequence gap). Not wired to app/native; unit CI pending. Native must enforce exact origin + main-frame and durable acknowledgements.

@@ -22,12 +22,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Syntax check
-        run: node --check app.js && node --check test-browser.cjs
-      - name: Install Chromium
+      - name: Protocol and syntax checks
         run: |
-          npm install --no-save --package-lock=false playwright@1.51.1
-          npx playwright install --with-deps chromium
+          node --check bridge-protocol.js
+          node --check test-bridge.cjs
+          node test-bridge.cjs
+          node --check app.js
+          node --check test-browser.cjs
+      - uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-1.51.1
+      - name: Install Chromium
+        run: npx playwright install chromium
       - name: Run integrated shell regression
         run: node test-browser.cjs
       - uses: actions/upload-artifact@v4

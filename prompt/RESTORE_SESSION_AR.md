@@ -51,3 +51,7 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 ## خريطة التحميل Native
 اقرأ docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md قبل تصميم downloads bridge. Queue110.pause يكتب PAUSE/USER_PAUSED، وDelete94/MkvCancel262 تتطلب delete intent/journal؛ لا تعاملها كعمليات UI عادية. resume/DAO snapshot ما زالا قيد التتبع.
+
+
+## JS bridge protocol
+راجع docs/HTML_BRIDGE_CONTRACT_AR.md وdocs/fixtures/html-shell-lab/bridge-protocol.js. عميل JS مستقل، لا Android transport. شغّل test-bridge.cjs. Native origin/main-frame validation والداتا/العمليات والـdurable ACK لم تُنفذ بعد.

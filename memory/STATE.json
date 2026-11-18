@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify shell CI 44395819123; continue map exact resume/DAO snapshot, build typed admission facade after parity/security tests",
+  "next": "Run protocol unit tests and latest shell regression; then continue native download facade mapping and Android bridge implementation gates",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -495,6 +495,16 @@
     },
     "download_native_map": "docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md",
     "bridge_contract": "docs/HTML_BRIDGE_CONTRACT_AR.md",
-    "native_bridge_implemented": false
+    "native_bridge_implemented": false,
+    "bridge_protocol": {
+      "source": "docs/fixtures/html-shell-lab/bridge-protocol.js",
+      "tests": "docs/fixtures/html-shell-lab/test-bridge.cjs",
+      "implemented_js": true,
+      "native_transport": false,
+      "unit_ci_pending": true,
+      "actions_allowlisted": true,
+      "idempotency_for_destructive": true,
+      "sequence_gap_resync": true
+    }
   }
 }

@@ -1,0 +1,2 @@
+# Session 23 — CP-DL Bridge Protocol Client
+origin=chat; 2026-11-18; branch Html. Added standalone JS transport-independent bridge protocol client and Node tests. Allowlisted actions/events, idempotency keys for destructive commands, sensitive-key and URL/path rejection, payload limit, request correlation/timeouts, sequence gap resync, close pending requests. Not loaded by app.js and not connected to Android. Native exact origin/main-frame validation remains mandatory. CI updated with cache and protocol tests before Chromium.

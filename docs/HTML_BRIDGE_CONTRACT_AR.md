@@ -63,3 +63,7 @@
 
 ## خريطة التحميل Native التفصيلية
 راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md للتفاصيل المثبتة من Download94$State وBatchDownload$Screen وQueue110.pause/terminal وRestart108.paused وDelete94/MkvCancel262. أهم نتيجة: pause يكتب PAUSE intent وUSER_PAUSED؛ الحذف يكتب ca1_delete_intent قبل إيقاف FileDownloader/FFmpeg، ثم Delete94 worker/journal. مسار resume والـDAO snapshot الكامل ما زالا غير محسومين. لا تعرض نجاح pause/delete قبل Native result.
+
+
+## عميل البروتوكول JS (جلسة 23)
+أضيف docs/fixtures/html-shell-lab/bridge-protocol.js وtest-bridge.cjs. هذه طبقة transport-independent غير موصولة بالـHTML أو Android. allowlist للأوامر والأحداث، idempotency keys للأوامر destructive، حد payload، رفض حقول token/cookie/session/path/url، correlation/timeout، event seq gap → resync-required، close يرفض pending. يجب أن يتحقق Native من exact origin وmain frame قبل إرسال أي رد/حدث؛ فحص JS ليس security boundary. CI سيشغّل unit tests قبل Chromium.
