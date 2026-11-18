@@ -333,7 +333,29 @@
       "original per-source Lease115 and epoch guards retained",
       "bounded128 callback token queue on existing reconciler scheduler"
     ],
-    "ci": "pending",
-    "device": "pending"
+    "ci": "in_progress; mandatory ART pending",
+    "device": "pending",
+    "build": {
+      "run_id": 44207852201,
+      "run_number": 12,
+      "job_id": 134478313978,
+      "code_sha": "9511f14a3eb1b7511e453a1931017f495d4208ad",
+      "status": "in_progress",
+      "source_jvm_compile": "success",
+      "sign_dex": "success",
+      "artifact": "success",
+      "art": "in_progress",
+      "release": "pending"
+    },
+    "recovery_gap": {
+      "episode": "additional batch E09",
+      "ffmpeg_exit": 0,
+      "final_exists": true,
+      "db_promoted": true,
+      "original_proof": false,
+      "sidecar": "MKV_EXPORT_PREPARING",
+      "root_path": "Restart108.repair omits RecoveryCapsule.finalizeMkv/cleanupCompleted",
+      "fixed": false
+    }
   }
 }
