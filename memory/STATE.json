@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_authorized_iterative_research_lab",
-  "last_session": "memory/sessions/2026-11-18_cp-dl-html-nuvio-planning-20.md",
+  "status": "html_motion_lab_ci_pending",
+  "last_session": "memory/sessions/2026-11-18_cp-dl-html-motion-21.md",
   "verified_at": "2026-11-18",
   "app_code_changed": false,
   "new_build_triggered": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Review run 44389366278; fix browser lab if needed; deepen CP native entrypoints and bridge/parity; owner authorizes experimental APK once gates ready",
+  "next": "Verify motion CI 44392095637 and fix; continue shell/router, actual native bridge parity and Android WebView",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "77e87221a052fc12f97d3e9b8c2c85f9aac354cb",
+  "last_verified_head": "beaadffcd110702087805fa0cecc1342c23eb452",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -451,16 +451,31 @@
       "lab": "docs/fixtures/html-nav-lab/index.html",
       "model_assertions": 70,
       "model_pass": true,
-      "real_browser_pass": null,
+      "real_browser_pass": true,
       "device_pass": null,
       "lab_ci": {
         "run_id": 44389366278,
         "head_sha": "77e87221a052fc12f97d3e9b8c2c85f9aac354cb",
-        "status": "in_progress",
+        "status": "completed",
         "model_syntax": "success",
-        "chromium": "pending"
+        "chromium": "success",
+        "conclusion": "success"
       }
     },
-    "native_entrypoints": "docs/HTML_NATIVE_ENTRYPOINTS_AR.md"
+    "native_entrypoints": "docs/HTML_NATIVE_ENTRYPOINTS_AR.md",
+    "motion": {
+      "source": "1006543263.mp4",
+      "duration_s": 27.822,
+      "decoded_frames": 1720,
+      "visual_samples": 56,
+      "model_assertions": 34,
+      "model_pass": true,
+      "lab": "docs/fixtures/html-motion-lab/index.html",
+      "plan": "docs/HTML_MOTION_SYSTEM_AR.md",
+      "run_id": 44392095637,
+      "run_status": "in_progress",
+      "browser_pass": null,
+      "android_pass": null
+    }
   }
 }
