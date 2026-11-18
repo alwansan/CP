@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_unified_shell_lab_ci_pending",
+  "status": "html_shell_and_bridge_protocol_regression",
   "last_session": "memory/sessions/2026-11-18_cp-dl-html-unified-shell-22.md",
   "verified_at": "2026-11-18",
   "app_code_changed": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Run protocol unit tests and latest shell regression; then continue native download facade mapping and Android bridge implementation gates",
+  "next": "Commit test route fix, run bridge protocol unit tests and full Chromium shell regression; then continue native resume/DAO mapping",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -491,7 +491,13 @@
       "latest_app_js_fix": "scroll behavior auto when motion disabled",
       "bridge_implemented": false,
       "uses_mock_data": true,
-      "android_test": false
+      "android_test": false,
+      "run_latest": {
+        "id": 44396266955,
+        "conclusion": "failure",
+        "reason": "test navigation order: attempted continue-card removal while account route active",
+        "fixed_in_commit_pending": true
+      }
     },
     "download_native_map": "docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md",
     "bridge_contract": "docs/HTML_BRIDGE_CONTRACT_AR.md",

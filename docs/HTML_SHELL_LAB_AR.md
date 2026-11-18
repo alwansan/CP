@@ -32,3 +32,7 @@ Chromium Playwright CI ثم مراجعة بصريّة للـartifact؛ إصلا�
 
 ## عميل البروتوكول JS (جلسة 23)
 أضيف docs/fixtures/html-shell-lab/bridge-protocol.js وtest-bridge.cjs. هذه طبقة transport-independent غير موصولة بالـHTML أو Android. allowlist للأوامر والأحداث، idempotency keys للأوامر destructive، حد payload، رفض حقول token/cookie/session/path/url، correlation/timeout، event seq gap → resync-required، close يرفض pending. يجب أن يتحقق Native من exact origin وmain frame قبل إرسال أي رد/حدث؛ فحص JS ليس security boundary. CI سيشغّل unit tests قبل Chromium.
+
+
+## Regression 44396266955
+Browser regression reached the long-press/context-menu phase but test attempted to find Continue cards after navigating to Account. This was a test-order bug, not an application route bug. Test now returns to Home before removing all three Continue items; rerun with bridge protocol unit checks pending.

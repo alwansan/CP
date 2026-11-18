@@ -165,3 +165,5 @@ HTML-009: unified shell first browser pass 34 assertions (44394027250); updated 
 HTML-011: download bridge mapping deepened. Queue110.pause persists PAUSE/USER_PAUSED; Restart108.paused mirrors marker; Delete94/MkvCancel262 use committed delete intent + worker/journal; resume mapping and full DAO snapshot still open. See docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md. Do not expose path/url or claim pause/delete complete before native result.
 
 HTML-012: JS bridge protocol client added (allowlist/idempotency/payload cap/sensitive-key rejection/request correlation/timeout/event sequence gap). Not wired to app/native; unit CI pending. Native must enforce exact origin + main-frame and durable acknowledgements.
+
+HTML-013: unified shell regression 44396266955 failed because test script stayed on Account route before trying to remove Continue cards; product route was behaving correctly. Fixed test navigation order (return to Home before removing cards); rerun pending.
