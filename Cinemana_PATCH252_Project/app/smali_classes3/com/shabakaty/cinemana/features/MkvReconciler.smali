@@ -207,6 +207,23 @@
     return-void
 .end method
 
+
+# Callback path: enqueue a concrete token on the existing single discovery scheduler.
+# Pending duplicates coalesce; overflow falls back to the existing disk audit.
+.method public static requestToken(Ljava/lang/String;)V
+    .locals 3
+    if-eqz p0, :dl_token_done
+    sget-object v0, Lcom/shabakaty/cinemana/features/MkvReconciler;->SCHEDULER:Ljava/util/concurrent/ScheduledExecutorService;
+    new-instance v1, Lcom/shabakaty/cinemana/features/MkvReconciler$Token;
+    invoke-direct {v1, p0}, Lcom/shabakaty/cinemana/features/MkvReconciler$Token;-><init>(Ljava/lang/String;)V
+    invoke-static {v0, p0, v1}, Lcom/shabakaty/cinemana/local/TokenWorkDL;->offer(Ljava/util/concurrent/Executor;Ljava/lang/String;Ljava/lang/Runnable;)Z
+    move-result v2
+    if-nez v2, :dl_token_done
+    invoke-static {}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestAudit()V
+    :dl_token_done
+    return-void
+.end method
+
 .method public static reconcileToken(Ljava/lang/String;)V
     .locals 13
 

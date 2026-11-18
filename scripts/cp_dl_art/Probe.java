@@ -84,6 +84,42 @@ public final class Probe extends Instrumentation {
                 }
             }
             require(classes >= 20, "incomplete BatchDownload inventory");
+            // Verify the changed backend classes in the exact signed candidate DEX.
+            for (String name : new String[]{
+                "com.shabakaty.cinemana.features.MkvExporter",
+                "com.shabakaty.cinemana.features.MkvReconciler",
+                "com.shabakaty.cinemana.features.MkvReconciler$Token",
+                "com.shabakaty.cinemana.ca1.Lease115",
+                "com.shabakaty.cinemana.local.MuxSlotsDL",
+                "com.shabakaty.cinemana.local.TokenWorkDL"
+            }) {
+                Class<?> checked=Class.forName(name,false,cl);
+                require(checked.getClassLoader()==cl,"wrong backend loader "+name);
+                checked.getDeclaredMethods(); checked.getDeclaredConstructors();
+            }
+            Class<?> slots=Class.forName("com.shabakaty.cinemana.local.MuxSlotsDL",true,cl);
+            Method take=slots.getMethod("acquire",File.class), give=slots.getMethod("release");
+            File slotDir=new File(ctx.getFilesDir(),"synthetic-slots");
+            take.invoke(null,slotDir);
+            give.invoke(null);
+            take.invoke(null,slotDir);
+            give.invoke(null);
+            Class<?> leases=Class.forName("com.shabakaty.cinemana.ca1.Lease115",true,cl);
+            Method claim=leases.getDeclaredMethod("acquire",File.class,String.class);
+            claim.setAccessible(true);
+            File leaseDir=new File(ctx.getFilesDir(),"synthetic-source-leases");
+            Object first=claim.invoke(null,leaseDir,"synthetic.mp4");
+            require(first!=null,"initial source lease missing");
+            Method closeLease=first.getClass().getDeclaredMethod("close");
+            closeLease.setAccessible(true);
+            try {
+                require(claim.invoke(null,leaseDir,"synthetic.mp4")==null,"duplicate source lease accepted");
+                Object second=claim.invoke(null,leaseDir,"different.mp4");
+                require(second!=null,"distinct source lease rejected");
+                closeLease.invoke(second);
+            } finally { closeLease.invoke(first); }
+            Object again=claim.invoke(null,leaseDir,"synthetic.mp4");
+            require(again!=null,"source lease did not recycle"); closeLease.invoke(again);
             Class<?> c = Class.forName("com.shabakaty.cinemana.ca1.BatchDownload$Screen", true, cl);
             Constructor<?> ctor = c.getDeclaredConstructor(Object.class,Object.class,Object.class,Object.class,Context.class);
             ctor.setAccessible(true);
@@ -128,7 +164,7 @@ public final class Probe extends Instrumentation {
                     }
                 }
             } finally { main(activity::finish); }
-            result.putString("stream","\nCPDL_ART_PASS family="+classes+" opens=2 refresh_paths=4 closes=2\n");
+            result.putString("stream","\nCPDL_ART_PASS family="+classes+" opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1\n");
             finish(Activity.RESULT_OK,result);
         } catch (Throwable t) {
             StringWriter trace = new StringWriter(); t.printStackTrace(new PrintWriter(trace));

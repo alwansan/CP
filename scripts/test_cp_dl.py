@@ -103,12 +103,24 @@ for stage in ("VIDEO_COROUTINE_ENTER","VIDEO_METADATA_COLLECTION_READY","VIDEO_P
     assert stage in dv
 print("CP-DL B1b-1 storage, DB and detached batch scope source guards PASS")
 
-# B1b2: single mux slot while two preparation workers remain; bounded async telemetry.
+# B1b3: three shared OS slots; retain bounded async telemetry and B1b2 native admission.
 mkv=read("smali_classes3/com/shabakaty/cinemana/features/MkvExporter.smali")
-assert "MAX_CONCURRENT_FFMPEG:I = 0x1" in mkv
+assert "MAX_CONCURRENT_FFMPEG:I = 0x3" in mkv
 clinit=mkv.split(".method static constructor <clinit>()V",1)[1].split(".end method",1)[0]
-assert "const/4 v1, 0x2\n\n    invoke-static {v1, v0}, Ljava/util/concurrent/Executors;->newFixedThreadPool" in clinit
-assert "const/4 v1, 0x1\n\n    const/4 v2, 0x1\n\n    invoke-direct {v0, v1, v2}, Ljava/util/concurrent/Semaphore;-><init>(IZ)V" in clinit
+assert "const/4 v1, 0x3\n\n    invoke-static {v1, v0}, Ljava/util/concurrent/Executors;->newFixedThreadPool" in clinit
+assert "FFMPEG_SLOTS" not in mkv
+locked=mkv.split(".method private static exportLocked(",1)[1].split(".end method",1)[0]
+assert locked.count("MuxSlotsDL;->acquire(")==1 and locked.count("MuxSlotsDL;->release()V")==6
+assert locked.index("MuxSlotsDL;->acquire(")<locked.index("MkvCancel262;->checkCurrent()V")<locked.index("ProcessBuilder;->start()")
+assert "FFMPEG_PROCESS_STARTED" in locked and "Lease115;->export(" in mkv
+lease=read("smali_classes6/com/shabakaty/cinemana/ca1/Lease115.smali")
+assert "->putIfAbsent(" in lease and "FileChannel;->tryLock()" in lease
+callback=read("smali/com/shabakaty/downloader/mc4$a.smali")
+assert "MkvReconciler;->requestToken(" in callback and "MkvReconciler;->reconcileToken(" not in callback
+rec=read("smali_classes3/com/shabakaty/cinemana/features/MkvReconciler.smali")
+req=rec.split(".method public static requestToken(",1)[1].split(".end method",1)[0]
+assert "SCHEDULER:" in req and "TokenWorkDL;->offer(" in req and "->requestAudit()V" in req
+assert "->reconcileToken(" in read("smali_classes3/com/shabakaty/cinemana/features/MkvReconciler$Token.smali")
 trace=read("smali_classes3/com/shabakaty/cinemana/features/DownloadTrace.smali")
 sink=trace.split(".method public static log(Landroid/content/Context;Ljava/lang/String;)V",1)[1].split(".end method",1)[0]
 assert "TraceWriterDL;->offer(Ljava/lang/String;)V" in sink and "monitor-enter" not in sink and "FileOutputStream" not in sink
@@ -119,7 +131,7 @@ ey=read("smali/com/shabakaty/downloader/ey0.smali")
 assert "invoke-direct {p0, p1, p2, v4}, Lcom/shabakaty/downloader/ey0;->dlStart" in ey
 assert "if-nez p3, :dl_already_admitted" in ey
 assert "invoke-direct {p0, p1, p2, v0}, Lcom/shabakaty/downloader/ey0;->dlStart" in ey
-print("CP-DL B1b2 source gates PASS")
+print("CP-DL B1b3 shared mux and deferred token source gates PASS")
 
 # B1b2 hotfix: ART wide types are indivisible; numeric zero is not a long high-half.
 # Constrain this small control-flow region to a boolean test before either atomic

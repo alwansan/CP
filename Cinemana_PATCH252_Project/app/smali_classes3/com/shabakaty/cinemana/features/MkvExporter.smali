@@ -28,7 +28,6 @@
 
 .field private static volatile DL_SHARED_DAO:Ljava/lang/Object;
 
-.field private static final FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
 
 .field private static final JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
 
@@ -38,7 +37,7 @@
 
 .field private static final LOG_DIR:Ljava/lang/String; = "log"
 
-.field private static final MAX_CONCURRENT_FFMPEG:I = 0x1
+.field private static final MAX_CONCURRENT_FFMPEG:I = 0x3
 
 .field private static final MAX_JOB_RETRIES:I = 0x3
 
@@ -77,7 +76,7 @@
 
     invoke-direct {v0}, Lcom/shabakaty/cinemana/features/MkvExporter$1;-><init>()V
 
-    const/4 v1, 0x2
+    const/4 v1, 0x3
 
     invoke-static {v1, v0}, Ljava/util/concurrent/Executors;->newFixedThreadPool(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
 
@@ -85,17 +84,7 @@
 
     sput-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->JOB_EXECUTOR:Ljava/util/concurrent/ExecutorService;
 
-    .line 71
-    new-instance v0, Ljava/util/concurrent/Semaphore;
-
-    # CP-DL B1b2: one active conversion per exporter process; preparation remains separate.
-    const/4 v1, 0x1
-
-    const/4 v2, 0x1
-
-    invoke-direct {v0, v1, v2}, Ljava/util/concurrent/Semaphore;-><init>(IZ)V
-
-    sput-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
+    # CP-DL B1b3: MuxSlotsDL enforces 3 slots across app and service processes.
 
     .line 72
     new-instance v0, Ljava/util/HashSet;
@@ -2129,9 +2118,7 @@
     const/4 v8, 0x0
 
     :try_start_0
-    sget-object v11, Lcom/shabakaty/cinemana/features/MkvExporter;->FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
-
-    invoke-virtual {v11}, Ljava/util/concurrent/Semaphore;->acquire()V
+    invoke-static {v1}, Lcom/shabakaty/cinemana/local/MuxSlotsDL;->acquire(Landroid/content/Context;)V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_7
 
@@ -2164,6 +2151,9 @@
 
     invoke-static {v1, v11}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendExternalLog(Landroid/content/Context;Ljava/lang/String;)V
 
+    # Recheck request after the shared slot wait, before spawning FFmpeg.
+    invoke-static {}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->checkCurrent()V
+
     .line 449
     new-instance v11, Ljava/lang/ProcessBuilder;
 
@@ -2177,6 +2167,9 @@
 
     move-result-object v8
     invoke-static {v8}, Lcom/shabakaty/cinemana/ca1/MkvCancel262;->register(Ljava/lang/Process;)V
+
+    const-string v11, "FFMPEG_PROCESS_STARTED"
+    invoke-static {v3, v11}, Lcom/shabakaty/cinemana/features/MkvExporter;->appendLog(Ljava/io/File;Ljava/lang/String;)V
 
     .line 450
     invoke-virtual {v8}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
@@ -2392,9 +2385,7 @@
     nop
 
     .line 582
-    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
-
-    invoke-virtual {v0}, Ljava/util/concurrent/Semaphore;->release()V
+    invoke-static {}, Lcom/shabakaty/cinemana/local/MuxSlotsDL;->release()V
 
     .line 583
     new-instance v0, Ljava/lang/StringBuilder;
@@ -2601,9 +2592,7 @@
     nop
 
     .line 582
-    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
-
-    invoke-virtual {v0}, Ljava/util/concurrent/Semaphore;->release()V
+    invoke-static {}, Lcom/shabakaty/cinemana/local/MuxSlotsDL;->release()V
 
     .line 583
     new-instance v0, Ljava/lang/StringBuilder;
@@ -2809,9 +2798,7 @@
     nop
 
     .line 582
-    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
-
-    invoke-virtual {v0}, Ljava/util/concurrent/Semaphore;->release()V
+    invoke-static {}, Lcom/shabakaty/cinemana/local/MuxSlotsDL;->release()V
 
     .line 583
     new-instance v0, Ljava/lang/StringBuilder;
@@ -3393,9 +3380,7 @@
     nop
 
     .line 582
-    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
-
-    invoke-virtual {v0}, Ljava/util/concurrent/Semaphore;->release()V
+    invoke-static {}, Lcom/shabakaty/cinemana/local/MuxSlotsDL;->release()V
 
     .line 583
     new-instance v0, Ljava/lang/StringBuilder;
@@ -3480,9 +3465,7 @@
     nop
 
     .line 582
-    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
-
-    invoke-virtual {v0}, Ljava/util/concurrent/Semaphore;->release()V
+    invoke-static {}, Lcom/shabakaty/cinemana/local/MuxSlotsDL;->release()V
 
     .line 583
     new-instance v0, Ljava/lang/StringBuilder;
@@ -3550,9 +3533,7 @@
     if-eqz v7, :cond_2c
 
     .line 582
-    sget-object v0, Lcom/shabakaty/cinemana/features/MkvExporter;->FFMPEG_SLOTS:Ljava/util/concurrent/Semaphore;
-
-    invoke-virtual {v0}, Ljava/util/concurrent/Semaphore;->release()V
+    invoke-static {}, Lcom/shabakaty/cinemana/local/MuxSlotsDL;->release()V
 
     .line 583
     new-instance v0, Ljava/lang/StringBuilder;

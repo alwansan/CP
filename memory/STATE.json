@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "b1b2_art_hotfix_emulator_retry_pending",
-  "last_session": "memory/sessions/2026-11-18_cp-dl-b1b2-art-hotfix-16.md",
+  "status": "b1b3_shared_mux_ci_pending",
+  "last_session": "memory/sessions/2026-11-18_cp-dl-b1b3-mux-17.md",
   "verified_at": "2026-11-18",
   "app_code_changed": true,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify new CI ART runtime gate and publish only on success; then test phone without data wipe; durable admission/DB ACK/UI synchronization afterward.",
+  "next": "Verify B1b3 CI including JVM/ART gates; phone concurrency, force-stop, one missing proof and DB contention; durable batch ACK and UI separation before HTML",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "f53bd49293ca173adc104277288182c36c37bd2b",
+  "last_verified_head": "9080d4c3da58ce86fac31abf060c8e770d036f25",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -264,7 +264,7 @@
     "source_guard": "exact h65 and scalar high-half negative cases",
     "art_gate": "Android API35 signed candidate DexClassLoader actual dialog smoke, required before release",
     "ci": "pending",
-    "device": "not tested",
+    "device": "dialog opened and 416+35 accepted in h66/h67; phone digest not supplied",
     "build": {
       "run_id": 44185130936,
       "run_number": 10,
@@ -284,13 +284,56 @@
       "injected_high_half_rejected": true
     },
     "emulator_retry": {
-      "status": "in_progress",
+      "status": "completed",
       "run_id": 44185564726,
       "run_number": 11,
       "code_sha": "f53bd49293ca173adc104277288182c36c37bd2b",
       "fallback": "software -accel off; strict ART gate retained",
-      "art_verified": false,
-      "release_verified": false
+      "art_verified": true,
+      "release_verified": true,
+      "conclusion": "success",
+      "release": "cp-dl-B1b2-fix-11",
+      "apk_sha256": "sha256:5bb792de830fda574b2c89d3826331917385006c9924be2628f0a5f15b943eb4"
     }
+  },
+  "b1b3": {
+    "report": "docs/CP_DL_B1B3_MUX_RECOVERY_AR.md",
+    "phone_h66": {
+      "mkv": 417,
+      "proofs": 417,
+      "mp4_completion_unique": 417,
+      "db_ack_unique": 417,
+      "accepted": [
+        219,
+        197
+      ],
+      "batch_plan_complete_s": [
+        19.307,
+        42.121
+      ],
+      "slot_pairs": 417,
+      "slot_duration_median_ms": 5675,
+      "db_promote_raw": 1673,
+      "db_promote_distinct": 417
+    },
+    "phone_h67": {
+      "mkv": 452,
+      "proofs": 451,
+      "remaining_recovery_json": 1,
+      "mp4_completion_unique": 452,
+      "db_ack_unique": 452,
+      "extra_accepted": 35,
+      "force_stops_user": 3,
+      "db_promote_raw": 1791,
+      "db_promote_distinct": 452,
+      "sqlite_busy": 11
+    },
+    "changes": [
+      "3 per-process exporter workers; 3 shared app-wide live permit locks",
+      "original per-source Lease115 and epoch guards retained",
+      "bounded128 callback token queue on existing reconciler scheduler"
+    ],
+    "ci": "pending",
+    "device": "pending"
   }
 }

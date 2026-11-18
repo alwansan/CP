@@ -218,7 +218,7 @@
 
     move-result-object v5
 
-    invoke-static {v5}, Lcom/shabakaty/cinemana/features/MkvReconciler;->reconcileToken(Ljava/lang/String;)V
+    invoke-static {v5}, Lcom/shabakaty/cinemana/features/MkvReconciler;->requestToken(Ljava/lang/String;)V
     :try_end_0
     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
