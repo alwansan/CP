@@ -2,7 +2,7 @@
   "schema_version": 1,
   "agent": "CP-DL",
   "repository": "alwansan/CP",
-  "writable_branch": "feature/download-stability",
+  "writable_branch": "Html",
   "source_branch": "feature/local-account",
   "baseline_sha": "82d7f67037f67659115d41782d3a9b5bf4e0bd02",
   "baseline_patch": "PATCH274",
@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "download_baseline_accepted_html_handoff_waiting_owner",
-  "last_session": "memory/sessions/2026-11-18_cp-dl-h68-html-handoff-18.md",
+  "status": "html_owner_brief_planning_only",
+  "last_session": "memory/sessions/2026-11-18_cp-dl-html-planning-19.md",
   "verified_at": "2026-11-18",
   "app_code_changed": false,
   "new_build_triggered": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "read latest restore and await owner HTML/UI brief; agree page order and asynchronous bridge; preserve B1b3 regression gates and address backend backlog with UI integration",
+  "next": "Continue parity and exact lifecycle/call graph; no runtime/build until owner authorizes implementation",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "bbd5ad1bbc1c53f7a9fffb29662fe04071a8b138",
+  "last_verified_head": "7e9420e35a6e1133edf9fb83705c0ac18b47c4c1",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -410,7 +410,7 @@
     "report": "docs/CP_DL_H68_CLOSURE_AR.md",
     "design": "docs/CP_HTML_HANDOFF_AR.md",
     "session": "memory/sessions/2026-11-18_cp-dl-h68-html-handoff-18.md",
-    "await_owner_ui_brief": true,
+    "await_owner_ui_brief": false,
     "additional_apk_required_now": false,
     "all_defects_closed": false,
     "open": [
@@ -419,6 +419,24 @@
       "durable batch ACK and bounded scans",
       "UI lifecycle state bridge",
       "pause/delete/cancel, orphan, soak and playback validation"
-    ]
+    ],
+    "await_implementation_authorization": true
+  },
+  "html_phase": {
+    "status": "planning_only",
+    "source_branch": "feature/download-stability",
+    "initial_head": "c68c0d80722765409f8544d499938a656217967b",
+    "plan": "docs/HTML_MASTER_PLAN_AR.md",
+    "audit": "docs/HTML_UI_AUDIT_AR.md",
+    "screenshots": 94,
+    "decoded_frames": 15766,
+    "visually_sampled_frames": 64,
+    "video_duration_s": 255.143,
+    "exact_pts": false,
+    "branch_compare": "identical",
+    "old_ui_disabled": false,
+    "code_changed": false,
+    "build_triggered": false,
+    "workflow_gate": "old branch only"
   }
 }

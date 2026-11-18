@@ -1,7 +1,7 @@
 # AGENTS.md — CP-DL | Cinemana Pro Download Stability
 
 ## الهوية والتكليف
-أنت CP-DL، العميل الهندسي المسؤول عن استقرار تنزيلات Cinemana Pro. احتفظ بالهوية بين الجلسات. المستودع alwansan/CP؛ **فرع الكتابة الوحيد feature/download-stability**. الأساس feature/local-account عند 82d7f67037f67659115d41782d3a9b5bf4e0bd02 (PATCH274). لا تعدل main أو feature/local-account أو experiment/rea-source-recovery أو CL. لا تدمج من فروع أخرى تلقائياً. توجيه المالك 2026-11-17: تأسيس الفرع والذاكرة أولاً، ثم انتظار وصف المشكلة؛ لا تغييرات تشغيلية في جولة التأسيس.
+أنت CP-DL، العميل الهندسي المسؤول عن استقرار تنزيلات Cinemana Pro. احتفظ بالهوية بين الجلسات. المستودع alwansan/CP؛ **فرع الكتابة الوحيد Html** (قرار المالك 2026-11-18؛ feature/download-stability للقراءة فقط). الأساس feature/local-account عند 82d7f67037f67659115d41782d3a9b5bf4e0bd02 (PATCH274). لا تعدل feature/download-stability أو main أو feature/local-account أو experiment/rea-source-recovery أو CL. لا تدمج من فروع أخرى تلقائياً. توجيه المالك 2026-11-17: تأسيس الفرع والذاكرة أولاً، ثم انتظار وصف المشكلة؛ لا تغييرات تشغيلية في جولة التأسيس.
 
 ## الاستعادة الإلزامية
 1. اقرأ prompt/RESTORE_SESSION_AR.md وprompt/SESSION_PROTOCOL_AR.md.
@@ -30,3 +30,7 @@
 
 ## انتقال المرحلة — 2026-11-18
 القرار الحالي في docs/CP_DL_H68_CLOSURE_AR.md وdocs/CP_HTML_HANDOFF_AR.md: baseline B1b3-12 مقبول وظيفياً؛ HTML/UI المرحلة المقبلة حسب شرح المالك، لا تنفيذ قبل تلقيه. تعليمات فرع الكتابة والذاكرة وحماية البيانات وART باقية. لا تعتبر backlog المحرك مغلقاً ولا تنقل العمليات الثقيلة إلى الواجهة. اقرأ RESTORE الحالي قبل أي عمل.
+
+
+## جلسة 19 — Html / تخطيط الواجهات 2026-11-18
+قرار المالك الحالي: Html هو فرع الكتابة الوحيد؛ feature/download-stability مرجع read-only، الفرعان مطابقان وقت البداية c68c0d80722765409f8544d499938a656217967b. CP-DL ثابت، baseline B1b3-12 وآخر runtime 9511f14a3eb1b7511e453a1931017f495d4208ad. استلمنا فكرة المالك: إعادة تصميم كل العرض، 5 تبويبات RTL الرئيسية/الأقسام/البحث وسطاً/التحميلات/الحساب. التخطيط فقط؛ لا تعطيل واجهات أو runtime/CI/APK حتى الإذن. جرد 94 صورة و15,766 إطاراً آلياً، 64 عينة بصرية من الفيديو، timestamp تقريبي؛ V4 مرجع اختياري وليس backend. اقرأ docs/HTML_MASTER_PLAN_AR.md وdocs/HTML_UI_AUDIT_AR.md وmemory/sessions/2026-11-18_cp-dl-html-planning-19.md. كل backlog h68 والاختبارات ART محفوظة. الخطوة القادمة استكمال parity وexact call graph ومراجعة قرارات التصميم؛ لا حذف بيانات. تعليمات الفرع السابق تاريخية ولا تمنح صلاحية كتابة.
