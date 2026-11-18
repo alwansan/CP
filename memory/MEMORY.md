@@ -171,3 +171,6 @@ Html الوحيد للكتابة؛ إذن المالك السابق للتجرب
 
 ## جلسة 24 — تتبع Pause/Retry/Recovery
 فحص إضافي للـsmali: ey0.d(taskId) pause calls Restart108.paused → Queue110.pause (PAUSE/USER_PAUSED) then pauses FileDownloader; ey0.i(taskId) retry via ExpiredLink269 + DAO readDownloadsByTaskId + composer rebuild. DownloaderService yy0 retry coroutine iterates downloadsRepo and calls Restart108.canRetry before ey0.i. canRetry blocks intent ending |PAUSE or Queue110.isPaused, requires DAO row and no ca1_delete_intent. Restart108.attach saves manager/context then wake scan. PauseDownloadBR/RetryDownloadBR/CancelDownloadBR exist; no ResumeDownloadBR in manifest. Dependencies112/Inputs114 handles subtitle-only DEPENDENCY114_NATIVE_RESUME, not video resume. Generic resume/clear-PAUSE UI caller still unknown. See docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md. No runtime changes.
+
+
+Resume candidate: ey0.l -> q(reuse=true) -> dlStart -> Restart108.admitted -> Queue110.remember(RUN/NATIVE_ADMITTED), but UI caller still unconfirmed. See HTML_DOWNLOAD_NATIVE_MAP_AR.md.

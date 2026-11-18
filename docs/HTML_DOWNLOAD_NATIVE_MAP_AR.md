@@ -50,3 +50,10 @@
 
 ## نتيجة تعميق التتبع
 المسار الذي تأكد الآن: ey0.d(taskId) = pause، ويستدعي Restart108.paused ثم Queue110.pause ويوقف FileDownloader؛ ey0.i(taskId) = retry، يمر عبر ExpiredLink269 ثم DAO readDownloadsByTaskId ويعيد بناء composer. DownloaderService coroutine yy0 تجمع download repository وتنفذ Restart108.canRetry قبل retry. canRetry يمنع |PAUSE وQueue110.isPaused ويتطلب DB row وعدم delete intent. Restart108.attach يربط manager/context ثم wake scan/recovery. لا يوجد ResumeDownloadBR في Manifest. Dependencies112/Inputs114 فيها resume خاص باعتماد subtitle فقط. لم نثبت بعد clear PAUSE + resume UI caller؛ لا API resume.
+
+
+## 7) مرشح إزالة PAUSE وإعادة القبول
+- Queue110.isPaused(taskId) يقرأ request:<id> ويتحقق أن intent == PAUSE. Queue110.remember(task,manager) يكتب request جديداً intent=RUN وphase=NATIVE_ADMITTED، لذلك يعيد المهمة إلى حالة admitted ويزيل paused bit من سجل Queue110.
+- Restart108.admitted(manager,composer) يكتب intent:<id> = external|RUN في restart prefs ثم يستدعي Queue110.remember. وهذا يزيل suffix |PAUSE الذي يمنع canRetry.
+- ey0.l(manager,taskId) يعثر على composer الحي، يعيد بناءه من URL/filename/metadata، ثم يستدعي q(composer,true). q يصل إلى dlStart مع reuse=true، وdlStart يمر عبر Restart108.admitted قبل إعادة استخدام DownloadTask. ميكانيكياً هذا مرشح قوي لمسار إعادة القبول بعد pause، لكنه لا يثبت وحده أن زر Resume في واجهة المستخدم يستدعيه؛ لم نعثر بعد على caller UI موثوق له.
+- لذلك صنّفناه Resume/Re-admit candidate فقط. قبل API: تتبع caller، تحقق من حالة task/bytes/file، ومنع duplicate start، وتأكد من ACK بعد Queue110.remember + FileDownloader state. لا تستدع ey0.l من JS مباشرة.

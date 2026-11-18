@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Trace UI action that clears PAUSE intent and resumes same video task; map full DAO snapshots and service commands before implementing native facade",
+  "next": "Trace UI caller for ey0.l/re-admit, verify pause/resume state/duplicate prevention/durable ACK, then define Native bridge endpoint",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -517,6 +517,6 @@
     },
     "pause_confirmed": "ey0.d -> Restart108.paused -> Queue110.pause -> FileDownloader.pause",
     "retry_confirmed": "yy0 -> Restart108.canRetry -> ey0.i -> ExpiredLink269 + DAO restore",
-    "resume_generic": "unresolved; no ResumeDownloadBR in manifest; PAUSE blocks canRetry"
+    "resume_generic": "candidate: ey0.l -> q(reuse=true) -> dlStart -> Restart108.admitted -> Queue110.remember(RUN/NATIVE_ADMITTED); caller UI not yet confirmed"
   }
 }

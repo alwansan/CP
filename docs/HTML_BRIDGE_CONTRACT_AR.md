@@ -75,3 +75,7 @@ run 44397753290 شغّل bridge-protocol.js + test-bridge.cjs ونجح بـ21 as
 
 ## Resume gap — لا تخمّن
 المسار المثبت ey0.d = pause وey0.i = retry. yy0 auto retry يمر عبر Restart108.canRetry الذي يمنع |PAUSE/Queue110.isPaused ويتحقق من DAO/delete intent. Restart108.attach → wake scan. لا ResumeDownloadBR في Manifest. Dependencies112/Inputs114 resume خاص بترجمة/subtitle. راجع docs/HTML_DOWNLOAD_NATIVE_MAP_AR.md؛ generic video resume/clear PAUSE لم يثبت بعد، فلا تنشئ endpoint باسم resume أو تربط retry به.
+
+
+## تحديث Resume candidate
+Queue110.isPaused يقرأ request intent=PAUSE؛ Queue110.remember يكتب RUN/NATIVE_ADMITTED. Restart108.admitted يكتب external|RUN ثم Queue110.remember. ey0.l(manager,id) يعيد بناء composer ثم q(...,true) → dlStart(reuse) → Restart108.admitted. هذا مرشح ميكانيكي قوي لإعادة القبول بعد pause، لكن UI caller لم يثبت؛ لا تعرض endpoint resume قبل tracing caller والتحقق من عدم تكرار المهمة وACK.

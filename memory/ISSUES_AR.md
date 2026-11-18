@@ -173,3 +173,5 @@ HTML-014: protocol unit/syntax checks passed in run 44397348530; Chromium step f
 HTML-015: fixed test navigation order; latest shell run 44397753290 SUCCESS with 40 Chromium assertions. Protocol unit tests 21 PASS. Screenshot artifact 14472026955 visually reviewed. Native bridge, WebView, actual catalog/download/account integration and Android device tests remain open.
 
 HTML-016: Resume semantics still unresolved. ey0.d is pause; ey0.i is retry after ExpiredLink/DAO reconstruction; yy0 auto-retry gates through Restart108.canRetry. PAUSE marker and Queue110.isPaused block retry. No ResumeDownloadBR found; subtitle-only Dependencies112 resume is not general video resume.
+
+HTML-016 update: found strong re-admit candidate ey0.l(manager,id) -> q(reuse=true) -> dlStart -> Restart108.admitted -> Queue110.remember(intent=RUN, NATIVE_ADMITTED), mechanically clears PAUSE in both journals. UI caller not yet confirmed; do not expose resume API until traced and duplicate/ACK semantics tested.
