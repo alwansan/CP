@@ -1,0 +1,37 @@
+name: CP HTML unified shell lab
+on:
+  push:
+    branches: [Html]
+    paths: ['docs/fixtures/html-shell-lab/**', '.github/workflows/html-shell-lab.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cp-html-shell-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  shell-browser:
+    if: github.ref == 'refs/heads/Html'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: docs/fixtures/html-shell-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check app.js && node --check test-browser.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.51.1
+          npx playwright install --with-deps chromium
+      - name: Run integrated shell regression
+        run: node test-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: cp-html-shell-preview
+          path: docs/fixtures/html-shell-lab/shell-preview.png
