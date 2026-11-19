@@ -557,12 +557,22 @@
       "direct_resume_ui": false
     },
     "path_hint": {
-      "status": "isolated_candidate_ci_pending",
+      "status": "isolated_candidate_ci_pass",
       "max_bytes_per_read": 8192,
       "synthetic_records": 452,
       "report": "docs/HTML_MKV_PATH_HINT_AR.md",
       "authoritative": false,
-      "android_test": false
+      "android_test": false,
+      "code_sha": "1959f88a3779cd4fa818c3bbcfb9fdfb8decf0ee",
+      "run_id": 44428257593,
+      "assertions": 934,
+      "linux_temp_file_io": true,
+      "atomic": false
+    },
+    "admission_audit": {
+      "scope": "NativeBatchScope + DownloadActionsHandlerScope.m + dv0",
+      "video_dispatch_return_is_durable_ack": false,
+      "typed_admission_implemented": false
     }
   }
 }
