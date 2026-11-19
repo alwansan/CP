@@ -6,12 +6,11 @@ import json
 import pathlib
 import re
 import subprocess
-import tempfile
+import struct
 import xml.etree.ElementTree as ET
 import zipfile
 
 CLASS = re.compile(r"^\s*\.class\s+(?:\S+\s+)*(L[^;\s]+;)\s*$")
-DEX_CLASS = re.compile(r"^\s*Class descriptor\s*:\s*'([^']+)'\s*$", re.M)
 RESOURCE = re.compile(r"^\s*resource\s+(0x[0-9a-fA-F]+)\s+(?:[^\s:]+:)?([\w-]+/[\w.]+)(?=\s|$)", re.M)
 
 def original_classes(root):
@@ -39,19 +38,69 @@ def original_classes(root):
 def command(args):
     return subprocess.run(args, check=True, capture_output=True, text=True).stdout
 
+def dex_definitions(data):
+    # Read the class_defs table rather than decoding the huge, mixed-encoding
+    # dexdump listing. DEX string_data_item uses modified UTF-8, not UTF-8.
+    def u32(offset):
+        if offset < 0 or offset + 4 > len(data):
+            raise ValueError("DEX offset outside file")
+        return struct.unpack_from("<I", data, offset)[0]
+    if len(data) < 112 or data[:4] != b"dex\n" or data[7] != 0:
+        raise ValueError("invalid DEX magic")
+    if u32(32) != len(data) or u32(36) != 112 or u32(40) != 0x12345678:
+        raise ValueError("unsupported DEX header")
+    def table(offset, width):
+        count, pos = u32(offset), u32(offset+4)
+        if count and (pos < 112 or pos + count*width > len(data)):
+            raise ValueError("DEX table outside file")
+        return count, pos
+    string_count, string_off = table(56,4)
+    type_count, type_off = table(64,4)
+    class_count, class_off = table(96,32)
+    if not class_count:
+        raise ValueError("empty class definitions")
+    def string(index):
+        if index >= string_count:
+            raise ValueError("string index outside table")
+        pos = u32(string_off + index*4)
+        value, shift = 0,0
+        for _ in range(5):
+            if pos >= len(data):
+                raise ValueError("truncated string length")
+            byte=data[pos];pos+=1
+            value |= (byte & 127) << shift
+            if byte < 128:
+                break
+            shift += 7
+        else:
+            raise ValueError("invalid uleb128")
+        stop=data.find(b"\x00",pos)
+        if stop < 0:
+            raise ValueError("unterminated DEX string")
+        raw=data[pos:stop].replace(b"\xc0\x80",b"\x00")
+        units=raw.decode("utf-8","surrogatepass").encode("utf-16-le","surrogatepass")
+        if len(units)//2 != value:
+            raise ValueError("invalid DEX string length")
+        return units.decode("utf-16-le")
+    out=[]
+    for i in range(class_count):
+        idx=u32(class_off+i*32)
+        if idx >= type_count:
+            raise ValueError("class type index outside table")
+        desc=string(u32(type_off+idx*4))
+        if not re.fullmatch(r"L[^;\s]+;",desc):
+            raise ValueError("invalid class descriptor: "+repr(desc))
+        out.append(desc)
+    return out
+
 def lab_classes(apk, dexdump):
     out = collections.defaultdict(list)
-    with zipfile.ZipFile(apk) as z, tempfile.TemporaryDirectory() as t:
+    with zipfile.ZipFile(apk) as z:
         names = sorted(n for n in z.namelist() if re.fullmatch(r"classes(?:\d+)?\.dex", n))
         if not names:
             raise ValueError("no DEX")
         for name in names:
-            path = pathlib.Path(t, name)
-            path.write_bytes(z.read(name))
-            text = command([dexdump, str(path)])
-            descriptors = DEX_CLASS.findall(text)
-            if not descriptors:
-                raise ValueError("no class descriptors in " + name)
+            descriptors = dex_definitions(z.read(name))
             for desc in descriptors:
                 out[desc].append(name)
     return out, names
