@@ -12,11 +12,11 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_native_model_and_resync_ci_pass",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-native-download-model-24.md",
-  "verified_at": "2026-11-18",
+  "status": "html_owner_page_session_ci_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-owner-page-session-43.md",
+  "verified_at": "2026-11-19",
   "app_code_changed": false,
-  "new_build_triggered": false,
+  "new_build_triggered": true,
   "device_test": "B1b1 416 native video dispatch return, zero missing Downloads and storage lock warnings; one ANR; MKV recovery progressed after restart",
   "cl": {
     "repo": "alwansan/CL",
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Build bounded actual native DAO read adapter with verified evidence, then typed admission extraction; trace actual resume UI caller; no APK before Android transport/security/parity/ART gates",
+  "next": "Verify owner page session CI, exact process startup gate and Android fixture, optional owner service and ART; no original APK/manifest changes yet",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -906,5 +906,12 @@
       "strict_owner_process": true,
       "raw_cursor_native_only": true
     }
+  },
+  "html_owner_page_session_43": {
+    "code_sha": "5d0797e9fe8907a59c232e272e55371aa247f188",
+    "run_id": 44442771296,
+    "status": "in_progress",
+    "scope": "isolated Java candidate; no Android runtime",
+    "doc": "docs/HTML_OWNER_PAGE_SESSION_AR.md"
   }
 }
