@@ -1260,5 +1260,27 @@
     "resource_retry_run": 44535973568,
     "resource_retry_job": 135601350720,
     "resource_retry_status": "in_progress"
+  },
+  "native_compose_isolation_55": {
+    "entry": "ee093c02a64ec1a0d2a807c92c15a42677abb258",
+    "r8_run": 44535973795,
+    "r8_job": 135601352375,
+    "r8_status": "success",
+    "r8_artifact": 14535129514,
+    "remaining_overlap": 8,
+    "abi_diff_rows": 37,
+    "raw_merge_blocked": true,
+    "resource_run": 44538821367,
+    "resource_job": 135611368694,
+    "resource_status": "success",
+    "resource_code": "1259eca90017823ef965cdd4a244188fd47df8f8",
+    "resource_artifact": 14537262107,
+    "relinked": 263,
+    "original_public_namespace": 7162,
+    "references_rewritten": 74,
+    "runtime_code": "994872e30b43addaa5e875ffff29480036d68019",
+    "runtime_run": 44539099629,
+    "runtime_status": "in_progress",
+    "production_merged": false
   }
 }
