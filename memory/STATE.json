@@ -1356,5 +1356,21 @@
     "styleable_retry_code": "f318953bf45131afddd5496cc965adc355a510a0",
     "styleable_retry_run": 44544545322,
     "styleable_retry_status": "in_progress"
+  },
+  "native_compose_isolation_60": {
+    "dex_roundtrip_status": "success",
+    "dex_run": 44546469539,
+    "dex_job": 135638249347,
+    "fields": 426,
+    "styleable_sites": 30,
+    "arrays": 11,
+    "index_fields": 74,
+    "combined_run": 44547279297,
+    "combined_job": 135641116247,
+    "combined_static": "success",
+    "combined_runtime": "in_progress",
+    "parcel_run": 44547935444,
+    "parcel_status": "in_progress",
+    "production_merged": false
   }
 }
