@@ -72,6 +72,7 @@ jobs:
             ${{ runner.temp }}/cp-compose-lab/android-metrics.txt
             ${{ runner.temp }}/cp-compose-lab/android-runtime.txt
             ${{ runner.temp }}/cp-compose-lab/owner-fixture.txt
+            ${{ runner.temp }}/cp-compose-lab/last-anr.txt
           if-no-files-found: error
       - uses: softprops/action-gh-release@v3
         if: success()

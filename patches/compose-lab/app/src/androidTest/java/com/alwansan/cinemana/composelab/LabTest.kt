@@ -238,15 +238,32 @@ class LabTest {
                 Thread.sleep(150)
             }
             assertNotNull("native UI did not survive real landscape configuration",rotated)
-            println("CP_COMPOSE_NATIVEUI_FACTORY_PASS "+rotated)
+            val landscape=rotated ?: throw AssertionError("missing landscape snapshot")
             clickRemote("CP_ROTATE_PORTRAIT")
+            val portraitUntil=SystemClock.elapsedRealtime()+20000L
+            var portrait:android.os.Bundle?=null
+            while(SystemClock.elapsedRealtime()<portraitUntil){
+                val s=context.contentResolver.call(uri,"snapshot",null,null)
+                if(s!=null&&s.getInt("pid")==uiPid&&s.getInt("configCount")>landscape.getInt("configCount")&&s.getInt("lastOrientation")==android.content.res.Configuration.ORIENTATION_PORTRAIT&&s.getInt("drawHeight")>s.getInt("drawWidth")&&s.getString("drawState")=="observed"&&s.getInt("drawRows")==24&&s.getBoolean("focused")){portrait=s;break}
+                Thread.sleep(150)
+            }
+            assertNotNull("native UI did not survive real portrait configuration",portrait)
+            println("CP_COMPOSE_NATIVEUI_FACTORY_PASS landscape=$landscape portrait=$portrait")
+            clickRemote("إغلاق")
             println("CP_COMPOSE_NATIVEUI_STARTUP_PASS ownerPid=$ownerPid nativeUiPid=$uiPid legacyDownloaderPid=$downloaderPid providerBeforeCreate=true remotePage=24")
         } finally {
-            automation.executeShellCommand("input keyevent 4").close()
+            // Only close our own remote window, never dismiss unrelated system dialogs.
+            if(automation.rootInActiveWindow?.packageName?.toString()==pkg&&visibleTexts().contains("CP_NATIVE_UI_READY")){
+                automation.executeShellCommand("input keyevent 4").close()
+            }
         }
+        rule.waitUntil(timeoutMillis=15000){rule.activity.hasWindowFocus()}
     }
     @Test fun smokeAndPressure() {
         node("disclosure").assertIsDisplayed()
+        // Run foreground lifecycle/configuration before synthetic CPU/fsync load.
+        testNativeUiStartup()
+        open(0)
         node("hero-detail").performClick(); node("detail-close").assertIsDisplayed().performClick()
         open(2); node("search-field").performTextInput("أفق"); rule.onNodeWithText("أفق بعيد").assertIsDisplayed()
         open(4); node("appearance").performClick(); node("oled").performClick(); node("motion").performClick(); node("style-2").performClick()
@@ -291,6 +308,5 @@ class LabTest {
             assertTrue(SystemClock.elapsedRealtime() - started < 40000)
             println("CP_COMPOSE_LAB_PASS workerPid=$worker uiPid=${android.os.Process.myPid()}")
         } finally { rule.runOnIdle { rule.activity.stopService(load) } }
-        testNativeUiStartup()
     }
 }
