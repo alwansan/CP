@@ -35,6 +35,7 @@ jobs:
           java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.UiProcessPolicyTest
           java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.OwnerClientEpochTest
           java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.OwnerProcessReadsTest
+          java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.NativeApplicationChoiceTest
       - name: Locate exact resume candidate callers (static only)
         run: |
           python3 - <<'PY'
