@@ -627,14 +627,17 @@
     "owner_preflight": {
       "code_sha": "8fd0c0804e89acc31ab101da0490f3201e53dbbb",
       "run_id": 44431539268,
-      "ci": "pending",
+      "ci": "success",
       "report": "docs/HTML_OWNER_PREFLIGHT_AR.md",
       "expected_assertions": 9514,
       "authoritative": false,
       "variant_mapping": false,
       "android_test": false,
       "shared_owner_arbitration": false,
-      "claim_capacity_max": 1024
+      "claim_capacity_max": 1024,
+      "job_id": 135249848977,
+      "assertions": 9514,
+      "total_native_assertions": 32030
     }
   }
 }
