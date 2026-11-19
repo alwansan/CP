@@ -4,6 +4,10 @@ class DexAuditTest(unittest.TestCase):
     def test_lexical(self):
         self.assertEqual(lexical('const-string v0, "x#y\\"z" # 0x7f010001'),("const-string v0,",['x#y\\"z']))
         self.assertEqual(lexical("const v0, 0x7f010001 # note")[0],"const v0, 0x7f010001")
+    def test_character_literals(self):
+        self.assertEqual(lexical("  '\"' # 0x7f010001"),("",[]))
+        self.assertEqual(lexical("  '#' # comment"),("",[]))
+        self.assertEqual(lexical("  '\\u0022'"),("",[]))
     def test_classification(self):
         rows=[("id/item",0x7f010001,"id/cpui_item",0x7f010100),("attr/theme",0x7f020001,"attr/cpui_theme",0x7f020100)]
         with tempfile.TemporaryDirectory() as t:

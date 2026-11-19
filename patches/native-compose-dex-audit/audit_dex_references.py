@@ -12,6 +12,7 @@ from resource_namespace_plan import allocate
 
 LITERAL=re.compile(r"(?<![\w])0x[0-9a-fA-F]{8}(?![\w])")
 QUOTED=re.compile(r'"(?:\\.|[^"\\])*"')
+CHAR=re.compile(r"'(?:\\(?:u[0-9a-fA-F]{4}|.)|[^'\\])'")
 FIELD=re.compile(r"^\.field\s+(?:\S+\s+)*?([^:\s]+):I\s*=\s*(0x[0-9a-fA-F]{8})\s*$")
 RCLASS=re.compile(r"^L[^;]+/R\$([\w]+);$")
 RFIELD=re.compile(r"(L[^;\s]+/R\$([\w]+);)->([^:\s]+):(\[?I)(?![\w])")
@@ -34,6 +35,12 @@ def lexical(line):
     while i<len(line):
         if line[i]=="#":
             break
+        if line[i]=="'":
+            m=CHAR.match(line,i)
+            if m:
+                code.append(" "*len(m.group()))
+                i=m.end()
+                continue
         if line[i]=='"':
             m=QUOTED.match(line,i)
             if not m:
@@ -60,7 +67,10 @@ def analyze(root,rows):
             files+=1
             rel=str(path.relative_to(root));desc="";method="";array_width=None
             for n,line in enumerate(path.read_text(encoding="utf-8").splitlines(),1):
-                code,strings=lexical(line)
+                try:
+                    code,strings=lexical(line)
+                except ValueError as exc:
+                    raise ValueError(f"{rel}:{n}: {exc}: {line[:240]!r}") from exc
                 if code.startswith(".class "):
                     m=CLASS.match(code)
                     if not m:raise ValueError("bad class "+rel)
