@@ -7,6 +7,7 @@ import android.webkit.*;
 import android.view.ViewGroup;
 import android.graphics.Color;
 import android.widget.TextView;
+import android.util.Log;
 import java.io.*;
 import java.util.*;
 import org.json.JSONObject;
@@ -56,6 +57,9 @@ public final class PreviewActivity extends Activity {
         s.setJavaScriptCanOpenWindowsAutomatically(false);s.setSupportMultipleWindows(false);
         s.setGeolocationEnabled(false);s.setSaveFormData(false);
         CookieManager.getInstance().setAcceptCookie(false);
+        web.setWebChromeClient(new WebChromeClient(){
+            @Override public boolean onConsoleMessage(ConsoleMessage m){Log.i("CPPreview","JS "+m.messageLevel()+" line="+m.lineNumber()+" "+m.message());return true;}
+        });
         web.setWebViewClient(new WebViewClient(){
             @Override public WebResourceResponse shouldInterceptRequest(WebView v,WebResourceRequest r){
                 if(!"GET".equals(r.getMethod()))return denied();
@@ -71,6 +75,7 @@ public final class PreviewActivity extends Activity {
                 if(!page(url)){v.stopLoading();fallback();}
             }
             @Override public void onPageFinished(WebView v,String url){
+                Log.i("CPPreview","pageFinished local="+page(url)+" current="+page(v.getUrl()));
                 if(web!=v||sent||!page(url)||!page(v.getUrl()))return;
                 sent=true;
                 try{
@@ -80,7 +85,7 @@ public final class PreviewActivity extends Activity {
                         @Override public void onMessage(WebMessagePort p,WebMessage msg){reply(p,msg);}
                     });
                     v.postWebMessage(new WebMessage("CP_PREVIEW_PORT_V1",new WebMessagePort[]{pair[1]}),Uri.parse(ORIGIN));
-                }catch(RuntimeException e){closePort();fallback();}
+                }catch(RuntimeException e){Log.w("CPPreview","port setup failed",e);closePort();fallback();}
             }
             @Override public boolean onRenderProcessGone(WebView v,RenderProcessGoneDetail detail){
                 closePort();web=null;
@@ -88,10 +93,19 @@ public final class PreviewActivity extends Activity {
                 v.destroy();fallback();return true;
             }
         });
-        setContentView(web);web.loadUrl(PAGE);
+        setContentView(web);
+        // All executable assets are bundled into one document with CSP SHA-256
+        // hashes. No WebView network request is needed even for local resources.
+        try(InputStream in=getAssets().open("preview/bundle.html")){
+            ByteArrayOutputStream out=new ByteArrayOutputStream();
+            byte[] buf=new byte[4096];int n;
+            while((n=in.read(buf))!=-1){if(out.size()+n>256*1024)throw new IOException("bundle cap");out.write(buf,0,n);}
+            web.loadDataWithBaseURL(PAGE,out.toString("UTF-8"),"text/html","UTF-8",PAGE);
+        }catch(IOException e){fallback();}
     }
     private void reply(WebMessagePort p,WebMessage m){
         if(p!=port||web==null||!page(web.getUrl())||++requests>8){closePort();return;}
+        Log.i("CPPreview","native port received");
         String raw=m.getData();
         if(raw==null||raw.length()>1024||m.getPorts()!=null&&m.getPorts().length>0){closePort();return;}
         try{
@@ -104,6 +118,7 @@ public final class PreviewActivity extends Activity {
             if(ok)r.put("data",new JSONObject().put("mode","synthetic-preview").put("nativeTransport",true).put("writeCommands",false));
             else r.put("error",new JSONObject().put("code","ACTION_NOT_ALLOWED").put("message","Preview only"));
             p.postMessage(new WebMessage(r.toString()));
+            Log.i("CPPreview","bootstrap reply ok="+ok);
         }catch(Exception ignored){closePort();}
     }
     private void closePort(){if(port!=null){try{port.close();}catch(RuntimeException ignored){}port=null;}}

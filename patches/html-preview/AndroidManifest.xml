@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.alwansan.cinemana.htmlpreview" android:versionCode="1" android:versionName="0.1">
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="32"/>
     <application android:label="Cinemana HTML Preview" android:theme="@android:style/Theme.Material.NoActionBar" android:allowBackup="false" android:usesCleartextTraffic="false" android:hardwareAccelerated="true">
+        <service android:name=".PreviewLoadService" android:process=":previewload" android:exported="false"/>
         <activity android:name=".PreviewActivity" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
         </activity>

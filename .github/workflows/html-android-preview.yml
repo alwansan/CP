@@ -45,7 +45,9 @@ jobs:
           script: |
             adb install "$RUNNER_TEMP/cp-html-preview/main.apk"
             adb install "$RUNNER_TEMP/cp-html-preview/test.apk"
+            adb logcat -c
             adb shell am instrument -w com.alwansan.cinemana.htmlpreview.test/.PreviewTest | tee "$RUNNER_TEMP/cp-html-preview/android-test.txt"
+            adb logcat -d -s CPPreview:I chromium:E | tail -n 150
             grep -F 'CP_HTML_PREVIEW_PASS' "$RUNNER_TEMP/cp-html-preview/android-test.txt"
             grep -F 'INSTRUMENTATION_CODE: -1' "$RUNNER_TEMP/cp-html-preview/android-test.txt"
       - uses: actions/upload-artifact@v4
