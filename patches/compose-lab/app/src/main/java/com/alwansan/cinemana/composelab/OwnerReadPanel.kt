@@ -5,12 +5,13 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun OwnerReadPanel(foreground: Boolean, close: () -> Unit) {
+internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,Int)->Unit)?=null, close: () -> Unit) {
     val context = LocalContext.current
     var client by remember { mutableStateOf<LabOwnerClient?>(null) }
     var reconnect by remember { mutableIntStateOf(0) }
@@ -21,7 +22,11 @@ internal fun OwnerReadPanel(foreground: Boolean, close: () -> Unit) {
     }
     val current = client
     val state = current?.screen ?: OwnerScreen()
-    Column(Modifier.fillMaxSize(),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+    val drawObserver=if(onDrawState==null)Modifier else Modifier.drawWithContent {
+        drawContent()
+        onDrawState.invoke(state,size.width.toInt(),size.height.toInt())
+    }
+    Column(Modifier.fillMaxSize().then(drawObserver),verticalArrangement=Arrangement.spacedBy(8.dp)) {
         Text("قراءة IPC مستقلة · بيانات اختبار فقط")
         Text("حالة: ${state.state}",Modifier.testTag("owner-status"))
         Text("PID: ${state.pid}",Modifier.testTag("owner-pid"))

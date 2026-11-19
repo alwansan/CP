@@ -7,7 +7,7 @@ adb logcat -c
 adb shell am instrument -w -r com.alwansan.cinemana.composelab.test/androidx.test.runner.AndroidJUnitRunner | tee "$OUT/android-test-raw.txt"
 tr -d '\r' < "$OUT/android-test-raw.txt" > "$OUT/android-test.txt"
 adb logcat -d -s System.out:I | tee "$OUT/android-metrics.txt"
-adb logcat -d -s AndroidRuntime:E | tee "$OUT/android-runtime.txt"
+adb logcat -d -s AndroidRuntime:E CPNativeUi:I ActivityTaskManager:I | tee "$OUT/android-runtime.txt"
 adb logcat -d -s CPComposeOwner:I | tee "$OUT/owner-fixture.txt"
 grep -F 'CP_COMPOSE_OWNER_IPC_PASS' "$OUT/android-metrics.txt"
 grep -F 'CP_COMPOSE_OWNER_TIMEOUT_DEATH_PASS' "$OUT/android-metrics.txt"

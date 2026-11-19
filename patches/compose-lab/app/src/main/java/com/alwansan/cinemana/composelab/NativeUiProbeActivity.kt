@@ -27,12 +27,15 @@ class NativeUiProbeActivity : ComponentActivity() {
                     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(16.dp)) {
                         Text("CP_NATIVE_UI_READY")
                         Text("PID: "+android.os.Process.myPid())
-                        OwnerReadPanel(foreground) { finish() }
+                        OwnerReadPanel(foreground,onDrawState={ state,w,h ->
+                            LabStartupApplication.uiDraw(state.state,state.page,state.rows.size,state.responseSerial,state.pid,w,h)
+                        }) { finish() }
                     }
                 }
             }
         }
     }
-    override fun onResume(){super.onResume();foreground=true}
-    override fun onPause(){foreground=false;super.onPause()}
+    override fun onResume(){super.onResume();LabStartupApplication.uiResume(true);foreground=true;android.util.Log.i("CPNativeUi","CP_NATIVE_UI_RESUME pid="+android.os.Process.myPid())}
+    override fun onWindowFocusChanged(hasFocus:Boolean){super.onWindowFocusChanged(hasFocus);LabStartupApplication.uiFocus(hasFocus);android.util.Log.i("CPNativeUi","focus="+hasFocus)}
+    override fun onPause(){foreground=false;LabStartupApplication.uiResume(false);super.onPause()}
 }

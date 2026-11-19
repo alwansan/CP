@@ -1,6 +1,8 @@
 package com.alwansan.cinemana.composelab
 
 import android.os.Bundle
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
@@ -53,6 +55,7 @@ class ComposeLabActivity : ComponentActivity() {
 
 @Composable
 private fun LabShell(foreground: Boolean) {
+    val context=LocalContext.current
     var route by rememberSaveable { mutableIntStateOf(0) }
     var detail by rememberSaveable { mutableStateOf("") }
     var appearance by rememberSaveable { mutableStateOf(false) }
@@ -92,6 +95,7 @@ private fun LabShell(foreground: Boolean) {
                     Text("CINEMANA", fontWeight = FontWeight.Black, letterSpacing = 2.sp, fontSize = 20.sp, color = Ivory)
                     Spacer(Modifier.weight(1f))
                     Text("NATIVE / 01", color = Coral, fontSize = 11.sp)
+                    if(route==4 && android.os.Build.VERSION.SDK_INT>=28) TextButton(onClick={context.startActivity(Intent(context,NativeUiProbeActivity::class.java))},modifier=Modifier.testTag("nativeui-open")) {Text("UI مستقل",fontSize=11.sp)}
                 }
                 Text("معاينة مستقلة · بيانات وهمية فقط", color = Muted, fontSize = 12.sp, modifier = Modifier.testTag("disclosure"))
                 Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {

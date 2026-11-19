@@ -14,6 +14,14 @@ public final class LabStartupApplication extends Application {
     private static String process="";
     private static int attachCount,legacyAttachCount,createCount,legacyCreateCount,providerCount;
     private static boolean providerAfterAttach,providerBeforeCreate;
+    private static boolean resumed,focused;
+    private static int drawPage,drawRows,drawSerial,drawOwnerPid,drawWidth,drawHeight;
+    private static String drawState="none";
+    static void uiResume(boolean value){synchronized(LOCK){resumed=value;if(value){drawPage=0;drawRows=0;drawSerial=0;drawOwnerPid=0;drawWidth=0;drawHeight=0;drawState="none";}else focused=false;}}
+    static void uiFocus(boolean value){synchronized(LOCK){focused=value;}}
+    static void uiDraw(String state,int page,int rows,int serial,int ownerPid,int width,int height){
+        synchronized(LOCK){if(resumed){drawState=state;drawPage=page;drawRows=rows;drawSerial=serial;drawOwnerPid=ownerPid;drawWidth=width;drawHeight=height;}}
+    }
     @Override protected void attachBaseContext(Context base){
         // Decide before any application-specific initialization.
         String name=Build.VERSION.SDK_INT>=28?Application.getProcessName():null;
@@ -47,6 +55,8 @@ public final class LabStartupApplication extends Application {
         b.putInt("create",createCount);b.putInt("legacyCreate",legacyCreateCount);
         b.putInt("provider",providerCount);
         b.putBoolean("providerAfterAttach",providerAfterAttach);b.putBoolean("providerBeforeCreate",providerBeforeCreate);
+        b.putBoolean("resumed",resumed);b.putBoolean("focused",focused);
+        b.putString("drawState",drawState);b.putInt("drawPage",drawPage);b.putInt("drawRows",drawRows);b.putInt("drawSerial",drawSerial);b.putInt("drawOwnerPid",drawOwnerPid);b.putInt("drawWidth",drawWidth);b.putInt("drawHeight",drawHeight);
         b.putBoolean("allowOwnerRead",UiProcessPolicy.allowOwnerRead(role));b.putBoolean("allowNewUi",UiProcessPolicy.allowNewUi(role));
         return b;
         }

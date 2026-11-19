@@ -161,19 +161,46 @@ class LabTest {
         assertEquals(3,setOf(ownerPid,uiPid,downloaderPid).size)
         val instrumentation=androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
         val automation=instrumentation.uiAutomation
-        fun containsText(text: String): Boolean {
-            val root=automation.rootInActiveWindow ?: return false
-            return root.findAccessibilityNodeInfosByText(text).any{it.text?.toString()==text}
+        fun visibleTexts(): List<String> {
+            val root=automation.rootInActiveWindow ?: return emptyList()
+            val texts=mutableListOf<String>()
+            fun walk(n: android.view.accessibility.AccessibilityNodeInfo, depth: Int) {
+                if(depth>20||texts.size>=80)return
+                n.text?.toString()?.let{texts.add(it)}
+                n.contentDescription?.toString()?.let{texts.add(it)}
+                for(j in 0 until minOf(n.childCount,40)){
+                    n.getChild(j)?.let{walk(it,depth+1)}
+                }
+            }
+            walk(root,0)
+            return texts
         }
         try {
-            rule.runOnIdle { rule.activity.startActivity(Intent(context,NativeUiProbeActivity::class.java)) }
-            val limit=SystemClock.elapsedRealtime()+20000L
-            var visible=false
+            open(4)
+            node("nativeui-open").performClick()
+            val limit=SystemClock.elapsedRealtime()+25000L
+            val uri=android.net.Uri.parse("content://$pkg.ui-startup")
+            var final:android.os.Bundle?=null
             while(SystemClock.elapsedRealtime()<limit){
-                if(containsText("CP_NATIVE_UI_READY")&&containsText("PID: $uiPid")&&containsText("صفحة 1 · 24 عنصر")&&containsText("حالة: observed")){visible=true;break}
+                val s=context.contentResolver.call(uri,"snapshot",null,null)
+                final=s
+                if(s!=null&&s.getInt("pid")==uiPid&&s.getBoolean("resumed")&&s.getBoolean("focused")&&
+                    s.getString("drawState")=="observed"&&s.getInt("drawPage")==1&&s.getInt("drawRows")==24&&
+                    s.getInt("drawSerial")==1&&s.getInt("drawOwnerPid")>0&&s.getInt("drawOwnerPid")!=uiPid&&
+                    s.getInt("drawWidth")>0&&s.getInt("drawHeight")>0)break
                 Thread.sleep(150)
             }
-            assertTrue("remote Compose renderer and owner IPC must be visible",visible)
+            println("CP_NATIVEUI_REMOTE_DRAW_SNAPSHOT $final")
+            println("CP_NATIVEUI_ACCESSIBILITY "+visibleTexts().joinToString("|").take(3000))
+            val actual=final ?: throw AssertionError("missing remote draw snapshot")
+            assertEquals(uiPid,actual.getInt("pid"))
+            assertTrue("remote window resumed",actual.getBoolean("resumed"))
+            assertTrue("remote window focused",actual.getBoolean("focused"))
+            assertEquals("observed",actual.getString("drawState"))
+            assertEquals(1,actual.getInt("drawPage"));assertEquals(24,actual.getInt("drawRows"))
+            assertEquals(1,actual.getInt("drawSerial"))
+            assertTrue(actual.getInt("drawOwnerPid")>0&&actual.getInt("drawOwnerPid")!=uiPid)
+            assertTrue(actual.getInt("drawWidth")>0&&actual.getInt("drawHeight")>0)
             assertEquals(uiPid,verify(snapshot("ui"),"$pkg:nativeui","UI_ONLY",false,false,true))
             println("CP_COMPOSE_NATIVEUI_STARTUP_PASS ownerPid=$ownerPid nativeUiPid=$uiPid legacyDownloaderPid=$downloaderPid providerBeforeCreate=true remotePage=24")
         } finally {
