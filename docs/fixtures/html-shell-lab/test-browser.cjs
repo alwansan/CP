@@ -6,6 +6,30 @@ await p.locator("#main [data-item=a]").first().click();await ok(await p.locator(
 await p.locator("#dock [data-route=categories]").click();await p.locator("#main [data-genre=دراما]").click();await ok(await p.locator("#main #search-input").inputValue(),"دراما");await p.locator("#main [data-action=clear-search]").click();await ok(await p.locator("#main #search-input").inputValue(),"");
 await p.locator("#dock [data-route=search]").click();await p.locator("#search-input").fill("لايوجد");await ok(await p.locator("#main .search-results .poster").count(),0);await ok(await p.locator("#main .empty").count(),1);await p.locator("#search-input").fill("مدينة");await ok(await p.locator("#main .search-results .poster").count(),1);await p.locator('#main [data-search-type="أفلام"]').click();await ok(await p.locator("#main .search-results .poster").count(),0);
 await p.locator("#dock [data-route=downloads]").click();await ok(await p.locator("#main .download-row").count(),3);await p.locator("#main [data-download-tab=groups]").click();await ok(await p.locator("#main .collection").count(),4);await p.locator("#main [data-download-tab=items]").click();await p.locator("#main [data-download=d1]").click();
+
+// 452-row synthetic workload, bounded page, atomic invalid-batch rejection, coalesced in-place updates.
+await p.locator("#main [data-demo-toggle]").click();
+await ok(await p.locator("#main .download-row").count(),24);
+await ok(await p.evaluate(()=>demoRows.size),452);
+await p.evaluate(()=>{clearInterval(demoTimer);demoTimer=null;window.__row=document.querySelector("[data-demo-row=d1]");window.__page=document.querySelector("#main .page");});
+await ok(await p.evaluate(()=>demoApplyBatch(Array.from({length:65},()=>({id:"d1",progress:11})))),false);
+await ok(await p.evaluate(()=>{const before=demoRows.get("d1").progress;return !demoApplyBatch([{id:"d1",progress:11},{id:"unknown",progress:13}])&&demoRows.get("d1").progress===before}),true);
+await p.evaluate(()=>{for(let n=0;n<8;n++)demoApplyBatch(Array.from({length:64},(_,i)=>({id:"d"+(i+1),progress:n+1})));});
+await p.waitForTimeout(300);
+await ok(await p.evaluate(()=>window.__row===document.querySelector("[data-demo-row=d1]")&&window.__page===document.querySelector("#main .page")),true);
+await ok(await p.locator("[data-demo-row=d1] .progress").evaluate(e=>e.style.getPropertyValue("--progress")),"8%");
+await p.locator("#main [data-demo-page='1']").click();
+await ok(await p.locator("#main .download-row").count(),24);
+await ok(await p.locator("#main [data-demo-row=d25]").count(),1);
+await p.locator("#dock [data-route=account]").click();
+await p.evaluate(()=>{window.__hiddenPage=document.querySelector("#main .page");window.__hiddenWrites=demoStats.domWrites;demoApplyBatch([{id:"d25",progress:91}]);});
+await p.waitForTimeout(300);
+await ok(await p.evaluate(()=>window.__hiddenPage===document.querySelector("#main .page")&&window.__hiddenWrites===demoStats.domWrites),true);
+await p.locator("#dock [data-route=downloads]").click();
+await ok(await p.locator("[data-demo-row=d25] .progress").evaluate(e=>e.style.getPropertyValue("--progress")),"91%");
+await p.locator("#main [data-demo-toggle]").click();
+await ok(await p.locator("#main .download-row").count(),3);
+
 await p.locator("#dock [data-route=account]").click();await p.locator("#main [data-sub=appearance]").click();await ok(await p.locator("#main #theme").count(),1);await p.locator("#main #theme").selectOption("oled");await p.locator("#main #dock-size").selectOption("large");await p.locator("#main #continue-style").selectOption("poster");await p.locator("#main #motion").uncheck();await p.locator("#main [data-action=save-appearance]").click();await ok(await p.locator("html").getAttribute("data-theme"),"oled");await ok(await p.locator("#dock").getAttribute("data-size"),"large");await ok(await p.locator("body").getAttribute("data-motion"),"off");
 await p.reload();await ok(await p.locator("html").getAttribute("data-theme"),"oled");await ok(await p.locator("#dock").getAttribute("data-size"),"large");await p.locator("#dock [data-route=account]").click();await p.locator("#main [data-sub=appearance]").click();await p.locator("#main [data-action=back]").click();await ok(await p.locator("#main .profile-card").count(),1);
 await p.locator("#dock [data-route=home]").click();await ok(await p.locator("#main .continue-rail").getAttribute("data-style"),"poster");await p.locator("#main .avatar-item[data-item=a]").dispatchEvent("contextmenu");await ok(await p.locator("#detail-dialog").evaluate(d=>d.open),true);await p.keyboard.press("Escape");await ok(await p.locator("#detail-dialog").evaluate(d=>d.open),false);

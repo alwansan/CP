@@ -51,6 +51,12 @@ public final class PreviewTest extends Instrumentation {
             runOnMainSync(()->w.reload());
             Thread.sleep(900);
             check(connected(w),"reload bootstrap unavailable");
+            // Exercise the bounded synthetic download list before the CPU/fsync test.
+            check("true".equals(eval(w,"document.querySelector('#dock [data-route=downloads]').click();document.querySelector('[data-demo-toggle]').click();demoRows.size===452 && document.querySelectorAll('[data-demo-row]').length===24")),"bounded download page");
+            check("true".equals(eval(w,"window.__cpRow=document.querySelector('[data-demo-row=d1]');window.__cpPage=document.querySelector('#main .page');clearInterval(demoTimer);demoTimer=null;demoApplyBatch([{id:'d1',progress:37}])")),"queued progress");
+            Thread.sleep(350);
+            check("true".equals(eval(w,"window.__cpRow===document.querySelector('[data-demo-row=d1]') && window.__cpPage===document.querySelector('#main .page') && window.__cpRow.querySelector('.progress').style.getPropertyValue('--progress')==='37%'")),"in-place download progress");
+            check("true".equals(eval(w,"document.querySelector('[data-demo-toggle]').click();document.querySelectorAll('[data-demo-row]').length===3")),"restore fixture");
             // Start a separate process with bounded synthetic CPU and fsync load.
             Intent load=new Intent().setClassName("com.alwansan.cinemana.htmlpreview","com.alwansan.cinemana.htmlpreview.PreviewLoadService");
             runOnMainSync(()->a.startService(load));
