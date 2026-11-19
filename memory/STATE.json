@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_startup_fixture_and_application_policy_pending",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-nativeui-startup-49.md",
+  "status": "native_compose_startup_snapshot_retry_and_dependency_audit_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-startup-race-dependency-audit-50.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify 44450030887 and 44450284851; then actual standalone alternative Application factory and original APK dependency/ART audits",
+  "next": "Verify 44451087117 and 44451318341 then actual alternate Application factory and ABI audit",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -1042,7 +1042,7 @@
     "compose_code_sha": "befe9c397820981eab2448300d2143a422c8ed20",
     "compose_run": 44450030887,
     "compose_job": 135311425980,
-    "compose_status": "in_progress",
+    "compose_status": "completed",
     "model_code_sha": "3b0a824c560bbe7c9f4ad0d1932bbb2753930849",
     "model_run": 44450284851,
     "model_status": "completed",
@@ -1053,6 +1053,20 @@
     "assertions": 5404,
     "total_native_assertions": 41221,
     "compose_build": "success",
-    "android_instrumentation": "in_progress"
+    "android_instrumentation": "failure",
+    "compose_conclusion": "failure",
+    "failure": "provider snapshot observed create=0 at LabTest.kt:134 in :nativeui; prior IPC, timeout/death and pressure passed",
+    "retry_code_sha": "1a747d08b9c3b85813e369db7130bb229d24a08a",
+    "retry_run": 44451087117,
+    "retry_job": 135314899971,
+    "retry_status": "in_progress"
+  },
+  "native_compose_dependency_50": {
+    "code_sha": "db008bfc67cc239cc19adfef5ceb7a89e97778f7",
+    "run": 44451318341,
+    "job": 135315699289,
+    "status": "completed",
+    "scope": "read-only class/resource collision audit cp-compose-lab-5 vs original Smali public resources",
+    "doc": "docs/NATIVE_COMPOSE_DEPENDENCY_AUDIT_AR.md"
   }
 }
