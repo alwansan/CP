@@ -10,7 +10,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 import zipfile
 
-CLASS = re.compile(r"^\s*\.class\s+.*?\s+(L[^;]+;)\s*$")
+CLASS = re.compile(r"^\s*\.class\s+(?:\S+\s+)*(L[^;\s]+;)\s*$")
 DEX_CLASS = re.compile(r"^\s*Class descriptor\s*:\s*'([^']+)'\s*$", re.M)
 RESOURCE = re.compile(r"^\s*resource\s+(0x[0-9a-fA-F]+)\s+(?:[^\s:]+:)?([\w-]+/[\w.]+)(?=\s|$)", re.M)
 

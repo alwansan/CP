@@ -5,7 +5,7 @@ import native_dependency_audit as a
 
 class AuditTest(unittest.TestCase):
     def test_class_parser(self):
-        for line in (".class public Lx/Y;", ".class public final synthetic Lx/Y$Z;", ".class interface abstract Lx/Y;"):
+        for line in (".class Landroidx/navigation/NavController$1;", ".class public Lx/Y;", ".class public final synthetic Lx/Y$Z;", ".class interface abstract Lx/Y;"):
             self.assertIsNotNone(a.CLASS.match(line))
         self.assertEqual(a.DEX_CLASS.findall("  Class descriptor  : 'Lx/Y;'\nClass descriptor  : 'Lz/A;'\n"), ["Lx/Y;","Lz/A;"])
     def test_smali_roots(self):
