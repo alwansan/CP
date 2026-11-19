@@ -23,6 +23,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Test exact emulator ANR recognition and rejection
+        run: python3 patches/native-compose-isolation/smoke-r8-runtime.py --test-launcher-anr
       - name: Allocate stable IDs before R8 and combine isolated lab
         env:
           KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
@@ -34,6 +36,8 @@ jobs:
           if [[ -c /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi
       - name: Android 15 combined minified runtime gate
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          CP_RECOVER_PIXEL_LAUNCHER_ANR: '1'
         with:
           api-level: 35
           target: google_apis
