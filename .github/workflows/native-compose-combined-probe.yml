@@ -1,0 +1,47 @@
+name: CP Native Compose combined standalone resource and DEX probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    if: github.ref == 'refs/heads/Native-Compose'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - name: Assemble only the pinned standalone lab
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash patches/native-compose-combined-probe/run-probe.sh
+      - name: Enable KVM
+        run: |
+          if [[ -c /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi
+      - name: Android 15 standalone runtime gate
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-boot-timeout: 1800
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: bash patches/native-compose-combined-probe/run-smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CP-Combined-Standalone-Diagnostics
+          path: |
+            ${{ runner.temp }}/cp-combined/*.log
+            ${{ runner.temp }}/cp-combined/report
+            ${{ runner.temp }}/cp-isolation-probe/*.txt
+            ${{ runner.temp }}/cp-isolation-probe/*.xml
+          if-no-files-found: warn
