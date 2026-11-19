@@ -1,14 +1,14 @@
-name: CP HTML native download model
+name: CP Native Compose shared engine model
 on:
   push:
-    branches: [Html]
+    branches: [Native-Compose]
     paths: ['patches/html-bridge/**', '.github/workflows/html-native-model.yml']
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   model:
-    if: github.ref == 'refs/heads/Html'
+    if: github.ref == 'refs/heads/Native-Compose'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
