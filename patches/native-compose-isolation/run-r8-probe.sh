@@ -24,7 +24,7 @@ test -s "$APK"
 if grep -E 'uses-permission.*(android.permission.INTERNET|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|MANAGE_EXTERNAL_STORAGE|ACCESS_NETWORK_STATE)' "$OUT/permissions.txt"; then exit 1; fi
 cp patches/compose-lab/app/build/outputs/mapping/release/mapping.txt "$OUT/mapping.txt"
 "$T/aapt2" dump badging "$APK" > "$OUT/badging.txt"
-grep -Fx "targetSdkVersion:\x2735\x27" "$OUT/badging.txt"
+grep -Fx "targetSdkVersion:'35'" "$OUT/badging.txt"
 python3 patches/native-compose-audit/native_dependency_audit.py --original Cinemana_PATCH252_Project/app --apk "$APK" --dexdump "$T/dexdump" --aapt2 "$T/aapt2" --out "$OUT/report"
 python3 - "$OUT" <<'PY'
 import json,pathlib,sys

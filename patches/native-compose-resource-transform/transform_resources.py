@@ -103,12 +103,12 @@ class Transform:
                         if parent.startswith("android:"):
                             child.set("parent","@"+parent.replace("android:","android:style/",1))
                         else:
-                            child.set("parent","@style/"+self.mapped("style/"+parent))
+                            child.set("parent","@style/"+parent)
                     elif parent is None and "." in name:
                         implicit=name.rsplit(".",1)[0]
                         if "style/"+implicit not in self.names:
                             raise ValueError("unresolved implicit style parent "+implicit)
-                        child.set("parent","@style/"+self.mapped("style/"+implicit))
+                        child.set("parent","@style/"+implicit)
                     for item in child.findall("item"):
                         if "name" in item.attrib:
                             item.set("name",self.attr_name(item.get("name")))
