@@ -61,11 +61,11 @@ class LabTest {
         open(4); node("appearance").performClick(); node("oled").performClick(); node("motion").performClick(); node("style-2").performClick()
         open(3)
         node("page-index").assertTextEquals("1 / 19")
-        node("page-count").assertTextContains("24")
+        node("page-count").assertTextEquals("452 حلقة تجريبية · 24 في الصفحة")
         node("row-0").assertIsDisplayed()
         repeat(18) { node("next").performClick() }
         node("page-index").assertTextEquals("19 / 19")
-        node("page-count").assertTextContains("20")
+        node("page-count").assertTextEquals("452 حلقة تجريبية · 20 في الصفحة")
         node("next").assertIsNotEnabled()
         repeat(18) { node("prev").performClick() }
         node("stress").performClick()
