@@ -604,6 +604,17 @@
       "job_id": 135244563670,
       "initial_run_conclusion": "success_superseded",
       "thread_contention_test": true
+    },
+    "fresh_epoch_read": {
+      "code_sha": "ee35b410fc09db143810e8ba490541e5de006977",
+      "run_id": 44430639883,
+      "ci": "pending",
+      "report": "docs/HTML_FRESH_EPOCH_READ_AR.md",
+      "expected_epoch_assertions": 1820,
+      "expected_process_assertions": 36,
+      "android_test": false,
+      "authoritative": false,
+      "preflight_runtime": false
     }
   }
 }
