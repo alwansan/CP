@@ -7,3 +7,7 @@ New isolated BoundedDownloadRead + ExistingDaoSource: limit 64 per explicit page
 Resume: static caller scan added to native model CI for exact ey0.l(Lcom/shabakaty/downloader/ey0;I)V. Scanner reports file, enclosing method and line, not proof of intent. Need trace those callers and actual user action before endpoint. Existing pause/delete/queue remain intact. Next inspect real proof/journal readers, correlate epoch and identity, test with Android ART and real Room before exposing any state/actions to WebView.
 
 CI pending. No APK or runtime modification.
+
+
+## جلسة 25 — CI verified + resume candidate narrowed
+Code 61cbaac4f3c8f86dc659d0b388829fe6cb2c1c77, run https://github.com/alwansan/CP/actions/runs/44425947999 SUCCESS (8366 existing model +26 bounded read assertions; source scanner 2 exact invoke callers). Both callers of ey0.l are missing-DB-row fallbacks: ey0$i (DownloadManager$pauseInDatabase$1, enclosing ey0.p) line424 calls l then d(pause); ey0$k (DownloadManager$retryDownload$1, enclosing ey0.i) line353 calls l only when no DAO row. This refutes interpreting l as a direct dedicated UI resume path. Do not expose l or retry as resume; next trace actual screen action callers of d/i and whether retry explicitly clears PAUSE for existing rows, then verify journals and ownership. Bounded adapter JVM/fixtures only, not Android Room or globally consistent snapshot; no proof of media/ACK/real device, no APK or runtime changes. CL unchanged. Future work: native evidence/journal read mapping and typed admission before bridge.

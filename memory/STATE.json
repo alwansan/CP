@@ -519,7 +519,7 @@
     },
     "pause_confirmed": "ey0.d -> Restart108.paused -> Queue110.pause -> FileDownloader.pause",
     "retry_confirmed": "yy0 -> Restart108.canRetry -> ey0.i -> ExpiredLink269 + DAO restore",
-    "resume_generic": "candidate ey0.l/re-admit RUN path; UI caller unconfirmed",
+    "resume_generic": "ey0.l is missing-DAO-row fallback for pause and retry; no dedicated UI resume confirmed; do not expose",
     "recovery_worker": "CheckDownloadsStatusWorker + jy0 manager attach/DAO gated restore",
     "native_model": {
       "source": "patches/html-bridge/src/com/shabakaty/cinemana/htmlbridge/model/DownloadModel.java",
@@ -533,13 +533,16 @@
       "assertions": 8366
     },
     "bounded_dao": {
-      "status": "isolated_candidate_ci_pending",
+      "status": "isolated_candidate_ci_pass",
       "page_cap": 64,
       "android_room_test": false,
       "durable_ack": false,
-      "resume_caller_scan": "pending",
+      "resume_caller_scan": "2 fallback callers: pauseInDatabase missing row and retryDownload missing row",
       "report": "docs/HTML_BOUNDED_DAO_AR.md",
-      "source": "patches/html-bridge/src/com/shabakaty/cinemana/htmlbridge/model/ExistingDaoSource.java"
+      "source": "patches/html-bridge/src/com/shabakaty/cinemana/htmlbridge/model/ExistingDaoSource.java",
+      "run_id": 44425947999,
+      "assertions": 26,
+      "code_sha": "61cbaac4f3c8f86dc659d0b388829fe6cb2c1c77"
     }
   }
 }
