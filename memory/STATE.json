@@ -640,22 +640,36 @@
       "total_native_assertions": 32030
     },
     "standalone_preview": {
-      "status": "signed_build_success_android_gate_running",
-      "code_sha": "e484daa569d2bbddb889f6b05e5805b697a16fcb",
-      "run_id": 44432508382,
-      "run_number": 1,
+      "status": "retry_in_progress",
+      "code_sha": "53300e682fd24393aa69282ea31c4a79c1692539",
+      "run_id": 44433391708,
+      "run_number": 2,
       "package": "com.alwansan.cinemana.htmlpreview",
       "version": "0.1",
       "min_sdk": 23,
       "synthetic_data": true,
       "production_integrated": false,
       "local_bootstrap_port_implemented": true,
-      "android_test": "in_progress",
+      "android_test": "pending",
       "release_verified": false,
       "permissions_declared": 0,
       "report": "docs/HTML_ANDROID_PREVIEW_AR.md",
       "job_id": 135253140686,
-      "signed_build_step": "success"
+      "signed_build_step": "success",
+      "first_run_failure": "bootstrap unavailable",
+      "first_run_id": 44432508382,
+      "first_run_signed_build": true,
+      "synthetic_background_load_test_pending": true
+    },
+    "ui_isolation": {
+      "owner_priority": true,
+      "all_routes": true,
+      "report": "docs/HTML_UI_ISOLATION_AR.md",
+      "strict_no_main_heavy": true,
+      "shared_resources_acknowledged": true,
+      "production_process_split": false,
+      "real_phone_pressure_test": false,
+      "synthetic_load_probe": true
     }
   }
 }
