@@ -56,9 +56,9 @@ public final class CommandReservationStore {
         Path file=root.resolve(command+".reservation");
         try {
             if(!privateRoot() || !Files.isRegularFile(file,LinkOption.NOFOLLOW_LINKS)) return Result.UNKNOWN;
-            try(FileChannel channel=FileChannel.open(file,StandardOpenOption.READ,LinkOption.NOFOLLOW_LINKS);
-                    FileLock lock=channel.tryLock(0,Long.MAX_VALUE,true)) {
-                if(lock==null) return Result.UNKNOWN;
+            // Reader never blocks the unique CREATE_NEW writer. A partial record is UNKNOWN;
+            // a complete record is still only a hint (writer may not have synced yet).
+            try(FileChannel channel=FileChannel.open(file,StandardOpenOption.READ,LinkOption.NOFOLLOW_LINKS)) {
                 long size=channel.size();
                 if(size<=0 || size>MAX) return Result.UNKNOWN;
                 ByteBuffer buf=ByteBuffer.allocate((int)size);
