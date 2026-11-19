@@ -1,0 +1,50 @@
+name: CP Native Compose named DEX resource field rewrite
+on:
+  push:
+    branches: [Native-Compose]
+    paths: ['patches/native-compose-dex-transform/**', '.github/workflows/native-compose-dex-transform.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    if: github.ref == 'refs/heads/Native-Compose'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - name: Rewrite and roundtrip named fields in scratch APK only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/cp-dex-transform"
+          mkdir -p "$OUT/report"
+          APK="$OUT/Cinemana-Compose-Lab-0.1.apk"
+          JAR="Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar"
+          T="$ANDROID_HOME/build-tools/35.0.0/aapt2"
+          gh release download cp-compose-lab-11 --repo "$GITHUB_REPOSITORY" --pattern Cinemana-Compose-Lab-0.1.apk --dir "$OUT"
+          (cd "$OUT"; echo '86fbbeff9df85dfe680049089399ad9f33ab570b6ad3fe8822f6f3fdea09768f  Cinemana-Compose-Lab-0.1.apk' | sha256sum -c -)
+          python3 -m unittest discover -s patches/native-compose-dex-transform -p 'test_*.py'
+          java -jar "$JAR" d -r -f -p "$OUT/framework" "$APK" -o "$OUT/decoded" 2>&1 | tee "$OUT/decode.log"
+          python3 patches/native-compose-dex-transform/rewrite_named_fields.py --original Cinemana_PATCH252_Project/app --apk "$APK" --decoded "$OUT/decoded" --aapt2 "$T" --out "$OUT/report" 2>&1 | tee "$OUT/rewrite.log"
+          # This APK deliberately has stale resources and unresolved Styleable
+          # references. It must NOT be installed, signed, released, or uploaded.
+          java -jar "$JAR" b "$OUT/decoded" -p "$OUT/framework" -o "$OUT/do-not-install.apk" 2>&1 | tee "$OUT/rebuild.log"
+          java -jar "$JAR" d -r -f -p "$OUT/framework" "$OUT/do-not-install.apk" -o "$OUT/roundtrip" 2>&1 | tee "$OUT/roundtrip.log"
+          python3 patches/native-compose-dex-transform/rewrite_named_fields.py --original Cinemana_PATCH252_Project/app --apk "$APK" --decoded "$OUT/roundtrip" --aapt2 "$T" --out "$OUT/report" --verify-only 2>&1 | tee "$OUT/verify.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CP-Native-Compose-Named-Dex-Field-Diagnostics
+          path: |
+            ${{ runner.temp }}/cp-dex-transform/*.log
+            ${{ runner.temp }}/cp-dex-transform/report
+          if-no-files-found: warn
