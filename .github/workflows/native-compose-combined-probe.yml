@@ -1,5 +1,8 @@
 name: CP Native Compose combined standalone resource and DEX probe
 on:
+  push:
+    branches: [Native-Compose]
+    paths: ['patches/native-compose-combined-probe/**', '.github/workflows/native-compose-combined-probe.yml']
   workflow_dispatch:
 permissions:
   contents: read
