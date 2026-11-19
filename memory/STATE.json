@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_factory_class_verified_rotation_retry_namespace_pending",
+  "status": "native_compose_resource_allocation_verified_rotation_r8_pending",
   "last_session": "memory/sessions/2026-11-19_cp-dl-factory-retry-resource-namespace-53.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify 44532220153, 44532616008, 44532616198; then class namespace isolation feasibility and resource transformations",
+  "next": "Verify 44533380584 and 44533751376. Inspect remaining R8 definitions, plan resource transforms and signed original ART gates",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "a88c55e2cae7b0d91ebd6626656d7cd1fcba2ac3",
+  "last_verified_head": "e854ea6865a3d4765fc6a3deadb5f4550f1907a0",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -1184,14 +1184,36 @@
   "native_compose_namespace_53": {
     "factory_retry_sha": "9d02b848ee728ba6191a5768bd0c6a408ab51d89",
     "factory_retry_run": 44532220153,
-    "factory_retry_status": "in_progress",
+    "factory_retry_status": "completed",
     "namespace_sha": "e854ea6865a3d4765fc6a3deadb5f4550f1907a0",
     "namespace_run": 44532616008,
     "namespace_job": 135589625070,
-    "namespace_status": "in_progress",
+    "namespace_status": "completed",
     "audit_repeat_run": 44532616198,
     "audit_repeat_job": 135589626167,
     "scope": "standalone factory rotation retry; allocation only plus AAPT2 synthetic smoke",
-    "doc": "docs/NATIVE_COMPOSE_RESOURCE_NAMESPACE_AR.md"
+    "doc": "docs/NATIVE_COMPOSE_RESOURCE_NAMESPACE_AR.md",
+    "namespace_conclusion": "success",
+    "namespace_artifact": 14534158862,
+    "namespace_counts": {
+      "original": 7162,
+      "new": 263,
+      "total": 7425,
+      "name_collisions": 0,
+      "id_collisions": 0
+    },
+    "aapt2_smoke": "success",
+    "audit_repeat_status": "success",
+    "factory_retry_conclusion": "failure_accessibility_click",
+    "factory_retry_job": 135588235573,
+    "focused_draw_verified": true,
+    "rotation_retry_sha": "68d900e4ce6b7183aa7163840a4e0f9a37d94815",
+    "rotation_retry_run": 44533380584,
+    "rotation_retry_job": 135592304606,
+    "rotation_retry_status": "in_progress",
+    "r8_probe_sha": "4ad2225af4c2bce7dba8612f6920d84473f1a497",
+    "r8_probe_run": 44533751376,
+    "r8_probe_job": 135593627950,
+    "r8_probe_status": "in_progress"
   }
 }
