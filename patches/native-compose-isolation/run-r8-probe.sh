@@ -9,6 +9,9 @@ p=Path("patches/compose-lab/app/build.gradle.kts")
 text=p.read_text()
 old="isMinifyEnabled = false"
 assert text.count(old)==1, "unexpected lab configuration"
+assert text.count("targetSdk = 32")==1, "unexpected lab target"
+# The release lint gate rejects target 32. Raise only the disposable probe target.
+text=text.replace("targetSdk = 32", "targetSdk = 35")
 text=text.replace(old, 'isMinifyEnabled = true\n            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), rootProject.file("../native-compose-isolation/probe.pro"))')
 p.write_text(text)
 PY
@@ -20,6 +23,8 @@ test -s "$APK"
 "$T/aapt2" dump permissions "$APK" > "$OUT/permissions.txt"
 if grep -E 'uses-permission.*(android.permission.INTERNET|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|MANAGE_EXTERNAL_STORAGE|ACCESS_NETWORK_STATE)' "$OUT/permissions.txt"; then exit 1; fi
 cp patches/compose-lab/app/build/outputs/mapping/release/mapping.txt "$OUT/mapping.txt"
+"$T/aapt2" dump badging "$APK" > "$OUT/badging.txt"
+grep -Fx "targetSdkVersion:\x2735\x27" "$OUT/badging.txt"
 python3 patches/native-compose-audit/native_dependency_audit.py --original Cinemana_PATCH252_Project/app --apk "$APK" --dexdump "$T/dexdump" --aapt2 "$T/aapt2" --out "$OUT/report"
 python3 - "$OUT" <<'PY'
 import json,pathlib,sys
@@ -33,7 +38,7 @@ for line in (p/"mapping.txt").read_text().splitlines():
         if line.split(" -> ",1)[1].startswith("com.alwansan.cinemana.uiisolated."):
             isolated+=1
 assert mapped>0 and isolated>0, "no actual R8 class relocation observed"
-out={"scope":"R8 minified standalone release, no original merge, no ART or reflection proof","mapped_classes":mapped,"classes_in_isolated_namespace":isolated,"remaining_overlap":s["class_overlap"],"resource_same_name_different_id":s["resource_same_name_different_id"],"resource_id_other_name":s["resource_id_other_name"],"raw_merge_blocked":s["verdict"]=="BLOCK_RAW_MERGE"}
+out={"scope":"R8 minified standalone release, no original merge, no ART or reflection proof","probe_target_sdk":35,"mapped_classes":mapped,"classes_in_isolated_namespace":isolated,"remaining_overlap":s["class_overlap"],"resource_same_name_different_id":s["resource_same_name_different_id"],"resource_id_other_name":s["resource_id_other_name"],"raw_merge_blocked":s["verdict"]=="BLOCK_RAW_MERGE"}
 (p/"isolation-summary.json").write_text(json.dumps(out,indent=2)+"\n")
 print("CP_NATIVE_R8_ISOLATION_OBSERVATION "+json.dumps(out,separators=(",",":")))
 PY
