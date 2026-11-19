@@ -1402,5 +1402,27 @@
     "minified_combined_run": 44550267921,
     "minified_combined_status": "in_progress",
     "production_merged": false
+  },
+  "native_compose_isolation_62": {
+    "entry": "faad619fbef95ef36687ac70d70d179ce8bef2a0",
+    "previous_run": 44550267921,
+    "previous_job": 135651790647,
+    "previous_static": "success_zero_overlap",
+    "previous_runtime": "failure_pixel_launcher_anr_focus",
+    "artifact": 14543567338,
+    "classes": 2347,
+    "resources": 263,
+    "class_overlap": 0,
+    "resource_name_overlap": 0,
+    "resource_numeric_overlap": 0,
+    "dex_format": "037",
+    "guard_code": "93b07566685d596146d21883c0af27e609757d22",
+    "retry_code": "b35180308973ed70e36ebbcea98e8ab14baae9af",
+    "retry_run": 44618948132,
+    "retry_status": "in_progress",
+    "r8_run": 44618921086,
+    "r8_status": "in_progress",
+    "production_merged": false,
+    "parcel_wire_verified": false
   }
 }
