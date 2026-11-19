@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_owner_page_session_ci_pass",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-owner-page-session-43.md",
+  "status": "html_native_renderer_evaluation_lab_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-renderer-evaluation-44.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Exact startup process gate and isolated Android fixture, then optional owner IPC and signed original ART",
+  "next": "Verify independent Native Views lab CI/release, then equivalent Compose candidate and common frame timing, original startup guard and typed owner IPC",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "5d0797e9fe8907a59c232e272e55371aa247f188",
+  "last_verified_head": "a59d0840bf1fea50acb9fb201cfcd2afbf80b42f",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -917,5 +917,26 @@
     "job_id": 135287449850,
     "assertions": 142,
     "cumulative_assertions": 33599
+  },
+  "html_renderer_evaluation_44": {
+    "doc": "docs/HTML_RENDERER_EVALUATION_AR.md",
+    "nuvio_sha": "b66f7725ca08f0455e5097797253a2d7ac432f84",
+    "process_policy": {
+      "code_sha": "a59d0840bf1fea50acb9fb201cfcd2afbf80b42f",
+      "run_id": 44443734910,
+      "job_id": 135290662657,
+      "status": "success",
+      "assertions": 808,
+      "total_native_assertions": 34407
+    },
+    "native_lab": {
+      "code_sha": "de83e8b74bfe1a2ca89b55421a60b3fe562599c8",
+      "run_id": 44444039820,
+      "job_id": 135291685643,
+      "status": "in_progress",
+      "package": "com.alwansan.cinemana.nativeuilab",
+      "scope": "standalone synthetic Android Views; not Compose"
+    },
+    "automation_enabled_at_check": false
   }
 }
