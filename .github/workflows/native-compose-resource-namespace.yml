@@ -1,0 +1,39 @@
+name: CP Native Compose resource namespace allocation
+on:
+  push:
+    branches: [Native-Compose]
+    paths: ['patches/native-compose-audit/resource_namespace_plan.py','patches/native-compose-audit/test_resource_namespace_plan.py','patches/native-compose-audit/run-resource-namespace-smoke.sh','.github/workflows/native-compose-resource-namespace.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  plan:
+    if: github.ref == 'refs/heads/Native-Compose'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - name: Verify fixed standalone lab input
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cp-resource-plan"
+          gh release download cp-compose-lab-8 --repo "$GITHUB_REPOSITORY" --pattern Cinemana-Compose-Lab-0.1.apk --dir "$RUNNER_TEMP/cp-resource-plan"
+          cd "$RUNNER_TEMP/cp-resource-plan"
+          echo 'd35534509ce370de300fbb3a53f999c1b3066c25155c14be679613676a3a351c  Cinemana-Compose-Lab-0.1.apk' | sha256sum -c -
+      - name: Allocate actual candidate resource IDs and test AAPT2 fixture
+        run: |
+          python3 -m unittest discover -s patches/native-compose-audit -p 'test_resource_namespace_plan.py'
+          python3 patches/native-compose-audit/resource_namespace_plan.py --original Cinemana_PATCH252_Project/app --apk "$RUNNER_TEMP/cp-resource-plan/Cinemana-Compose-Lab-0.1.apk" --aapt2 "$ANDROID_HOME/build-tools/35.0.0/aapt2" --out "$RUNNER_TEMP/cp-resource-plan/report"
+          bash patches/native-compose-audit/run-resource-namespace-smoke.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CP-Native-Compose-Resource-Namespace-Plan
+          path: |
+            ${{ runner.temp }}/cp-resource-plan/report
+            ${{ runner.temp }}/resource-namespace-smoke/*.ids
+          if-no-files-found: error
