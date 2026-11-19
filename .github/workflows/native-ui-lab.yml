@@ -1,0 +1,68 @@
+name: CP Native Views standalone lab
+on:
+  push:
+    branches: [Html]
+    paths: ['patches/native-ui-lab/**', '.github/workflows/native-ui-lab.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: cp-native-ui-lab-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preview:
+    if: github.ref == 'refs/heads/Html'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - name: Build isolated signed preview and test APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: bash patches/native-ui-lab/build.sh
+      - name: Enable KVM for Android 15
+        run: |
+          if [[ -c /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi
+      - name: Android 15 native UI smoke test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-boot-timeout: 1800
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: |
+            bash patches/native-ui-lab/run-android-test.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cinemana-Native-UI-Lab
+          path: |
+            ${{ runner.temp }}/cp-native-ui-lab/Cinemana-Native-UI-Lab-0.1.apk
+            ${{ runner.temp }}/cp-native-ui-lab/SHA256SUMS.txt
+            ${{ runner.temp }}/cp-native-ui-lab/android-test.txt
+          if-no-files-found: error
+      - name: Publish preview only after Android test
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: cp-native-ui-lab-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: Cinemana Native UI Lab #${{ github.run_number }}
+          prerelease: true
+          make_latest: "false"
+          body: |
+            Standalone native Android Views experiment, separate package, no permissions or real data. Synthetic five routes/452 items, idle/load frame metrics. Not Compose, not original app integration or proof of phone performance.
+          files: |
+            ${{ runner.temp }}/cp-native-ui-lab/Cinemana-Native-UI-Lab-0.1.apk
+            ${{ runner.temp }}/cp-native-ui-lab/SHA256SUMS.txt
+          fail_on_unmatched_files: true
