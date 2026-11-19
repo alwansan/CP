@@ -35,11 +35,13 @@ jobs:
           python3 -m unittest discover -s patches/native-compose-dex-transform -p 'test_*.py'
           java -jar "$JAR" d -r -f -p "$OUT/framework" "$APK" -o "$OUT/decoded" 2>&1 | tee "$OUT/decode.log"
           python3 patches/native-compose-dex-transform/rewrite_named_fields.py --original Cinemana_PATCH252_Project/app --apk "$APK" --decoded "$OUT/decoded" --aapt2 "$T" --out "$OUT/report" 2>&1 | tee "$OUT/rewrite.log"
-          # This APK deliberately has stale resources and unresolved Styleable
-          # references. It must NOT be installed, signed, released, or uploaded.
+          python3 patches/native-compose-dex-transform/rewrite_styleables.py --original Cinemana_PATCH252_Project/app --apk "$APK" --decoded "$OUT/decoded" --aapt2 "$T" --out "$OUT/report" 2>&1 | tee "$OUT/styleable.log"
+          # This APK deliberately has stale resources and incompatible original collisions
+          # It must NOT be installed, signed, released, or uploaded.
           java -jar "$JAR" b "$OUT/decoded" -p "$OUT/framework" -o "$OUT/do-not-install.apk" 2>&1 | tee "$OUT/rebuild.log"
           java -jar "$JAR" d -r -f -p "$OUT/framework" "$OUT/do-not-install.apk" -o "$OUT/roundtrip" 2>&1 | tee "$OUT/roundtrip.log"
           python3 patches/native-compose-dex-transform/rewrite_named_fields.py --original Cinemana_PATCH252_Project/app --apk "$APK" --decoded "$OUT/roundtrip" --aapt2 "$T" --out "$OUT/report" --verify-only 2>&1 | tee "$OUT/verify.log"
+          python3 patches/native-compose-dex-transform/rewrite_styleables.py --original Cinemana_PATCH252_Project/app --apk "$APK" --decoded "$OUT/roundtrip" --aapt2 "$T" --out "$OUT/report" --verify-only 2>&1 | tee "$OUT/styleable-verify.log"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
