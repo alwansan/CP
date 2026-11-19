@@ -1428,5 +1428,31 @@
     "guard_assertions": 9,
     "retry_job": 135895070526,
     "r8_job": 135894971479
+  },
+  "native_compose_isolation_63": {
+    "entry": "7f9cb8c329e74a86dffd932b25204773042ace87",
+    "combined_run": 44618948132,
+    "combined_job": 135895070526,
+    "combined_status": "success",
+    "combined_artifact": 14577002217,
+    "combined_sha256": "daab76267675eabdc8da0df005357f6b395b4211b2c712eff19d0105c0ee439f",
+    "classes": 2347,
+    "resources": 263,
+    "class_overlap": 0,
+    "resource_name_overlap": 0,
+    "resource_numeric_overlap": 0,
+    "main_pid": 2002,
+    "ui_pid": 2835,
+    "owner_pid": 2934,
+    "ipc_rows": 24,
+    "live_launcher_recovery_observed": false,
+    "raw_r8_run": 44618921086,
+    "raw_r8_status": "success",
+    "raw_r8_class_overlap": 8,
+    "parcel_probe_code": "0f864b742cf2f732ccce712edb02b94a6f04ba5e",
+    "parcel_probe_run": 44640720578,
+    "parcel_probe_status": "in_progress",
+    "parcel_wire_verified": false,
+    "production_merged": false
   }
 }
