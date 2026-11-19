@@ -10,7 +10,7 @@ jobs:
   probe:
     if: github.ref == 'refs/heads/Native-Compose'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -29,6 +29,20 @@ jobs:
           KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
           KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
         run: bash patches/native-compose-isolation/run-r8-probe.sh
+      - name: Enable KVM
+        run: |
+          if [[ -c /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi
+      - name: Android 15 minified standalone runtime smoke
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-boot-timeout: 1800
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: python3 patches/native-compose-isolation/smoke-r8-runtime.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
