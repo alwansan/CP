@@ -31,6 +31,15 @@ class AuditTest(unittest.TestCase):
         self.assertEqual(a.dex_definitions(bytes(data)),["Lx/😀;"])
         put(120,1)
         with self.assertRaises(ValueError): a.dex_definitions(bytes(data))
+    def test_declared_comparison(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=pathlib.Path(tmp)/"A.smali"
+            path.write_text(".class public LA;\n.super Ljava/lang/Object;\n.field private x:I = 0x0\n.method public f()V\n.end method\n")
+            old=a.declared_smali(path)
+            new={"flags":1,"super":"Ljava/lang/Object;","interfaces":[],"fields":{"x:I":9},"methods":{"g()V":1}}
+            rows=a.compare_declared("LA;",old,new)
+            self.assertEqual({r[3] for r in rows},{"ACCESS_SHAPE_DIFF","ORIGINAL_ONLY_DECLARATION","LAB_ONLY_DECLARATION"})
+            self.assertEqual(a.compare_declared("LA;",old,old),[])
     def test_resources(self):
         raw="  resource 0x7f010001 anim/foo\n  resource 0x7f010002 com.example:color/bar PUBLIC\n"
         self.assertEqual(a.RESOURCE.findall(raw),[("0x7f010001","anim/foo"),("0x7f010002","color/bar")])

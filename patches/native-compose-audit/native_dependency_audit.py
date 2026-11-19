@@ -38,7 +38,7 @@ def original_classes(root):
 def command(args):
     return subprocess.run(args, check=True, capture_output=True, text=True).stdout
 
-def dex_definitions(data):
+def dex_definitions(data, wanted=None):
     # Read the class_defs table rather than decoding the huge, mixed-encoding
     # dexdump listing. DEX string_data_item uses modified UTF-8, not UTF-8.
     def u32(offset):
@@ -82,15 +82,95 @@ def dex_definitions(data):
         if len(units)//2 != value:
             raise ValueError("invalid DEX string length")
         return units.decode("utf-16-le")
-    out=[]
+    def type_name(index):
+        if index >= type_count:
+            raise ValueError("type index outside table")
+        return string(u32(type_off+index*4))
+    def u16(offset):
+        if offset < 0 or offset+2>len(data):
+            raise ValueError("DEX u16 outside file")
+        return struct.unpack_from("<H",data,offset)[0]
+    def type_list(pos):
+        if not pos:
+            return []
+        count=u32(pos)
+        if pos+4+2*count>len(data):
+            raise ValueError("DEX type list outside file")
+        return [type_name(u16(pos+4+i*2)) for i in range(count)]
+    def uleb(pos):
+        value=0
+        for shift in range(0,35,7):
+            if pos>=len(data):
+                raise ValueError("truncated class_data")
+            byte=data[pos];pos+=1
+            if shift==28 and byte>15:
+                raise ValueError("invalid class_data uleb128")
+            value|=(byte&127)<<shift
+            if byte<128:
+                return value,pos
+        raise ValueError("invalid class_data uleb128")
+    def members(pos,owner):
+        fields,methods={},{}
+        if not pos:
+            return fields,methods
+        proto_count,proto_off=table(72,12)
+        field_count,field_off=table(80,8)
+        method_count,method_off=table(88,8)
+        counts=[]
+        for _ in range(4):
+            n,pos=uleb(pos)
+            counts.append(n)
+        if sum(counts)>field_count+method_count:
+            raise ValueError("class_data counts outside tables")
+        for group,n in enumerate(counts):
+            idx=0
+            for i in range(n):
+                diff,pos=uleb(pos)
+                if i and not diff:
+                    raise ValueError("duplicate encoded member")
+                idx+=diff
+                flags,pos=uleb(pos)
+                if group<2:
+                    if idx>=field_count:
+                        raise ValueError("field index outside table")
+                    at=field_off+idx*8
+                    if u16(at)!=owner:
+                        raise ValueError("field owner mismatch")
+                    sig=string(u32(at+4))+":"+type_name(u16(at+2))
+                    target=fields
+                else:
+                    _,pos=uleb(pos) # code_off
+                    if idx>=method_count:
+                        raise ValueError("method index outside table")
+                    at=method_off+idx*8
+                    if u16(at)!=owner:
+                        raise ValueError("method owner mismatch")
+                    proto=u16(at+2)
+                    if proto>=proto_count:
+                        raise ValueError("proto index outside table")
+                    po=proto_off+proto*12
+                    sig=string(u32(at+4))+"("+"".join(type_list(u32(po+8)))+")"+type_name(u32(po+4))
+                    target=methods
+                if sig in target:
+                    raise ValueError("duplicate declared member")
+                target[sig]=flags
+        return fields,methods
+    out=[] if wanted is None else {}
     for i in range(class_count):
-        idx=u32(class_off+i*32)
-        if idx >= type_count:
-            raise ValueError("class type index outside table")
-        desc=string(u32(type_off+idx*4))
+        at=class_off+i*32
+        idx=u32(at)
+        desc=type_name(idx)
         if not re.fullmatch(r"L[^;\s]+;",desc):
             raise ValueError("invalid class descriptor: "+repr(desc))
-        out.append(desc)
+        if wanted is None:
+            out.append(desc)
+        elif desc in wanted:
+            if desc in out:
+                raise ValueError("duplicate class in dex")
+            super_idx=u32(at+8)
+            fields,methods=members(u32(at+24),idx)
+            out[desc]={"flags":u32(at+4),"super":None if super_idx==0xffffffff else type_name(super_idx),
+                       "interfaces":sorted(type_list(u32(at+12))),"fields":fields,"methods":methods}
     return out
 
 def lab_classes(apk, dexdump):
@@ -104,6 +184,84 @@ def lab_classes(apk, dexdump):
             for desc in descriptors:
                 out[desc].append(name)
     return out, names
+
+# Compare only linkage-relevant declared shape. Not bytecode equivalence, and
+# absence of a declared member is not necessarily a failed inherited lookup.
+FLAG_BITS={"public":1,"private":2,"protected":4,"static":8,"final":16,
+           "synchronized":32,"volatile":64,"bridge":64,"transient":128,
+           "varargs":128,"native":256,"interface":512,"abstract":1024,
+           "strictfp":2048,"synthetic":4096,"annotation":8192,"enum":16384,
+           "constructor":65536,"declared-synchronized":131072}
+CLASS_MASK=1|2|4|16|512|1024|8192|16384
+MEMBER_MASK=1|2|4|8|16|256|1024
+def smali_flags(words):
+    flags=0
+    for w in words:
+        if w not in FLAG_BITS:
+            raise ValueError("unknown smali access flag "+w)
+        flags|=FLAG_BITS[w]
+    return flags
+
+def declared_smali(path):
+    out={"flags":None,"super":None,"interfaces":[],"fields":{},"methods":{}}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        # Class and member directives are at declaration level.
+        if line.startswith(".class "):
+            parts=line.split()
+            out["flags"]=smali_flags(parts[1:-1])
+        elif line.startswith(".super "):
+            out["super"]=line.split()[1]
+        elif line.startswith(".implements "):
+            out["interfaces"].append(line.split()[1])
+        elif line.startswith(".method ") or line.startswith(".field "):
+            parts=line.split(" = ",1)[0].split()
+            kind="methods" if parts[0]==".method" else "fields"
+            sig=parts[-1]
+            if kind=="methods" and "(" not in sig or kind=="fields" and ":" not in sig:
+                raise ValueError("invalid declaration "+line)
+            if sig in out[kind]:
+                raise ValueError("duplicate smali member "+sig)
+            out[kind][sig]=smali_flags(parts[1:-1])
+    if out["flags"] is None:
+        raise ValueError("missing smali class")
+    out["interfaces"].sort()
+    return out
+
+def declared_lab(apk,wanted):
+    result={}
+    with zipfile.ZipFile(apk) as z:
+        for name in sorted(z.namelist()):
+            if re.fullmatch(r"classes(?:\d+)?\.dex",name):
+                found=dex_definitions(z.read(name),wanted)
+                if set(result)&set(found):
+                    raise ValueError("duplicate overlapping dex class")
+                result.update(found)
+    if set(result)!=set(wanted):
+        raise ValueError("overlap declarations incomplete")
+    return result
+
+def compare_declared(desc,old,new):
+    rows=[]
+    for key in ("super","interfaces","flags"):
+        a,b=old[key],new[key]
+        if key=="flags":
+            a,b=a&CLASS_MASK,b&CLASS_MASK
+        if a!=b:
+            rows.append((desc,"class",key,"SHAPE_DIFF",str(a),str(b)))
+    for kind in ("fields","methods"):
+        a,b=old[kind],new[kind]
+        for sig in sorted(set(a)|set(b)):
+            left,right=a.get(sig),b.get(sig)
+            if left is None:
+                status="LAB_ONLY_DECLARATION"
+            elif right is None:
+                status="ORIGINAL_ONLY_DECLARATION"
+            elif left&MEMBER_MASK!=right&MEMBER_MASK:
+                status="ACCESS_SHAPE_DIFF"
+            else:
+                continue
+            rows.append((desc,kind,sig,status,"" if left is None else hex(left),"" if right is None else hex(right)))
+    return rows
 
 def original_resources(root):
     out = {}
@@ -162,7 +320,19 @@ def main():
     write_tsv(args.out / "class-lab-duplicates.tsv", ["descriptor","dex"], [(k,",".join(v)) for k,v in sorted(new.items()) if len(v)>1])
     write_tsv(args.out / "resource-name-overlaps.tsv", ["type/name","original_id","lab_id"], names)
     write_tsv(args.out / "resource-id-overlaps.tsv", ["id","original_other_names","lab_name"], ids)
-    summary = dict(scope="static inventory only, not compatibility or merge authorization",
+    parsed_lab=declared_lab(args.apk,set(overlap))
+    differences=[]
+    for desc in overlap:
+        if len(old[desc])!=1:
+            raise ValueError("ambiguous original class "+desc)
+        parsed_old=declared_smali(args.original/old[desc][0])
+        differences.extend(compare_declared(desc,parsed_old,parsed_lab[desc]))
+    write_tsv(args.out / "declared-abi-differences.tsv", ["descriptor","kind","member","status","original","lab"], differences)
+    summary = dict(declared_abi_scope="shared classes, direct declarations only; inheritance and runtime resolution not proven",
+        declared_abi_classes_with_differences=len({row[0] for row in differences}),
+        declared_abi_difference_rows=len(differences),
+        declared_abi_status_counts=dict(collections.Counter(row[3] for row in differences)),
+        scope="static inventory only, not compatibility or merge authorization",
         smali_dirs=smali_dirs, dex_files=dex_files, original_classes=len(old), lab_classes=len(new),
         class_overlap=len(overlap), original_duplicate_descriptors=sum(len(v)>1 for v in old.values()),
         lab_duplicate_descriptors=sum(len(v)>1 for v in new.values()),
