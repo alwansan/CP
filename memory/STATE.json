@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_process_owner_timeout_death_android_pending",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-compose-owner-process-48.md",
+  "status": "native_compose_startup_fixture_and_application_policy_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-nativeui-startup-49.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify 44448899889 and publication status, then minimal :nativeui Android startup fixture and production owner IPC/ART",
+  "next": "Verify 44450030887 and 44450284851; then actual standalone alternative Application factory and original APK dependency/ART audits",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "243558f690b0d344575bf3d9db7d257f44477bbc",
+  "last_verified_head": "4202cce8f6cc6d37daefc89d93988a1fa10784f1",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -1023,7 +1023,30 @@
     "compose_code_sha": "4202cce8f6cc6d37daefc89d93988a1fa10784f1",
     "compose_run": 44448899889,
     "compose_job": 135307701838,
+    "compose_status": "completed",
+    "scope": "standalone debug fixture; no production integration",
+    "compose_conclusion": "success",
+    "android_instrumentation": "success",
+    "release": "cp-compose-lab-5",
+    "asset_id": 766004804,
+    "bytes": 8838629,
+    "sha256": "6d06e73b76e085e2eab7250750e34051e3c4b044d5f9b34a3251825b54f6256f",
+    "timeout_death": {
+      "old_pid": 3039,
+      "new_pid": 3760,
+      "ui_pid": 2114,
+      "delay_ms": 8002
+    }
+  },
+  "native_compose_startup_49": {
+    "compose_code_sha": "befe9c397820981eab2448300d2143a422c8ed20",
+    "compose_run": 44450030887,
+    "compose_job": 135311425980,
     "compose_status": "in_progress",
-    "scope": "standalone debug fixture; no production integration"
+    "model_code_sha": "3b0a824c560bbe7c9f4ad0d1932bbb2753930849",
+    "model_run": 44450284851,
+    "model_status": "in_progress",
+    "scope": "standalone startup fixture and pure factory choice, no original integration",
+    "doc": "docs/NATIVE_COMPOSE_STARTUP_AR.md"
   }
 }
