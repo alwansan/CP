@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "9b085a89cffd614f91520b6f684bae251b5788d9",
+  "last_verified_head": "d19d6407f4596b8a95349da6c3a553e267470f2e",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -964,8 +964,12 @@
     "native_process_policy": {
       "code_sha": "d19d6407f4596b8a95349da6c3a553e267470f2e",
       "run_id": 44445870259,
-      "status": "queued",
-      "scope": "pure Java only"
+      "status": "completed",
+      "scope": "pure Java only",
+      "conclusion": "success",
+      "job_id": 135297732610,
+      "assertions": 1128,
+      "total_native_assertions": 34727
     }
   }
 }
