@@ -11,11 +11,13 @@ import android.os.Bundle;
 public class LabStartupProvider extends ContentProvider {
     public static final class Ui extends LabStartupProvider {}
     public static final class Downloader extends LabStartupProvider {}
-    @Override public boolean onCreate(){LabStartupApplication.providerStarted();return true;}
+    @Override public boolean onCreate(){LabStartupEvidence.providerStarted();return true;}
     @Override public Bundle call(String method,String arg,Bundle extras){
         if(Binder.getCallingUid()!=android.os.Process.myUid()||!"snapshot".equals(method))
             throw new SecurityException("fixture snapshot only");
-        return LabStartupApplication.snapshot();
+        Bundle b=LabStartupEvidence.snapshot();
+        b.putString("providerApplicationClass",getContext().getApplicationContext().getClass().getName());
+        return b;
     }
     @Override public Cursor query(Uri u,String[] p,String s,String[] a,String o){throw new UnsupportedOperationException();}
     @Override public String getType(Uri u){return null;}

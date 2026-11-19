@@ -18,7 +18,7 @@ class NativeUiProbeActivity : ComponentActivity() {
     private var foreground by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!LabStartupApplication.uiReady()) { finish(); return }
+        if (!LabStartupEvidence.uiReady()) { finish(); return }
         window.statusBarColor=0xff090a0d.toInt()
         window.navigationBarColor=0xff090a0d.toInt()
         setContent {
@@ -27,15 +27,17 @@ class NativeUiProbeActivity : ComponentActivity() {
                     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(16.dp)) {
                         Text("CP_NATIVE_UI_READY")
                         Text("PID: "+android.os.Process.myPid())
+                        TextButton(onClick={requestedOrientation=android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE}) {Text("CP_ROTATE_LANDSCAPE")}
+                        TextButton(onClick={requestedOrientation=android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT}) {Text("CP_ROTATE_PORTRAIT")}
                         OwnerReadPanel(foreground,onDrawState={ state,w,h ->
-                            LabStartupApplication.uiDraw(state.state,state.page,state.rows.size,state.responseSerial,state.pid,w,h)
+                            LabStartupEvidence.uiDraw(state.state,state.page,state.rows.size,state.responseSerial,state.pid,w,h)
                         }) { finish() }
                     }
                 }
             }
         }
     }
-    override fun onResume(){super.onResume();LabStartupApplication.uiResume(true);foreground=true;android.util.Log.i("CPNativeUi","CP_NATIVE_UI_RESUME pid="+android.os.Process.myPid())}
-    override fun onWindowFocusChanged(hasFocus:Boolean){super.onWindowFocusChanged(hasFocus);LabStartupApplication.uiFocus(hasFocus);android.util.Log.i("CPNativeUi","focus="+hasFocus)}
-    override fun onPause(){foreground=false;LabStartupApplication.uiResume(false);super.onPause()}
+    override fun onResume(){super.onResume();LabStartupEvidence.uiResume(true);foreground=true;android.util.Log.i("CPNativeUi","CP_NATIVE_UI_RESUME pid="+android.os.Process.myPid())}
+    override fun onWindowFocusChanged(hasFocus:Boolean){super.onWindowFocusChanged(hasFocus);LabStartupEvidence.uiFocus(hasFocus);android.util.Log.i("CPNativeUi","focus="+hasFocus)}
+    override fun onPause(){foreground=false;LabStartupEvidence.uiResume(false);super.onPause()}
 }

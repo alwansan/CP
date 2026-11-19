@@ -143,6 +143,11 @@ class LabTest {
         fun verify(bundle: android.os.Bundle, name: String, role:String, legacy:Boolean, owner:Boolean, ui:Boolean): Int {
             assertEquals(name,bundle.getString("process"))
             assertEquals(role,bundle.getString("role"))
+            val expectedClass="$pkg."+(if(ui)"LabMinimalApplication" else "LabStartupApplication")
+            assertEquals(expectedClass,bundle.getString("applicationClass"))
+            assertEquals(expectedClass,bundle.getString("providerApplicationClass"))
+            assertEquals(if(legacy)1 else 0,bundle.getInt("legacyConstructor"))
+            assertEquals(if(ui)1 else 0,bundle.getInt("minimalConstructor"))
             assertEquals(1,bundle.getInt("attach"))
             assertEquals(1,bundle.getInt("create"))
             assertEquals(1,bundle.getInt("provider"))
@@ -202,6 +207,39 @@ class LabTest {
             assertTrue(actual.getInt("drawOwnerPid")>0&&actual.getInt("drawOwnerPid")!=uiPid)
             assertTrue(actual.getInt("drawWidth")>0&&actual.getInt("drawHeight")>0)
             assertEquals(uiPid,verify(snapshot("ui"),"$pkg:nativeui","UI_ONLY",false,false,true))
+            // Click the remote window control via accessibility; wait for a real
+            // system configuration callback and a rendered landscape frame.
+            fun clickRemote(label:String){
+                val until=SystemClock.elapsedRealtime()+10000L
+                while(SystemClock.elapsedRealtime()<until){
+                    val root=automation.rootInActiveWindow
+                    val candidates=root?.findAccessibilityNodeInfosByText(label).orEmpty()
+                    for(n in candidates){
+                        var target:android.view.accessibility.AccessibilityNodeInfo?=n
+                        repeat(4){
+                            val current=target
+                            if(current!=null&&current.isClickable&&current.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK))return
+                            target=current?.parent
+                        }
+                    }
+                    Thread.sleep(150)
+                }
+                throw AssertionError("remote control not clickable: $label")
+            }
+            val beforeConfig=actual.getInt("configCount")
+            clickRemote("CP_ROTATE_LANDSCAPE")
+            val rotateUntil=SystemClock.elapsedRealtime()+20000L
+            var rotated:android.os.Bundle?=null
+            while(SystemClock.elapsedRealtime()<rotateUntil){
+                val s=context.contentResolver.call(uri,"snapshot",null,null)
+                if(s!=null&&s.getInt("pid")==uiPid&&s.getInt("configCount")>beforeConfig&&s.getInt("lastOrientation")==android.content.res.Configuration.ORIENTATION_LANDSCAPE&&s.getInt("drawWidth")>s.getInt("drawHeight")&&s.getString("drawState")=="observed"&&s.getInt("drawRows")==24&&s.getBoolean("focused")){
+                    rotated=s;break
+                }
+                Thread.sleep(150)
+            }
+            assertNotNull("native UI did not survive real landscape configuration",rotated)
+            println("CP_COMPOSE_NATIVEUI_FACTORY_PASS "+rotated)
+            clickRemote("CP_ROTATE_PORTRAIT")
             println("CP_COMPOSE_NATIVEUI_STARTUP_PASS ownerPid=$ownerPid nativeUiPid=$uiPid legacyDownloaderPid=$downloaderPid providerBeforeCreate=true remotePage=24")
         } finally {
             automation.executeShellCommand("input keyevent 4").close()
