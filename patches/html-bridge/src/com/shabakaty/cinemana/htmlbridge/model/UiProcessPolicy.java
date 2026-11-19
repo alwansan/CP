@@ -1,5 +1,5 @@
 package com.shabakaty.cinemana.htmlbridge.model;
-/** Pure classifier for opt-in UI startup. Not yet wired to production Application.
+/** Pure classifier for opt-in UI startup. Native-Compose opt-in candidate; not yet wired to production Application.
  * Never identify a process by suffix alone. Unknown keeps legacy behavior and denies new UI/owner access.
  */
 public final class UiProcessPolicy {
@@ -8,7 +8,7 @@ public final class UiProcessPolicy {
         if(api<28||pkg==null||!pkg.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+")||process==null)return Role.UNKNOWN;
         if(process.equals(pkg))return Role.OWNER;
         if(process.equals(pkg+":filedownloader"))return Role.LEGACY_DOWNLOADER;
-        if(process.equals(pkg+":htmlui"))return Role.UI_ONLY;
+        if(process.equals(pkg+":nativeui"))return Role.UI_ONLY;
         return Role.UNKNOWN;
     }
     public static boolean allowOwnerRead(Role role){return role==Role.OWNER;}

@@ -5,7 +5,7 @@ public final class UiProcessPolicyTest {
     public static void main(String[] args){
         String p="com.cinemana.pro";
         for(int api=21;api<=40;api++){
-            String[] names={p,p+":filedownloader",p+":htmlui",p+":htmlui:extra","other.app:htmlui",p+":HTMLUI",p+" ",p+":previewread",null,""};
+            String[] names={p,p+":filedownloader",p+":nativeui",p+":nativeui:extra","other.app:nativeui",p+":NATIVEUI",p+" ",p+":previewread",null,"",p+":htmlui",p+":htmlui:extra",p+":load","other.app:htmlui"};
             for(int i=0;i<names.length;i++){
                 UiProcessPolicy.Role expected=api<28||i>=3?UiProcessPolicy.Role.UNKNOWN:UiProcessPolicy.Role.values()[i];
                 UiProcessPolicy.Role role=UiProcessPolicy.classify(api,p,names[i]);
