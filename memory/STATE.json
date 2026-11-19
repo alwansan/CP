@@ -1296,7 +1296,11 @@
     "debug_retry_status": "in_progress",
     "dex_audit_code": "49fba4e5509692d015ae6b2cc9fd58257917fb94",
     "dex_audit_run": 44540913271,
-    "dex_audit_status": "in_progress",
-    "production_merged": false
+    "dex_audit_status": "failure_lexer",
+    "production_merged": false,
+    "dex_audit_job": 135618671488,
+    "dex_retry_code": "936d7e506a9000e8e6b33cb3b6c172cf7705bb94",
+    "dex_retry_run": 44541256873,
+    "dex_retry_status": "in_progress"
   }
 }
