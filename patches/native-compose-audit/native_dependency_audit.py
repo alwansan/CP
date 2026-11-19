@@ -296,6 +296,33 @@ def resource_overlap(old, new):
            for name, val in sorted(new.items()) if old_ids[val] - {name}]
     return names, ids
 
+# Conservative candidate-use inventory. Never blindly rewrite a matching literal:
+# bit patterns can be arbitrary constants and resource XML may have other uses.
+RESOURCE_LITERAL=re.compile(r"(?<![\w])0x[0-9a-fA-F]{8}(?![\w])")
+SMALI_RESOURCE_CONST=re.compile(r"^\s*const(?:/4|/16|/high16)?\s+[vp]\d+,\s*(0x[0-9a-fA-F]{8})(?=\s|$)")
+SMALI_RESOURCE_FIELD=re.compile(r"^\.field\s+.*?:I\s*=\s*(0x[0-9a-fA-F]{8})(?=\s|$)")
+def resource_literal_candidates(root,smali_dirs,old,new):
+    old_by_id=collections.defaultdict(list)
+    for k,v in old.items():
+        old_by_id[v].append(k)
+    new_by_id=collections.defaultdict(list)
+    for k,v in new.items():
+        new_by_id[v].append(k)
+    affected={v for k,v in old.items() if (k in new and new[k]!=v) or any(n!=k for n in new_by_id[v])}
+    rows=[]
+    for folder in smali_dirs:
+        for path in sorted((root/folder).rglob("*.smali")):
+            rel=str(path.relative_to(root))
+            for lineno,line in enumerate(path.read_text(encoding="utf-8").splitlines(),1):
+                m=SMALI_RESOURCE_CONST.match(line) or SMALI_RESOURCE_FIELD.match(line)
+                if m is None:
+                    continue
+                val=int(m.group(1),16)
+                if val in affected:
+                    rows.append((f"0x{val:08x}",",".join(sorted(old_by_id[val])),",".join(sorted(new_by_id[val])),
+                                 rel,str(lineno),"FIELD" if line.startswith(".field ") else "CONST"))
+    return rows,affected
+
 def write_tsv(path, header, rows):
     path.write_text("\t".join(header) + "\n" + "".join("\t".join(row) + "\n" for row in rows), encoding="utf-8")
 
@@ -328,7 +355,14 @@ def main():
         parsed_old=declared_smali(args.original/old[desc][0])
         differences.extend(compare_declared(desc,parsed_old,parsed_lab[desc]))
     write_tsv(args.out / "declared-abi-differences.tsv", ["descriptor","kind","member","status","original","lab"], differences)
-    summary = dict(declared_abi_scope="shared classes, direct declarations only; inheritance and runtime resolution not proven",
+    literal_rows,affected_ids=resource_literal_candidates(args.original,smali_dirs,old_res,new_res)
+    write_tsv(args.out / "original-resource-literal-candidates.tsv", ["original_id","original_names","lab_same_numeric_id_names","smali","line","kind"], literal_rows)
+    summary = dict(resource_literal_scope="original const and int field candidate sites only; not proven resource uses; excludes XML, arrays, computed IDs",
+        original_affected_resource_ids=len(affected_ids),
+        original_resource_literal_candidate_sites=len(literal_rows),
+        original_resource_literal_candidate_files=len({row[3] for row in literal_rows}),
+        original_resource_literal_ids_observed=len({row[0] for row in literal_rows}),
+        declared_abi_scope="shared classes, direct declarations only; inheritance and runtime resolution not proven",
         declared_abi_classes_with_differences=len({row[0] for row in differences}),
         declared_abi_difference_rows=len(differences),
         declared_abi_status_counts=dict(collections.Counter(row[3] for row in differences)),

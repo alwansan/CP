@@ -40,6 +40,17 @@ class AuditTest(unittest.TestCase):
             rows=a.compare_declared("LA;",old,new)
             self.assertEqual({r[3] for r in rows},{"ACCESS_SHAPE_DIFF","ORIGINAL_ONLY_DECLARATION","LAB_ONLY_DECLARATION"})
             self.assertEqual(a.compare_declared("LA;",old,old),[])
+    def test_literal_candidates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=pathlib.Path(tmp)
+            f=p/"smali"/"A.smali";f.parent.mkdir()
+            f.write_text('.class public LA;\n.field public static final x:I = 0x7f010002\n    const v0, 0x7f010001\n    const/high16 v1, 0x7f020000\n    const-string v2, "0x7f010001"\n    # const v0, 0x7f010001\n')
+            old={"color/a":0x7f010001,"color/b":0x7f010002,"id/c":0x7f020000}
+            new={"color/a":0x7f010003,"color/d":0x7f010002,"id/d":0x7f020000}
+            rows,affected=a.resource_literal_candidates(p,["smali"],old,new)
+            self.assertEqual(len(affected),3)
+            self.assertEqual(len(rows),3)
+            self.assertEqual({r[4] for r in rows},{"2","3","4"})
     def test_resources(self):
         raw="  resource 0x7f010001 anim/foo\n  resource 0x7f010002 com.example:color/bar PUBLIC\n"
         self.assertEqual(a.RESOURCE.findall(raw),[("0x7f010001","anim/foo"),("0x7f010002","color/bar")])
