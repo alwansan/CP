@@ -640,17 +640,17 @@
       "total_native_assertions": 32030
     },
     "standalone_preview": {
-      "status": "first_release_verified_new_performance_candidate",
-      "code_sha": "d54150d45d965bc66a5cf54c1edda1eec9484e80",
-      "run_id": 44436382922,
-      "run_number": 6,
+      "status": "sixth_release_verified_settings_candidate",
+      "code_sha": "13cd886e20b445d4ca5666df2de9543852df52ec",
+      "run_id": 44437615672,
+      "run_number": 7,
       "package": "com.alwansan.cinemana.htmlpreview",
       "version": "0.1",
       "min_sdk": 23,
       "synthetic_data": true,
       "production_integrated": false,
       "local_bootstrap_port_implemented": true,
-      "android_test": "in_progress",
+      "android_test": "pending",
       "release_verified": true,
       "permissions_declared": 1,
       "report": "docs/HTML_ANDROID_PREVIEW_AR.md",
@@ -700,14 +700,14 @@
         "p95GapMs": 250,
         "maxGapMs": 366.7
       },
-      "release_code_sha": "06b47eafbf8a4b0621a20e213614cdc38d35e5bf",
-      "release_tag": "cp-html-preview-5",
-      "release_asset_id": 765705890,
-      "release_asset_bytes": 33553,
-      "release_asset_sha256": "1ecdfbc1dc7ec9a818be8e82a4f09b7c21f9af9b150da94f396efa665705a8ab",
-      "release_asset_url": "https://github.com/alwansan/CP/releases/download/cp-html-preview-5/Cinemana-HTML-Preview-0.1.apk",
-      "release_artifact_id": 14489455648,
-      "shell_run_id": 44436382925,
+      "release_code_sha": "d54150d45d965bc66a5cf54c1edda1eec9484e80",
+      "release_tag": "cp-html-preview-6",
+      "release_asset_id": 765727069,
+      "release_asset_bytes": 37649,
+      "release_asset_sha256": "3f1dbfd906799d16543ff93099507f75984df57492a436caafee428dd1b43df9",
+      "release_asset_url": "https://github.com/alwansan/CP/releases/download/cp-html-preview-6/Cinemana-HTML-Preview-0.1.apk",
+      "release_artifact_id": 14489173208,
+      "shell_run_id": 44437615700,
       "performance_candidate": {
         "synthetic_rows": 452,
         "visible_page_size": 24,
@@ -717,12 +717,37 @@
         "real_data": false,
         "real_phone_test": false
       },
-      "shell_run_status": "success",
+      "shell_run_status": "pending",
       "shell_run_job": 135266211004,
       "shell_browser_assertions": 51,
       "bridge_protocol_assertions": 47,
       "android_job_id": 135266211053,
-      "android_signed_build": "success"
+      "android_signed_build": "success",
+      "sixth_run_id": 44436382922,
+      "sixth_run_job": 135266211053,
+      "sixth_run_ci": "success",
+      "sixth_run_metrics": {
+        "routeWorstMs": 1024,
+        "elapsedMs": 13694,
+        "frames": 112,
+        "p95GapMs": 583.3,
+        "maxGapMs": 750,
+        "full_pressure_overlap_verified": false
+      },
+      "owner_video": {
+        "filename": "1006543302.mp4",
+        "duration_s": 29.795624,
+        "metadata_frames": 1809,
+        "visual_samples": 24,
+        "exact_apk_verified": false,
+        "real_engine_test": false
+      },
+      "settings_candidate": {
+        "preview_only": true,
+        "real_backup": false,
+        "paired_idle_pressure": true,
+        "load_duration_s": 45
+      }
     },
     "ui_isolation": {
       "owner_priority": true,
