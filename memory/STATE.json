@@ -1322,10 +1322,15 @@
     "r8_keep_code": "6eb7cf1075f5796101490591ce9cac1361008be1",
     "r8_retry_run": 44542182108,
     "r8_attempt1": "failure_dependency_resolution",
-    "r8_attempt2": "rerun_requested",
+    "r8_attempt2": "in_progress",
     "dex_transform_code": "3cb41a1eb6a452c03a19e000defb68ab06c9daab",
     "dex_transform_run": 44542485674,
-    "dex_transform_status": "in_progress",
-    "production_merged": false
+    "dex_transform_status": "success",
+    "production_merged": false,
+    "dex_transform_job": 135624238248,
+    "dex_transform_artifact": 14538278551,
+    "named_fields_roundtrip": 426,
+    "unresolved_styleable_sites": 30,
+    "r8_attempt2_job": 135624546839
   }
 }
