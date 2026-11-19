@@ -22,3 +22,20 @@ jobs:
           mkdir -p "$RUNNER_TEMP/cp-html-model"
           javac --release 8 -d "$RUNNER_TEMP/cp-html-model" $(find patches/html-bridge/src patches/html-bridge/tests -name '*.java' -type f)
           java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.DownloadModelTest
+          java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.BoundedDownloadReadTest
+      - name: Locate exact resume candidate callers (static only)
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          needle = 'Lcom/shabakaty/downloader/ey0;->l(Lcom/shabakaty/downloader/ey0;I)V'
+          count = 0
+          for path in Path('Cinemana_PATCH252_Project/app').rglob('*.smali'):
+              method = ''
+              for n,line in enumerate(path.read_text(encoding='utf-8').splitlines(),1):
+                  if line.startswith('.method '): method = line
+                  if needle in line and line.lstrip().startswith('invoke-'):
+                      print(f'{path}:{n}: {method}')
+                      count += 1
+                  if line == '.end method': method = ''
+          print(f'CP_STATIC_RESUME_CALLERS={count}')
+          PY

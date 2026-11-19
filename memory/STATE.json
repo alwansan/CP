@@ -531,6 +531,15 @@
       "ci": "success",
       "run_id": 44424763514,
       "assertions": 8366
+    },
+    "bounded_dao": {
+      "status": "isolated_candidate_ci_pending",
+      "page_cap": 64,
+      "android_room_test": false,
+      "durable_ack": false,
+      "resume_caller_scan": "pending",
+      "report": "docs/HTML_BOUNDED_DAO_AR.md",
+      "source": "patches/html-bridge/src/com/shabakaty/cinemana/htmlbridge/model/ExistingDaoSource.java"
     }
   }
 }

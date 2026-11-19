@@ -68,3 +68,7 @@
 
 ## 9) Concrete DAO/transport facts and isolated model
 xc4 enum contains PENDING/STARTED/PROGRESS/RETRY/ERROR/PAUSED/COMPLETED/WARN/UNKNOWN and pw0.z carries it. ey0.f -> ey0$f -> uz0.a -> kz0.b for list; ey0$k reads uz0.e(taskId), reconstructs via ey0.m/q, updates uz0.i(pw0); ey0$l reads uz0.e for subscribing/callback. DownloadStore263.appDao and combined/readCombinedById provide app identity; CinemanaDownloadItem fields include id, downloadTaskId, collectionID, title, qualityName, sizeMB and path (never expose path). Actual coherent snapshot and resume caller unproven. See docs/HTML_NATIVE_MODEL_AR.md.
+
+
+## جلسة 25 — bounded DAO candidate
+راجع docs/HTML_BOUNDED_DAO_AR.md وmemory/sessions/2026-11-19_cp-dl-bounded-dao-25.md. أضيف BoundedDownloadRead وExistingDaoSource (isolated, 64 item cap, A→transport→A, 192 point reads worst case; no full scan, no writes, no ACK, no playback proof). Existing helper descriptors verified statically; actual Android/Room execution not tested. CI pending; static resume caller scan added, not yet a verified UI caller. Next: verify CI and callers, proof/journal readers and typed admission. Html only; no APK or old UI changes.
