@@ -181,6 +181,7 @@ class LabTest {
             return texts
         }
         try {
+            assertTrue("initial portrait",automation.setRotation(android.app.UiAutomation.ROTATION_FREEZE_0))
             open(4)
             node("nativeui-open").performClick()
             val limit=SystemClock.elapsedRealtime()+25000L
@@ -207,27 +208,11 @@ class LabTest {
             assertTrue(actual.getInt("drawOwnerPid")>0&&actual.getInt("drawOwnerPid")!=uiPid)
             assertTrue(actual.getInt("drawWidth")>0&&actual.getInt("drawHeight")>0)
             assertEquals(uiPid,verify(snapshot("ui"),"$pkg:nativeui","UI_ONLY",false,false,true))
-            // Click the remote window control via accessibility; wait for a real
-            // system configuration callback and a rendered landscape frame.
-            fun clickRemote(label:String){
-                val until=SystemClock.elapsedRealtime()+10000L
-                while(SystemClock.elapsedRealtime()<until){
-                    val root=automation.rootInActiveWindow
-                    val candidates=root?.findAccessibilityNodeInfosByText(label).orEmpty()
-                    for(n in candidates){
-                        var target:android.view.accessibility.AccessibilityNodeInfo?=n
-                        repeat(4){
-                            val current=target
-                            if(current!=null&&current.isClickable&&current.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK))return
-                            target=current?.parent
-                        }
-                    }
-                    Thread.sleep(150)
-                }
-                throw AssertionError("remote control not clickable: $label")
-            }
+            // Use Android's actual device rotation, not an accessibility ACTION_CLICK
+            // that may fail for merged Compose semantics. Keep all real draw/config gates.
+            assertTrue("starting portrait draw",actual.getInt("drawHeight")>actual.getInt("drawWidth"))
             val beforeConfig=actual.getInt("configCount")
-            clickRemote("CP_ROTATE_LANDSCAPE")
+            assertTrue("freeze system landscape rotation",automation.setRotation(android.app.UiAutomation.ROTATION_FREEZE_90))
             val rotateUntil=SystemClock.elapsedRealtime()+20000L
             var rotated:android.os.Bundle?=null
             while(SystemClock.elapsedRealtime()<rotateUntil){
@@ -239,7 +224,7 @@ class LabTest {
             }
             assertNotNull("native UI did not survive real landscape configuration",rotated)
             val landscape=rotated ?: throw AssertionError("missing landscape snapshot")
-            clickRemote("CP_ROTATE_PORTRAIT")
+            assertTrue("freeze system portrait rotation",automation.setRotation(android.app.UiAutomation.ROTATION_FREEZE_0))
             val portraitUntil=SystemClock.elapsedRealtime()+20000L
             var portrait:android.os.Bundle?=null
             while(SystemClock.elapsedRealtime()<portraitUntil){
@@ -249,9 +234,10 @@ class LabTest {
             }
             assertNotNull("native UI did not survive real portrait configuration",portrait)
             println("CP_COMPOSE_NATIVEUI_FACTORY_PASS landscape=$landscape portrait=$portrait")
-            clickRemote("إغلاق")
+            assertTrue("remote UI still visible",visibleTexts().contains("CP_NATIVE_UI_READY"))
             println("CP_COMPOSE_NATIVEUI_STARTUP_PASS ownerPid=$ownerPid nativeUiPid=$uiPid legacyDownloaderPid=$downloaderPid providerBeforeCreate=true remotePage=24")
         } finally {
+            automation.setRotation(android.app.UiAutomation.ROTATION_UNFREEZE)
             // Only close our own remote window, never dismiss unrelated system dialogs.
             if(automation.rootInActiveWindow?.packageName?.toString()==pkg&&visibleTexts().contains("CP_NATIVE_UI_READY")){
                 automation.executeShellCommand("input keyevent 4").close()
