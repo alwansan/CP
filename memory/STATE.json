@@ -545,11 +545,16 @@
       "code_sha": "61cbaac4f3c8f86dc659d0b388829fe6cb2c1c77"
     },
     "native_evidence": {
-      "status": "isolated_candidate_ci_pending",
+      "status": "isolated_candidate_ci_pass",
       "authoritative_control_source": false,
       "actual_proof_producer": false,
       "android_test": false,
-      "report": "docs/HTML_NATIVE_EVIDENCE_AR.md"
+      "report": "docs/HTML_NATIVE_EVIDENCE_AR.md",
+      "run_id": 44427230592,
+      "assertions": 4405,
+      "code_sha": "18894a719ab5a799ab9d6c84a127966d75d5caef",
+      "proof_format": "StorageMaintenance152 safe token .path canonical path + timestamp; hint only; reader not implemented",
+      "direct_resume_ui": false
     }
   }
 }
