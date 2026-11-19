@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify 44451087117 and 44451318341 then actual alternate Application factory and ABI audit",
+  "next": "Verify 44451087117 and 44451591508, then actual alternate Application factory and ABI inventory",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -1059,7 +1059,9 @@
     "retry_code_sha": "1a747d08b9c3b85813e369db7130bb229d24a08a",
     "retry_run": 44451087117,
     "retry_job": 135314899971,
-    "retry_status": "in_progress"
+    "retry_status": "in_progress",
+    "retry_build": "success",
+    "retry_android": "in_progress"
   },
   "native_compose_dependency_50": {
     "code_sha": "db008bfc67cc239cc19adfef5ceb7a89e97778f7",
@@ -1067,6 +1069,12 @@
     "job": 135315699289,
     "status": "completed",
     "scope": "read-only class/resource collision audit cp-compose-lab-5 vs original Smali public resources",
-    "doc": "docs/NATIVE_COMPOSE_DEPENDENCY_AUDIT_AR.md"
+    "doc": "docs/NATIVE_COMPOSE_DEPENDENCY_AUDIT_AR.md",
+    "conclusion": "failure",
+    "failure": "original package-private .class without flags",
+    "retry_code_sha": "9669414929bfd193aeb4c7d12c92ed174ae2ccf9",
+    "retry_run": 44451591508,
+    "retry_job": 135316608357,
+    "retry_status": "completed"
   }
 }
