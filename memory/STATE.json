@@ -1350,7 +1350,11 @@
     "ipc_rows": 24,
     "styleable_code": "ed647258d0fb7f3671e3747ccf830ae22d0cfe40",
     "styleable_run": 44544123936,
-    "styleable_status": "queued",
-    "production_merged": false
+    "styleable_status": "failure_unexpected_method",
+    "production_merged": false,
+    "styleable_job": 135629995524,
+    "styleable_retry_code": "f318953bf45131afddd5496cc965adc355a510a0",
+    "styleable_retry_run": 44544545322,
+    "styleable_retry_status": "in_progress"
   }
 }
