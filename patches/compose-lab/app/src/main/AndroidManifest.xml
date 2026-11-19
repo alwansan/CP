@@ -1,5 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application android:label="Cinemana Compose Lab" android:theme="@android:style/Theme.Material.NoActionBar" android:allowBackup="false" android:supportsRtl="true" android:hardwareAccelerated="true">
+    <application android:name=".LabStartupApplication" android:label="Cinemana Compose Lab" android:theme="@android:style/Theme.Material.NoActionBar" android:allowBackup="false" android:supportsRtl="true" android:hardwareAccelerated="true">
+        <provider android:name=".LabStartupProvider" android:authorities="com.alwansan.cinemana.composelab.owner-startup" android:exported="false"/>
+        <provider android:name=".LabStartupProvider$Ui" android:authorities="com.alwansan.cinemana.composelab.ui-startup" android:process=":nativeui" android:exported="false"/>
+        <provider android:name=".LabStartupProvider$Downloader" android:authorities="com.alwansan.cinemana.composelab.downloader-startup" android:process=":filedownloader" android:exported="false"/>
+        <activity android:name=".NativeUiProbeActivity" android:process=":nativeui" android:exported="false"/>
         <service android:name=".LabOwnerService" android:process=":owner" android:exported="false"/>
         <service android:name=".LabLoadService" android:process=":load" android:exported="false"/>
         <activity android:name=".ComposeLabActivity" android:exported="true">

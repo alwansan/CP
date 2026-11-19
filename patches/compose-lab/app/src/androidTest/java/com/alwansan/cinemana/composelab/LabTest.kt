@@ -120,6 +120,52 @@ class LabTest {
             context.unbindService(keeper)
         }
     }
+    // Real Application/provider hooks in 3 processes and a visible Compose+IPC renderer in :nativeui.
+    private fun testNativeUiStartup() {
+        val context=rule.activity.applicationContext
+        val pkg=context.packageName
+        fun snapshot(suffix: String): android.os.Bundle =
+            context.contentResolver.call(android.net.Uri.parse("content://$pkg.$suffix-startup"),"snapshot",null,null)
+                ?: throw AssertionError("missing startup snapshot")
+        fun verify(bundle: android.os.Bundle, name: String, role:String, legacy:Boolean, owner:Boolean, ui:Boolean): Int {
+            assertEquals(name,bundle.getString("process"))
+            assertEquals(role,bundle.getString("role"))
+            assertEquals(1,bundle.getInt("attach"))
+            assertEquals(1,bundle.getInt("create"))
+            assertEquals(1,bundle.getInt("provider"))
+            assertEquals(if(legacy)1 else 0,bundle.getInt("legacyAttach"))
+            assertEquals(if(legacy)1 else 0,bundle.getInt("legacyCreate"))
+            assertTrue(bundle.getBoolean("providerAfterAttach"))
+            assertTrue(bundle.getBoolean("providerBeforeCreate"))
+            assertEquals(owner,bundle.getBoolean("allowOwnerRead"))
+            assertEquals(ui,bundle.getBoolean("allowNewUi"))
+            return bundle.getInt("pid").also{assertTrue(it>0)}
+        }
+        val ownerPid=verify(snapshot("owner"),pkg,"OWNER",true,true,false)
+        val uiPid=verify(snapshot("ui"),"$pkg:nativeui","UI_ONLY",false,false,true)
+        val downloaderPid=verify(snapshot("downloader"),"$pkg:filedownloader","LEGACY_DOWNLOADER",true,false,false)
+        assertEquals(android.os.Process.myPid(),ownerPid)
+        assertEquals(3,setOf(ownerPid,uiPid,downloaderPid).size)
+        val instrumentation=androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+        val automation=instrumentation.uiAutomation
+        fun containsText(text: String): Boolean {
+            val root=automation.rootInActiveWindow ?: return false
+            return root.findAccessibilityNodeInfosByText(text).any{it.text?.toString()==text}
+        }
+        try {
+            rule.runOnIdle { rule.activity.startActivity(Intent(context,NativeUiProbeActivity::class.java)) }
+            val limit=SystemClock.elapsedRealtime()+20000L
+            var visible=false
+            while(SystemClock.elapsedRealtime()<limit){
+                if(containsText("CP_NATIVE_UI_READY")&&containsText("صفحة 1 · 24 عنصر")&&containsText("حالة: observed")){visible=true;break}
+                Thread.sleep(150)
+            }
+            assertTrue("remote Compose renderer and owner IPC must be visible",visible)
+            println("CP_COMPOSE_NATIVEUI_STARTUP_PASS ownerPid=$ownerPid nativeUiPid=$uiPid legacyDownloaderPid=$downloaderPid providerBeforeCreate=true remotePage=24")
+        } finally {
+            automation.executeShellCommand("input keyevent 4").close()
+        }
+    }
     @Test fun smokeAndPressure() {
         node("disclosure").assertIsDisplayed()
         node("hero-detail").performClick(); node("detail-close").assertIsDisplayed().performClick()
@@ -166,5 +212,6 @@ class LabTest {
             assertTrue(SystemClock.elapsedRealtime() - started < 40000)
             println("CP_COMPOSE_LAB_PASS workerPid=$worker uiPid=${android.os.Process.myPid()}")
         } finally { rule.runOnIdle { rule.activity.stopService(load) } }
+        testNativeUiStartup()
     }
 }
