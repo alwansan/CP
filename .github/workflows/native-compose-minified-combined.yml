@@ -46,7 +46,8 @@ jobs:
           disable-animations: true
           emulator-boot-timeout: 1800
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          script: python3 patches/native-compose-isolation/smoke-r8-runtime.py
+          script: |
+            python3 patches/native-compose-isolation/smoke-r8-runtime.py && bash patches/native-compose-minified-combined/run-parcel-runtime.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:
