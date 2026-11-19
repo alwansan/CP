@@ -13,7 +13,8 @@ import androidx.compose.ui.unit.dp
 internal fun OwnerReadPanel(foreground: Boolean, close: () -> Unit) {
     val context = LocalContext.current
     var client by remember { mutableStateOf<LabOwnerClient?>(null) }
-    DisposableEffect(foreground, context) {
+    var reconnect by remember { mutableIntStateOf(0) }
+    DisposableEffect(foreground, context, reconnect) {
         val connection=if(foreground) LabOwnerClient(context) else null
         client=connection
         onDispose { connection?.close() }
@@ -24,6 +25,8 @@ internal fun OwnerReadPanel(foreground: Boolean, close: () -> Unit) {
         Text("قراءة IPC مستقلة · بيانات اختبار فقط")
         Text("حالة: ${state.state}",Modifier.testTag("owner-status"))
         Text("PID: ${state.pid}",Modifier.testTag("owner-pid"))
+        Text("Reply: ${state.responseSerial}",Modifier.testTag("owner-serial"))
+        if (!state.busy && state.pid==0) TextButton(onClick={reconnect++},modifier=Modifier.testTag("owner-reconnect")) {Text("إعادة الاتصال")}
         Text("صفحة ${state.page} · ${state.rows.size} عنصر",Modifier.testTag("owner-count"))
         Row {
             TextButton(onClick={current?.request(1)},enabled=!state.busy && state.pid>0,modifier=Modifier.testTag("owner-first")){Text("الأولى")}
