@@ -640,10 +640,10 @@
       "total_native_assertions": 32030
     },
     "standalone_preview": {
-      "status": "third_build_queued",
-      "code_sha": "69ea78b23ef2561f69d7f97c3300854c104aab9f",
-      "run_id": 44434256630,
-      "run_number": 3,
+      "status": "fourth_build_in_progress",
+      "code_sha": "954d98ccf53dc51af4db7050d42bffca86ab4593",
+      "run_id": 44434870298,
+      "run_number": 4,
       "package": "com.alwansan.cinemana.htmlpreview",
       "version": "0.1",
       "min_sdk": 23,
@@ -668,7 +668,14 @@
         "android.permission.INTERNET"
       ],
       "remote_content_allowed": false,
-      "negative_test_pending": true
+      "negative_test_pending": true,
+      "third_run_id": 44434256630,
+      "third_run_job": 135258998845,
+      "third_run_signed_build": true,
+      "third_run_local_assets_rendered": true,
+      "third_run_failure": "bootstrap unavailable, first pageFinished precedes JS_READY",
+      "readiness_probe": true,
+      "reload_test_pending": true
     },
     "ui_isolation": {
       "owner_priority": true,
