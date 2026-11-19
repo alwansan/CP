@@ -2,7 +2,7 @@ name: CP HTML standalone Android preview
 on:
   push:
     branches: [Html]
-    paths: ['patches/html-preview/**', '.github/workflows/html-android-preview.yml']
+    paths: ['patches/html-preview/**', 'docs/fixtures/html-shell-lab/**', '.github/workflows/html-android-preview.yml']
   workflow_dispatch:
 permissions:
   contents: write

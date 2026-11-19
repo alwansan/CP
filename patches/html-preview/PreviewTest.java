@@ -19,6 +19,13 @@ public final class PreviewTest extends Instrumentation {
         return result[0];
     }
     private void check(boolean b,String label){if(!b)throw new AssertionError(label);}
+    private boolean connected(WebView w)throws Exception{
+        for(int n=0;n<50;n++){
+            if("true".equals(eval(w,"!!document.querySelector(\'#preview-status[data-connected=true]\') && window.__cpPreviewPortReady===true")))return true;
+            Thread.sleep(300);
+        }
+        return false;
+    }
     @Override public void onStart(){
         Bundle result=new Bundle();
         try{
@@ -26,8 +33,7 @@ public final class PreviewTest extends Instrumentation {
             Activity a=startActivitySync(i);WebView[] ref={null};
             runOnMainSync(()->ref[0]=find(a.getWindow().getDecorView()));
             WebView w=ref[0];check(w!=null,"WebView missing");
-            boolean ok=false;
-            for(int n=0;n<40;n++){if("true".equals(eval(w,"!!document.querySelector('#preview-status[data-connected=true]')"))){ok=true;break;}Thread.sleep(500);}
+            boolean ok=connected(w);
             check(ok,"bootstrap unavailable: "+eval(w,"JSON.stringify({href:location.href,ready:document.readyState,banner:document.querySelector(\'#preview-status\')?.textContent||null,client:typeof CPBridgeClient,main:!!document.querySelector(\'#main .hero\')})"));
             check("true".equals(eval(w,"location.origin==='https://appassets.androidplatform.net' && document.querySelectorAll('#dock [data-route]').length===5")),"origin or dock");
             for(String route:new String[]{"categories","search","downloads","account","home"}){
@@ -41,12 +47,17 @@ public final class PreviewTest extends Instrumentation {
             check("true".equals(eval(w,"window.__cpFetchBlocked===true")),"remote fetch blocked");
             check("true".equals(eval(w,"typeof window.Android==='undefined' && typeof window.Cinemana==='undefined'")),"unexpected bridge");
             check("true".equals(eval(w,"document.querySelector('#preview-status').textContent.includes('بيانات وهمية')")),"mock disclosure");
+            // A full document reload must create a new channel, never reuse the old port.
+            runOnMainSync(()->w.reload());
+            Thread.sleep(900);
+            check(connected(w),"reload bootstrap unavailable");
             // Start a separate process with bounded synthetic CPU and fsync load.
             Intent load=new Intent().setClassName("com.alwansan.cinemana.htmlpreview","com.alwansan.cinemana.htmlpreview.PreviewLoadService");
             runOnMainSync(()->a.startService(load));
             Thread.sleep(800);
             check("true".equals(eval(w,"window.__cpFrames=[];window.__cpLast=performance.now();window.__cpMeasure=true;requestAnimationFrame(function tick(t){if(!window.__cpMeasure)return;window.__cpFrames.push(t-window.__cpLast);window.__cpLast=t;requestAnimationFrame(tick)});true")),"frame sampler");
             long worst=0;
+            long loadStart=SystemClock.elapsedRealtime();
             for(int k=0;k<25;k++){
                 String route=new String[]{"home","categories","search","downloads","account"}[k%5];
                 long start=SystemClock.elapsedRealtime();
@@ -56,7 +67,8 @@ public final class PreviewTest extends Instrumentation {
             }
             Thread.sleep(400);
             String metrics=eval(w,"window.__cpMeasure=false;JSON.stringify({frames:window.__cpFrames.length,maxGap:Math.max(...window.__cpFrames),p95:window.__cpFrames.slice().sort((a,b)=>a-b)[Math.floor(window.__cpFrames.length*.95)]})");
-            result.putString("stream","CP_HTML_PREVIEW_LOAD_METRICS routeWorstMs="+worst+" frames="+metrics+"\n");
+            result.putString("stream","CP_HTML_PREVIEW_LOAD_METRICS routeWorstMs="+worst+" elapsedMs="+(SystemClock.elapsedRealtime()-loadStart)+" frames="+metrics+"\n");
+            check("true".equals(eval(w,"window.__cpFrames.length>=10 && window.__cpFrames.every(x=>Number.isFinite(x))")),"frame sampler insufficient");
             check(worst<2000,"navigation stall under synthetic load");
             runOnMainSync(()->{a.stopService(load);a.finish();});
             result.putString("stream",result.getString("stream","")+"CP_HTML_PREVIEW_PASS: bootstrap, local origin, five tabs, mock disclosure\n");

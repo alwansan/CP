@@ -2,6 +2,8 @@ package com.alwansan.cinemana.htmlpreview;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.net.Uri;
 import android.webkit.*;
 import android.view.ViewGroup;
@@ -19,8 +21,9 @@ public final class PreviewActivity extends Activity {
     static final String CSP="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-src 'none'; child-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; worker-src 'none'";
     private WebView web;
     private WebMessagePort port;
-    private boolean sent;
-    private int requests;
+    private boolean sent, probing;
+    private int requests, documentGeneration;
+    private final Handler main = new Handler(Looper.getMainLooper());
     private static String asset(Uri uri) {
         if(uri==null||!ORIGIN.equals(uri.getScheme()+"://"+uri.getEncodedAuthority())||uri.getEncodedQuery()!=null)return null;
         String p=uri.getEncodedPath();
@@ -75,27 +78,20 @@ public final class PreviewActivity extends Activity {
             }
             @Override public boolean shouldOverrideUrlLoading(WebView v,String url){return !page(url);}
             @Override public void onPageStarted(WebView v,String url,android.graphics.Bitmap icon){
-                closePort();sent=false;requests=0;
+                closePort();sent=false;probing=false;requests=0;documentGeneration++;
                 if(!page(url)){v.stopLoading();fallback();}
             }
             @Override public void onReceivedError(WebView v,WebResourceRequest r,WebResourceError e){
-                if(r.isForMainFrame()){Log.w("CPPreview","main document error code="+e.getErrorCode());closePort();}
+                if(r.isForMainFrame()){Log.w("CPPreview","main document error code="+e.getErrorCode());closePort();documentGeneration++;probing=false;sent=true;}
             }
             @Override public void onPageFinished(WebView v,String url){
                 Log.i("CPPreview","pageFinished local="+page(url)+" current="+page(v.getUrl()));
-                if(web!=v||sent||!page(url)||!page(v.getUrl()))return;
-                sent=true;
-                try{
-                    WebMessagePort[] pair=v.createWebMessageChannel();
-                    port=pair[0];
-                    port.setWebMessageCallback(new WebMessagePort.WebMessageCallback(){
-                        @Override public void onMessage(WebMessagePort p,WebMessage msg){reply(p,msg);}
-                    });
-                    v.postWebMessage(new WebMessage("CP_PREVIEW_PORT_V1",new WebMessagePort[]{pair[1]}),Uri.parse(ORIGIN));
-                }catch(RuntimeException e){Log.w("CPPreview","port setup failed",e);closePort();fallback();}
+                if(web!=v||sent||probing||!page(url)||!page(v.getUrl()))return;
+                probing=true;
+                probeReady(v,documentGeneration,0);
             }
             @Override public boolean onRenderProcessGone(WebView v,RenderProcessGoneDetail detail){
-                closePort();web=null;
+                closePort();documentGeneration++;probing=false;web=null;
                 if(v.getParent() instanceof ViewGroup)((ViewGroup)v.getParent()).removeView(v);
                 v.destroy();fallback();return true;
             }
@@ -103,8 +99,42 @@ public final class PreviewActivity extends Activity {
         setContentView(web);
         web.loadUrl(PAGE);
     }
+    /** onPageFinished may be delivered early by history.replaceState.
+     * Never transfer a port until the current main document explicitly reports
+     * that the message listener is installed. No wildcard origin, bounded retry,
+     * at most one outstanding probe and one transfer per document generation.
+     */
+    private boolean current(WebView v,int generation){
+        return web==v&&documentGeneration==generation&&page(v.getUrl())&&!sent;
+    }
+    private void probeReady(WebView v,int generation,int attempt){
+        if(!current(v,generation))return;
+        if(attempt>=50){probing=false;sent=true;Log.w("CPPreview","ready probe exhausted");return;}
+        try{
+            v.evaluateJavascript("(window.top===window && location.origin==='https://appassets.androidplatform.net' && location.pathname==='/preview/index.html' && window.__cpPreviewPortReady===true)",value->{
+                if(!current(v,generation))return;
+                if("true".equals(value)){
+                    probing=false;sent=true;
+                    WebMessagePort[] pair=null;
+                    try{
+                        pair=v.createWebMessageChannel();
+                        port=pair[0];
+                        port.setWebMessageCallback(new WebMessagePort.WebMessageCallback(){
+                            @Override public void onMessage(WebMessagePort p,WebMessage msg){reply(p,msg);}
+                        });
+                        v.postWebMessage(new WebMessage("CP_PREVIEW_PORT_V1",new WebMessagePort[]{pair[1]}),Uri.parse(ORIGIN));
+                        Log.i("CPPreview","port transferred after ready probe attempt="+attempt);
+                    }catch(RuntimeException e){
+                        Log.w("CPPreview","port setup failed",e);closePort();
+                        if(pair!=null)try{pair[1].close();}catch(RuntimeException ignored){}
+                    }
+                }else main.postDelayed(()->probeReady(v,generation,attempt+1),100);
+            });
+        }catch(RuntimeException e){probing=false;sent=true;Log.w("CPPreview","ready probe failed",e);}
+    }
     private void reply(WebMessagePort p,WebMessage m){
-        if(p!=port||web==null||!page(web.getUrl())||++requests>8){closePort();return;}
+        if(p!=port)return;
+        if(web==null||!page(web.getUrl())||++requests>8){closePort();return;}
         Log.i("CPPreview","native port received");
         String raw=m.getData();
         if(raw==null||raw.length()>1024||m.getPorts()!=null&&m.getPorts().length>0){closePort();return;}
@@ -128,5 +158,5 @@ public final class PreviewActivity extends Activity {
     @Override public void onBackPressed(){
         if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();
     }
-    @Override protected void onDestroy(){closePort();if(web!=null){if(web.getParent() instanceof ViewGroup)((ViewGroup)web.getParent()).removeView(web);web.destroy();web=null;}super.onDestroy();}
+    @Override protected void onDestroy(){documentGeneration++;main.removeCallbacksAndMessages(null);closePort();if(web!=null){if(web.getParent() instanceof ViewGroup)((ViewGroup)web.getParent()).removeView(web);web.destroy();web=null;}super.onDestroy();}
 }

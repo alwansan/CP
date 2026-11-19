@@ -6,7 +6,6 @@
  banner.textContent="معاينة مستقلة • بيانات وهمية • الاتصال المحلي قيد التحقق";
  document.body.insertBefore(banner,document.body.firstChild);
  let got=false;
- console.info("CP_PREVIEW_JS_READY");
  window.addEventListener("message",function(e){
    if(got||window.top!==window||location.origin!=="https://appassets.androidplatform.net"||e.data!=="CP_PREVIEW_PORT_V1"||!e.ports||e.ports.length!==1)return;
    got=true;console.info("CP_PREVIEW_PORT_RECEIVED");
@@ -22,4 +21,7 @@
    }).catch(e=>{console.info("CP_PREVIEW_BOOTSTRAP_FAILED "+e.code);banner.textContent="معاينة مستقلة • بيانات وهمية • الاتصال المحلي غير متاح";});
    window.addEventListener("pagehide",()=>{client.close();p.close()},{once:true});
  });
+ // Publish readiness only after the listener is registered, never earlier.
+ window.__cpPreviewPortReady=true;
+ console.info("CP_PREVIEW_JS_READY");
 })();
