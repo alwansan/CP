@@ -1,0 +1,42 @@
+name: CP Native Compose dependency collision audit
+on:
+  push:
+    branches: [Native-Compose]
+    paths: ['patches/native-compose-audit/**', '.github/workflows/native-compose-dependency-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.ref == 'refs/heads/Native-Compose'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0'
+      - name: Read verified standalone lab release, never mutate original
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native-compose-audit"
+          gh release download cp-compose-lab-5 --repo "$GITHUB_REPOSITORY" --pattern Cinemana-Compose-Lab-0.1.apk --dir "$RUNNER_TEMP/native-compose-audit"
+          cd "$RUNNER_TEMP/native-compose-audit"
+          echo '6d06e73b76e085e2eab7250750e34051e3c4b044d5f9b34a3251825b54f6256f  Cinemana-Compose-Lab-0.1.apk' | sha256sum -c -
+      - name: Audit DEX definitions and resource IDs
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s patches/native-compose-audit -p 'test_*.py'
+          python3 patches/native-compose-audit/native_dependency_audit.py \
+            --original Cinemana_PATCH252_Project/app \
+            --apk "$RUNNER_TEMP/native-compose-audit/Cinemana-Compose-Lab-0.1.apk" \
+            --dexdump "$ANDROID_HOME/build-tools/35.0.0/dexdump" \
+            --aapt2 "$ANDROID_HOME/build-tools/35.0.0/aapt2" \
+            --out "$RUNNER_TEMP/native-compose-audit/report"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CP-Native-Compose-Collision-Inventory
+          path: ${{ runner.temp }}/native-compose-audit/report
+          if-no-files-found: error
