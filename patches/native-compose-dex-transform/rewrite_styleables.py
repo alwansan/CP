@@ -63,6 +63,9 @@ def read_styleable(path,desc):
             require(ended and label and label not in payloads,"invalid payload")
             payload=label;payloads[label]=[];label=None;continue
         if s.startswith((".locals ",".registers ",".line ")):continue
+        # Baksmali may emit an alignment nop after the unconditional return,
+        # before a 4-byte payload. It is unreachable in this branch-free method.
+        if ended and s=="nop":continue
         require(not ended,"instruction after return: "+s)
         body.append((n,s))
         if s=="return-void":ended=True
