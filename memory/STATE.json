@@ -2,7 +2,7 @@
   "schema_version": 1,
   "agent": "CP-DL",
   "repository": "alwansan/CP",
-  "writable_branch": "Html",
+  "writable_branch": "Native-Compose",
   "source_branch": "feature/local-account",
   "baseline_sha": "82d7f67037f67659115d41782d3a9b5bf4e0bd02",
   "baseline_patch": "PATCH274",
@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_native_renderer_evaluation_lab_pending",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-renderer-evaluation-44.md",
+  "status": "native_compose_lab_ci_in_progress",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-compose-branch-45.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify independent Native Views lab CI/release, then equivalent Compose candidate and common frame timing, original startup guard and typed owner IPC",
+  "next": "Verify Compose CI and release then original typed owner IPC, startup boundary and fair physical device macrobenchmark",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -933,13 +933,27 @@
       "code_sha": "de83e8b74bfe1a2ca89b55421a60b3fe562599c8",
       "run_id": 44444039820,
       "job_id": 135291685643,
-      "status": "in_progress",
+      "status": "completed",
       "package": "com.alwansan.cinemana.nativeuilab",
       "scope": "standalone synthetic Android Views; not Compose",
       "build": "success",
-      "android_instrumentation": "in_progress",
-      "release": "unverified"
+      "android_instrumentation": "success",
+      "release": "cp-native-ui-lab-1",
+      "conclusion": "success",
+      "asset": 765892803,
+      "sha256": "f965ad837b524dba20dcff397fcae01da6698c77810ce5aae12e9dbe826e55d7"
     },
+    "automation_enabled_at_check": false
+  },
+  "native_compose_45": {
+    "base_branch": "Html",
+    "base_sha": "8bb7146e194374f0f6a1e2393fa24cbf56e48328",
+    "code_sha": "9b085a89cffd614f91520b6f684bae251b5788d9",
+    "compose_run": 44445496296,
+    "model_run": 44445496119,
+    "scope": "standalone synthetic debug lab; source app untouched",
+    "status": "in_progress",
+    "doc": "docs/NATIVE_COMPOSE_MASTER_AR.md",
     "automation_enabled_at_check": false
   }
 }
