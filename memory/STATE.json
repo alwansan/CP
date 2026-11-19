@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_lab_ci_in_progress",
+  "status": "native_compose_signed_build_android_test_in_progress",
   "last_session": "memory/sessions/2026-11-19_cp-dl-compose-branch-45.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "a59d0840bf1fea50acb9fb201cfcd2afbf80b42f",
+  "last_verified_head": "9b085a89cffd614f91520b6f684bae251b5788d9",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -954,6 +954,18 @@
     "scope": "standalone synthetic debug lab; source app untouched",
     "status": "in_progress",
     "doc": "docs/NATIVE_COMPOSE_MASTER_AR.md",
-    "automation_enabled_at_check": false
+    "automation_enabled_at_check": false,
+    "model_status": "success",
+    "model_job": 135296504312,
+    "compose_job": 135296505786,
+    "compose_build": "success",
+    "android_instrumentation": "in_progress",
+    "release": "unverified",
+    "native_process_policy": {
+      "code_sha": "d19d6407f4596b8a95349da6c3a553e267470f2e",
+      "run_id": 44445870259,
+      "status": "queued",
+      "scope": "pure Java only"
+    }
   }
 }
