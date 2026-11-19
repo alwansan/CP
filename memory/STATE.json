@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_resource_allocation_verified_rotation_r8_pending",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-factory-retry-resource-namespace-53.md",
+  "status": "native_compose_factory_rotation_complete_r8_resource_transform_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-rotation-r8-resource-transform-54.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify 44533380584 and 44533751376. Inspect remaining R8 definitions, plan resource transforms and signed original ART gates",
+  "next": "Verify 44535973795 and 44535973568; resolve residual DEX overlaps and actual resource relinking, test minified runtime",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "e854ea6865a3d4765fc6a3deadb5f4550f1907a0",
+  "last_verified_head": "68d900e4ce6b7183aa7163840a4e0f9a37d94815",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -1210,10 +1210,55 @@
     "rotation_retry_sha": "68d900e4ce6b7183aa7163840a4e0f9a37d94815",
     "rotation_retry_run": 44533380584,
     "rotation_retry_job": 135592304606,
-    "rotation_retry_status": "in_progress",
+    "rotation_retry_status": "completed",
     "r8_probe_sha": "4ad2225af4c2bce7dba8612f6920d84473f1a497",
     "r8_probe_run": 44533751376,
     "r8_probe_job": 135593627950,
-    "r8_probe_status": "in_progress"
+    "r8_probe_status": "completed",
+    "rotation_retry_conclusion": "success",
+    "release": "cp-compose-lab-11",
+    "asset_id": 767813035,
+    "bytes": 8855253,
+    "sha256": "86fbbeff9df85dfe680049089399ad9f33ab570b6ad3fe8822f6f3fdea09768f",
+    "rotation": {
+      "nativeui_pid": 2910,
+      "owner_pid": 3181,
+      "main_pid": 2296,
+      "legacy_pid": 3030,
+      "landscape": [
+        2188,
+        492
+      ],
+      "portrait": [
+        996,
+        1747
+      ],
+      "rows": 24
+    },
+    "r8_probe_conclusion": "failure_target_sdk_lint"
+  },
+  "native_compose_isolation_54": {
+    "r8_retry_run": 44535070434,
+    "r8_retry_job": 135598191290,
+    "r8_retry_conclusion": "failure_postbuild_grep",
+    "r8_build": "success",
+    "r8_diagnostic_artifact": 14536910455,
+    "r8_mapping": {
+      "entries": 2682,
+      "isolated_destinations": 2181,
+      "unchanged": 85
+    },
+    "r8_final_retry_code": "2886a39943a737a4321b22c02cee36756c63eaea",
+    "r8_final_retry_run": 44535973795,
+    "r8_final_retry_job": 135601352375,
+    "r8_final_retry_status": "in_progress",
+    "resource_transform_code": "8301ac468d494511d8a25559d65ec04e11361b62",
+    "resource_transform_run": 44535606706,
+    "resource_transform_job": 135600063634,
+    "resource_transform_conclusion": "failure_unit_double_parent",
+    "resource_retry_code": "2886a39943a737a4321b22c02cee36756c63eaea",
+    "resource_retry_run": 44535973568,
+    "resource_retry_job": 135601350720,
+    "resource_retry_status": "in_progress"
   }
 }
