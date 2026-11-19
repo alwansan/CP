@@ -26,7 +26,7 @@ def read_styleable(path,desc):
     code=[lexical(line)[0] for line in lines]
     require(any(s.startswith(".class ") and s.split()[-1]==desc for s in code),"descriptor differs")
     arrays=set();indexes={};payloads={};body=[]
-    in_method=False;label=None;payload=None;seen=False;ended=False
+    in_method=False;label=None;payload=None;seen=False;ended=False;ctor=False;ctor_seen=False;ctor_body=[]
     for n,s in enumerate(code,1):
         if not s:continue
         a=ARRAY_FIELD.fullmatch(s);idx=INDEX_FIELD.fullmatch(s)
@@ -36,8 +36,19 @@ def read_styleable(path,desc):
             require(idx[1] not in indexes,"duplicate index")
             indexes[idx[1]]=int(idx[2],0)
         if s.startswith(".method "):
-            require(not in_method and not seen and s.split()[-1]=="<clinit>()V","unexpected method")
+            require(not in_method and not ctor,"nested method "+s)
+            signature=s.split()[-1]
+            if signature=="<init>()V":
+                require(not ctor_seen,"duplicate constructor")
+                ctor=True;ctor_seen=True;ctor_body=[];continue
+            require(not seen and signature=="<clinit>()V","unexpected method "+s)
             in_method=True;seen=True;continue
+        if ctor:
+            if s==".end method":
+                require(ctor_body==["invoke-direct {p0}, Ljava/lang/Object;-><init>()V","return-void"],"nontrivial constructor "+repr(ctor_body))
+                ctor=False;continue
+            if s.startswith((".locals ",".registers ",".line ")):continue
+            ctor_body.append(s);continue
         if not in_method:continue
         if s==".end method":
             require(payload is None,"unterminated payload");in_method=False;continue
@@ -55,7 +66,7 @@ def read_styleable(path,desc):
         require(not ended,"instruction after return: "+s)
         body.append((n,s))
         if s=="return-void":ended=True
-    require(seen and ended and not in_method and arrays,"invalid clinit")
+    require(seen and ended and not in_method and not ctor and arrays,"invalid clinit")
     # Each integer travels with its original producer line. The only uses are
     # array length or ordered array elements; reject all unknown instructions.
     registers={};pending=None;output={};size_sources=set();used_payloads=set()
