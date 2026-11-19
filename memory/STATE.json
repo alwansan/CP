@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_signed_build_android_test_in_progress",
+  "status": "native_compose_first_android_assertion_failure_fixed_retry",
   "last_session": "memory/sessions/2026-11-19_cp-dl-compose-branch-45.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
@@ -959,7 +959,7 @@
     "model_job": 135296504312,
     "compose_job": 135296505786,
     "compose_build": "success",
-    "android_instrumentation": "in_progress",
+    "android_instrumentation": "failure",
     "release": "unverified",
     "native_process_policy": {
       "code_sha": "d19d6407f4596b8a95349da6c3a553e267470f2e",
@@ -970,6 +970,10 @@
       "job_id": 135297732610,
       "assertions": 1128,
       "total_native_assertions": 34727
-    }
+    },
+    "first_compose_failure": "page-count assertion exact vs substring",
+    "corrected_test_sha": "ca7ac8235c9d7363b7eef9eec8f3c1cd27ccd757",
+    "corrected_run": 44446133648,
+    "corrected_run_status": "in_progress"
   }
 }

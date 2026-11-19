@@ -297,3 +297,7 @@ Model run 44445496119 job 135296504312 SUCCESS, 34407 assertions including previ
 
 
 CI verified: exact native UI process classifier run 44445870259 job 135297732610 completed SUCCESS, CP_UI_PROCESS_POLICY_PASS assertions=1128, cumulative shared model suite 34727 assertions. Code d19d6407f4596b8a95349da6c3a553e267470f2e. Standalone Compose run 44445496296 API35 instrumentation still IN_PROGRESS at check, signed build success. No release or phone performance claim.
+
+
+## Compose first actual Android failure and correction
+Run 44445496296 job 135296505786 completed FAILURE at Android instrumentation. Signed main/test APK built; Home/detail/Search/Account/Appearance and entering Downloads passed up to page-count assertion. Actual semantics text was '[452 حلقة تجريبية · 24 في الصفحة]' but assertTextContains("24") default is exact, not substring. No runtime crash proven; later pagination/load checks not reached. Instrumentation returned -1 even with JUnit FAILURES!!!; existing gate correctly refused publication because explicit PASS/OK and negative checks were not met. Corrected both first and last page assertions to exact full Arabic strings, no weakened checks or runtime changes, code ca7ac8235c9d7363b7eef9eec8f3c1cd27ccd757. New Compose run https://github.com/alwansan/CP/actions/runs/44446133648 status in_progress at check. No release verified. Native-Compose only.
