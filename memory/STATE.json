@@ -1423,6 +1423,10 @@
     "r8_run": 44618921086,
     "r8_status": "in_progress",
     "production_merged": false,
-    "parcel_wire_verified": false
+    "parcel_wire_verified": false,
+    "guard_unit": "success",
+    "guard_assertions": 9,
+    "retry_job": 135895070526,
+    "r8_job": 135894971479
   }
 }
