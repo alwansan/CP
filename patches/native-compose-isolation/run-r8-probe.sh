@@ -26,6 +26,15 @@ cp patches/compose-lab/app/build/outputs/mapping/release/mapping.txt "$OUT/mappi
 "$T/aapt2" dump badging "$APK" > "$OUT/badging.txt"
 grep -Fx "targetSdkVersion:'35'" "$OUT/badging.txt"
 python3 patches/native-compose-audit/native_dependency_audit.py --original Cinemana_PATCH252_Project/app --apk "$APK" --dexdump "$T/dexdump" --aapt2 "$T/aapt2" --out "$OUT/report"
+PYTHONPATH=patches/native-compose-audit python3 - "$APK" "$OUT" <<'PY'
+import sys,pathlib,json
+from native_dependency_audit import declared_lab
+desc="Lcom/alwansan/cinemana/composelab/LabMinimalApplication;"
+decl=declared_lab(pathlib.Path(sys.argv[1]),{desc})[desc]
+assert decl["super"]=="Landroid/app/Application;",decl
+assert decl["methods"].get("<init>()V",0)&1,decl
+print("CP_R8_FACTORY_ENTRYPOINT_PASS "+json.dumps({"descriptor":desc,"public_constructor":True}))
+PY
 python3 - "$OUT" <<'PY'
 import json,pathlib,sys
 p=pathlib.Path(sys.argv[1])

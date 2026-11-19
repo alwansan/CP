@@ -52,9 +52,13 @@ def pid(name):
     result=adb("shell","pidof",name,check=False).strip().split()
     assert len(result)==1 and result[0].isdigit(),(name,result)
     return int(result[0])
+stream=None
+logfile=None
 try:
     adb("install","-r",str(APK),timeout=120)
     adb("logcat","-c")
+    logfile=(OUT/"runtime-live-logcat.txt").open("w")
+    stream=subprocess.Popen(["adb","logcat","-v","threadtime","-s","AndroidRuntime:E","ActivityTaskManager:I","ActivityManager:I","CPNativeUi:I","CPComposeOwner:I"],stdout=logfile,stderr=subprocess.STDOUT)
     launch=adb("shell","cmd","package","resolve-activity","--brief",PKG).strip().splitlines()[-1]
     assert launch.startswith(PKG+"/"),launch
     print(adb("shell","am","start","-W","-n",launch))
@@ -68,6 +72,11 @@ try:
     assert len({main,ui,owner})==3
     print(f"CP_NATIVE_R8_RUNTIME_PASS mainPid={main} uiPid={ui} ownerPid={owner} rows=24",flush=True)
 finally:
+    if stream is not None:
+        stream.terminate()
+        try:stream.wait(timeout=10)
+        except subprocess.TimeoutExpired:stream.kill();stream.wait(timeout=10)
+    if logfile is not None:logfile.close()
     (OUT/"runtime-logcat.txt").write_text(adb("logcat","-d","-t","8000",check=False,timeout=60))
     (OUT/"final-window-insets.txt").write_text(adb("shell","dumpsys","window","displays",check=False))
     (OUT/"runtime-activity.txt").write_text(adb("shell","dumpsys","activity","activities",check=False))
