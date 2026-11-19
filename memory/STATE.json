@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "html_owner_page_session_ci_pending",
+  "status": "html_owner_page_session_ci_pass",
   "last_session": "memory/sessions/2026-11-19_cp-dl-owner-page-session-43.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify owner page session CI, exact process startup gate and Android fixture, optional owner service and ART; no original APK/manifest changes yet",
+  "next": "Exact startup process gate and isolated Android fixture, then optional owner IPC and signed original ART",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "e51912305b0de0e00f5cb67c0df117491e163857",
+  "last_verified_head": "5d0797e9fe8907a59c232e272e55371aa247f188",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -910,8 +910,12 @@
   "html_owner_page_session_43": {
     "code_sha": "5d0797e9fe8907a59c232e272e55371aa247f188",
     "run_id": 44442771296,
-    "status": "in_progress",
+    "status": "completed",
     "scope": "isolated Java candidate; no Android runtime",
-    "doc": "docs/HTML_OWNER_PAGE_SESSION_AR.md"
+    "doc": "docs/HTML_OWNER_PAGE_SESSION_AR.md",
+    "conclusion": "success",
+    "job_id": 135287449850,
+    "assertions": 142,
+    "cumulative_assertions": 33599
   }
 }
