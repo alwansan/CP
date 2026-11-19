@@ -1,0 +1,1 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.alwansan.cinemana.htmlpreview.test"><uses-sdk android:minSdkVersion="23" android:targetSdkVersion="32"/><application android:hasCode="true"/><instrumentation android:name=".PreviewTest" android:targetPackage="com.alwansan.cinemana.htmlpreview"/></manifest>
