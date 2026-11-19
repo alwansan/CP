@@ -44,6 +44,13 @@ await ok(await p.locator("#main .download-row").count(),0);
 await p.locator("#download-query").fill("");
 await p.locator("#download-filter").selectOption("all");
 await ok(await p.locator("#main .download-row").count(),24);
+await p.locator("#download-filter").selectOption("active");
+await p.evaluate(()=>{window.__visibleFirst=document.querySelector("[data-demo-row]");window.__oldCount=matchingDownloads().length;demoApplyBatch([{id:"d452",progress:100}]);});
+await p.waitForTimeout(300);
+await ok(await p.evaluate(()=>document.querySelector("[data-demo-row]")===window.__visibleFirst),true);
+await ok(await p.locator("#demo-count").textContent(),await p.evaluate(()=> (window.__oldCount-1)+" من 452 عنصر تجريبي"));
+await p.locator("#download-filter").selectOption("all");
+
 
 await p.locator("#main [data-demo-toggle]").click();
 await ok(await p.locator("#main .download-row").count(),3);

@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.content.*;
 import android.net.Uri;
 import android.webkit.*;
 import android.view.ViewGroup;
@@ -20,6 +25,8 @@ public final class PreviewActivity extends Activity {
     static final String PAGE=ORIGIN+"/preview/index.html";
     static final String CSP="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-src 'none'; child-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; worker-src 'none'";
     private WebView web;
+    private ReadCall readCall;
+    private int readSerial;
     private WebMessagePort port;
     private boolean sent, probing;
     private int requests, documentGeneration;
@@ -140,10 +147,12 @@ public final class PreviewActivity extends Activity {
         if(raw==null||raw.length()>1024||m.getPorts()!=null&&m.getPorts().length>0){closePort();return;}
         try{
             JSONObject q=new JSONObject(raw);
-            String id=q.optString("id","");
+            String id=q.opt("id") instanceof String?(String)q.opt("id"):"";
             if(!id.matches("[A-Za-z0-9_-]{1,128}"))return;
-            boolean ok=q.length()==4&&Integer.valueOf(1).equals(q.opt("v"))&&"app.bootstrap".equals(q.optString("action"))
+            boolean valid=q.length()==4&&Integer.valueOf(1).equals(q.opt("v"))&&q.opt("action") instanceof String
                &&q.optJSONObject("args")!=null&&q.optJSONObject("args").length()==0;
+            if(valid&&"downloads.snapshot".equals(q.opt("action"))){startRead(p,id);return;}
+            boolean ok=valid&&"app.bootstrap".equals(q.opt("action"));
             JSONObject r=new JSONObject().put("v",1).put("id",id).put("ok",ok).put("status",ok?"RESULT":"FAILED");
             if(ok)r.put("data",new JSONObject().put("mode","synthetic-preview").put("nativeTransport",true).put("writeCommands",false));
             else r.put("code","ACTION_NOT_ALLOWED").put("message","Preview only");
@@ -151,7 +160,56 @@ public final class PreviewActivity extends Activity {
             Log.i("CPPreview","bootstrap reply ok="+ok);
         }catch(Exception ignored){closePort();}
     }
-    private void closePort(){if(port!=null){try{port.close();}catch(RuntimeException ignored){}port=null;}}
+    // One asynchronous read, bound to the current document and exact reply channel.
+    private final class ReadCall implements ServiceConnection {
+        final WebMessagePort target;final String id;final int generation,serial;
+        boolean bound;
+        final Runnable timeout=()->complete(null);
+        ReadCall(WebMessagePort p,String id){target=p;this.id=id;generation=documentGeneration;serial=++readSerial;}
+        void complete(JSONObject data){
+            if(readCall!=this)return;
+            cancelRead();
+            if(port!=target||generation!=documentGeneration)return;
+            sendRead(target,id,data);
+        }
+        @Override public void onServiceConnected(ComponentName n,IBinder b){
+            if(readCall!=this)return;
+            Messenger responses=new Messenger(new Handler(Looper.getMainLooper(),m->{
+                if(readCall!=this||m.what!=PreviewReadService.RESULT||m.arg1!=serial||m.sendingUid!=android.os.Process.myUid())return true;
+                try{
+                    String raw=m.getData().getString("json","");
+                    if(raw.length()>8192)throw new IllegalArgumentException();
+                    JSONObject data=new JSONObject(raw);
+                    if(!"synthetic-native-read".equals(data.optString("mode"))||data.optInt("workerPid",0)<=0||data.optInt("workerPid")==android.os.Process.myPid()||data.getJSONArray("rows").length()!=24)throw new IllegalArgumentException();
+                    complete(data);
+                }catch(Exception e){complete(null);}
+                return true;
+            }));
+            Message request=Message.obtain(null,PreviewReadService.READ,serial,0);request.replyTo=responses;
+            try{new Messenger(b).send(request);}catch(RemoteException e){complete(null);}
+        }
+        @Override public void onServiceDisconnected(ComponentName n){complete(null);}
+        @Override public void onBindingDied(ComponentName n){complete(null);}
+        @Override public void onNullBinding(ComponentName n){complete(null);}
+    }
+    private void sendRead(WebMessagePort p,String id,JSONObject data){
+        try{
+            JSONObject r=new JSONObject().put("v",1).put("id",id).put("ok",data!=null).put("status",data!=null?"RESULT":"FAILED");
+            if(data!=null)r.put("data",data);else r.put("code","READ_UNAVAILABLE").put("message","Preview read unavailable");
+            p.postMessage(new WebMessage(r.toString()));
+        }catch(Exception ignored){}
+    }
+    private void startRead(WebMessagePort p,String id){
+        if(readCall!=null){sendRead(p,id,null);return;}
+        ReadCall c=new ReadCall(p,id);readCall=c;
+        try{c.bound=bindService(new Intent(this,PreviewReadService.class),c,Context.BIND_AUTO_CREATE);if(!c.bound){c.complete(null);return;}main.postDelayed(c.timeout,5000);}
+        catch(RuntimeException e){c.complete(null);}
+    }
+    private void cancelRead(){
+        ReadCall c=readCall;readCall=null;if(c==null)return;
+        main.removeCallbacks(c.timeout);if(c.bound)try{unbindService(c);}catch(RuntimeException ignored){}
+    }
+    private void closePort(){cancelRead();if(port!=null){try{port.close();}catch(RuntimeException ignored){}port=null;}}
     private void fallback(){
         TextView t=new TextView(this);t.setText("تعذر فتح المعاينة الآمنة. أغلق التطبيق وأعد فتحه.");t.setTextSize(18);t.setPadding(28,60,28,28);setContentView(t);
     }

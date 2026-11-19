@@ -48,12 +48,22 @@ function downloadRows(){const rows=matchingDownloads();downloadPage=Math.max(0,M
 function downloadListMarkup(){
  const rows=matchingDownloads(),pages=Math.max(1,Math.ceil(rows.length/downloadPageSize));
  downloadPage=Math.max(0,Math.min(downloadPage,pages-1));
- return '<div class="demo-summary"><small>'+rows.length+' من '+demoRows.size+' عنصر تجريبي</small><small>صفحة '+(downloadPage+1)+' / '+pages+'</small></div><div id="demo-visible-rows">'+(rows.length?rows.slice(downloadPage*downloadPageSize,(downloadPage+1)*downloadPageSize).map(downloadRow).join(""):'<div class="empty">لا توجد عناصر مطابقة</div>')+'</div><div class="demo-tools"><button class="secondary" data-demo-page="-1" '+(downloadPage===0?"disabled":"")+'>السابق</button><button class="secondary" data-demo-page="1" '+(downloadPage+1>=pages?"disabled":"")+'>التالي</button></div>'
+ return '<div class="demo-summary"><small id="demo-count">'+rows.length+' من '+demoRows.size+' عنصر تجريبي</small><small id="demo-page-count">صفحة '+(downloadPage+1)+' / '+pages+'</small></div><div id="demo-visible-rows">'+(rows.length?rows.slice(downloadPage*downloadPageSize,(downloadPage+1)*downloadPageSize).map(downloadRow).join(""):'<div class="empty">لا توجد عناصر مطابقة</div>')+'</div><div class="demo-tools"><button class="secondary" data-demo-page="-1" '+(downloadPage===0?"disabled":"")+'>السابق</button><button class="secondary" data-demo-page="1" '+(downloadPage+1>=pages?"disabled":"")+'>التالي</button></div>'
 }
 function refreshDownloadProjection(force=false){
  const host=$("demo-list");if(!host)return;
- const target=downloadRows().map(d=>d.id).join("|"),present=Array.from(host.querySelectorAll("[data-demo-row]"),el=>el.dataset.demoRow).join("|");
- if(force||target!==present){host.innerHTML=downloadListMarkup();demoStats.projectionWrites=(demoStats.projectionWrites||0)+1}
+ const all=matchingDownloads(),pages=Math.max(1,Math.ceil(all.length/downloadPageSize));
+ downloadPage=Math.max(0,Math.min(downloadPage,pages-1));
+ const rows=all.slice(downloadPage*downloadPageSize,(downloadPage+1)*downloadPageSize);
+ const target=rows.map(d=>d.id).join("|"),present=Array.from(host.querySelectorAll("[data-demo-row]"),el=>el.dataset.demoRow).join("|");
+ if(force||target!==present){host.innerHTML=downloadListMarkup();demoStats.projectionWrites=(demoStats.projectionWrites||0)+1;return}
+ const count=$("demo-count"),page=$("demo-page-count");
+ const countText=all.length+" من "+demoRows.size+" عنصر تجريبي",pageText="صفحة "+(downloadPage+1)+" / "+pages;
+ if(count&&count.textContent!==countText){count.textContent=countText;demoStats.domWrites++}
+ if(page&&page.textContent!==pageText){page.textContent=pageText;demoStats.domWrites++}
+ const prev=host.querySelector('[data-demo-page="-1"]'),next=host.querySelector('[data-demo-page="1"]');
+ if(prev&&prev.disabled!==(downloadPage===0))prev.disabled=downloadPage===0;
+ if(next&&next.disabled!==(downloadPage+1>=pages))next.disabled=downloadPage+1>=pages;
 }
 
 function downloadActive(){return route==="downloads"&&!sub&&downloadTab==="items"&&!document.hidden}

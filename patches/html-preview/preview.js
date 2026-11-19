@@ -15,8 +15,14 @@
       if(r.data&&r.data.mode==="synthetic-preview"&&r.data.nativeTransport===true&&r.data.writeCommands===false){
         banner.textContent="معاينة مستقلة • بيانات وهمية • الاتصال المحلي ناجح";
         banner.dataset.connected="true";
+        client.request("downloads.snapshot",{}).then(r=>{
+          const d=r.data;
+          if(d&&d.mode==="synthetic-native-read"&&Number.isInteger(d.workerPid)&&Array.isArray(d.rows)&&d.rows.length===24&&d.rows.every((x,i)=>x.index===i&&x.observation==="OBSERVED"&&x.transport==="PROGRESS"&&x.progressBytes===(i+1)*10&&x.totalBytes===1000)){
+            banner.dataset.nativeRead="passed";banner.dataset.workerPid=String(d.workerPid);
+          }else banner.dataset.nativeRead="failed";
+        }).catch(()=>{banner.dataset.nativeRead="failed";});
         // Exercise a harmless prohibited command; the native allowlist must reject it.
-        client.request("downloads.snapshot",{}).then(()=>{banner.dataset.readGuard="failed";}).catch(err=>{banner.dataset.readGuard=err.code==="ACTION_NOT_ALLOWED"?"passed":"failed";});
+        client.request("catalog.detail",{}).then(()=>{banner.dataset.readGuard="failed";}).catch(err=>{banner.dataset.readGuard=err.code==="ACTION_NOT_ALLOWED"?"passed":"failed";});
       }
    }).catch(e=>{console.info("CP_PREVIEW_BOOTSTRAP_FAILED "+e.code);banner.textContent="معاينة مستقلة • بيانات وهمية • الاتصال المحلي غير متاح";});
    window.addEventListener("pagehide",()=>{client.close();p.close()},{once:true});

@@ -66,6 +66,13 @@ public final class PreviewTest extends Instrumentation {
             boolean denied=false;
             for(int n=0;n<20;n++){if("true".equals(eval(w,"document.querySelector('#preview-status').dataset.readGuard==='passed'"))){denied=true;break;}Thread.sleep(200);}
             check(denied,"native action allowlist");
+            boolean readPassed=false;for(int n=0;n<40;n++){
+                if("true".equals(eval(w,"document.querySelector('#preview-status').dataset.nativeRead==='passed'"))){readPassed=true;break;}Thread.sleep(200);
+            }
+            check(readPassed,"cross-process synthetic native read");
+            String pidText=eval(w,"Number(document.querySelector('#preview-status').dataset.workerPid)");
+            check(Integer.parseInt(pidText)!=android.os.Process.myPid(),"native read process separation");
+            android.util.Log.i("CPPreview","CP_HTML_NATIVE_READ_PASS rows=24 workerPid="+pidText+" uiPid="+android.os.Process.myPid());
             check("true".equals(eval(w,"window.__cpFetchBlocked=false;fetch('https://example.invalid/probe').then(()=>{},()=>window.__cpFetchBlocked=true);true")),"CSP probe start");
             Thread.sleep(500);
             check("true".equals(eval(w,"window.__cpFetchBlocked===true")),"remote fetch blocked");

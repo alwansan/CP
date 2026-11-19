@@ -17,7 +17,7 @@ s=p.read_text()
 assert '<script src="app.js"></script>' in s
 p.write_text(s.replace('<script src="app.js"></script>','<script src="app.js"></script><script src="bridge-protocol.js"></script><script src="preview.js"></script>'))
 PY
-javac --release 8 -cp "$J" -d "$OUT/mainclasses" "$P/PreviewActivity.java" "$P/PreviewLoadService.java"
+javac --release 8 -cp "$J" -d "$OUT/mainclasses" "$P/PreviewActivity.java" "$P/PreviewLoadService.java" "$P/PreviewReadService.java" patches/html-bridge/src/com/shabakaty/cinemana/htmlbridge/model/{BoundedDownloadRead,DownloadModel}.java
 javac --release 8 -cp "$J" -d "$OUT/testclasses" "$P/PreviewTest.java"
 "$T/d8" --min-api 23 --lib "$J" --output "$OUT/maindex" $(find "$OUT/mainclasses" -name '*.class')
 "$T/d8" --min-api 23 --lib "$J" --output "$OUT/testdex" $(find "$OUT/testclasses" -name '*.class')

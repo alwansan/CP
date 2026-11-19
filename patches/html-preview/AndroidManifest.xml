@@ -2,6 +2,7 @@
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="32"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <application android:label="Cinemana HTML Preview" android:theme="@android:style/Theme.Material.NoActionBar" android:allowBackup="false" android:usesCleartextTraffic="false" android:hardwareAccelerated="true">
+        <service android:name=".PreviewReadService" android:process=":previewread" android:exported="false"/>
         <service android:name=".PreviewLoadService" android:process=":previewload" android:exported="false"/>
         <activity android:name=".PreviewActivity" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
