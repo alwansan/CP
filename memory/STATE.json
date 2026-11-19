@@ -640,17 +640,17 @@
       "total_native_assertions": 32030
     },
     "standalone_preview": {
-      "status": "seventh_release_verified_obsidian_candidate",
-      "code_sha": "1de21c73d40741b1c2336411309689f5a72eb256",
-      "run_id": 44438407227,
-      "run_number": 8,
+      "status": "eighth_release_verified_queue_filter_candidate",
+      "code_sha": "44768eb6b696a4af9b5999fc18ef07e206953fca",
+      "run_id": 44439674975,
+      "run_number": 9,
       "package": "com.alwansan.cinemana.htmlpreview",
       "version": "0.1",
       "min_sdk": 23,
       "synthetic_data": true,
       "production_integrated": false,
       "local_bootstrap_port_implemented": true,
-      "android_test": "in_progress",
+      "android_test": "pending",
       "release_verified": true,
       "permissions_declared": 1,
       "report": "docs/HTML_ANDROID_PREVIEW_AR.md",
@@ -700,14 +700,14 @@
         "p95GapMs": 250,
         "maxGapMs": 366.7
       },
-      "release_code_sha": "13cd886e20b445d4ca5666df2de9543852df52ec",
-      "release_tag": "cp-html-preview-7",
-      "release_asset_id": 765754042,
+      "release_code_sha": "1de21c73d40741b1c2336411309689f5a72eb256",
+      "release_tag": "cp-html-preview-8",
+      "release_asset_id": 765771988,
       "release_asset_bytes": 37649,
-      "release_asset_sha256": "f417eef9e991679d39946de2cc2e31959d701c086d693449c39fe4b904d059d5",
-      "release_asset_url": "https://github.com/alwansan/CP/releases/download/cp-html-preview-7/Cinemana-HTML-Preview-0.1.apk",
+      "release_asset_sha256": "31b7e47f78c5462c112c921a9c25ed1df7c6cee49bc14f1dc5d0e55131685466",
+      "release_asset_url": "https://github.com/alwansan/CP/releases/download/cp-html-preview-8/Cinemana-HTML-Preview-0.1.apk",
       "release_artifact_id": null,
-      "shell_run_id": 44438407319,
+      "shell_run_id": 44439675121,
       "performance_candidate": {
         "synthetic_rows": 452,
         "visible_page_size": 24,
@@ -717,7 +717,7 @@
         "real_data": false,
         "real_phone_test": false
       },
-      "shell_run_status": "success",
+      "shell_run_status": "pending",
       "shell_run_job": 135272943747,
       "shell_browser_assertions": 60,
       "bridge_protocol_assertions": 47,
@@ -780,6 +780,40 @@
         "hyperframes_rendered": false,
         "context7_used": true,
         "artwork_imported": false
+      },
+      "eighth_run_id": 44438407227,
+      "eighth_run_job": 135272943206,
+      "eighth_run_ci": "success",
+      "eighth_run_metrics": {
+        "idle": {
+          "routeWorstMs": 902,
+          "routeP95Ms": 290,
+          "elapsedMs": 7281,
+          "frames": 137,
+          "p95GapMs": 233.4,
+          "maxGapMs": 450,
+          "over50": 34
+        },
+        "load": {
+          "routeWorstMs": 391,
+          "routeP95Ms": 310,
+          "elapsedMs": 6985,
+          "frames": 134,
+          "p95GapMs": 216.6,
+          "maxGapMs": 333.3,
+          "over50": 32,
+          "loadPid": 3302,
+          "uiPid": 2210
+        }
+      },
+      "queue_filter_candidate": {
+        "synthetic_only": true,
+        "normalized_query_max": 100,
+        "page_size": 24,
+        "coalesce_ms": 200,
+        "route_scroll_cache_max": 5,
+        "back_history": true,
+        "summary_edge_pending": true
       }
     },
     "ui_isolation": {
