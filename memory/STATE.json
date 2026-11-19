@@ -575,12 +575,30 @@
       "typed_admission_implemented": false,
       "isolated_receipt_gate": true,
       "code_sha": "1c605e7d170338481831d1f49a5d7c99409500f8",
-      "ci": "pending",
+      "ci": "success",
       "expected_assertions": 4198,
       "report": "docs/HTML_ADMISSION_RECEIPT_AR.md",
       "runtime_defect_candidate": "admitted false and enqueue boolean not propagated; independent writes",
       "authoritative_producer": false,
-      "android_test": false
+      "android_test": false,
+      "run_id": 44429335768,
+      "assertions": 4198,
+      "total_native_assertions": 17929,
+      "epoch_begin_caller": "MkvPlanStore.record",
+      "queue_path": "Cinemana_PATCH252_Project/app/smali_classes5/com/shabakaty/downloader/CnmDownloadQueue.smali"
+    },
+    "command_reservation": {
+      "status": "isolated_candidate_ci_pending",
+      "code_sha": "1f04a506ef303e7354d8eee64f3cbcd77457e7ef",
+      "run_id": 44429977107,
+      "initial_run_id": 44429948784,
+      "expected_assertions": 2731,
+      "synthetic_commands": 452,
+      "uses_actual_linux_fixture_io": true,
+      "authoritative": false,
+      "android_test": false,
+      "process_death_test": false,
+      "report": "docs/HTML_COMMAND_RESERVATION_AR.md"
     }
   }
 }
