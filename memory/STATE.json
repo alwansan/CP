@@ -1282,5 +1282,21 @@
     "runtime_run": 44539099629,
     "runtime_status": "in_progress",
     "production_merged": false
+  },
+  "native_compose_isolation_56": {
+    "entry": "985f21fa258b61f04bdc547c0985289a966015e8",
+    "previous_runtime_run": 44539099629,
+    "previous_runtime_job": 135612346324,
+    "previous_runtime_status": "failure_private_ui_not_opened",
+    "previous_artifact": 14538321032,
+    "insets_code": "032eac93b0c3c1e54f8826795d349161e5e60416",
+    "r8_retry_run": 44540498797,
+    "debug_retry_run": 44540498862,
+    "r8_retry_status": "in_progress",
+    "debug_retry_status": "in_progress",
+    "dex_audit_code": "49fba4e5509692d015ae6b2cc9fd58257917fb94",
+    "dex_audit_run": 44540913271,
+    "dex_audit_status": "in_progress",
+    "production_merged": false
   }
 }
