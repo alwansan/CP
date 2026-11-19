@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_lifecycle_verified_remote_draw_abi_pending",
+  "status": "native_compose_declared_abi_verified_draw_retry",
   "last_session": "memory/sessions/2026-11-19_cp-dl-nativeui-draw-abi-51.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify 44452375999 and 44452640557 then alternate Application factory and safe dependency isolation",
+  "next": "Inspect 44452375999 retry then factory fixture and safe namespace/resource integration design; declared ABI audit succeeded",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "cea16e32688d405a46676bca1e6b6a0c2cae364b",
+  "last_verified_head": "6b4491f73aed61b5d7026de06cfb99b45bfa4c07",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -1110,7 +1110,20 @@
     "abi_code_sha": "6b4491f73aed61b5d7026de06cfb99b45bfa4c07",
     "abi_run": 44452640557,
     "abi_job": 135320043144,
-    "abi_status": "in_progress",
-    "scope": "standalone lifecycle verified; draw/declared ABI pending"
+    "abi_status": "completed",
+    "scope": "standalone lifecycle verified; draw/declared ABI pending",
+    "abi_conclusion": "success",
+    "abi_artifact": 14496470952,
+    "abi_counts": {
+      "classes_with_differences": 30,
+      "difference_rows": 720,
+      "lab_only": 449,
+      "original_only": 201,
+      "class_shape": 26,
+      "access_shape": 44
+    },
+    "draw_first_attempt": "failure_maven_429",
+    "draw_retry_status": "in_progress",
+    "draw_retry_job": 135320994276
   }
 }
