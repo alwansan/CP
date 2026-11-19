@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_owner_ipc_fixture_ci_in_progress",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-compose-owner-ipc-46.md",
+  "status": "native_compose_client_epoch_android_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-compose-client-epoch-47.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify owner IPC fixture run, strengthen generation/serial disconnect and timeout tests, then original startup+typed owner service gate",
+  "next": "Verify 44448046392 then deterministic Binder delayed read/disconnect, process startup fixture and gated original ART",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "ca7ac8235c9d7363b7eef9eec8f3c1cd27ccd757",
+  "last_verified_head": "23c752ac15f2b4a535a41afac0dd0a7ca3b0be7e",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -984,8 +984,26 @@
   "native_compose_owner_ipc_46": {
     "code_sha": "363fc4a319e88c863048dbf8dd68c7e5e3f7392b",
     "run_id": 44447105331,
-    "status": "in_progress",
+    "status": "completed",
     "scope": "standalone synthetic read-only Android Messenger, no original integration",
-    "doc": "docs/NATIVE_COMPOSE_OWNER_IPC_AR.md"
+    "doc": "docs/NATIVE_COMPOSE_OWNER_IPC_AR.md",
+    "conclusion": "success",
+    "job_id": 135301801779,
+    "release": "cp-compose-lab-3",
+    "asset_id": 765961499,
+    "bytes": 8822245,
+    "sha256": "879271aa9c9e89f94c5dc05360192693b80ba8840fb029cf106dfdac84a773e0"
+  },
+  "native_compose_client_epoch_47": {
+    "model_code_sha": "23c752ac15f2b4a535a41afac0dd0a7ca3b0be7e",
+    "model_run": 44447798207,
+    "model_job": 135304076640,
+    "model_status": "success",
+    "assertions": 801,
+    "total_native_assertions": 35528,
+    "compose_code_sha": "f83e1e1c12dc7f1a802daca87313339f7a15b2fe",
+    "compose_run": 44448046392,
+    "compose_status": "in_progress",
+    "scope": "standalone client gate; no production integration"
   }
 }
