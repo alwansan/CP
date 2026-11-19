@@ -30,7 +30,25 @@ await ok(await p.locator("[data-demo-row=d25] .progress").evaluate(e=>e.style.ge
 await p.locator("#main [data-demo-toggle]").click();
 await ok(await p.locator("#main .download-row").count(),3);
 
-await p.locator("#dock [data-route=account]").click();await p.locator("#main [data-sub=appearance]").click();await ok(await p.locator("#main #theme").count(),1);await p.locator("#main #theme").selectOption("oled");await p.locator("#main #dock-size").selectOption("large");await p.locator("#main #continue-style").selectOption("poster");await p.locator("#main #motion").uncheck();await p.locator("#main [data-action=save-appearance]").click();await ok(await p.locator("html").getAttribute("data-theme"),"oled");await ok(await p.locator("#dock").getAttribute("data-size"),"large");await ok(await p.locator("body").getAttribute("data-motion"),"off");
+await p.locator("#dock [data-route=account]").click();
+await p.locator("#main [data-sub=subtitles]").click();
+await ok(await p.locator("#dock [data-route=account]").getAttribute("aria-current"),"true");
+await p.locator("#demo-setting-size").selectOption("30");
+await ok(await p.locator("#subtitle-sample").evaluate(e=>e.style.fontSize),"30px");
+await p.locator("[data-action=save-demo-settings]").click();
+await p.locator("#main [data-action=back]").click();
+await p.locator("#main [data-sub=subtitles]").click();
+await ok(await p.locator("#demo-setting-size").inputValue(),"30");
+await p.locator("#main [data-action=back]").click();
+await p.locator("#main [data-sub=downloads-settings]").click();
+await p.locator("#demo-setting-quality").selectOption("720");
+await p.locator("[data-action=save-demo-settings]").click();
+await p.locator("#main [data-action=back]").click();
+await p.locator("#main [data-sub=backup]").click();
+await p.locator("[data-action=preview-backup]").click();
+await ok(await p.locator("#preview-backup-text").evaluate(e=>JSON.parse(e.value).settings["downloads-settings"].quality),"720");
+await p.locator("#main [data-action=back]").click();
+await p.locator("#main [data-sub=appearance]").click();await ok(await p.locator("#main #theme").count(),1);await p.locator("#main #theme").selectOption("oled");await p.locator("#main #dock-size").selectOption("large");await p.locator("#main #continue-style").selectOption("poster");await p.locator("#main #motion").uncheck();await p.locator("#main [data-action=save-appearance]").click();await ok(await p.locator("html").getAttribute("data-theme"),"oled");await ok(await p.locator("#dock").getAttribute("data-size"),"large");await ok(await p.locator("body").getAttribute("data-motion"),"off");
 await p.reload();await ok(await p.locator("html").getAttribute("data-theme"),"oled");await ok(await p.locator("#dock").getAttribute("data-size"),"large");await p.locator("#dock [data-route=account]").click();await p.locator("#main [data-sub=appearance]").click();await p.locator("#main [data-action=back]").click();await ok(await p.locator("#main .profile-card").count(),1);
 await p.locator("#dock [data-route=home]").click();await ok(await p.locator("#main .continue-rail").getAttribute("data-style"),"poster");await p.locator("#main .avatar-item[data-item=a]").dispatchEvent("contextmenu");await ok(await p.locator("#detail-dialog").evaluate(d=>d.open),true);await p.keyboard.press("Escape");await ok(await p.locator("#detail-dialog").evaluate(d=>d.open),false);
 await p.locator(".topbar [data-action=notifications]").click();await ok((await p.locator("#toast").textContent()).includes("الإشعارات"),true);await p.locator(".topbar [data-route=account]").click();await ok(await p.locator("#main .profile-card").count(),1);await p.locator("#dock [data-route=home]").click();

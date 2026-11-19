@@ -26,6 +26,30 @@ public final class PreviewTest extends Instrumentation {
         }
         return false;
     }
+    private String measure(WebView w,String label)throws Exception{
+        check("true".equals(eval(w,"window.__cpFrames=[];window.__cpLast=performance.now();window.__cpMeasure=true;requestAnimationFrame(function tick(t){if(!window.__cpMeasure)return;window.__cpFrames.push(t-window.__cpLast);window.__cpLast=t;requestAnimationFrame(tick)});true")),"frame sampler "+label);
+        long worst=0,startAll=SystemClock.elapsedRealtime();
+        long[] latency=new long[25];
+        for(int k=0;k<25;k++){
+            String route=new String[]{"home","categories","search","downloads","account"}[k%5];
+            long t=SystemClock.elapsedRealtime();
+            check("true".equals(eval(w,"document.querySelector('#dock [data-route="+route+"]').click(); document.querySelector('#dock [data-route="+route+"]').getAttribute('aria-current')==='true'")),"route "+label+" "+route);
+            latency[k]=SystemClock.elapsedRealtime()-t;
+            worst=Math.max(worst,latency[k]);Thread.sleep(80);
+        }
+        Thread.sleep(400);
+        String metrics=eval(w,"window.__cpMeasure=false;JSON.stringify({frames:window.__cpFrames.length,maxGap:Math.max(...window.__cpFrames),p95:window.__cpFrames.slice().sort((a,b)=>a-b)[Math.floor(window.__cpFrames.length*.95)],over50:window.__cpFrames.filter(x=>x>50).length})");
+        check("true".equals(eval(w,"window.__cpFrames.length>=10 && window.__cpFrames.every(x=>Number.isFinite(x))")),"frame sampler insufficient "+label);
+        check(worst<2000,"navigation stall "+label);
+        java.util.Arrays.sort(latency);
+        return label+" routeWorstMs="+worst+" routeP95Ms="+latency[23]+" elapsedMs="+(SystemClock.elapsedRealtime()-startAll)+" frames="+metrics;
+    }
+    private int loadPid(Activity a){
+        ActivityManager am=(ActivityManager)a.getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo s:am.getRunningServices(100)){
+            if(s.service.getClassName().equals("com.alwansan.cinemana.htmlpreview.PreviewLoadService"))return s.pid;
+        }return 0;
+    }
     @Override public void onStart(){
         Bundle result=new Bundle();
         try{
@@ -57,25 +81,18 @@ public final class PreviewTest extends Instrumentation {
             Thread.sleep(350);
             check("true".equals(eval(w,"window.__cpRow===document.querySelector('[data-demo-row=d1]') && window.__cpPage===document.querySelector('#main .page') && window.__cpRow.querySelector('.progress').style.getPropertyValue('--progress')==='37%'")),"in-place download progress");
             check("true".equals(eval(w,"document.querySelector('[data-demo-toggle]').click();document.querySelectorAll('[data-demo-row]').length===3")),"restore fixture");
-            // Start a separate process with bounded synthetic CPU and fsync load.
+            // Same route sequence with and without CPU/fsync service, in one emulator process.
+            check("true".equals(eval(w,"document.querySelector('#dock [data-route=account]').click();document.querySelector('[data-sub=subtitles]').click();document.querySelector('#demo-setting-size').value='30';subtitleSample();document.querySelector('#subtitle-sample').style.fontSize==='30px'")),"subtitle preview");
+            check("true".equals(eval(w,"document.querySelector('[data-action=save-demo-settings]').click();document.querySelector('#dock [data-route=home]').click();true")),"save preview only");
+            String idle=measure(w,"CP_HTML_PREVIEW_IDLE_METRICS");
             Intent load=new Intent().setClassName("com.alwansan.cinemana.htmlpreview","com.alwansan.cinemana.htmlpreview.PreviewLoadService");
             runOnMainSync(()->a.startService(load));
-            Thread.sleep(800);
-            check("true".equals(eval(w,"window.__cpFrames=[];window.__cpLast=performance.now();window.__cpMeasure=true;requestAnimationFrame(function tick(t){if(!window.__cpMeasure)return;window.__cpFrames.push(t-window.__cpLast);window.__cpLast=t;requestAnimationFrame(tick)});true")),"frame sampler");
-            long worst=0;
+            int pid=0;for(int n=0;n<30&&pid<=0;n++){Thread.sleep(200);pid=loadPid(a);}
+            check(pid>0&&pid!=android.os.Process.myPid(),"separate load process");
             long loadStart=SystemClock.elapsedRealtime();
-            for(int k=0;k<25;k++){
-                String route=new String[]{"home","categories","search","downloads","account"}[k%5];
-                long start=SystemClock.elapsedRealtime();
-                check("true".equals(eval(w,"document.querySelector('#dock [data-route="+route+"]').click(); document.querySelector('#dock [data-route="+route+"]').getAttribute('aria-current')==='true'")),"load route "+route);
-                worst=Math.max(worst,SystemClock.elapsedRealtime()-start);
-                Thread.sleep(80);
-            }
-            Thread.sleep(400);
-            String metrics=eval(w,"window.__cpMeasure=false;JSON.stringify({frames:window.__cpFrames.length,maxGap:Math.max(...window.__cpFrames),p95:window.__cpFrames.slice().sort((a,b)=>a-b)[Math.floor(window.__cpFrames.length*.95)]})");
-            result.putString("stream","CP_HTML_PREVIEW_LOAD_METRICS routeWorstMs="+worst+" elapsedMs="+(SystemClock.elapsedRealtime()-loadStart)+" frames="+metrics+"\n");
-            check("true".equals(eval(w,"window.__cpFrames.length>=10 && window.__cpFrames.every(x=>Number.isFinite(x))")),"frame sampler insufficient");
-            check(worst<2000,"navigation stall under synthetic load");
+            String pressure=measure(w,"CP_HTML_PREVIEW_LOAD_METRICS");
+            check(loadPid(a)==pid&&SystemClock.elapsedRealtime()-loadStart<40000,"load overlap window");
+            result.putString("stream",idle+"\n"+pressure+" loadPid="+pid+" uiPid="+android.os.Process.myPid()+"\n");
             runOnMainSync(()->{a.stopService(load);a.finish();});
             result.putString("stream",result.getString("stream","")+"CP_HTML_PREVIEW_PASS: bootstrap, local origin, five tabs, mock disclosure\n");
             finish(Activity.RESULT_OK,result);

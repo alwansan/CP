@@ -12,7 +12,7 @@ public final class PreviewLoadService extends Service {
     @Override public int onStartCommand(Intent intent,int flags,int startId){
         if(pool!=null)return START_NOT_STICKY;
         running=true;pool=Executors.newFixedThreadPool(3);
-        long end=SystemClock.elapsedRealtime()+12000;
+        long end=SystemClock.elapsedRealtime()+45000;
         for(int i=0;i<2;i++)pool.submit(()->{
             long x=17;while(running&&SystemClock.elapsedRealtime()<end){
                 for(int j=0;j<30000;j++)x=(x*1664525L+1013904223L)^j;
@@ -30,7 +30,7 @@ public final class PreviewLoadService extends Service {
             }catch(Exception ignored){}finally{f.delete();}
         });
         android.util.Log.i("CPPreview","load fixture pid="+android.os.Process.myPid());
-        new Handler(Looper.getMainLooper()).postDelayed(()->stopSelf(startId),12500);
+        new Handler(Looper.getMainLooper()).postDelayed(()->stopSelf(startId),45500);
         return START_NOT_STICKY;
     }
     @Override public void onDestroy(){running=false;if(pool!=null)pool.shutdownNow();super.onDestroy();}
