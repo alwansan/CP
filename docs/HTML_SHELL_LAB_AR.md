@@ -44,3 +44,7 @@ Protocol unit checks and JS syntax all passed. Chromium browser install passed, 
 
 ## نتيجة الاختبار النهائي للدفعة
 run 44397753290 SUCCESS على HEAD e3b00bce2debdb0f5c7c4eb44888e4e6b803514d. CP_BRIDGE_PROTOCOL_PASS assertions=21 وCP_SHELL_BROWSER_PASS assertions=40. Artifact 14472026955 (shell-preview.png) تمت مراجعته بصرياً. الواجهة ما زالت synthetic/mock ولا Native bridge.
+
+
+## جلسة 32 — standalone Android preview
+راجع docs/HTML_ANDROID_PREVIEW_AR.md وmemory/sessions/2026-11-19_cp-dl-html-preview-32.md. Owner permits experimental APK when ready. Code e484daa569d2bbddb889f6b05e5805b697a16fcb; run https://github.com/alwansan/CP/actions/runs/44432508382 in progress at check. First separate package com.alwansan.cinemana.htmlpreview v0.1, no permission, synthetic data, WebView exact local HTTPS allowlist/CSP + platform main-frame transferred message port; app.bootstrap only, no mutation/real account/Room/downloads. Original APK and old UI untouched. CI builds signed separate main/test APK and requires actual API35 instrumentation (bootstrap/5 tabs/disclosure) BEFORE artifact/release tag cp-html-preview-1; no APK delivery claim until success and release checked. Existing signed production ART gate mandatory for integrated CP later. Next monitor run/fix failures, verify actual release, owner phone visual tests, negative security/lifecycle cases and read-only native source integration. Html only.

@@ -638,6 +638,22 @@
       "job_id": 135249848977,
       "assertions": 9514,
       "total_native_assertions": 32030
+    },
+    "standalone_preview": {
+      "status": "build_in_progress",
+      "code_sha": "e484daa569d2bbddb889f6b05e5805b697a16fcb",
+      "run_id": 44432508382,
+      "run_number": 1,
+      "package": "com.alwansan.cinemana.htmlpreview",
+      "version": "0.1",
+      "min_sdk": 23,
+      "synthetic_data": true,
+      "production_integrated": false,
+      "local_bootstrap_port_implemented": true,
+      "android_test": null,
+      "release_verified": false,
+      "permissions_declared": 0,
+      "report": "docs/HTML_ANDROID_PREVIEW_AR.md"
     }
   }
 }
