@@ -588,7 +588,7 @@
       "queue_path": "Cinemana_PATCH252_Project/app/smali_classes5/com/shabakaty/downloader/CnmDownloadQueue.smali"
     },
     "command_reservation": {
-      "status": "isolated_candidate_ci_pending",
+      "status": "isolated_candidate_ci_pass",
       "code_sha": "1f04a506ef303e7354d8eee64f3cbcd77457e7ef",
       "run_id": 44429977107,
       "initial_run_id": 44429948784,
@@ -598,7 +598,12 @@
       "authoritative": false,
       "android_test": false,
       "process_death_test": false,
-      "report": "docs/HTML_COMMAND_RESERVATION_AR.md"
+      "report": "docs/HTML_COMMAND_RESERVATION_AR.md",
+      "assertions": 2731,
+      "total_native_assertions": 20660,
+      "job_id": 135244563670,
+      "initial_run_conclusion": "success_superseded",
+      "thread_contention_test": true
     }
   }
 }
