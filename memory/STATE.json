@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_remote_draw_verified_factory_and_resource_audit_pending",
+  "status": "native_compose_resource_audit_verified_factory_instrumentation_pending",
   "last_session": "memory/sessions/2026-11-19_cp-dl-minimal-application-resource-audit-52.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "9c5b62a40dba8d5695872e6a7c9727b5d65a4012",
+  "last_verified_head": "a88c55e2cae7b0d91ebd6626656d7cd1fcba2ac3",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -1150,8 +1150,18 @@
     "resource_audit_code_sha": "a88c55e2cae7b0d91ebd6626656d7cd1fcba2ac3",
     "resource_audit_run": 44454286924,
     "resource_audit_job": 135325419356,
-    "resource_audit_status": "in_progress",
+    "resource_audit_status": "completed",
     "doc": "docs/NATIVE_COMPOSE_INTEGRATION_DECISION_AR.md",
-    "scope": "standalone actual factory and read-only resource candidate audit"
+    "scope": "standalone actual factory and read-only resource candidate audit",
+    "resource_audit_conclusion": "success",
+    "resource_audit_artifact": 14495794839,
+    "resource_counts": {
+      "affected_ids": 307,
+      "candidate_sites": 381,
+      "candidate_files": 52,
+      "distinct_ids_observed": 267
+    },
+    "factory_build": "success",
+    "factory_android": "in_progress"
   }
 }
