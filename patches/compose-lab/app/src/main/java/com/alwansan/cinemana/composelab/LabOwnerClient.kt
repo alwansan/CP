@@ -67,11 +67,11 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
         snapshot=next
         ui.post { if (!closed) screen=next }
     }
-    private fun send(what: Int,s: Int,nav: Int): Boolean {
+    private fun send(what: Int,s: Int,nav: Int,fixtureDelayMs: Int=0): Boolean {
         val target=remote ?: return false
         val m=Message.obtain(null,what,s,nav)
         m.replyTo=inbox
-        m.data=Bundle().apply { putLong("generation",transportGeneration) }
+        m.data=Bundle().apply { putLong("generation",transportGeneration); if(fixtureDelayMs!=0)putInt("fixtureDelayMs",fixtureDelayMs) }
         return try { target.send(m); true } catch (_: Exception) { false }
     }
     private fun releaseTransport() {
@@ -88,18 +88,18 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
         gate.disconnect(epoch); releaseTransport()
         publish(OwnerScreen(if(reason=="unavailable") "unavailable-terminal" else reason,busy=false))
     }
-    fun request(nav: Int) {
+    fun request(nav: Int, fixtureDelayMs: Int=0) {
         if (closed || !queued.compareAndSet(false,true)) return
-        if (!worker.post { queued.set(false); startRead(nav) }) queued.set(false)
+        if (!worker.post { queued.set(false); startRead(nav,fixtureDelayMs) }) queued.set(false)
     }
-    private fun startRead(nav: Int) {
+    private fun startRead(nav: Int, fixtureDelayMs: Int=0) {
         if (closed) return
         val move=when(nav){1->OwnerClientEpoch.Move.FIRST;2->OwnerClientEpoch.Move.NEXT;3->OwnerClientEpoch.Move.REFRESH;else->return}
         val q=gate.begin(move,SystemClock.elapsedRealtime()) ?: return
         pending=q
         publish(snapshot.copy(state="reading",busy=true))
         armDeadline()
-        if (!send(LabOwnerService.READ,q.serial,nav)) {
+        if (!send(LabOwnerService.READ,q.serial,nav,fixtureDelayMs)) {
             gate.sendFailed(q); terminal("unavailable")
         }
     }
