@@ -1,0 +1,37 @@
+name: CP Native Compose R8 namespace feasibility
+on:
+  push:
+    branches: [Native-Compose]
+    paths: ['patches/native-compose-isolation/**','.github/workflows/native-compose-r8-isolation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    if: github.ref == 'refs/heads/Native-Compose'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build isolated standalone release and inspect remaining collisions
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: bash patches/native-compose-isolation/run-r8-probe.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CP-Native-Compose-R8-Isolation-Diagnostics
+          path: ${{ runner.temp }}/cp-isolation-probe
+          if-no-files-found: warn
