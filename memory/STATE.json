@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "4202cce8f6cc6d37daefc89d93988a1fa10784f1",
+  "last_verified_head": "3b0a824c560bbe7c9f4ad0d1932bbb2753930849",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -1045,8 +1045,14 @@
     "compose_status": "in_progress",
     "model_code_sha": "3b0a824c560bbe7c9f4ad0d1932bbb2753930849",
     "model_run": 44450284851,
-    "model_status": "in_progress",
+    "model_status": "completed",
     "scope": "standalone startup fixture and pure factory choice, no original integration",
-    "doc": "docs/NATIVE_COMPOSE_STARTUP_AR.md"
+    "doc": "docs/NATIVE_COMPOSE_STARTUP_AR.md",
+    "model_conclusion": "success",
+    "model_job": 135312247978,
+    "assertions": 5404,
+    "total_native_assertions": 41221,
+    "compose_build": "success",
+    "android_instrumentation": "in_progress"
   }
 }
