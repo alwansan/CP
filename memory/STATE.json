@@ -640,7 +640,7 @@
       "total_native_assertions": 32030
     },
     "standalone_preview": {
-      "status": "ninth_release_verified_native_ipc_candidate",
+      "status": "tenth_release_verified",
       "code_sha": "46b782410c1dfc3bc56da590f82fcdbcc95da805",
       "run_id": 44440534916,
       "run_number": 10,
@@ -650,7 +650,7 @@
       "synthetic_data": true,
       "production_integrated": false,
       "local_bootstrap_port_implemented": true,
-      "android_test": "in_progress",
+      "android_test": "success",
       "release_verified": true,
       "permissions_declared": 1,
       "report": "docs/HTML_ANDROID_PREVIEW_AR.md",
@@ -700,12 +700,12 @@
         "p95GapMs": 250,
         "maxGapMs": 366.7
       },
-      "release_code_sha": "44768eb6b696a4af9b5999fc18ef07e206953fca",
-      "release_tag": "cp-html-preview-9",
-      "release_asset_id": 765798372,
-      "release_asset_bytes": 41745,
-      "release_asset_sha256": "25fcfc9296b3898a216e2526ccbd350738987e3d6b3b4d5b5ba1bf495e927e23",
-      "release_asset_url": "https://github.com/alwansan/CP/releases/download/cp-html-preview-9/Cinemana-HTML-Preview-0.1.apk",
+      "release_code_sha": "46b782410c1dfc3bc56da590f82fcdbcc95da805",
+      "release_tag": "cp-html-preview-10",
+      "release_asset_id": 765818750,
+      "release_asset_bytes": 49937,
+      "release_asset_sha256": "727ca0d1b7520aeb59f227f249c0f9d4bb729b53a11c7820999fc614db9d6659",
+      "release_asset_url": "https://github.com/alwansan/CP/releases/download/cp-html-preview-10/Cinemana-HTML-Preview-0.1.apk",
       "release_artifact_id": null,
       "shell_run_id": 44440534797,
       "performance_candidate": {
@@ -851,7 +851,28 @@
         "max_response_chars": 8192,
         "one_in_flight": true,
         "real_dao": false,
-        "android_verified": false
+        "android_verified": true,
+        "workerPid": 3167,
+        "uiPid": 2664
+      },
+      "tenth_run_id": 44440534916,
+      "tenth_run_job": 135279959522,
+      "tenth_run_ci": "success",
+      "tenth_run_metrics": {
+        "idle": {
+          "routeWorstMs": 441,
+          "routeP95Ms": 357,
+          "p95GapMs": 250,
+          "maxGapMs": 350.1
+        },
+        "load": {
+          "routeWorstMs": 401,
+          "routeP95Ms": 335,
+          "p95GapMs": 233.4,
+          "maxGapMs": 400,
+          "loadPid": 3561,
+          "uiPid": 2664
+        }
       }
     },
     "ui_isolation": {
@@ -869,6 +890,21 @@
       "cadence": "hourly minute 10 Asia/Baghdad",
       "scope": "Html only",
       "continue_after_success": true
+    },
+    "owner_page_read": {
+      "code_sha": "83714347bca5b7fcf2cfe110b41beddfb42a6a93",
+      "run_id": 44441696410,
+      "job_id": 135283834901,
+      "status": "success",
+      "assertions": 1427,
+      "total_native_assertions": 33457,
+      "page_size": 24,
+      "lookahead": 25,
+      "existing_room_candidate": true,
+      "production_integrated": false,
+      "art_verified": false,
+      "strict_owner_process": true,
+      "raw_cursor_native_only": true
     }
   }
 }
