@@ -62,6 +62,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: bash patches/compose-lab/run-android-test.sh
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: Cinemana-Compose-Lab
           path: |
@@ -69,8 +70,11 @@ jobs:
             ${{ runner.temp }}/cp-compose-lab/SHA256SUMS.txt
             ${{ runner.temp }}/cp-compose-lab/android-test.txt
             ${{ runner.temp }}/cp-compose-lab/android-metrics.txt
+            ${{ runner.temp }}/cp-compose-lab/android-runtime.txt
+            ${{ runner.temp }}/cp-compose-lab/owner-fixture.txt
           if-no-files-found: error
       - uses: softprops/action-gh-release@v3
+        if: success()
         with:
           tag_name: cp-compose-lab-${{ github.run_number }}
           target_commitish: ${{ github.sha }}

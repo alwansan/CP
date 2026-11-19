@@ -124,9 +124,22 @@ class LabTest {
     private fun testNativeUiStartup() {
         val context=rule.activity.applicationContext
         val pkg=context.packageName
-        fun snapshot(suffix: String): android.os.Bundle =
-            context.contentResolver.call(android.net.Uri.parse("content://$pkg.$suffix-startup"),"snapshot",null,null)
-                ?: throw AssertionError("missing startup snapshot")
+        fun snapshot(suffix: String): android.os.Bundle {
+            val uri=android.net.Uri.parse("content://$pkg.$suffix-startup")
+            val deadline=SystemClock.elapsedRealtime()+12000L
+            var latest:android.os.Bundle?=null
+            do {
+                latest=context.contentResolver.call(uri,"snapshot",null,null)
+                // Provider can be published before Application.onCreate; poll observation,
+                // do not move the recorded provider-order event or weaken exact assertions.
+                if(latest!=null&&latest.getInt("create")>0) {
+                    println("CP_NATIVEUI_STARTUP_SNAPSHOT $suffix $latest")
+                    return latest
+                }
+                Thread.sleep(100)
+            } while(SystemClock.elapsedRealtime()<deadline)
+            throw AssertionError("startup not completed for $suffix: $latest")
+        }
         fun verify(bundle: android.os.Bundle, name: String, role:String, legacy:Boolean, owner:Boolean, ui:Boolean): Int {
             assertEquals(name,bundle.getString("process"))
             assertEquals(role,bundle.getString("role"))
@@ -157,10 +170,11 @@ class LabTest {
             val limit=SystemClock.elapsedRealtime()+20000L
             var visible=false
             while(SystemClock.elapsedRealtime()<limit){
-                if(containsText("CP_NATIVE_UI_READY")&&containsText("صفحة 1 · 24 عنصر")&&containsText("حالة: observed")){visible=true;break}
+                if(containsText("CP_NATIVE_UI_READY")&&containsText("PID: $uiPid")&&containsText("صفحة 1 · 24 عنصر")&&containsText("حالة: observed")){visible=true;break}
                 Thread.sleep(150)
             }
             assertTrue("remote Compose renderer and owner IPC must be visible",visible)
+            assertEquals(uiPid,verify(snapshot("ui"),"$pkg:nativeui","UI_ONLY",false,false,true))
             println("CP_COMPOSE_NATIVEUI_STARTUP_PASS ownerPid=$ownerPid nativeUiPid=$uiPid legacyDownloaderPid=$downloaderPid providerBeforeCreate=true remotePage=24")
         } finally {
             automation.executeShellCommand("input keyevent 4").close()
