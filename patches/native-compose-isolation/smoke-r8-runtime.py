@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Black-box API35 smoke of minified lab only; no original app or test APK."""
 import os
+import sys
 import pathlib
 import re
 import subprocess
@@ -13,7 +14,41 @@ APK=pathlib.Path("patches/compose-lab/app/build/outputs/apk/release/app-release.
 def adb(*args,timeout=30,check=True):
     p=subprocess.run(["adb",*args],capture_output=True,text=True,timeout=timeout,check=check)
     return p.stdout
+def launcher_anr_close_target(root, focus):
+    # Only the emulator's exact known Pixel Launcher ANR. Never dismiss an app ANR.
+    if not re.search(r"mCurrentFocus=Window\{[^\n}]*Application Not Responding: com\.google\.android\.apps\.nexuslauncher\}", focus):
+        return None
+    if not re.search(r"mFocusedApp=ActivityRecord\{[^\n}]* "+re.escape(PKG)+r"/", focus):
+        return None
+    nodes=list(root.iter("node"))
+    titles=[n for n in nodes if n.get("package")=="android" and n.get("resource-id")=="android:id/alertTitle" and n.get("text")=="Pixel Launcher isn't responding"]
+    buttons=[n for n in nodes if n.get("package")=="android" and n.get("resource-id")=="android:id/aerr_close" and n.get("class")=="android.widget.Button" and n.get("text")=="Close app" and n.get("clickable")=="true" and n.get("enabled")=="true"]
+    if len(titles)!=1 or len(buttons)!=1:
+        return None
+    m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", buttons[0].get("bounds",""))
+    if m is None:
+        return None
+    x1,y1,x2,y2=map(int,m.groups())
+    if x2<=x1 or y2<=y1:
+        return None
+    return ((x1+x2)//2,(y1+y2)//2)
+
+def test_launcher_anr():
+    root=ET.fromstring("""<hierarchy><node package="android" resource-id="android:id/alertTitle" text="Pixel Launcher isn't responding"/><node package="android" resource-id="android:id/aerr_close" class="android.widget.Button" text="Close app" clickable="true" enabled="true" bounds="[70,1170][1010,1296]"/></hierarchy>""")
+    focus="mCurrentFocus=Window{abc u0 Application Not Responding: com.google.android.apps.nexuslauncher}\nmFocusedApp=ActivityRecord{abc u0 "+PKG+"/.ComposeLabActivity t8}"
+    assert launcher_anr_close_target(root,focus)==(540,1233)
+    assert launcher_anr_close_target(root,focus.replace("com.google.android.apps.nexuslauncher",PKG)) is None
+    assert launcher_anr_close_target(root,focus.replace(PKG+"/","other.app/")) is None
+    for idx,attr,value in [(0,"text","Cinemana isn't responding"),(0,"package",PKG),(1,"resource-id","android:id/aerr_wait"),(1,"enabled","false"),(1,"bounds","[10,10][0,0]"),(1,"package",PKG)]:
+        node=list(root.iter("node"))[idx]; old=node.get(attr);node.set(attr,value)
+        assert launcher_anr_close_target(root,focus) is None,(attr,value)
+        node.set(attr,old)
+    print("CP_LAUNCHER_ANR_GUARD_UNIT_PASS assertions=9",flush=True)
+
+launcher_recoveries=0
+
 def wait_for(label,click=False):
+    global launcher_recoveries
     end=time.monotonic()+65
     last=""
     while time.monotonic()<end:
@@ -21,6 +56,17 @@ def wait_for(label,click=False):
             adb("shell","uiautomator","dump","/sdcard/cp-r8-window.xml",timeout=15)
             last=adb("shell","cat","/sdcard/cp-r8-window.xml")
             root=ET.fromstring(last)
+            if os.environ.get("CP_RECOVER_PIXEL_LAUNCHER_ANR")=="1" and launcher_recoveries<2 and any(n.get("text")=="Pixel Launcher isn't responding" for n in root.iter("node")):
+                focus=adb("shell","dumpsys","window","displays",check=False)
+                target=launcher_anr_close_target(root,focus)
+                if target is not None:
+                    launcher_recoveries+=1
+                    (OUT/f"launcher-anr-{launcher_recoveries}.xml").write_text(last)
+                    (OUT/f"launcher-anr-{launcher_recoveries}.txt").write_text(focus)
+                    print("CP_EMULATOR_PIXEL_LAUNCHER_ANR_RECOVERY",launcher_recoveries,flush=True)
+                    adb("shell","input","tap",str(target[0]),str(target[1]))
+                    time.sleep(2)
+                    continue
             for node in root.iter("node"):
                 if node.get("package")!=PKG:
                     continue
@@ -52,6 +98,9 @@ def pid(name):
     result=adb("shell","pidof",name,check=False).strip().split()
     assert len(result)==1 and result[0].isdigit(),(name,result)
     return int(result[0])
+if sys.argv[1:]==["--test-launcher-anr"]:
+    test_launcher_anr()
+    sys.exit(0)
 stream=None
 logfile=None
 try:
