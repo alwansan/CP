@@ -36,7 +36,10 @@ def wait_for(label,click=False):
                     numbers=list(map(int,re.findall(r"\d+",target.get("bounds",""))))
                     if len(numbers)!=4 or numbers[2]<=numbers[0] or numbers[3]<=numbers[1]:
                         continue
-                    adb("shell","input","tap",str((numbers[0]+numbers[2])//2),str((numbers[1]+numbers[3])//2))
+                    x,y=(numbers[0]+numbers[2])//2,(numbers[1]+numbers[3])//2
+                    print("CP_R8_TAP",label,"bounds=",numbers,"xy=",x,y,flush=True)
+                    (OUT/("tap-"+str(x)+"-"+str(y)+".xml")).write_text(last)
+                    adb("shell","input","tap",str(x),str(y))
                 (OUT/"last-window.xml").write_text(last)
                 print("CP_R8_UI_OBSERVED",label,flush=True)
                 return
@@ -55,6 +58,7 @@ try:
     launch=adb("shell","cmd","package","resolve-activity","--brief",PKG).strip().splitlines()[-1]
     assert launch.startswith(PKG+"/"),launch
     print(adb("shell","am","start","-W","-n",launch))
+    (OUT/"initial-window-insets.txt").write_text(adb("shell","dumpsys","window","displays",check=False))
     wait_for("CINEMANA")
     wait_for("الحساب",click=True)
     wait_for("UI مستقل",click=True)
@@ -64,5 +68,6 @@ try:
     assert len({main,ui,owner})==3
     print(f"CP_NATIVE_R8_RUNTIME_PASS mainPid={main} uiPid={ui} ownerPid={owner} rows=24",flush=True)
 finally:
-    (OUT/"runtime-logcat.txt").write_text(adb("logcat","-d","-t","2500",check=False,timeout=60))
+    (OUT/"runtime-logcat.txt").write_text(adb("logcat","-d","-t","8000",check=False,timeout=60))
+    (OUT/"final-window-insets.txt").write_text(adb("shell","dumpsys","window","displays",check=False))
     (OUT/"runtime-activity.txt").write_text(adb("shell","dumpsys","activity","activities",check=False))

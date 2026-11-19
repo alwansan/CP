@@ -90,7 +90,7 @@ private fun LabShell(foreground: Boolean) {
     }
     MaterialTheme(colorScheme = darkColorScheme(background = bg, surface = Panel, primary = Coral, onSurface = Ivory, onBackground = Ivory, onPrimary = Obsidian)) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(Modifier.fillMaxSize().background(bg).padding(horizontal = 14.dp)) {
+            Column(Modifier.fillMaxSize().background(bg).windowInsetsPadding(WindowInsets.safeDrawing).padding(horizontal = 14.dp)) {
                 Row(Modifier.fillMaxWidth().height(52.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text("CINEMANA", fontWeight = FontWeight.Black, letterSpacing = 2.sp, fontSize = 20.sp, color = Ivory)
                     Spacer(Modifier.weight(1f))

@@ -24,7 +24,7 @@ class NativeUiProbeActivity : ComponentActivity() {
         setContent {
             MaterialTheme(colorScheme=darkColorScheme(background=Color(0xff090a0d))) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(16.dp)) {
+                    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).windowInsetsPadding(WindowInsets.safeDrawing).padding(16.dp)) {
                         Text("CP_NATIVE_UI_READY")
                         Text("PID: "+android.os.Process.myPid())
                         TextButton(onClick={requestedOrientation=android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE}) {Text("CP_ROTATE_LANDSCAPE")}
