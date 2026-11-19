@@ -1,0 +1,42 @@
+name: CP Native Compose DEX reference inventory
+on:
+  push:
+    branches: [Native-Compose]
+    paths: ['patches/native-compose-dex-audit/**', '.github/workflows/native-compose-dex-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.ref == 'refs/heads/Native-Compose'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - name: Verify pinned lab APK and inventory its DEX references
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/cp-dex-ref-audit"
+          mkdir -p "$OUT"
+          gh release download cp-compose-lab-11 --repo "$GITHUB_REPOSITORY" --pattern Cinemana-Compose-Lab-0.1.apk --dir "$OUT"
+          (cd "$OUT"; echo '86fbbeff9df85dfe680049089399ad9f33ab570b6ad3fe8822f6f3fdea09768f  Cinemana-Compose-Lab-0.1.apk' | sha256sum -c -)
+          python3 -m unittest discover -s patches/native-compose-dex-audit -p 'test_*.py'
+          java -jar Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar d -r -f -p "$OUT/framework" "$OUT/Cinemana-Compose-Lab-0.1.apk" -o "$OUT/decoded" 2>&1 | tee "$OUT/decode.log"
+          python3 patches/native-compose-dex-audit/audit_dex_references.py --original Cinemana_PATCH252_Project/app --apk "$OUT/Cinemana-Compose-Lab-0.1.apk" --decoded "$OUT/decoded" --aapt2 "$ANDROID_HOME/build-tools/35.0.0/aapt2" --out "$OUT/report" 2>&1 | tee "$OUT/audit.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CP-Native-Compose-Dex-Reference-Audit
+          path: |
+            ${{ runner.temp }}/cp-dex-ref-audit/*.log
+            ${{ runner.temp }}/cp-dex-ref-audit/report
+          if-no-files-found: warn
