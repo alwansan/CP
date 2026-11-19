@@ -16,7 +16,7 @@ from audit_dex_references import lexical
 
 CLASSES={"Landroidx/core/R$styleable;","Landroidx/autofill/R$styleable;"}
 CONST=re.compile(r"const(?:/4|/16|/high16)? (v\d+), (-?(?:0x[0-9a-fA-F]+|\d+))$")
-ARRAY_FIELD=re.compile(r"\.field (?:\S+ )+([^:\s]+):\[I$")
+ARRAY_FIELD=re.compile(r"\.field (?:\S+ )+([^:\s]+):\[I(?: = null)?$")
 INDEX_FIELD=re.compile(r"\.field (?:\S+ )+([^:\s]+):I = (-?(?:0x[0-9a-fA-F]+|\d+))$")
 NUM=re.compile(r"-?(?:0x[0-9a-fA-F]+|\d+)$")
 def require(condition,msg):
@@ -66,7 +66,7 @@ def read_styleable(path,desc):
         require(not ended,"instruction after return: "+s)
         body.append((n,s))
         if s=="return-void":ended=True
-    require(seen and ended and not in_method and not ctor and arrays,"invalid clinit")
+    require(seen and ended and not in_method and not ctor and arrays, f"invalid clinit {desc}: seen={seen} ended={ended} in_method={in_method} ctor={ctor} arrays={len(arrays)}; declarations={[s for s in code if s.startswith('.field ') and ': [I' in s.replace(':[',': [')][:10]}")
     # Each integer travels with its original producer line. The only uses are
     # array length or ordered array elements; reject all unknown instructions.
     registers={};pending=None;output={};size_sources=set();used_payloads=set()

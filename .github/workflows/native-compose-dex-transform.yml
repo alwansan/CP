@@ -35,6 +35,10 @@ jobs:
           python3 -m unittest discover -s patches/native-compose-dex-transform -p 'test_*.py'
           java -jar "$JAR" d -r -f -p "$OUT/framework" "$APK" -o "$OUT/decoded" 2>&1 | tee "$OUT/decode.log"
           python3 patches/native-compose-dex-transform/rewrite_named_fields.py --original Cinemana_PATCH252_Project/app --apk "$APK" --decoded "$OUT/decoded" --aapt2 "$T" --out "$OUT/report" 2>&1 | tee "$OUT/rewrite.log"
+          # Collect only the two generated public library R classes for exact failure diagnosis.
+          mkdir -p "$OUT/report/styleable-source"
+          cp "$OUT/decoded/smali_classes2/androidx/autofill/R\$styleable.smali" "$OUT/report/styleable-source/autofill.smali"
+          find "$OUT/decoded" -path '*/androidx/core/R$styleable.smali' -exec cp {} "$OUT/report/styleable-source/core.smali" \;
           python3 patches/native-compose-dex-transform/rewrite_styleables.py --original Cinemana_PATCH252_Project/app --apk "$APK" --decoded "$OUT/decoded" --aapt2 "$T" --out "$OUT/report" 2>&1 | tee "$OUT/styleable.log"
           # This APK deliberately has stale resources and incompatible original collisions
           # It must NOT be installed, signed, released, or uploaded.

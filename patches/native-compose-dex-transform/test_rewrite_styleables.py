@@ -4,7 +4,7 @@ class StyleableProof(unittest.TestCase):
     def test_array_producers(self):
         s=""".class public Llab/R$styleable;
 .super Ljava/lang/Object;
-.field public static A:[I
+.field public static A:[I = null
 .field public static A_alpha:I = 0x1
 .method static constructor <clinit>()V
 .locals 2
