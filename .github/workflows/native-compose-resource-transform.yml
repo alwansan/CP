@@ -1,0 +1,36 @@
+name: CP Native Compose actual resource rewrite probe
+on:
+  push:
+    branches: [Native-Compose]
+    paths: ['patches/native-compose-resource-transform/**','.github/workflows/native-compose-resource-transform.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    if: github.ref == 'refs/heads/Native-Compose'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - name: Decode and relink standalone lab resources only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash patches/native-compose-resource-transform/run-probe.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CP-Native-Compose-Resource-Transform-Diagnostics
+          path: |
+            ${{ runner.temp }}/cp-resource-transform/*.log
+            ${{ runner.temp }}/cp-resource-transform/summary.json
+            ${{ runner.temp }}/cp-resource-transform/transformed/*.tsv
+            ${{ runner.temp }}/cp-resource-transform/transformed/*.ids
+          if-no-files-found: warn
