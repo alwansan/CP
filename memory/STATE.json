@@ -935,7 +935,10 @@
       "job_id": 135291685643,
       "status": "in_progress",
       "package": "com.alwansan.cinemana.nativeuilab",
-      "scope": "standalone synthetic Android Views; not Compose"
+      "scope": "standalone synthetic Android Views; not Compose",
+      "build": "success",
+      "android_instrumentation": "in_progress",
+      "release": "unverified"
     },
     "automation_enabled_at_check": false
   }
