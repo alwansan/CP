@@ -1368,9 +1368,14 @@
     "combined_run": 44547279297,
     "combined_job": 135641116247,
     "combined_static": "success",
-    "combined_runtime": "in_progress",
+    "combined_runtime": "failure_drawscope_incompatible_class_change",
     "parcel_run": 44547935444,
-    "parcel_status": "in_progress",
-    "production_merged": false
+    "parcel_status": "runtime_in_progress",
+    "production_merged": false,
+    "combined_artifact": 14541607839,
+    "combined_format_fix": "afd29c743d1ff04154a99830a2ef6fe8fffdb4a9",
+    "combined_retry_run": 44548574857,
+    "combined_retry_status": "in_progress",
+    "parcel_job": 135643481540
   }
 }
