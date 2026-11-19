@@ -543,6 +543,13 @@
       "run_id": 44425947999,
       "assertions": 26,
       "code_sha": "61cbaac4f3c8f86dc659d0b388829fe6cb2c1c77"
+    },
+    "native_evidence": {
+      "status": "isolated_candidate_ci_pending",
+      "authoritative_control_source": false,
+      "actual_proof_producer": false,
+      "android_test": false,
+      "report": "docs/HTML_NATIVE_EVIDENCE_AR.md"
     }
   }
 }
