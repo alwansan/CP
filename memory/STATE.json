@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_first_android_assertion_failure_fixed_retry",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-compose-branch-45.md",
+  "status": "native_compose_owner_ipc_fixture_ci_in_progress",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-compose-owner-ipc-46.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify Compose CI and release then original typed owner IPC, startup boundary and fair physical device macrobenchmark",
+  "next": "Verify owner IPC fixture run, strengthen generation/serial disconnect and timeout tests, then original startup+typed owner service gate",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "d19d6407f4596b8a95349da6c3a553e267470f2e",
+  "last_verified_head": "ca7ac8235c9d7363b7eef9eec8f3c1cd27ccd757",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -959,8 +959,8 @@
     "model_job": 135296504312,
     "compose_job": 135296505786,
     "compose_build": "success",
-    "android_instrumentation": "failure",
-    "release": "unverified",
+    "android_instrumentation": "success",
+    "release": "cp-compose-lab-2",
     "native_process_policy": {
       "code_sha": "d19d6407f4596b8a95349da6c3a553e267470f2e",
       "run_id": 44445870259,
@@ -974,6 +974,18 @@
     "first_compose_failure": "page-count assertion exact vs substring",
     "corrected_test_sha": "ca7ac8235c9d7363b7eef9eec8f3c1cd27ccd757",
     "corrected_run": 44446133648,
-    "corrected_run_status": "in_progress"
+    "corrected_run_status": "completed",
+    "corrected_run_conclusion": "success",
+    "corrected_job": 135298606859,
+    "asset_id": 765941965,
+    "bytes": 8773003,
+    "sha256": "6af79c51ac70a19e65f3d99ceceb220aeb72aac00def17b25de68f1ff36a8476"
+  },
+  "native_compose_owner_ipc_46": {
+    "code_sha": "363fc4a319e88c863048dbf8dd68c7e5e3f7392b",
+    "run_id": 44447105331,
+    "status": "in_progress",
+    "scope": "standalone synthetic read-only Android Messenger, no original integration",
+    "doc": "docs/NATIVE_COMPOSE_OWNER_IPC_AR.md"
   }
 }
