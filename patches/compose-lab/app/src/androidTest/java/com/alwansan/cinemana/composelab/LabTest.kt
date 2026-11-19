@@ -68,6 +68,21 @@ class LabTest {
         node("page-count").assertTextEquals("452 حلقة تجريبية · 20 في الصفحة")
         node("next").assertIsNotEnabled()
         repeat(18) { node("prev").performClick() }
+        node("owner-open").performClick()
+        fun waitPage(page: Int, count: Int) {
+            rule.waitUntil(timeoutMillis=15000) { rule.onAllNodesWithText("صفحة $page · $count عنصر").fetchSemanticsNodes().isNotEmpty() }
+            node("owner-status").assertTextEquals("حالة: observed")
+        }
+        waitPage(1,24)
+        val ownerPid = node("owner-pid").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].first().text.substringAfter("PID: ").toInt()
+        assertTrue(ownerPid>0&&ownerPid!=android.os.Process.myPid())
+        repeat(18) { node("owner-next").performClick(); waitPage(it+2,if(it==17)20 else 24) }
+        node("owner-next").assertIsNotEnabled()
+        node("owner-refresh").performClick(); waitPage(19,20)
+        node("owner-first").performClick(); waitPage(1,24)
+        open(0); open(3); node("owner-open").performClick(); waitPage(1,24)
+        node("owner-close").performClick()
+        println("CP_COMPOSE_OWNER_IPC_PASS rows=452 pages=19 ownerPid=$ownerPid uiPid=${android.os.Process.myPid()}")
         node("stress").performClick()
         Thread.sleep(600)
         node("row-0").assertIsDisplayed()

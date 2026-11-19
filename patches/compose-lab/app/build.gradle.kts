@@ -29,6 +29,7 @@ android {
             isMinifyEnabled = false
         }
     }
+    sourceSets.getByName("main").java.srcDir(rootProject.file("../html-bridge/src"))
     buildFeatures { compose = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -61,13 +61,14 @@ private fun LabShell(foreground: Boolean) {
     var continueStyle by rememberSaveable { mutableIntStateOf(0) }
     var page by rememberSaveable { mutableIntStateOf(0) }
     var stress by rememberSaveable { mutableStateOf(false) }
+    var ownerPanel by rememberSaveable { mutableStateOf(false) }
     val progress = remember { List(TOTAL) { mutableIntStateOf(0) } }
     val holder = rememberSaveableStateHolder()
     val bg = if (oled) Color.Black else Obsidian
     val active = if (detail.isNotBlank()) detail else if (appearance) "المظهر" else routes[route]
     // Never run the fixture ticker when this screen or the Activity is hidden.
-    LaunchedEffect(foreground, route, stress, detail, appearance) {
-        if (foreground && route == 3 && stress && detail.isEmpty() && !appearance) {
+    LaunchedEffect(foreground, route, stress, detail, appearance, ownerPanel) {
+        if (foreground && route == 3 && stress && detail.isEmpty() && !appearance && !ownerPanel) {
             var cursor = 0
             while (true) {
                 delay(200)
@@ -81,8 +82,8 @@ private fun LabShell(foreground: Boolean) {
             }
         }
     }
-    BackHandler(enabled = detail.isNotBlank() || appearance || route != 0) {
-        when { detail.isNotBlank() -> detail = ""; appearance -> appearance = false; else -> route = 0 }
+    BackHandler(enabled = ownerPanel || detail.isNotBlank() || appearance || route != 0) {
+        when { ownerPanel -> ownerPanel = false; detail.isNotBlank() -> detail = ""; appearance -> appearance = false; else -> route = 0 }
     }
     MaterialTheme(colorScheme = darkColorScheme(background = bg, surface = Panel, primary = Coral, onSurface = Ivory, onBackground = Ivory, onPrimary = Obsidian)) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -99,6 +100,7 @@ private fun LabShell(foreground: Boolean) {
                 }
                 Box(Modifier.weight(1f).fillMaxWidth()) {
                     when {
+                        route == 3 && ownerPanel -> OwnerReadPanel(foreground) { ownerPanel = false }
                         detail.isNotBlank() -> Detail(detail) { detail = "" }
                         appearance -> Appearance(oled, motion, continueStyle, { oled = it }, { motion = it }, { continueStyle = it })
                         else -> holder.SaveableStateProvider(route) {
@@ -106,7 +108,7 @@ private fun LabShell(foreground: Boolean) {
                                 0 -> Home(continueStyle) { detail = it }
                                 1 -> Categories { detail = it }
                                 2 -> Search { detail = it }
-                                3 -> Downloads(page, progress, stress, { stress = !stress }, { page = it })
+                                3 -> Downloads(page, progress, stress, { stress = !stress }, { page = it }, { ownerPanel = true })
                                 4 -> Account { appearance = true }
                             }
                         }
@@ -121,7 +123,7 @@ private fun LabShell(foreground: Boolean) {
                         val tint by animateFloatAsState(if (selected) 1f else 0f, animationSpec = tween(if (motion) 180 else 0), label = "dock")
                         Column(
                             Modifier.weight(1f).clip(RoundedCornerShape(20.dp))
-                                .background(Ivory.copy(alpha = tint)).clickable { route = i; detail = ""; appearance = false }
+                                .background(Ivory.copy(alpha = tint)).clickable { route = i; detail = ""; appearance = false; ownerPanel = false }
                                 .testTag("route-$i").height(56.dp),
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
                         ) {
@@ -212,12 +214,12 @@ private fun Detail(title: String, close: () -> Unit) {
     }
 }
 @Composable
-private fun Downloads(page: Int, progress: List<MutableIntState>, stress: Boolean, toggle: () -> Unit, navigate: (Int) -> Unit) {
+private fun Downloads(page: Int, progress: List<MutableIntState>, stress: Boolean, toggle: () -> Unit, navigate: (Int) -> Unit, openOwner: () -> Unit) {
     val start = page * PAGE
     val count = minOf(PAGE, TOTAL - start)
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("452 حلقة تجريبية · $count في الصفحة", Modifier.testTag("page-count"), color = Muted)
-        Button(onClick = toggle, modifier = Modifier.testTag("stress")) { Text(if (stress) "إيقاف تحديثات العرض" else "تشغيل تحديثات العرض") }
+        Row { Button(onClick = toggle, modifier = Modifier.testTag("stress")) { Text(if (stress) "إيقاف تحديثات العرض" else "تشغيل تحديثات العرض") }; TextButton(onClick=openOwner,modifier=Modifier.testTag("owner-open")) { Text("IPC") } }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
             TextButton(onClick = { navigate(page - 1) }, enabled = page > 0, modifier = Modifier.testTag("prev")) { Text("السابق") }
             Text("${page + 1} / $PAGES", Modifier.testTag("page-index"), color = Ivory)

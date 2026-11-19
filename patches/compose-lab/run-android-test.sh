@@ -7,6 +7,7 @@ adb logcat -c
 adb shell am instrument -w -r com.alwansan.cinemana.composelab.test/androidx.test.runner.AndroidJUnitRunner | tee "$OUT/android-test-raw.txt"
 tr -d '\r' < "$OUT/android-test-raw.txt" > "$OUT/android-test.txt"
 adb logcat -d -s System.out:I | tee "$OUT/android-metrics.txt"
+grep -F 'CP_COMPOSE_OWNER_IPC_PASS' "$OUT/android-metrics.txt"
 grep -F 'CP_COMPOSE_LAB_PASS' "$OUT/android-metrics.txt"
 grep -F 'CP_COMPOSE_IDLE' "$OUT/android-metrics.txt"
 grep -F 'CP_COMPOSE_LOAD' "$OUT/android-metrics.txt"
