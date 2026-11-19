@@ -31,6 +31,7 @@ class Transform:
         self.pkg=pkg
         self.defined=set()
         self.ref_count=0
+        self.symbols={}
     def mapped(self,key,definition=False):
         if key not in self.names:
             raise ValueError("unmapped local resource "+key)
@@ -77,6 +78,38 @@ class Transform:
                 return name
             name=local
         return self.mapped("attr/"+name)
+    def collect_symbols(self,res):
+        # AAPT2 emits ID resources for local enum/flag symbols. APKTool
+        # may represent them only inside attrs.xml, not as <item type="id">.
+        for path in sorted(res.glob("values*/*.xml")):
+            if path.name=="public.xml":
+                continue
+            root=ET.parse(path).getroot()
+            for attr in root.findall("attr"):
+                attr_name=attr.get("name")
+                if not attr_name or "attr/"+attr_name not in self.names:
+                    continue
+                for symbol in attr:
+                    if symbol.tag not in ("enum","flag"):
+                        continue
+                    name=symbol.get("name")
+                    if not name or "id/"+name not in self.names:
+                        raise ValueError("unmapped enum/flag symbol "+str(name)+" in "+str(path))
+                    group=self.symbols.setdefault(attr_name,{})
+                    mapped=self.mapped("id/"+name)
+                    if name in group and group[name]!=mapped:
+                        raise ValueError("inconsistent symbol mapping "+name)
+                    group[name]=mapped
+        print("CP_RESOURCE_ENUM_SYMBOLS "+json.dumps(self.symbols,sort_keys=True))
+    def symbol_value(self,attr,value):
+        group=self.symbols.get(attr,{})
+        if not group or not value:
+            return value
+        # Only local attributes use this map; don't replace framework
+        # or arbitrary strings. Preserve separators for flag expressions.
+        return "|".join(piece.replace(piece.strip(),group[piece.strip()],1)
+                        if piece.strip() in group else piece
+                        for piece in value.split("|"))
     def rename_xml(self,path,out,values):
         root=ET.parse(path).getroot()
         if values and root.tag!="resources":
@@ -97,6 +130,10 @@ class Transform:
                     raise ValueError("unsupported values declaration "+tag+" in "+str(path))
                 key=typ+"/"+name
                 child.set("name",self.mapped(key,True))
+                if typ=="attr":
+                    for symbol in child:
+                        if symbol.tag in ("enum","flag"):
+                            symbol.set("name",self.mapped("id/"+symbol.get("name"),True))
                 if typ=="style":
                     parent=child.get("parent")
                     if parent is not None and parent and not parent.startswith(("@","?")):
@@ -111,7 +148,11 @@ class Transform:
                         child.set("parent","@style/"+implicit)
                     for item in child.findall("item"):
                         if "name" in item.attrib:
-                            item.set("name",self.attr_name(item.get("name")))
+                            old_attr=item.get("name")
+                            local=old_attr.split(":",1)[-1] if old_attr.startswith(self.pkg+":") else old_attr
+                            if item.text:
+                                item.text=self.symbol_value(local,item.text)
+                            item.set("name",self.attr_name(old_attr))
         for el in root.iter():
             for key,val in list(el.attrib.items()):
                 new_key=key
@@ -119,6 +160,7 @@ class Transform:
                     if key.startswith("{"+ns+"}"):
                         local=key.split("}",1)[1]
                         new_key="{"+AUTO+"}"+self.mapped("attr/"+local)
+                        val=self.symbol_value(local,val)
                 updated=self.reference(val)
                 if new_key!=key:
                     del el.attrib[key]
@@ -130,6 +172,7 @@ class Transform:
     def run(self,res,out):
         if out.exists():
             raise ValueError("scratch output already exists")
+        self.collect_symbols(res)
         for path in sorted(res.rglob("*")):
             if not path.is_file():
                 continue
