@@ -24,6 +24,7 @@ jobs:
           java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.DownloadModelTest
           java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.BoundedDownloadReadTest
           java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.NativeEvidenceGateTest
+          java -ea -cp "$RUNNER_TEMP/cp-html-model" com.shabakaty.cinemana.htmlbridge.model.BoundedMkvPathHintTest
       - name: Locate exact resume candidate callers (static only)
         run: |
           python3 - <<'PY'

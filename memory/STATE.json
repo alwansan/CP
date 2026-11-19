@@ -555,6 +555,14 @@
       "code_sha": "18894a719ab5a799ab9d6c84a127966d75d5caef",
       "proof_format": "StorageMaintenance152 safe token .path canonical path + timestamp; hint only; reader not implemented",
       "direct_resume_ui": false
+    },
+    "path_hint": {
+      "status": "isolated_candidate_ci_pending",
+      "max_bytes_per_read": 8192,
+      "synthetic_records": 452,
+      "report": "docs/HTML_MKV_PATH_HINT_AR.md",
+      "authoritative": false,
+      "android_test": false
     }
   }
 }
