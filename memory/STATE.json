@@ -1377,5 +1377,30 @@
     "combined_retry_run": 44548574857,
     "combined_retry_status": "in_progress",
     "parcel_job": 135643481540
+  },
+  "native_compose_isolation_61": {
+    "entry": "0f9e79eef26f37e8a53cbe63190a23fc7fa686a5",
+    "combined_debug_run": 44548574857,
+    "combined_debug_job": 135645764319,
+    "combined_debug_status": "success",
+    "combined_debug_artifact": 14542141553,
+    "dex_format": "037",
+    "dex_files": 5,
+    "resources": 263,
+    "debug_classes": 12317,
+    "debug_ipc_rows": 24,
+    "parcel_run": 44547935444,
+    "parcel_job": 135643481540,
+    "parcel_status": "success",
+    "parcel_artifact": 14542485060,
+    "relocated_classes": 8,
+    "relocated_references": 149,
+    "minified_classes": 2347,
+    "class_overlap": 0,
+    "parcel_wire_verified": false,
+    "minified_combined_code": "920846197c2b5dbbdb1d9a2daf60c042f0a3933d",
+    "minified_combined_run": 44550267921,
+    "minified_combined_status": "in_progress",
+    "production_merged": false
   }
 }
