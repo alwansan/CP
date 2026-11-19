@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_resource_audit_verified_factory_instrumentation_pending",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-minimal-application-resource-audit-52.md",
+  "status": "native_compose_factory_class_verified_rotation_retry_namespace_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-factory-retry-resource-namespace-53.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify 44454077545 and 44454286924; then isolation prototype and original signed ART integration gates",
+  "next": "Verify 44532220153, 44532616008, 44532616198; then class namespace isolation feasibility and resource transformations",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -1146,7 +1146,7 @@
     "factory_code_sha": "ee6a5f900d133a2b01566f91f785780bfaf061cd",
     "factory_run": 44454077545,
     "factory_job": 135324745973,
-    "factory_status": "in_progress",
+    "factory_status": "completed",
     "resource_audit_code_sha": "a88c55e2cae7b0d91ebd6626656d7cd1fcba2ac3",
     "resource_audit_run": 44454286924,
     "resource_audit_job": 135325419356,
@@ -1162,6 +1162,36 @@
       "distinct_ids_observed": 267
     },
     "factory_build": "success",
-    "factory_android": "in_progress"
+    "factory_android": "failure_launcher_anr_focus",
+    "factory_conclusion": "failure",
+    "actual_factory_class_verified": true,
+    "rotation_verified": false,
+    "pids": {
+      "main": 2835,
+      "nativeui": 4124,
+      "legacy": 4140,
+      "owner_fixture": 3823
+    },
+    "draw": {
+      "rows": 24,
+      "page": 1,
+      "width": 996,
+      "height": 1747,
+      "resumed": true,
+      "focused": false
+    }
+  },
+  "native_compose_namespace_53": {
+    "factory_retry_sha": "9d02b848ee728ba6191a5768bd0c6a408ab51d89",
+    "factory_retry_run": 44532220153,
+    "factory_retry_status": "in_progress",
+    "namespace_sha": "e854ea6865a3d4765fc6a3deadb5f4550f1907a0",
+    "namespace_run": 44532616008,
+    "namespace_job": 135589625070,
+    "namespace_status": "in_progress",
+    "audit_repeat_run": 44532616198,
+    "audit_repeat_job": 135589626167,
+    "scope": "standalone factory rotation retry; allocation only plus AAPT2 synthetic smoke",
+    "doc": "docs/NATIVE_COMPOSE_RESOURCE_NAMESPACE_AR.md"
   }
 }
