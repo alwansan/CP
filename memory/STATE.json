@@ -597,24 +597,32 @@
       "uses_actual_linux_fixture_io": true,
       "authoritative": false,
       "android_test": false,
-      "process_death_test": false,
+      "process_death_test": "Linux fixtures pass: partial simulated writer and completed reserve; not actual mid-reserve or Android",
       "report": "docs/HTML_COMMAND_RESERVATION_AR.md",
       "assertions": 2731,
       "total_native_assertions": 20660,
       "job_id": 135244563670,
       "initial_run_conclusion": "success_superseded",
-      "thread_contention_test": true
+      "thread_contention_test": true,
+      "subprocess_run_id": 44430639883
     },
     "fresh_epoch_read": {
       "code_sha": "ee35b410fc09db143810e8ba490541e5de006977",
       "run_id": 44430639883,
-      "ci": "pending",
+      "ci": "success",
       "report": "docs/HTML_FRESH_EPOCH_READ_AR.md",
       "expected_epoch_assertions": 1820,
       "expected_process_assertions": 36,
       "android_test": false,
       "authoritative": false,
-      "preflight_runtime": false
+      "preflight_runtime": false,
+      "job_id": 135246825143,
+      "epoch_assertions": 1820,
+      "process_assertions": 36,
+      "total_native_assertions": 22516,
+      "linux_independent_contenders": 8,
+      "linux_forced_kills": 2,
+      "deterministic_kill_inside_reserve": false
     }
   }
 }

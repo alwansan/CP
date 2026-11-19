@@ -9,3 +9,7 @@ FreshEpochRead: read-only candidate based on actual Fresh121.marker/epoch/advanc
 Code ee35b410fc09db143810e8ba490541e5de006977; workflow 44430639883 in progress last checked. Expected 36 process and 1820 epoch assertions; not verified yet.
 ## Next
 Verify CI and update count. Implement owner-side actual typed read preflight/serialization with existing lock and native identity mapping, not another scheduler. Resolve distinct-key duplicate and durable binding/retention; no APK/runtime/old UI/real DB/IPC or authoritative ACK, no resume endpoint.
+
+
+## جلسة 30 — verified CI
+Code ee35b410fc09db143810e8ba490541e5de006977; run https://github.com/alwansan/CP/actions/runs/44430639883 completed SUCCESS, job 135246825143. CP_COMMAND_RESERVATION_PROCESS_PASS assertions=36 independentContenders=8 forcedKills=2; CP_FRESH_EPOCH_READ_PASS assertions=1820 syntheticEpisodes=452; cumulative native suite 22516 assertions. Actual Linux independent JVM and forced kill fixtures (one partial synthetic writer, one completed actual reserve). No deterministic kill inside production reserve, power loss, Android, Room/IPC, authoritative ACK or APK. Next implement owner-side arbitration/preflight including native identity and distinct command dedup before mutating delete/epoch, then bind exact epoch/task receipt; no parallel queue. Preserve old UI and ART. Html only.
