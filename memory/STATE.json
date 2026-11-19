@@ -570,9 +570,17 @@
       "atomic": false
     },
     "admission_audit": {
-      "scope": "NativeBatchScope + DownloadActionsHandlerScope.m + dv0",
+      "scope": "mv0/i44/ey0.c/dlStart/Restart108/Queue110/Fresh121",
       "video_dispatch_return_is_durable_ack": false,
-      "typed_admission_implemented": false
+      "typed_admission_implemented": false,
+      "isolated_receipt_gate": true,
+      "code_sha": "1c605e7d170338481831d1f49a5d7c99409500f8",
+      "ci": "pending",
+      "expected_assertions": 4198,
+      "report": "docs/HTML_ADMISSION_RECEIPT_AR.md",
+      "runtime_defect_candidate": "admitted false and enqueue boolean not propagated; independent writes",
+      "authoritative_producer": false,
+      "android_test": false
     }
   }
 }
