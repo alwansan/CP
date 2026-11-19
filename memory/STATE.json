@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_declared_abi_verified_draw_retry",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-nativeui-draw-abi-51.md",
+  "status": "native_compose_remote_draw_verified_factory_and_resource_audit_pending",
+  "last_session": "memory/sessions/2026-11-19_cp-dl-minimal-application-resource-audit-52.md",
   "verified_at": "2026-11-19",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Inspect 44452375999 retry then factory fixture and safe namespace/resource integration design; declared ABI audit succeeded",
+  "next": "Verify 44454077545 and 44454286924; then isolation prototype and original signed ART integration gates",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,7 +41,7 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "6b4491f73aed61b5d7026de06cfb99b45bfa4c07",
+  "last_verified_head": "9c5b62a40dba8d5695872e6a7c9727b5d65a4012",
   "branch_actions": {
     "total_count": 11,
     "latest_run_id": 44185564726,
@@ -1106,7 +1106,7 @@
     "draw_code_sha": "9c5b62a40dba8d5695872e6a7c9727b5d65a4012",
     "draw_run": 44452375999,
     "draw_job": 135319183748,
-    "draw_status": "in_progress",
+    "draw_status": "completed",
     "abi_code_sha": "6b4491f73aed61b5d7026de06cfb99b45bfa4c07",
     "abi_run": 44452640557,
     "abi_job": 135320043144,
@@ -1123,7 +1123,35 @@
       "access_shape": 44
     },
     "draw_first_attempt": "failure_maven_429",
-    "draw_retry_status": "in_progress",
-    "draw_retry_job": 135320994276
+    "draw_retry_status": "completed",
+    "draw_retry_job": 135320994276,
+    "draw_retry_conclusion": "success",
+    "release": "cp-compose-lab-8",
+    "asset_id": 766101930,
+    "bytes": 8838849,
+    "sha256": "d35534509ce370de300fbb3a53f999c1b3066c25155c14be679613676a3a351c",
+    "remote_draw": {
+      "nativeui_pid": 3960,
+      "owner_pid": 3761,
+      "main_pid": 2204,
+      "legacy_pid": 3990,
+      "page": 1,
+      "rows": 24,
+      "serial": 1,
+      "width": 996,
+      "height": 1999
+    }
+  },
+  "native_compose_factory_resource_52": {
+    "factory_code_sha": "ee6a5f900d133a2b01566f91f785780bfaf061cd",
+    "factory_run": 44454077545,
+    "factory_job": 135324745973,
+    "factory_status": "in_progress",
+    "resource_audit_code_sha": "a88c55e2cae7b0d91ebd6626656d7cd1fcba2ac3",
+    "resource_audit_run": 44454286924,
+    "resource_audit_job": 135325419356,
+    "resource_audit_status": "in_progress",
+    "doc": "docs/NATIVE_COMPOSE_INTEGRATION_DECISION_AR.md",
+    "scope": "standalone actual factory and read-only resource candidate audit"
   }
 }
