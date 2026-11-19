@@ -67,7 +67,7 @@ jobs:
           prerelease: true
           make_latest: "false"
           body: |
-            Standalone synthetic HTML UI preview, separate package. No original app data, real account, downloads or playback. Android WebView smoke test required. Install alongside the stable Cinemana app.
+            Standalone synthetic HTML UI preview, separate package. No original app data, real account, downloads or playback. INTERNET permission is needed for local HTTPS WebView interception; remote requests are denied by CSP and the local asset allowlist. Android WebView smoke test required. Install alongside the stable Cinemana app.
           files: |
             ${{ runner.temp }}/cp-html-preview/Cinemana-HTML-Preview-0.1.apk
             ${{ runner.temp }}/cp-html-preview/SHA256SUMS.txt

@@ -33,6 +33,12 @@ public final class PreviewTest extends Instrumentation {
             for(String route:new String[]{"categories","search","downloads","account","home"}){
                 check("true".equals(eval(w,"document.querySelector('#dock [data-route="+route+"]').click(); document.querySelector('#dock [data-route="+route+"]').getAttribute('aria-current')==='true'")),"route "+route);
             }
+            boolean denied=false;
+            for(int n=0;n<20;n++){if("true".equals(eval(w,"document.querySelector('#preview-status').dataset.readGuard==='passed'"))){denied=true;break;}Thread.sleep(200);}
+            check(denied,"native action allowlist");
+            check("true".equals(eval(w,"window.__cpFetchBlocked=false;fetch('https://example.invalid/probe').then(()=>{},()=>window.__cpFetchBlocked=true);true")),"CSP probe start");
+            Thread.sleep(500);
+            check("true".equals(eval(w,"window.__cpFetchBlocked===true")),"remote fetch blocked");
             check("true".equals(eval(w,"typeof window.Android==='undefined' && typeof window.Cinemana==='undefined'")),"unexpected bridge");
             check("true".equals(eval(w,"document.querySelector('#preview-status').textContent.includes('بيانات وهمية')")),"mock disclosure");
             // Start a separate process with bounded synthetic CPU and fsync load.

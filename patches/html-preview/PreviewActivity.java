@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.*;
 import org.json.JSONObject;
 
-/** Standalone synthetic preview; no Internet permission, real account, DAO or downloader. */
+/** Standalone synthetic preview; no remote content, real account, DAO or downloader. */
 public final class PreviewActivity extends Activity {
     static final String ORIGIN="https://appassets.androidplatform.net";
     static final String PAGE=ORIGIN+"/preview/index.html";
@@ -53,7 +53,8 @@ public final class PreviewActivity extends Activity {
         WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);
         s.setAllowFileAccess(false);s.setAllowContentAccess(false);
         s.setAllowFileAccessFromFileURLs(false);s.setAllowUniversalAccessFromFileURLs(false);
-        s.setBlockNetworkLoads(true);s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        // HTTPS asset interception needs WebView network loads enabled; every request is intercepted below.
+        s.setBlockNetworkLoads(false);s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         s.setJavaScriptCanOpenWindowsAutomatically(false);s.setSupportMultipleWindows(false);
         s.setGeolocationEnabled(false);s.setSaveFormData(false);
         CookieManager.getInstance().setAcceptCookie(false);
@@ -63,7 +64,10 @@ public final class PreviewActivity extends Activity {
         web.setWebViewClient(new WebViewClient(){
             @Override public WebResourceResponse shouldInterceptRequest(WebView v,WebResourceRequest r){
                 if(!"GET".equals(r.getMethod()))return denied();
-                return response(asset(r.getUrl()));
+                String name=asset(r.getUrl());
+                if(name==null){Log.i("CPPreview","blocked non-asset request");return denied();}
+                Log.i("CPPreview","local asset "+name);
+                return response(name);
             }
             @Override public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){
                 // No navigation to another document or frame. Same-document hashes are local.
@@ -73,6 +77,9 @@ public final class PreviewActivity extends Activity {
             @Override public void onPageStarted(WebView v,String url,android.graphics.Bitmap icon){
                 closePort();sent=false;requests=0;
                 if(!page(url)){v.stopLoading();fallback();}
+            }
+            @Override public void onReceivedError(WebView v,WebResourceRequest r,WebResourceError e){
+                if(r.isForMainFrame()){Log.w("CPPreview","main document error code="+e.getErrorCode());closePort();}
             }
             @Override public void onPageFinished(WebView v,String url){
                 Log.i("CPPreview","pageFinished local="+page(url)+" current="+page(v.getUrl()));
@@ -94,14 +101,7 @@ public final class PreviewActivity extends Activity {
             }
         });
         setContentView(web);
-        // All executable assets are bundled into one document with CSP SHA-256
-        // hashes. No WebView network request is needed even for local resources.
-        try(InputStream in=getAssets().open("preview/bundle.html")){
-            ByteArrayOutputStream out=new ByteArrayOutputStream();
-            byte[] buf=new byte[4096];int n;
-            while((n=in.read(buf))!=-1){if(out.size()+n>256*1024)throw new IOException("bundle cap");out.write(buf,0,n);}
-            web.loadDataWithBaseURL(PAGE,out.toString("UTF-8"),"text/html","UTF-8",PAGE);
-        }catch(IOException e){fallback();}
+        web.loadUrl(PAGE);
     }
     private void reply(WebMessagePort p,WebMessage m){
         if(p!=port||web==null||!page(web.getUrl())||++requests>8){closePort();return;}
@@ -112,11 +112,11 @@ public final class PreviewActivity extends Activity {
             JSONObject q=new JSONObject(raw);
             String id=q.optString("id","");
             if(!id.matches("[A-Za-z0-9_-]{1,128}"))return;
-            boolean ok=q.length()==4&&q.optInt("v",-1)==1&&"app.bootstrap".equals(q.optString("action"))
+            boolean ok=q.length()==4&&Integer.valueOf(1).equals(q.opt("v"))&&"app.bootstrap".equals(q.optString("action"))
                &&q.optJSONObject("args")!=null&&q.optJSONObject("args").length()==0;
             JSONObject r=new JSONObject().put("v",1).put("id",id).put("ok",ok).put("status",ok?"RESULT":"FAILED");
             if(ok)r.put("data",new JSONObject().put("mode","synthetic-preview").put("nativeTransport",true).put("writeCommands",false));
-            else r.put("error",new JSONObject().put("code","ACTION_NOT_ALLOWED").put("message","Preview only"));
+            else r.put("code","ACTION_NOT_ALLOWED").put("message","Preview only");
             p.postMessage(new WebMessage(r.toString()));
             Log.i("CPPreview","bootstrap reply ok="+ok);
         }catch(Exception ignored){closePort();}
