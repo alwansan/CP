@@ -1302,5 +1302,30 @@
     "dex_retry_code": "936d7e506a9000e8e6b33cb3b6c172cf7705bb94",
     "dex_retry_run": 44541256873,
     "dex_retry_status": "in_progress"
+  },
+  "native_compose_isolation_57": {
+    "entry": "c9759eeef477d0f6e6f4066f7074143d7d3f813c",
+    "debug_release": "cp-compose-lab-12",
+    "asset_id": 767950433,
+    "sha256": "5143acae74b02f055f0a2a7d6d9d783a67adc80822970ce13c924525586c96ae",
+    "debug_run": 44540498862,
+    "debug_status": "success",
+    "dex_audit_run": 44541256873,
+    "dex_audit_status": "success",
+    "smali_classes": 12317,
+    "exact_r_fields": 426,
+    "styleable_arrays": 24,
+    "styleable_const_candidates": 6,
+    "residual_refs": 342,
+    "r8_previous_run": 44540498797,
+    "r8_previous_status": "failure_private_ui",
+    "r8_keep_code": "6eb7cf1075f5796101490591ce9cac1361008be1",
+    "r8_retry_run": 44542182108,
+    "r8_attempt1": "failure_dependency_resolution",
+    "r8_attempt2": "rerun_requested",
+    "dex_transform_code": "3cb41a1eb6a452c03a19e000defb68ab06c9daab",
+    "dex_transform_run": 44542485674,
+    "dex_transform_status": "in_progress",
+    "production_merged": false
   }
 }
