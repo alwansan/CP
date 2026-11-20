@@ -77,6 +77,22 @@ public final class OwnerPageReadTest {
             }
         };
         ok(new OwnerPageRead(f).read(null).status==OwnerPageRead.Status.CHANGED);
+        // Identity remains stable for one reader despite progress, missing
+        // transport, title changes and a shifted position after removal.
+        f=new Fixture();reader=new OwnerPageRead(f);
+        OwnerPageRead.Page initial=reader.read(null);
+        Set<String> keys=new HashSet<>();
+        for(OwnerPageRead.Row row:initial.rows)ok(row.displayKey.matches("[0-9a-f]{64}")&&keys.add(row.displayKey));
+        String target=initial.rows.get(1).displayKey;
+        f.all.remove(0);
+        f.all.set(0,new BoundedDownloadRead.AppRow("ep0002",0,0,"q","private-path","new title"));
+        OwnerPageRead.Page shifted=reader.read(null);
+        ok(shifted.rows.get(0).displayKey.equals(target)&&shifted.rows.get(0).index==0);
+        ok(shifted.rows.get(0).result==BoundedDownloadRead.Result.NO_TRANSPORT_ROW);
+        ok(reader.read(null).rows.get(0).displayKey.equals(target));
+        ok(!new OwnerPageRead(f).read(null).rows.get(0).displayKey.equals(target));
+        ok(!reader.read(null).rows.get(0).displayKey.contains("ep0002"));
+        System.out.println("CP_OWNER_DISPLAY_KEYS_PASS stable=verified shift=verified readerIsolation=verified");
         System.out.println("CP_OWNER_PAGE_READ_PASS assertions="+n+" syntheticRows=452 pages=19");
     }
 }

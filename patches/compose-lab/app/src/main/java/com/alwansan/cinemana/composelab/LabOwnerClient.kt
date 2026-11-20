@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * All IPC and validations on worker; Compose receives one bounded snapshot.
  */
 @Immutable
-internal data class OwnerRow(val index: Int, val progress: Long, val total: Long, val transport: String, val observation: String, val title: String = "")
+internal data class OwnerRow(val index: Int, val progress: Long, val total: Long, val transport: String, val observation: String, val title: String = "", val displayKey: String = "")
 internal data class OwnerScreen(val state: String = "connecting", val pid: Int = 0, val page: Int = 0,
     val rows: List<OwnerRow> = emptyList(), val more: Boolean = false, val busy: Boolean = true,
     val responseSerial: Int = 0)
@@ -147,7 +147,7 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
         if(realOwner) {
             val expected=when(m.what) {
                 LabOwnerService.ATTACHED,LabOwnerService.REJECTED->setOf("generation","ownerPid")
-                LabOwnerService.PAGE->setOf("generation","ownerPid","status","more","indices","progress","total","states","observations","titles")
+                LabOwnerService.PAGE->setOf("generation","ownerPid","status","more","indices","progress","total","states","observations","titles","displayKeys")
                 else->emptySet()
             }
             if(expected.isEmpty()||b.keySet()!=expected){ terminal("invalid");return }
@@ -186,21 +186,25 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
         if(status!="OBSERVED"){finish(OwnerClientEpoch.Outcome.INVALID,false);return}
         val indices=b.getIntArray("indices");val progress=b.getLongArray("progress");val total=b.getLongArray("total")
         val states=b.getStringArray("states");val observations=b.getStringArray("observations");val titles=if(realOwner)b.getStringArray("titles") else null
+        val keys=if(realOwner)b.getStringArray("displayKeys") else null
         val n=indices?.size ?: -1;val more=b.getBoolean("more")
-        if(n !in 0..24||progress?.size!=n||total?.size!=n||states?.size!=n||observations?.size!=n||(realOwner&&titles?.size!=n)||(more&&n!=24)){
+        if(n !in 0..24||progress?.size!=n||total?.size!=n||states?.size!=n||observations?.size!=n||(realOwner&&(titles?.size!=n||keys?.size!=n))||(more&&n!=24)){
             finish(OwnerClientEpoch.Outcome.INVALID,false);return
         }
         val rows=ArrayList<OwnerRow>(n)
+        val seenKeys=HashSet<String>(n)
+        val keyPattern=Regex("[0-9a-f]{64}")
         for(i in 0 until n){
             val pr=progress!![i];val all=total!![i];val state=states!![i];val obs=observations!![i]
             val title=if(realOwner)titles!![i] else ""
-            if(title==null||title!=OwnerPageRead.safeTitle(title)||indices!![i]!=i||!DownloadModel.Transport.values().any{it.name==state}||
+            val key=if(realOwner)keys!![i] else ""
+            if(key==null||(realOwner&&(!keyPattern.matches(key)||!seenKeys.add(key)))||title==null||title!=OwnerPageRead.safeTitle(title)||indices!![i]!=i||!DownloadModel.Transport.values().any{it.name==state}||
                 !BoundedDownloadRead.Result.values().any{it.name==obs}||
                 (obs=="OBSERVED"&&(pr<0||all==0L||all< -1||all>0&&pr>all))||
                 (obs!="OBSERVED"&&(pr!= -1L||all!= -1L||state!="UNKNOWN"))){
                 finish(OwnerClientEpoch.Outcome.INVALID,false);return
             }
-            rows.add(OwnerRow(i,pr,all,state,obs,title))
+            rows.add(OwnerRow(i,pr,all,state,obs,title,key))
         }
         if(finish(OwnerClientEpoch.Outcome.OBSERVED,more)) {
             // Reuse only an equal, already validated page. Never suppress

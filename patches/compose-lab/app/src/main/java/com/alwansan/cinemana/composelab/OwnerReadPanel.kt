@@ -85,8 +85,9 @@ internal fun OwnerReadRows(readSnapshot:()->OwnerScreen,realOwner:Boolean,presen
     val visible=slice
     if(onComposed!=null) SideEffect { onComposed() }
     LazyColumn(modifier,verticalArrangement=Arrangement.spacedBy(6.dp)) {
-        // Indices are page-local display positions, not persistent episode IDs.
-        items(visible.rows,key={"${visible.page}:${it.index}"},contentType={"ipc"}) { row ->
+        // Real owner keys are opaque, reader-local, and stable across shifts.
+        // The standalone fixture protocol keeps page-local fallback keys.
+        items(visible.rows,key={it.displayKey.ifEmpty { "${visible.page}:${it.index}" }},contentType={"ipc"}) { row ->
             if(presentation) DownloadObservationCard(row,visible.fresh) else Text("عنصر ${row.index+1} · ${row.progress}/${row.total} · ${row.transport}" +
                 if(realOwner) " · ${row.observation}" else "",Modifier.fillMaxWidth().padding(8.dp))
         }

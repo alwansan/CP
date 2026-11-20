@@ -1,5 +1,9 @@
 package com.shabakaty.cinemana.htmlbridge.model;
 import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /** Native-only keyset page. Reads two bounded app snapshots around transfer reads.
  * No global database snapshot, write, playback proof, or external cursor accepted.
@@ -21,8 +25,10 @@ public final class OwnerPageRead {
         public final DownloadModel.Transport transport;
         public final long progressBytes,totalBytes;
         public final String displayTitle;
-        private Row(int i,BoundedDownloadRead.Result r,DownloadModel.Transport t,long p,long total,String title){
-            index=i;result=r;transport=t;progressBytes=p;totalBytes=total;displayTitle=safeTitle(title);
+        /** Process-reader-local opaque presentation identity, never an action or cursor. */
+        public final String displayKey;
+        private Row(int i,BoundedDownloadRead.Result r,DownloadModel.Transport t,long p,long total,String title,String key){
+            index=i;result=r;transport=t;progressBytes=p;totalBytes=total;displayTitle=safeTitle(title);displayKey=key;
         }
     }
     public static final class Page {
@@ -36,10 +42,21 @@ public final class OwnerPageRead {
         }
     }
     private final Source source;
-    public OwnerPageRead(Source s){source=Objects.requireNonNull(s);}
+    private final byte[] keySecret=new byte[32];
+    public OwnerPageRead(Source s){source=Objects.requireNonNull(s);new SecureRandom().nextBytes(keySecret);}
+    // Never persist or expose the salt, raw ID, cursor, transfer ID, or path.
+    // HMAC is keyed per reader lifetime; a process restart may reset UI keys.
+    private String displayKey(String id)throws Exception{
+        Mac mac=Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(keySecret,"HmacSHA256"));
+        byte[] bytes=mac.doFinal(id.getBytes(StandardCharsets.UTF_8));
+        char[] digits="0123456789abcdef".toCharArray();char[] out=new char[64];
+        for(int i=0;i<bytes.length;i++){int v=bytes[i]&255;out[2*i]=digits[v>>>4];out[2*i+1]=digits[v&15];}
+        return new String(out);
+    }
     private static Page empty(Status s){return new Page(s,false,Collections.emptyList(),null);}
-    private static Row unknown(int i,BoundedDownloadRead.Result r,String title){
-        return new Row(i,r,DownloadModel.Transport.UNKNOWN,-1,-1,title);
+    private static Row unknown(int i,BoundedDownloadRead.Result r,String title,String key){
+        return new Row(i,r,DownloadModel.Transport.UNKNOWN,-1,-1,title,key);
     }
     /** Bounded plain-text display metadata; never a cursor or action input. */
     public static String safeTitle(String raw){
@@ -90,16 +107,17 @@ public final class OwnerPageRead {
             for(int i=0;i<n;i++){
                 if(Thread.currentThread().isInterrupted())throw new InterruptedException();
                 BoundedDownloadRead.AppRow a=first.get(i);
-                if(a.taskId==0){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,a.title));continue;}
+                String key=displayKey(a.id);
+                if(a.taskId==0){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,a.title,key));continue;}
                 try{
-                    if(batchFailed){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE,a.title));continue;}
+                    if(batchFailed){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE,a.title,key));continue;}
                     BoundedDownloadRead.TransferRow t=batch==null?source.transfer(a.taskId):batch.get(a.taskId);
-                    if(t==null){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,a.title));continue;}
+                    if(t==null){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,a.title,key));continue;}
                     if(t.taskId!=a.taskId||!a.id.equals(t.externalId)||t.status==null||t.progress<0||t.total< -1||(t.total>0&&t.progress>t.total)){
-                        rows.add(unknown(i,BoundedDownloadRead.Result.CONFLICT,a.title));continue;
+                        rows.add(unknown(i,BoundedDownloadRead.Result.CONFLICT,a.title,key));continue;
                     }
-                    rows.add(new Row(i,BoundedDownloadRead.Result.OBSERVED,t.status,t.progress,t.total>0?t.total:-1,a.title));
-                }catch(InterruptedException e){throw e;}catch(Exception e){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE,a.title));}
+                    rows.add(new Row(i,BoundedDownloadRead.Result.OBSERVED,t.status,t.progress,t.total>0?t.total:-1,a.title,key));
+                }catch(InterruptedException e){throw e;}catch(Exception e){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE,a.title,key));}
             }
             if(Thread.currentThread().isInterrupted())throw new InterruptedException();
             List<BoundedDownloadRead.AppRow> second=checked(source.page(nativeCursor),nativeCursor);

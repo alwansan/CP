@@ -80,9 +80,9 @@ public final class RealOwnerService extends Service {
                     if(result==null){send(to,REJECTED,serial,meta(g));return;}
                     if(!reads.canDeliver(accepted,result))return;
                     Bundle out=meta(g);out.putString("status",result.status.name());out.putBoolean("more",result.hasMore);
-                    int n=result.rows.size();int[] indices=new int[n];long[] progress=new long[n],total=new long[n];String[] states=new String[n],observations=new String[n],titles=new String[n];
-                    for(int i=0;i<n;i++){OwnerPageRead.Row row=result.rows.get(i);indices[i]=row.index;progress[i]=row.progressBytes;total[i]=row.totalBytes;states[i]=row.transport.name();observations[i]=row.result.name();titles[i]=row.displayTitle;}
-                    out.putIntArray("indices",indices);out.putLongArray("progress",progress);out.putLongArray("total",total);out.putStringArray("states",states);out.putStringArray("observations",observations);out.putStringArray("titles",titles);
+                    int n=result.rows.size();int[] indices=new int[n];long[] progress=new long[n],total=new long[n];String[] states=new String[n],observations=new String[n],titles=new String[n],keys=new String[n];
+                    for(int i=0;i<n;i++){OwnerPageRead.Row row=result.rows.get(i);indices[i]=row.index;progress[i]=row.progressBytes;total[i]=row.totalBytes;states[i]=row.transport.name();observations[i]=row.result.name();titles[i]=row.displayTitle;keys[i]=row.displayKey;}
+                    out.putIntArray("indices",indices);out.putLongArray("progress",progress);out.putLongArray("total",total);out.putStringArray("states",states);out.putStringArray("observations",observations);out.putStringArray("titles",titles);out.putStringArray("displayKeys",keys);
                     send(to,PAGE,serial,out);
             }));
         if(submission!=OwnerProcessReads.Submission.ACCEPTED)send(to,REJECTED,serial,meta(g));
