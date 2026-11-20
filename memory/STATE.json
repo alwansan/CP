@@ -1972,5 +1972,26 @@
     "x86_remux_verified": false,
     "actual_app_exporter_pressure_verified": false,
     "real_download_mkv_pressure_verified": false
+  },
+  "native_compose_isolation_85": {
+    "entry": "1c25e0d33e513a2d815e0e4e99dc9e8bec73d531",
+    "code": "e562f9fbf25a194d1252fe8d7f1de7b91d782eb0",
+    "workflow_checkpoint": "254fef66ff90df33f5b687727eff12a17e03f4d2",
+    "prior_remux_run": 44754270579,
+    "prior_remux_status": "failure",
+    "prior_remux_failure": "missing nativeui frame metrics idle; workers not reached",
+    "prior_renderer_run": 44754270678,
+    "prior_renderer_status": "failure_http_429",
+    "prior_ipc_run": 44754270609,
+    "prior_ipc_status": "success",
+    "prior_startup_run": 44754272079,
+    "prior_startup_status": "success",
+    "remux_run": 44756576452,
+    "renderer_run": 44756483108,
+    "startup_run": 44756483324,
+    "status": "in_progress",
+    "x86_remux_verified": false,
+    "actual_app_exporter_pressure_verified": false,
+    "real_download_mkv_pressure_verified": false
   }
 }
