@@ -1904,9 +1904,42 @@
       44668430714,
       44668430749
     ],
-    "presentation_status": "in_progress",
-    "presentation_verified": false,
+    "presentation_status": "success",
+    "presentation_verified": true,
     "automatic_refresh": false,
+    "real_download_mkv_pressure_verified": false,
+    "regression_status": "all_success",
+    "pressure_metrics": {
+      "idle_local_median_ms": 280,
+      "idle_local_max_ms": 1974,
+      "idle_reply_median_ms": 310,
+      "idle_reply_max_ms": 2001,
+      "load_local_median_ms": 342,
+      "load_local_max_ms": 767,
+      "load_reply_median_ms": 362,
+      "load_reply_max_ms": 778,
+      "updates": 2048,
+      "overlap_batches": 31
+    }
+  },
+  "native_compose_isolation_83": {
+    "entry": "c72442991b81c6c521b6b3a1ade59345b23597d6",
+    "code": "d6261d6972107d48e926241ff718fbe5b4cefc6a",
+    "presentation_verified": true,
+    "presentation_run": 44668430719,
+    "release": "cp-compose-lab-16",
+    "release_asset": 770317306,
+    "auto_refresh_run": 44670220384,
+    "auto_refresh_status": "in_progress",
+    "regression_runs": [
+      44670220354,
+      44670220363,
+      44670220349,
+      44670220356
+    ],
+    "active_delay_ms": 2000,
+    "idle_delay_ms": 10000,
+    "auto_refresh_verified": false,
     "real_download_mkv_pressure_verified": false
   }
 }
