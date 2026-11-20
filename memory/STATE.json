@@ -1481,5 +1481,25 @@
     "resource_coexistence_job": 135975680522,
     "resource_coexistence_status": "in_progress",
     "production_merged": false
+  },
+  "native_compose_isolation_65": {
+    "entry": "4966b5345fb2a61e0a07c4e630e6ef720013624a",
+    "run": 44642162685,
+    "job": 135975680522,
+    "status": "failure_lab_drawable_value_block",
+    "artifact": 14587890990,
+    "artifact_sha256": "ed1e41993889ebf366eb6133e1ccb36f927b12ecc7d0596ac99b61836e4e50bc",
+    "original_entries": 7162,
+    "lab_entries": 263,
+    "merged_entries": 7425,
+    "original_files": 2516,
+    "added_files": 169,
+    "original_displayed_differences": 0,
+    "lab_value_block_differences": 12,
+    "table_id_mismatches": 0,
+    "retry_code": "0efccdbb24459494cef39f880f0a29148a499e61",
+    "retry_run": 44643213378,
+    "retry_status": "in_progress",
+    "production_merged": false
   }
 }
