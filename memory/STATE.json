@@ -1565,5 +1565,26 @@
     "real_engine_connected": false,
     "dormant_candidate_verified": true,
     "production_merged": false
+  },
+  "native_compose_isolation_69": {
+    "entry": "9d4f3d00eed18ffa19e2d886c7861b57053bef61",
+    "startup_run": 44646885091,
+    "startup_job": 135991626093,
+    "startup_status": "failure_instrumentation_manifest_packaging",
+    "static_startup_gate": "success",
+    "classes": 20001,
+    "dex": 13,
+    "added_gate_classes": 4,
+    "private_components": 2,
+    "resources": 7425,
+    "original_payload_preserved_except_manifest": true,
+    "artifact": 14589043086,
+    "artifact_sha256": "dadbebf5fa882a2f286b09572daff8c7496314839d9d2f5eec06601ae373a2f4",
+    "retry_code": "4e585ecfe181662014405bb2ff24946c35623325",
+    "retry_run": 44647868004,
+    "retry_status": "in_progress",
+    "startup_runtime_verified": false,
+    "compose_renderer_in_original": false,
+    "real_engine_connected": false
   }
 }
