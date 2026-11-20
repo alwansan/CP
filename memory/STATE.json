@@ -1821,15 +1821,37 @@
     "real_transfer_fixture_verified": true,
     "duplicate_task_id_android_verified": true,
     "ui_run": 44663500417,
-    "ui_status": "in_progress",
+    "ui_status": "success",
     "regression_runs": [
       44663500436,
       44663500426,
       44663500429,
       44663500445
     ],
-    "populated_ui_verified": false,
+    "populated_ui_verified": true,
     "real_engine_connected": false,
-    "real_device_pressure_verified": false
+    "real_device_pressure_verified": false,
+    "regression_status": "all_success"
+  },
+  "native_compose_isolation_80": {
+    "entry": "27ea1aa76f69019c1a8407f8f60a9441e972cf02",
+    "code": "f15a0673254a89ee46fb707629522166bbc05d85",
+    "populated_ui_verified": true,
+    "populated_ui_run": 44663500417,
+    "populated_ui_job": 136047122602,
+    "populated_ui_rows": 4,
+    "owner_pid": 5330,
+    "ui_pid": 5377,
+    "release": "cp-compose-lab-15",
+    "release_asset": 770195312,
+    "pressure_run": 44665181703,
+    "pressure_status": "in_progress",
+    "regression_runs": [
+      44665181704,
+      44665181637,
+      44665181636
+    ],
+    "actual_room_pressure_verified": false,
+    "real_download_mkv_pressure_verified": false
   }
 }
