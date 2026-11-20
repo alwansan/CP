@@ -1708,5 +1708,21 @@
     "populated_probe_status": "in_progress",
     "real_owner_empty_read_verified": true,
     "real_engine_connected": false
+  },
+  "native_compose_isolation_75": {
+    "entry": "8bb12d0e656665de0be2129d5f3920d2722b1f74",
+    "populated_run": 44655998986,
+    "populated_job": 136022235435,
+    "populated_status": "failure_javac_package_private_fields",
+    "artifact": 14593387754,
+    "artifact_sha256": "d76d29b7320a9b76f3e714a3a37a6abb094eac97b132c5fa7d2d9f7011ad4b97",
+    "fixture_fix": "c4546ec86b1dda1fe25117830aa7c3ef720cf2b9",
+    "fixture_retry": 44657015194,
+    "fixture_retry_status": "in_progress",
+    "ipc_code": "3c4847eda96cb86ac18f1b4d178f5a0913fdd9cb",
+    "ipc_run": 44657456897,
+    "ipc_status": "in_progress",
+    "real_ipc_verified": false,
+    "real_engine_connected": false
   }
 }
