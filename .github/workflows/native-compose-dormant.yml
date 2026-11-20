@@ -32,6 +32,15 @@ jobs:
           curl --fail --location --retry 3 https://storage.googleapis.com/r8-releases/raw/8.3.37/r8.jar -o "$RUNNER_TEMP/local-tools/r8.jar"
           curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar -o "$RUNNER_TEMP/local-tools/gson.jar"
           echo '4241c14a7727c34feea6507ec801318a3d4a90f070e4525681079fb94ee4c593  '"$RUNNER_TEMP/local-tools/gson.jar" | sha256sum --check
+      # Keep the standalone R8 clean-checkout guard intact: the original helper
+      # compiler generates tracked Smali and must run after the isolation probe.
+      # combine_dormant independently checks the actual rebuilt DEX class union.
+      - name: Generate isolated allocated Compose code and resources
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: bash patches/native-compose-minified-combined/run-probe.sh
       - name: Test account storage and API routing; compile helpers
         shell: bash
         run: |
@@ -46,12 +55,6 @@ jobs:
           python3 scripts/test_cp_dl.py
           python3 scripts/test_mux_slots_dl.py
           bash Cinemana_PATCH252_Project/build.sh
-      - name: Generate isolated allocated Compose code and resources
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
-          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
-          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
-        run: bash patches/native-compose-minified-combined/run-probe.sh
       - name: Verify full resource table parity
         run: bash patches/native-compose-resource-coexistence/run-probe.sh
       - name: Assemble and sign dormant same-package candidate
@@ -82,4 +85,6 @@ jobs:
           path: |
             ${{ runner.temp }}/cp-dormant/report
             ${{ runner.temp }}/cp-resource-coexistence/report
+            ${{ runner.temp }}/cp-minified-combined/report/final-summary.json
+            ${{ runner.temp }}/cp-isolation-probe/isolation-summary.json
           if-no-files-found: warn
