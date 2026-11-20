@@ -1635,5 +1635,31 @@
     "retry_status": "in_progress",
     "compose_renderer_in_original_verified": false,
     "real_engine_connected": false
+  },
+  "native_compose_isolation_72": {
+    "entry": "7eeb2275cb5664846745ea0204dc472ea662c9f6",
+    "startup_retry": 44651370834,
+    "startup_status": "success",
+    "startup_main_pid": 4142,
+    "startup_ui_pid": 4239,
+    "renderer_run": 44651370693,
+    "renderer_job": 136006804558,
+    "renderer_status": "failure_accessibility_discovery_after_actual_display",
+    "renderer_display_observed": true,
+    "renderer_display_ms": 968,
+    "renderer_focused": true,
+    "main_pid": 4486,
+    "ui_pid": 4547,
+    "enumerated_fixture_rows": 11,
+    "clicks_verified": 0,
+    "artifact": 14591676774,
+    "artifact_sha256": "087c857f459abeaa1bf441460e0f36ba2a04197289685cade17d7a3af88bc776",
+    "retry_code": "d030d05d458b8f3edcfaf23beec9587f37c24950",
+    "renderer_retry": 44652983134,
+    "startup_regression": 44652983199,
+    "retry_status": "queued",
+    "compose_renderer_in_original_verified": true,
+    "interactive_gate_verified": false,
+    "real_engine_connected": false
   }
 }
