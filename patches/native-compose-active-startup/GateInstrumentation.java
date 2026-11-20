@@ -387,21 +387,64 @@ public final class GateInstrumentation extends Instrumentation {
         }
         require(pids[0]!=pids[1]&&pids[0]!=pids[2]&&pids[1]!=pids[2],"duplicate mux PID");
     }
-    private void reportFrames(String phase,String dump){
-        // Require actual nativeui process summary rather than legacy UI numbers.
-        boolean nativeUi=false;int frames=-1;String jank="";
-        for(String line:dump.split("\\n")){
-            if(line.contains("Graphics info for pid"))nativeUi=line.contains("com.cinemana.pro:nativeui");
-            if(nativeUi&&line.contains("Total frames rendered:")){
-                String value=line.substring(line.indexOf(':')+1).trim();
-                if(value.matches("[0-9]+"))frames=Integer.parseInt(value);
+    // Only accept the exact verified renderer PID and process name. A package
+    // selector can instead select the original main process (or several apps).
+    static String frameSummary(String dump,int pid){
+        String expected="** Graphics info for pid "+pid+" ["+PKG+":nativeui] **";
+        boolean nativeUi=false;int headers=0,frames=-1,janky=-1;String jank="";
+        for(String raw:dump.split("\\n")){
+            String line=raw.trim();
+            if(line.startsWith("** Graphics info for pid ")){
+                nativeUi=line.equals(expected);
+                if(nativeUi)headers++;
             }
-            if(nativeUi&&line.contains("Janky frames:"))jank=line.trim();
+            if(!nativeUi)continue;
+            if(line.startsWith("Total frames rendered:")){
+                String value=line.substring("Total frames rendered:".length()).trim();
+                if(frames!=-1||!value.matches("[0-9]+"))return null;
+                frames=Integer.parseInt(value);
+            }
+            if(line.startsWith("Janky frames:")){
+                java.util.regex.Matcher m=Pattern.compile("Janky frames:\\s*([0-9]+)(?:\\s+\\([^)]*\\))?").matcher(line);
+                if(janky!=-1||!m.matches())return null;
+                janky=Integer.parseInt(m.group(1));jank=line;
+            }
         }
-        require(frames>0&&!jank.isEmpty(),"missing nativeui frame metrics "+phase);
-        Log.i(TAG,"CP_REMUX_FRAME_SUMMARY "+phase+" frames="+frames+" "+jank);
+        return headers==1&&frames>0&&janky>=0&&janky<=frames?"frames="+frames+" "+jank:null;
     }
-    private String remuxPressure(Context ctx)throws Exception{
+    private void frameParserSelfTest(){
+        String header="** Graphics info for pid 123 ["+PKG+":nativeui] **\n";
+        String stats="Total frames rendered: 32\nJanky frames: 4 (12.50%)\n";
+        String legacy="** Graphics info for pid 456 ["+PKG+"] **\n";
+        require(frameSummary(legacy+stats+header+stats,123)!=null,"frame parser correct process");
+        require(frameSummary(legacy+stats,123)==null,"frame parser legacy rejection");
+        require(frameSummary(header+legacy+stats,123)==null,"frame parser cross-process rejection");
+        require(frameSummary(header+stats,124)==null,"frame parser PID rejection");
+        require(frameSummary(header+stats.replace("32","0"),123)==null,"frame parser zero rejection");
+        require(frameSummary(header+stats.replace("4 (","99 ("),123)==null,"frame parser count rejection");
+        require(frameSummary(header+stats+header+stats,123)==null,"frame parser duplicate rejection");
+        Log.i(TAG,"CP_REMUX_FRAME_PARSER_PASS assertions=7");
+    }
+    private void requireRendererPid(int pid)throws Exception{
+        require(pid>0&&shellScalar("pidof "+PKG+":nativeui").equals(Integer.toString(pid)),"renderer PID changed");
+    }
+    private void reportFrames(String phase,int pid)throws Exception{
+        requireRendererPid(pid);
+        // Request the summary, not the per-frame CSV (framestats).
+        String dump=shell("dumpsys gfxinfo "+pid);
+        // Log bounded diagnostic summaries BEFORE asserting, including on failure.
+        for(String raw:dump.split("\\n")){
+            String line=raw.trim();
+            if(line.startsWith("** Graphics info for pid ")||line.startsWith("Total frames rendered:")||
+               line.startsWith("Janky frames:")||line.contains("percentile")||line.startsWith("No process found"))
+                Log.i(TAG,"CP_REMUX_FRAME_DIAG "+phase+" "+line);
+        }
+        String summary=frameSummary(dump,pid);
+        require(summary!=null,"missing or invalid nativeui frame metrics "+phase+" pid="+pid);
+        requireRendererPid(pid);
+        Log.i(TAG,"CP_REMUX_FRAME_SUMMARY "+phase+" pid="+pid+" "+summary);
+    }
+    private String remuxPressure(Context ctx,int uiPid)throws Exception{
         require("1".equals(shellScalar("getprop ro.kernel.qemu"))&&"35".equals(shellScalar("getprop ro.build.version.sdk"))&&
             "x86_64".equals(shellScalar("getprop ro.product.cpu.abi")),"remux disposable emulator only");
         int[] pids=new int[3];long[] startSizes=new long[3];
@@ -415,14 +458,12 @@ public final class GateInstrumentation extends Instrumentation {
             find("صفحة 1 · 24 عنصر",15000).recycle();
             find("Reply: 1",15000).recycle();
             find("CP_COMPOSE_COUNT_0",15000).recycle();
-            shell("dumpsys gfxinfo "+PKG+" reset");
+            frameParserSelfTest();
+            requireRendererPid(uiPid);
+            shell("dumpsys gfxinfo "+uiPid+" reset");
             String idle=pairedActions(1,0,null);
-            String idleFrames=shell("dumpsys gfxinfo "+PKG+" framestats");
-            reportFrames("idle",idleFrames);
-            Log.i(TAG,"CP_REMUX_IDLE_FRAME_DUMP_BEGIN");
-            for(String line:idleFrames.split("\\n"))if(line.contains("Total frames rendered")||line.contains("Janky frames")||line.contains("percentile"))Log.i(TAG,line);
-            Log.i(TAG,"CP_REMUX_IDLE_FRAME_DUMP_END");
-            shell("dumpsys gfxinfo "+PKG+" reset");
+            reportFrames("idle",uiPid);
+            shell("dumpsys gfxinfo "+uiPid+" reset");
             for(int n=1;n<=3;n++)shell("sh "+MUX_DIR+"/worker.sh "+n+" </dev/null >/dev/null 2>&1 &");
             long deadline=SystemClock.elapsedRealtime()+10000;
             while(SystemClock.elapsedRealtime()<deadline){
@@ -437,11 +478,7 @@ public final class GateInstrumentation extends Instrumentation {
             String load=pairedActions(9,8,null);
             activeMuxes(pids);
             for(int n=1;n<=3;n++)require(muxSize(n)>startSizes[n-1],"mux output did not grow "+n);
-            String loadedFrames=shell("dumpsys gfxinfo "+PKG+" framestats");
-            reportFrames("load",loadedFrames);
-            Log.i(TAG,"CP_REMUX_LOAD_FRAME_DUMP_BEGIN");
-            for(String line:loadedFrames.split("\\n"))if(line.contains("Total frames rendered")||line.contains("Janky frames")||line.contains("percentile"))Log.i(TAG,line);
-            Log.i(TAG,"CP_REMUX_LOAD_FRAME_DUMP_END");
+            reportFrames("load",uiPid);
             requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
             deadline=SystemClock.elapsedRealtime()+60000;
             while(SystemClock.elapsedRealtime()<deadline){
@@ -619,7 +656,7 @@ public final class GateInstrumentation extends Instrumentation {
                         markerResult+="CP_REAL_DOWNLOAD_AUTO_REFRESH_PASS progress=25,75 empty=observed manualClicks=0 close=verified noPollAfterClose=11500ms\n";
                         if(remuxUi){
                             setStage("x86-android-ffmpeg-remux-pressure");
-                            markerResult+=remuxPressure(ctx)+"\n";
+                            markerResult+=remuxPressure(ctx,ui)+"\n";
                             clickText("تحديث");
                             find("صفحة 1 · 0 عنصر",15000).recycle();
                             markerResult+="CP_X86_REMUX_CLEANUP_PASS\n";
