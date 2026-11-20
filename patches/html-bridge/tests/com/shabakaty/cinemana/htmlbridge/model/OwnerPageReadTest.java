@@ -62,6 +62,21 @@ public final class OwnerPageReadTest {
         bp=new OwnerPageRead(batch).read(null);
         ok(batch.calls==1&&batch.transfers==0&&bp.rows.get(1).result==BoundedDownloadRead.Result.CONFLICT);
         batch=new Batched();batch.all.clear();ok(new OwnerPageRead(batch).read(null).rows.isEmpty()&&batch.calls==0);
+        ok(OwnerPageRead.safeTitle(null).isEmpty());
+        ok(OwnerPageRead.safeTitle("  حلقة"+(char)0+(char)0x202e+" 12  ").equals("حلقة 12"));
+        ok(OwnerPageRead.safeTitle(String.join("",Collections.nCopies(100,"😀"))).length()==160);
+        f=new Fixture();
+        f.all.set(0,new BoundedDownloadRead.AppRow("ep0001",1,0,"q","native-path","الحلقة 1"));
+        ok(new OwnerPageRead(f).read(null).rows.get(0).displayTitle.equals("الحلقة 1"));
+        f=new Fixture(){
+            public List<BoundedDownloadRead.AppRow> page(String after){
+                List<BoundedDownloadRead.AppRow> r=super.page(after);
+                BoundedDownloadRead.AppRow x=r.get(0);
+                r.set(0,new BoundedDownloadRead.AppRow(x.id,x.taskId,x.collection,x.quality,x.path,pages==1?"first":"changed"));
+                return r;
+            }
+        };
+        ok(new OwnerPageRead(f).read(null).status==OwnerPageRead.Status.CHANGED);
         System.out.println("CP_OWNER_PAGE_READ_PASS assertions="+n+" syntheticRows=452 pages=19");
     }
 }

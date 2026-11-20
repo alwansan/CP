@@ -29,7 +29,8 @@ class NativeUiProbeActivity : ComponentActivity() {
             window.statusBarColor = 0xff090a0d.toInt()
             window.navigationBarColor = 0xff090a0d.toInt()
             val realOwner = intent.getBooleanExtra("cp_real_owner",false)
-            setContent { SamePackageRendererGate(realOwner,foreground) }
+            val presentation = realOwner && intent.getBooleanExtra("cp_download_presentation",false)
+            setContent { SamePackageRendererGate(realOwner,foreground,presentation) { finish() } }
             return
         }
         if (!LabStartupEvidence.uiReady()) { finish(); return }
@@ -58,13 +59,17 @@ class NativeUiProbeActivity : ComponentActivity() {
 
 /** Installed real Compose proof only. No queue, DB, owner fixture, network or user data. */
 @Composable
-private fun SamePackageRendererGate(realOwner:Boolean,foreground:Boolean) {
+private fun SamePackageRendererGate(realOwner:Boolean,foreground:Boolean,presentation:Boolean,close:()->Unit) {
     var count by remember { mutableIntStateOf(0) }
     val rows = remember { (1..48).toList() }
     MaterialTheme(colorScheme=darkColorScheme(background=Color(0xff090a0d))) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
                 .windowInsetsPadding(WindowInsets.safeDrawing).padding(16.dp)) {
+                if(presentation) {
+                    OwnerReadPanel(foreground,presentation=true,close=close)
+                    return@Column
+                }
                 Text("CP_SAME_PACKAGE_COMPOSE_READY")
                 Text("PID: "+android.os.Process.myPid())
                 Text("واجهة Cinemana المستقلة",style=MaterialTheme.typography.headlineSmall)

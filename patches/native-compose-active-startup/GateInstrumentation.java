@@ -482,6 +482,27 @@ public final class GateInstrumentation extends Instrumentation {
                         markerResult+="CP_REAL_OWNER_PRESSURE_IDLE "+idle+"\n";
                         markerResult+="CP_REAL_OWNER_PRESSURE_LOAD "+loaded+"\n";
                         markerResult+="CP_REAL_OWNER_PRESSURE_PASS rows=452 page=24 actions=16 cleanup=verified serial=23\n";
+                        setStage("real-download-presentation");
+                        UiFixture screen=new UiFixture(ctx);
+                        try{
+                            screen.seed();
+                            Intent present=new Intent().setClassName(PKG,"com.alwansan.cinemana.composelab.NativeUiProbeActivity")
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("cp_real_owner",true).putExtra("cp_download_presentation",true);
+                            ctx.startActivity(present);
+                            find("التنزيلات",45000).recycle();
+                            find("CP disposable UI 1",15000).recycle();
+                            find("25%",15000).recycle();
+                            find("اكتمل النقل · لم تثبت جاهزية الملف",15000).recycle();
+                            find("تعارض بيانات النقل",15000).recycle();
+                            find("حالة النقل غير متاحة",15000).recycle();
+                            screen.advance();
+                            clickText("تحديث");
+                            find("75%",15000).recycle();
+                            requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+                        }finally{screen.cleanup();}
+                        clickText("تحديث");
+                        find("لا توجد تنزيلات",15000).recycle();
+                        markerResult+="CP_REAL_DOWNLOAD_PRESENTATION_PASS titles=verified progress=25,75 completion=transport_only conflict=verified cleanup=verified\n";
                     }
                 }
             }

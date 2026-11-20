@@ -20,8 +20,9 @@ public final class OwnerPageRead {
         public final BoundedDownloadRead.Result result;
         public final DownloadModel.Transport transport;
         public final long progressBytes,totalBytes;
-        private Row(int i,BoundedDownloadRead.Result r,DownloadModel.Transport t,long p,long total){
-            index=i;result=r;transport=t;progressBytes=p;totalBytes=total;
+        public final String displayTitle;
+        private Row(int i,BoundedDownloadRead.Result r,DownloadModel.Transport t,long p,long total,String title){
+            index=i;result=r;transport=t;progressBytes=p;totalBytes=total;displayTitle=safeTitle(title);
         }
     }
     public static final class Page {
@@ -37,8 +38,21 @@ public final class OwnerPageRead {
     private final Source source;
     public OwnerPageRead(Source s){source=Objects.requireNonNull(s);}
     private static Page empty(Status s){return new Page(s,false,Collections.emptyList(),null);}
-    private static Row unknown(int i,BoundedDownloadRead.Result r){
-        return new Row(i,r,DownloadModel.Transport.UNKNOWN,-1,-1);
+    private static Row unknown(int i,BoundedDownloadRead.Result r,String title){
+        return new Row(i,r,DownloadModel.Transport.UNKNOWN,-1,-1,title);
+    }
+    /** Bounded plain-text display metadata; never a cursor or action input. */
+    public static String safeTitle(String raw){
+        if(raw==null)return "";
+        StringBuilder out=new StringBuilder(160);
+        for(int off=0;off<raw.length()&&off<320;){
+            int cp=raw.codePointAt(off);off+=Character.charCount(cp);
+            int kind=Character.getType(cp);
+            if(kind==Character.CONTROL||kind==Character.FORMAT||kind==Character.SURROGATE||kind==Character.LINE_SEPARATOR||kind==Character.PARAGRAPH_SEPARATOR)continue;
+            if(out.length()+Character.charCount(cp)>160)break;
+            out.appendCodePoint(cp);
+        }
+        return out.toString().trim();
     }
     private static boolean valid(String id){return id!=null&&id.matches("[A-Za-z0-9_.:-]{1,128}");}
     private static List<BoundedDownloadRead.AppRow> checked(List<BoundedDownloadRead.AppRow> raw,String after){
@@ -76,16 +90,16 @@ public final class OwnerPageRead {
             for(int i=0;i<n;i++){
                 if(Thread.currentThread().isInterrupted())throw new InterruptedException();
                 BoundedDownloadRead.AppRow a=first.get(i);
-                if(a.taskId==0){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW));continue;}
+                if(a.taskId==0){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,a.title));continue;}
                 try{
-                    if(batchFailed){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE));continue;}
+                    if(batchFailed){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE,a.title));continue;}
                     BoundedDownloadRead.TransferRow t=batch==null?source.transfer(a.taskId):batch.get(a.taskId);
-                    if(t==null){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW));continue;}
+                    if(t==null){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,a.title));continue;}
                     if(t.taskId!=a.taskId||!a.id.equals(t.externalId)||t.status==null||t.progress<0||t.total< -1||(t.total>0&&t.progress>t.total)){
-                        rows.add(unknown(i,BoundedDownloadRead.Result.CONFLICT));continue;
+                        rows.add(unknown(i,BoundedDownloadRead.Result.CONFLICT,a.title));continue;
                     }
-                    rows.add(new Row(i,BoundedDownloadRead.Result.OBSERVED,t.status,t.progress,t.total>0?t.total:-1));
-                }catch(InterruptedException e){throw e;}catch(Exception e){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE));}
+                    rows.add(new Row(i,BoundedDownloadRead.Result.OBSERVED,t.status,t.progress,t.total>0?t.total:-1,a.title));
+                }catch(InterruptedException e){throw e;}catch(Exception e){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE,a.title));}
             }
             if(Thread.currentThread().isInterrupted())throw new InterruptedException();
             List<BoundedDownloadRead.AppRow> second=checked(source.page(nativeCursor),nativeCursor);

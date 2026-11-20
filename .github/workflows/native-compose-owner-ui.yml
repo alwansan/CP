@@ -3,7 +3,7 @@ on:
   push:
     branches: [Native-Compose]
     paths: ['.github/workflows/native-compose-owner-ui.yml']
-    # Session 81: repeat paired pressure with one bounded transfer cursor per page.
+    # Session 82: native read-only downloads presentation, titles and safe transport labels.
   workflow_dispatch:
 permissions:
   contents: read

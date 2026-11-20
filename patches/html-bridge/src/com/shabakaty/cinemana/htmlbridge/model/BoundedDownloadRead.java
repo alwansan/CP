@@ -15,14 +15,17 @@ public final class BoundedDownloadRead {
         TransferRow transfer(int taskId) throws Exception;
     }
     public static final class AppRow {
-        final String id, quality, path;
+        final String id, quality, path, title;
         final int taskId, collection;
         public AppRow(String id,int taskId,int collection,String quality,String path) {
-            this.id=id;this.taskId=taskId;this.collection=collection;this.quality=quality;this.path=path;
+            this(id,taskId,collection,quality,path,"");
+        }
+        public AppRow(String id,int taskId,int collection,String quality,String path,String title) {
+            this.id=id;this.taskId=taskId;this.collection=collection;this.quality=quality;this.path=path;this.title=title;
         }
         boolean same(AppRow r) {
             return r!=null&&taskId==r.taskId&&collection==r.collection&&Objects.equals(id,r.id)
-                &&Objects.equals(quality,r.quality)&&Objects.equals(path,r.path);
+                &&Objects.equals(quality,r.quality)&&Objects.equals(path,r.path)&&Objects.equals(title,r.title);
         }
     }
     public static final class TransferRow {

@@ -29,6 +29,7 @@ if [[ "${CP_REAL_OWNER_UI_GATE:-0}" == 1 ]]; then
     grep -F 'CP_REAL_OWNER_PRESSURE_IDLE ' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_PRESSURE_LOAD ' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_PRESSURE_PASS rows=452 page=24 actions=16 cleanup=verified serial=23' "$OUT/report/compose-owner-ui.txt"
+    grep -F 'CP_REAL_DOWNLOAD_PRESENTATION_PASS titles=verified progress=25,75 completion=transport_only conflict=verified cleanup=verified' "$OUT/report/compose-owner-ui.txt"
     grep -E 'INSTRUMENTATION_CODE: -1' "$OUT/report/compose-owner-ui.txt"
     if grep -Eq 'CP_NATIVEUI_FACTORY_IN_PACKAGE_FAIL|INSTRUMENTATION_FAILED|Process crashed' "$OUT/report/compose-owner-ui.txt"; then exit 1; fi
 fi

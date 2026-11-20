@@ -32,11 +32,11 @@ public final class UiIpcProbeProvider extends ContentProvider {
     }
     private static int checkPage(Reply r,long generation,int owner){
         Bundle b=r.data;
-        require(b.keySet().equals(new HashSet<>(Arrays.asList("generation","ownerPid","status","more","indices","progress","total","states","observations"))),"unexpected page fields");
+        require(b.keySet().equals(new HashSet<>(Arrays.asList("generation","ownerPid","status","more","indices","progress","total","states","observations","titles"))),"unexpected page fields");
         require(b.getLong("generation")==generation&&b.getInt("ownerPid")==owner&&"OBSERVED".equals(b.getString("status")),"not observed owner page");
         int[] ix=b.getIntArray("indices");long[] p=b.getLongArray("progress"),t=b.getLongArray("total");
-        String[] s=b.getStringArray("states"),o=b.getStringArray("observations");
-        require(ix!=null&&p!=null&&t!=null&&s!=null&&o!=null&&ix.length<=24&&ix.length==p.length&&ix.length==t.length&&ix.length==s.length&&ix.length==o.length,"invalid page array lengths");
+        String[] s=b.getStringArray("states"),o=b.getStringArray("observations"),titles=b.getStringArray("titles");
+        require(ix!=null&&p!=null&&t!=null&&s!=null&&o!=null&&ix.length<=24&&ix.length==p.length&&ix.length==t.length&&ix.length==s.length&&ix.length==o.length&&titles!=null&&ix.length==titles.length,"invalid page array lengths");
         // Fresh disposable emulator: this gate is the actual empty owner page,
         // populated Room and transport fixtures are independent tests.
         require(ix.length==0&&!b.getBoolean("more"),"expected empty clean emulator database");

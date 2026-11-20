@@ -12,7 +12,7 @@ public final class ExistingOwnerPageSource implements OwnerPageRead.Source {
     private Object database;
     private Class<?> room,query,cursor,cancellation,queryInterface;
     private Method execute;
-    private static final String SELECT="SELECT id,downloadTaskId,collectionID,qualityName,path FROM CinemanaDownloadItem";
+    private static final String SELECT="SELECT id,downloadTaskId,collectionID,qualityName,path,substr(title,1,160) FROM CinemanaDownloadItem";
     public ExistingOwnerPageSource(Object applicationContext){
         app=Objects.requireNonNull(applicationContext);transfer=new ExistingDaoSource(app);
     }
@@ -54,7 +54,7 @@ public final class ExistingOwnerPageSource implements OwnerPageRead.Source {
             while(Boolean.TRUE.equals(next.invoke(c))){
                 if(rows.size()>=OwnerPageRead.LOOKAHEAD)throw new IllegalStateException("row limit");
                 rows.add(new BoundedDownloadRead.AppRow((String)getString.invoke(c,0),(Integer)getInt.invoke(c,1),
-                   (Integer)getInt.invoke(c,2),(String)getString.invoke(c,3),(String)getString.invoke(c,4)));
+                   (Integer)getInt.invoke(c,2),(String)getString.invoke(c,3),(String)getString.invoke(c,4),(String)getString.invoke(c,5)));
             }
             return rows;
         }finally{
