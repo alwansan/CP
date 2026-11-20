@@ -1661,5 +1661,28 @@
     "compose_renderer_in_original_verified": true,
     "interactive_gate_verified": false,
     "real_engine_connected": false
+  },
+  "native_compose_isolation_73": {
+    "entry": "1a5a420d3a73fbd9a7815d630a242060c0d1ca5a",
+    "renderer_run": 44652983134,
+    "renderer_job": 136012202890,
+    "renderer_status": "success",
+    "main_pid": 4453,
+    "ui_pid": 4519,
+    "clicks_verified": 2,
+    "classes": 20016,
+    "dex": 13,
+    "resources": 7425,
+    "artifact": 14593090859,
+    "artifact_sha256": "6459faf311f1dcf848a0a8716754af4c0d7aff20280702ed183006eb3b1504cd",
+    "startup_run": 44652983199,
+    "startup_status": "success",
+    "startup_main_pid": 4534,
+    "startup_ui_pid": 4597,
+    "owner_probe_code": "521f8d6ab74ea0d97eff884478fe88dcd6b8a58a",
+    "owner_probe_run": 44654627610,
+    "owner_probe_status": "in_progress",
+    "interactive_gate_verified": true,
+    "real_engine_connected": false
   }
 }
