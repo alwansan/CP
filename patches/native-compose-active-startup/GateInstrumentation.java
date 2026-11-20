@@ -14,6 +14,7 @@ public final class GateInstrumentation extends Instrumentation {
     private void require(boolean ok,String why){if(!ok)throw new AssertionError(why);}
     private boolean renderer;
     private boolean ownerUi;
+    private boolean populatedUi;
     private static final String TAG="CPNativeGate";
     private static final String PKG="com.cinemana.pro";
     private int recoveries=0;
@@ -92,7 +93,7 @@ public final class GateInstrumentation extends Instrumentation {
                 if(line.contains("mCurrentFocus=")||line.contains("mFocusedApp="))Log.i(TAG,line.trim());
         }catch(Exception e){Log.w(TAG,"diagnostics unavailable",e);}
     }
-    @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));ownerUi="true".equals(args.getString("owner_ui"));start();}
+    @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));ownerUi="true".equals(args.getString("owner_ui"));populatedUi="true".equals(args.getString("populated_ui"));start();}
     // Compose virtual accessibility nodes can be enumerated through getChild()
     // even when the provider's text-search implementation returns no result.
     // Retain the exact package/text, visible flag and positive screen bounds.
@@ -168,6 +169,112 @@ public final class GateInstrumentation extends Instrumentation {
         if(n!=null)n.recycle();
         throw new AssertionError("click failed "+text);
     }
+
+    /** Test-APK-only fixture: committed briefly for cross-process verification.
+     * No original schema changes, scheduling, files, media or network requests.
+     * An empty disposable emulator is mandatory; cleanup is exact-key scoped. */
+    private final class UiFixture {
+        final Class<?> rt=type("vt3"), qt=type("yt3"), at=type("kw0"), tt=type("lz0");
+        final Object ad,ar,td,tr,adapter;
+        final Class<?> item=Class.forName("com.shabakaty.cinemana.data.db.downloads.CinemanaDownloadItem");
+        final Class<?> row=type("pw0"),status=type("xc4");
+        final java.lang.reflect.Constructor<?> insert;
+        boolean armed;
+        private Class<?> type(String n)throws ClassNotFoundException{return Class.forName("com.shabakaty.downloader."+n);}
+        UiFixture(Context ctx)throws Exception{
+            require(Build.VERSION.SDK_INT==35 && ("ranchu".equals(Build.HARDWARE)||"goldfish".equals(Build.HARDWARE)
+                ||"sdk_gphone64_x86_64".equals(Build.PRODUCT)) && "1".equals(shell("getprop ro.kernel.qemu").trim()),"disposable emulator required");
+            require("1".equals(shell("settings get global airplane_mode_on").trim()),"offline emulator required");
+            Context app=ctx.getApplicationContext();
+            require(PKG.equals(Application.getProcessName())&&Looper.myLooper()!=Looper.getMainLooper(),"fixture owner worker");
+            ad=Class.forName("com.shabakaty.cinemana.ca1.DownloadStore263").getMethod("appDao",Context.class).invoke(null,app);
+            ar=at.getField("a").get(ad);
+            java.lang.reflect.Method exp=Class.forName("com.shabakaty.cinemana.ca1.Restart108").getMethod("exp",String.class,Object[].class);
+            td=exp.invoke(null,"getDownloadsDao",new Object[]{app,app});
+            require(td==exp.invoke(null,"getDownloadsDao",new Object[]{app,app}),"transfer cache");
+            tr=tt.getField("a").get(td);adapter=tt.getField("b").get(td);
+            require(rt.isInstance(ar)&&rt.isInstance(tr)&&ar!=tr,"Room owners");
+            insert=type("kw0$c").getConstructor(at,item);
+            require(count(ar,"CinemanaDownloadItem")==0&&count(tr,"Downloads")==0,"refuse preexisting rows");
+        }
+        String id(int n){return "cp-owner-ui-fixture-00"+n;}
+        int task(int n){return 720000+n;}
+        long count(Object db,String table)throws Exception{
+            require("Downloads".equals(table)||"CinemanaDownloadItem".equals(table),"count table");
+            Object q=qt.getMethod("a",String.class,int.class).invoke(null,"SELECT COUNT(*) FROM "+table,0);
+            android.database.Cursor c=null;
+            try{
+                c=(android.database.Cursor)type("lh0").getMethod("b",rt,type("bi4"),boolean.class,CancellationSignal.class).invoke(null,db,q,false,null);
+                require(c.moveToFirst(),"count cursor");return c.getLong(0);
+            }finally{try{if(c!=null)c.close();}finally{qt.getMethod("c").invoke(q);}}
+        }
+        void transaction(Object db,java.util.concurrent.Callable<Void> body)throws Exception{
+            rt.getMethod("i").invoke(db);
+            try{body.call();rt.getMethod("n").invoke(db);}finally{rt.getMethod("j").invoke(db);}
+        }
+        void transfer(int n,String external,long progress,long total,String state)throws Exception{
+            Object e=row.getConstructor().newInstance();
+            row.getField("r").setInt(e,task(n));row.getField("s").set(e,external);
+            row.getField("t").setLong(e,progress);row.getField("y").setLong(e,total);
+            for(String f:new String[]{"u","v","w","x","B"})row.getField(f).set(e,"");
+            Object match=null;
+            for(Object x:status.getEnumConstants())if(((Enum<?>)x).name().equals(state))match=x;
+            require(match!=null,"transfer status");row.getField("z").set(e,match);
+            type("x31").getMethod("f",Object.class).invoke(adapter,e);
+        }
+        void seed()throws Exception{
+            require(count(ar,"CinemanaDownloadItem")==0&&count(tr,"Downloads")==0,"fixture initial emptiness");
+            armed=true;
+            transaction(tr,()->{
+                require(count(tr,"Downloads")==0,"transfer table changed");
+                transfer(1,id(1),250,1000,"PROGRESS");
+                transfer(2,id(2),1000,1000,"COMPLETED");
+                transfer(3,id(3),400,1000,"PROGRESS");
+                transfer(3,id(5),900,1000,"PROGRESS");
+                return null;
+            });
+            transaction(ar,()->{
+                require(count(ar,"CinemanaDownloadItem")==0,"app table changed");
+                for(int n=1;n<=4;n++){
+                    Object e=item.getConstructor().newInstance();
+                    item.getField("id").set(e,id(n));item.getField("title").set(e,"CP disposable UI "+n);
+                    item.getField("downloadTaskId").setInt(e,task(n));item.getField("collectionID").setInt(e,0);
+                    item.getField("path").set(e,"");item.getField("qualityName").set(e,"fixture");
+                    ((java.util.concurrent.Callable<?>)insert.newInstance(ad,e)).call();
+                }
+                return null;
+            });
+            require(count(ar,"CinemanaDownloadItem")==4&&count(tr,"Downloads")==4,"committed fixture counts");
+        }
+        void advance()throws Exception{
+            transaction(tr,()->{transfer(1,id(1),750,1000,"PROGRESS");return null;});
+            require(count(tr,"Downloads")==4,"refresh transfer count");
+        }
+        void delete(Object db,String sql,Object... args)throws Exception{
+            Object helper=rt.getField("d").get(db);
+            Object writable=type("zh4").getMethod("getWritableDatabase").invoke(helper);
+            type("yh4").getMethod("k0",String.class,Object[].class).invoke(writable,sql,args);
+        }
+        void cleanup()throws Exception{
+            if(!armed)return;
+            // Remove app bindings first; never clear unrelated rows or use engine delete side effects.
+            try{
+                transaction(ar,()->{
+                    for(int n=1;n<=4;n++)delete(ar,"DELETE FROM CinemanaDownloadItem WHERE id = ? AND downloadTaskId = ?",id(n),task(n));
+                    return null;
+                });
+            }finally{
+                transaction(tr,()->{
+                    for(int n=1;n<=3;n++)delete(tr,"DELETE FROM Downloads WHERE task_id = ? AND external_id = ?",task(n),id(n));
+                    delete(tr,"DELETE FROM Downloads WHERE task_id = ? AND external_id = ?",task(3),id(5));
+                    return null;
+                });
+            }
+            require(count(ar,"CinemanaDownloadItem")==0&&count(tr,"Downloads")==0,"cleanup not empty");
+            armed=false;
+        }
+    }
+
     @Override public void onStart(){
         Bundle result=new Bundle();
         try {
@@ -236,6 +343,31 @@ public final class GateInstrumentation extends Instrumentation {
                 Bundle realAfter=ctx.getContentResolver().call(uri,"snapshot",null,null);
                 require(realAfter!=null&&realAfter.getBoolean("ready")&&realAfter.getInt("pid")==ui,"owner UI changed process");
                 markerResult+="CP_REAL_OWNER_COMPOSE_UI_PASS owner="+main+" ui="+ui+" first=0 refresh=0 serial=2\n";
+                if(populatedUi){
+                    setStage("real-owner-ui-populated");
+                    UiFixture fixture=new UiFixture(ctx);
+                    try{
+                        fixture.seed();
+                        clickText("تحديث");
+                        find("Reply: 3",15000).recycle();
+                        find("صفحة 1 · 4 عنصر",15000).recycle();
+                        find("عنصر 1 · 250/1000 · PROGRESS · OBSERVED",15000).recycle();
+                        find("عنصر 2 · 1000/1000 · COMPLETED · OBSERVED",15000).recycle();
+                        find("عنصر 3 · -1/-1 · UNKNOWN · CONFLICT",15000).recycle();
+                        find("عنصر 4 · -1/-1 · UNKNOWN · NO_TRANSPORT_ROW",15000).recycle();
+                        fixture.advance();
+                        clickText("تحديث");
+                        find("Reply: 4",15000).recycle();
+                        find("عنصر 1 · 750/1000 · PROGRESS · OBSERVED",15000).recycle();
+                        find("عنصر 3 · -1/-1 · UNKNOWN · CONFLICT",15000).recycle();
+                    }finally{fixture.cleanup();}
+                    clickText("تحديث");
+                    find("Reply: 5",15000).recycle();
+                    find("صفحة 1 · 0 عنصر",15000).recycle();
+                    find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
+                    requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+                    markerResult+="CP_REAL_OWNER_COMPOSE_POPULATED_PASS rows=4 progress=250,750 collision=1 missing=1 cleanup=verified serial=5\n";
+                }
             }
             result.putString("stream",markerResult);
             finish(Activity.RESULT_OK,result);

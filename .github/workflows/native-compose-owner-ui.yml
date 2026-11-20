@@ -3,6 +3,7 @@ on:
   push:
     branches: [Native-Compose]
     paths: ['.github/workflows/native-compose-owner-ui.yml']
+    # Session 79: populated original Room -> IPC -> Compose gate.
   workflow_dispatch:
 permissions:
   contents: read

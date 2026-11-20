@@ -43,7 +43,8 @@ internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,
         }
         LazyColumn(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)) {
             items(state.rows,key={it.index},contentType={"ipc"}) { row ->
-                Text("عنصر ${row.index+1} · ${row.progress}/${row.total} · ${row.transport}",Modifier.fillMaxWidth().padding(8.dp))
+                Text("عنصر ${row.index+1} · ${row.progress}/${row.total} · ${row.transport}" +
+                    if(realOwner) " · ${row.observation}" else "",Modifier.fillMaxWidth().padding(8.dp))
             }
         }
     }
