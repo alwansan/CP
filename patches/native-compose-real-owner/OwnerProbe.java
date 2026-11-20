@@ -1,4 +1,4 @@
-package cp.ownerprobe;
+package com.shabakaty.cinemana.htmlbridge.model;
 import android.app.*;
 import android.content.Context;
 import android.os.*;
