@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * no automatic cursor replay. A new screen client must explicitly bind anew.
  * All IPC and validations on worker; Compose receives one bounded snapshot.
  */
+@Immutable
 internal data class OwnerRow(val index: Int, val progress: Long, val total: Long, val transport: String, val observation: String, val title: String = "")
 internal data class OwnerScreen(val state: String = "connecting", val pid: Int = 0, val page: Int = 0,
     val rows: List<OwnerRow> = emptyList(), val more: Boolean = false, val busy: Boolean = true,
@@ -201,8 +202,13 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
             }
             rows.add(OwnerRow(i,pr,all,state,obs,title))
         }
-        if(finish(OwnerClientEpoch.Outcome.OBSERVED,more))
-            publish(OwnerScreen("observed",pid,gate.page(),rows.toList(),gate.more(),false,q.serial))
+        if(finish(OwnerClientEpoch.Outcome.OBSERVED,more)) {
+            // Reuse only an equal, already validated page. Never suppress
+            // response serial, page, or freshness updates.
+            val page=gate.page()
+            val nextRows=if(snapshot.page==page && snapshot.rows==rows) snapshot.rows else rows.toList()
+            publish(OwnerScreen("observed",pid,page,nextRows,gate.more(),false,q.serial))
+        }
     }
     fun close() {
         if(closed)return

@@ -2,8 +2,11 @@ name: CP Native Compose real owner UI data binding gate
 on:
   push:
     branches: [Native-Compose]
-    paths: ['.github/workflows/native-compose-owner-ui.yml']
-    # Session 88: combined transfer-table pressure and three Android remux workers.
+    paths:
+      - '.github/workflows/native-compose-owner-ui.yml'
+      - 'patches/compose-lab/app/src/main/java/com/alwansan/cinemana/composelab/OwnerReadPanel.kt'
+      - 'patches/compose-lab/app/src/main/java/com/alwansan/cinemana/composelab/LabOwnerClient.kt'
+    # Session 89: revalidate the isolated row projection under combined pressure.
   workflow_dispatch:
 permissions:
   contents: read

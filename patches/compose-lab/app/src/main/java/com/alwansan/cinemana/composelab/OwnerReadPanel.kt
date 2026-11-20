@@ -11,6 +11,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextOverflow
 
+// Rows are a bounded projection, not a second source of truth. A transport
+// response serial or busy flag alone does not invalidate the diagnostic list.
+// The presentation list must still invalidate when its freshness changes.
+internal data class OwnerListSlice(val page:Int,val rows:List<OwnerRow>,val fresh:Boolean)
+internal fun ownerListSlice(state:OwnerScreen,presentation:Boolean)=
+    OwnerListSlice(state.page,state.rows,presentation && state.state=="observed")
+
 @Composable
 internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,Int)->Unit)?=null, presentation: Boolean=false, close: () -> Unit) {
     val context = LocalContext.current
@@ -22,13 +29,22 @@ internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,
         client=connection
         onDispose { connection?.close() }
     }
-    val current = client
-    val state = current?.screen ?: OwnerScreen()
+    val current=client
     val drawObserver=if(onDrawState==null)Modifier else Modifier.drawWithContent {
         drawContent()
-        onDrawState.invoke(state,size.width.toInt(),size.height.toInt())
+        // The optional diagnostic observer reads only in the draw phase.
+        onDrawState.invoke(current?.screen ?: OwnerScreen(),size.width.toInt(),size.height.toInt())
     }
     Column(Modifier.fillMaxSize().then(drawObserver),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+        OwnerReadHeader(current,realOwner,presentation,{reconnect++},close)
+        OwnerReadRows(current,realOwner,presentation,Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun OwnerReadHeader(current:LabOwnerClient?,realOwner:Boolean,presentation:Boolean,reconnect:()->Unit,close:()->Unit) {
+    val state=current?.screen ?: OwnerScreen()
+    Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
         if(presentation) {
             Text("التنزيلات",style=MaterialTheme.typography.headlineMedium)
             Text(when(state.state) {
@@ -44,7 +60,7 @@ internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,
             Text("PID: ${state.pid}",Modifier.testTag("owner-pid"))
             Text("Reply: ${state.responseSerial}",Modifier.testTag("owner-serial"))
         }
-        if (!state.busy && state.pid==0) TextButton(onClick={reconnect++},modifier=Modifier.testTag("owner-reconnect")) {Text("إعادة الاتصال")}
+        if (!state.busy && state.pid==0) TextButton(onClick={reconnect()},modifier=Modifier.testTag("owner-reconnect")) {Text("إعادة الاتصال")}
         Text("صفحة ${state.page} · ${state.rows.size} عنصر",Modifier.testTag("owner-count"))
         Row {
             TextButton(onClick={current?.request(1)},enabled=!state.busy && state.pid>0,modifier=Modifier.testTag("owner-first")){Text("الأولى")}
@@ -53,11 +69,21 @@ internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,
             TextButton(onClick=close,modifier=Modifier.testTag("owner-close")){Text("إغلاق")}
         }
         if(presentation && state.state=="observed" && state.rows.isEmpty()) Text("لا توجد تنزيلات")
-        LazyColumn(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-            items(state.rows,key={it.index},contentType={"ipc"}) { row ->
-                if(presentation) DownloadObservationCard(row,state.state=="observed") else Text("عنصر ${row.index+1} · ${row.progress}/${row.total} · ${row.transport}" +
-                    if(realOwner) " · ${row.observation}" else "",Modifier.fillMaxWidth().padding(8.dp))
-            }
+    }
+}
+
+@Composable
+private fun OwnerReadRows(current:LabOwnerClient?,realOwner:Boolean,presentation:Boolean,modifier:Modifier) {
+    val slice by remember(current,presentation) {
+        derivedStateOf(structuralEqualityPolicy()) {
+            ownerListSlice(current?.screen ?: OwnerScreen(),presentation)
+        }
+    }
+    LazyColumn(modifier,verticalArrangement=Arrangement.spacedBy(6.dp)) {
+        // Indices are page-local display positions, not persistent episode IDs.
+        items(slice.rows,key={"${slice.page}:${it.index}"},contentType={"ipc"}) { row ->
+            if(presentation) DownloadObservationCard(row,slice.fresh) else Text("عنصر ${row.index+1} · ${row.progress}/${row.total} · ${row.transport}" +
+                if(realOwner) " · ${row.observation}" else "",Modifier.fillMaxWidth().padding(8.dp))
         }
     }
 }

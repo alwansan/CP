@@ -245,7 +245,25 @@ class LabTest {
         }
         rule.waitUntil(timeoutMillis=15000){rule.activity.hasWindowFocus()}
     }
+    private fun testOwnerListProjection() {
+        val row=OwnerRow(0,25,100,"PROGRESS","OBSERVED","حلقة")
+        val observed=OwnerScreen("observed",123,1,listOf(row),true,false,1)
+        val reading=observed.copy(state="reading",busy=true,responseSerial=2)
+        val auto=observed.copy(busy=true,responseSerial=2)
+        assertEquals(ownerListSlice(observed,false),ownerListSlice(reading,false))
+        assertEquals(ownerListSlice(observed,true),ownerListSlice(auto,true))
+        assertNotEquals(ownerListSlice(observed,true),ownerListSlice(reading,true))
+        assertNotEquals(ownerListSlice(observed,true),ownerListSlice(observed.copy(state="changed"),true))
+        assertNotEquals(ownerListSlice(observed,true),ownerListSlice(observed.copy(state="unavailable"),true))
+        assertNotEquals(ownerListSlice(observed,true),ownerListSlice(observed.copy(rows=listOf(row.copy(progress=75))),true))
+        assertNotEquals(ownerListSlice(observed,false),ownerListSlice(observed.copy(page=2),false))
+        assertNotEquals(ownerListSlice(observed,true),ownerListSlice(observed.copy(rows=emptyList()),true))
+        assertEquals(ownerListSlice(observed,true),ownerListSlice(observed.copy(rows=listOf(row.copy()),responseSerial=3),true))
+        assertFalse(ownerListSlice(reading,true).fresh)
+        println("CP_COMPOSE_OWNER_LIST_PROJECTION_PASS assertions=10")
+    }
     @Test fun smokeAndPressure() {
+        testOwnerListProjection()
         node("disclosure").assertIsDisplayed()
         // Run foreground lifecycle/configuration before synthetic CPU/fsync load.
         testNativeUiStartup()
