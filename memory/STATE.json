@@ -2039,8 +2039,53 @@
     "renderer_run": 44765152701,
     "startup_run": 44765152717,
     "ipc_run": 44765152767,
+    "status": "completed_success",
+    "x86_remux_verified": true,
+    "actual_app_exporter_pressure_verified": false,
+    "real_download_mkv_pressure_verified": false,
+    "regression_status": "all_success"
+  },
+  "native_compose_isolation_88": {
+    "entry": "d750549d9990ec0f58dc0b89e19fb0d3806b2417",
+    "code": "b50f1ea1b2ac082c93be6cb15b10885cd78305ed",
+    "verified_remux_run": 44765152581,
+    "verified_remux_job": 136387660757,
+    "diagnostic_artifact": 14644163290,
+    "x86_remux_verified": true,
+    "media_files": 3,
+    "media_duration_sec": 60.021,
+    "media_size_bytes_each": 15695895,
+    "verified_regression_runs": [
+      44765152701,
+      44765152717,
+      44765152767
+    ],
+    "idle": {
+      "local_median_ms": 518,
+      "local_max_ms": 520,
+      "reply_median_ms": 532,
+      "reply_max_ms": 607,
+      "frames": 11,
+      "janky": 9,
+      "p50_ms": 16,
+      "p95_ms": 31
+    },
+    "load": {
+      "local_median_ms": 529,
+      "local_max_ms": 1100,
+      "reply_median_ms": 542,
+      "reply_max_ms": 1110,
+      "frames": 18,
+      "janky": 12,
+      "p50_ms": 22,
+      "p95_ms": 44
+    },
+    "combined_run": 44767938787,
+    "renderer_run": 44767938811,
+    "startup_run": 44767938681,
+    "ipc_run": 44767938880,
     "status": "in_progress",
-    "x86_remux_verified": false,
+    "combined_verified": false,
     "actual_app_exporter_pressure_verified": false,
     "real_download_mkv_pressure_verified": false
   }
