@@ -1799,16 +1799,37 @@
     "entry": "21bfa9444761570b82e17f8b696e9a1bba8438b1",
     "code": "c8ef1971276174f792ec860dd2fccc5db41fa4ca",
     "previous_transfer_run": 44661195369,
-    "previous_transfer_status": "in_progress",
+    "previous_transfer_status": "success",
     "collision_run": 44661986433,
     "collision_job": 136042146931,
-    "collision_status": "in_progress",
+    "collision_status": "success",
     "shared_run": 44661986007,
     "shared_job": 136042145570,
     "shared_status": "success",
     "shared_assertions": 41221,
     "duplicate_task_id_guard_candidate": true,
-    "duplicate_task_id_android_verified": false,
+    "duplicate_task_id_android_verified": true,
     "populated_ui_verified": false
+  },
+  "native_compose_isolation_79": {
+    "entry": "4cd6f6b15fe014658691a38ae046219884c07ec4",
+    "code": "db9c00040a11d51feed1e11adcdd616a170881f6",
+    "transfer_run": 44661195369,
+    "transfer_status": "success",
+    "collision_run": 44661986433,
+    "collision_status": "success",
+    "real_transfer_fixture_verified": true,
+    "duplicate_task_id_android_verified": true,
+    "ui_run": 44663500417,
+    "ui_status": "in_progress",
+    "regression_runs": [
+      44663500436,
+      44663500426,
+      44663500429,
+      44663500445
+    ],
+    "populated_ui_verified": false,
+    "real_engine_connected": false,
+    "real_device_pressure_verified": false
   }
 }
