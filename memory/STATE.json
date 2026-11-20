@@ -1454,5 +1454,32 @@
     "parcel_probe_status": "in_progress",
     "parcel_wire_verified": false,
     "production_merged": false
+  },
+  "native_compose_isolation_64": {
+    "entry": "deecee867ea229fa574d4a3b47694cf41cf5a6df",
+    "parcel_run": 44640720578,
+    "parcel_job": 135970777268,
+    "parcel_status": "success",
+    "parcel_checks": 450,
+    "parcel_cases": 5,
+    "parcel_aliases": 2,
+    "parcel_artifact": 14585844634,
+    "parcel_artifact_sha256": "6b646609b1e741649c7ca5c9734cfa681a5d04c6cdaa2ad40368440031eca6a1",
+    "scope": "relocated standalone synthetic parcel roundtrip only",
+    "main_pid": 2051,
+    "ui_pid": 2823,
+    "owner_pid": 2878,
+    "ipc_rows": 24,
+    "classes": 2347,
+    "resources": 263,
+    "class_overlap": 0,
+    "resource_name_overlap": 0,
+    "resource_numeric_overlap": 0,
+    "original_old_wire_verified": false,
+    "resource_coexistence_code": "8cb816db84075ec896a9572cfc75cce66af84163",
+    "resource_coexistence_run": 44642162685,
+    "resource_coexistence_job": 135975680522,
+    "resource_coexistence_status": "in_progress",
+    "production_merged": false
   }
 }
