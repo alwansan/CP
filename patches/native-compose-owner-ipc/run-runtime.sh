@@ -57,6 +57,7 @@ if [[ "${CP_REAL_OWNER_UI_GATE:-0}" == 1 ]]; then
     if [[ "${CP_X86_REMUX_GATE:-0}" == 1 ]]; then
         grep -F 'CP_X86_REMUX_UI_PASS workers=3 growth=verified exits=0,0,0 actions=16' "$OUT/report/compose-owner-ui.txt"
         grep -F 'CP_X86_REMUX_CLEANUP_PASS' "$OUT/report/compose-owner-ui.txt"
+        grep -F 'CP_X86_REMUX_COMBINED_PASS rows=452 page=24 workers=3 batches=verified actions=8' "$OUT/report/compose-owner-ui.txt"
         adb logcat -d -s CPNativeGate:I '*:S' > "$OUT/report/remux/frame-log.txt"
         bash patches/native-compose-owner-ipc/collect-remux.sh
     fi

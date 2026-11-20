@@ -339,6 +339,9 @@ public final class GateInstrumentation extends Instrumentation {
         return "local_"+samples(local)+" reply_"+samples(reply)+" overlappingBatches="+during;
     }
     private String pressure(UiFixture fixture)throws Exception{
+        return pressure(fixture,14,8);
+    }
+    private String pressure(UiFixture fixture,int firstSerial,int firstCount)throws Exception{
         java.util.concurrent.atomic.AtomicBoolean stop=new java.util.concurrent.atomic.AtomicBoolean();
         java.util.concurrent.atomic.AtomicInteger batches=new java.util.concurrent.atomic.AtomicInteger();
         java.util.concurrent.atomic.AtomicReference<Throwable> error=new java.util.concurrent.atomic.AtomicReference<>();
@@ -357,7 +360,7 @@ public final class GateInstrumentation extends Instrumentation {
         try{
             require(ready.await(15,java.util.concurrent.TimeUnit.SECONDS)&&batches.get()>0&&error.get()==null,"writer startup");
             require(writer.isAlive(),"writer ended before pressure");
-            metrics=pairedActions(14,8,batches);
+            metrics=pairedActions(firstSerial,firstCount,batches);
             require(writer.isAlive()&&error.get()==null,"writer ended during pressure");
         }finally{
             stop.set(true);writer.join(15000);
@@ -517,11 +520,17 @@ public final class GateInstrumentation extends Instrumentation {
             }
             activeMuxes(pids);
             for(int n=1;n<=3;n++){startSizes[n-1]=muxSize(n);require(startSizes[n-1]>0,"empty mux");}
-            // Same eight paired actions during three actual Android FFmpeg remuxes.
-            setStage("remux-load-actions");
-            String load=pairedActions(9,8,null);
+            // Combine actual shell remuxes with committed transfer-table writes.
+            // The existing pressure helper requires >=4 overlapping batches,
+            // a live writer across all actions, and exactly 452 rows afterwards.
+            setStage("remux-combined-load-actions");
+            String load=pressure(fx,9,8);
             activeMuxes(pids);
-            for(int n=1;n<=3;n++)require(muxSize(n)>startSizes[n-1],"mux output did not grow "+n);
+            for(int n=1;n<=3;n++){
+                long endSize=muxSize(n);
+                require(endSize>startSizes[n-1],"mux output did not grow "+n);
+                Log.i(TAG,"CP_REMUX_COMBINED_GROWTH slot="+n+" pid="+pids[n-1]+" start="+startSizes[n-1]+" end="+endSize);
+            }
             setStage("remux-load-frames");
             reportFrames("load",uiPid);
             requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
@@ -535,7 +544,8 @@ public final class GateInstrumentation extends Instrumentation {
             }
             for(int n=1;n<=3;n++)require(muxControl("exit",n).equals("0"),"mux failed "+n);
             return "CP_X86_REMUX_UI_IDLE "+idle+"\nCP_X86_REMUX_UI_LOAD "+load+"\n"+
-                "CP_X86_REMUX_UI_PASS workers=3 growth=verified exits=0,0,0 actions=16";
+                "CP_X86_REMUX_UI_PASS workers=3 growth=verified exits=0,0,0 actions=16\n"+
+                "CP_X86_REMUX_COMBINED_PASS rows=452 page=24 workers=3 batches=verified actions=8";
         }catch(Exception|Error t){primary=t;throw t;}finally{
             // Retain the original failure stage and attempt every slot even if
             // one cleanup command fails. Fixture cleanup must always run.
