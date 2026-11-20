@@ -401,19 +401,26 @@ public final class GateInstrumentation extends Instrumentation {
         }
     }
     private String shellScalar(String command)throws Exception{return remuxShell(command).trim();}
+    // UiAutomation executes an argv-like string, not shell syntax. All
+    // compound operations live in a fixed test-only script pushed by adb.
+    private String muxControl(String action,int n)throws Exception{
+        require(n>=1&&n<=3,"invalid mux slot");
+        require(Arrays.asList("start","pid","size","alive","done","exit","cleanup").contains(action),"invalid mux action");
+        return shellScalar("sh "+MUX_DIR+"/control.sh "+action+" "+n);
+    }
     private long muxSize(int n)throws Exception{
-        String s=shellScalar("stat -c %s "+MUX_DIR+"/out-"+n+".mkv 2>/dev/null || echo 0");
-        return Long.parseLong(s);
+        String value=muxControl("size",n);
+        require(value.matches("[0-9]+"),"invalid mux size "+n);
+        return Long.parseLong(value);
     }
     private void activeMuxes(int[] pids)throws Exception{
         for(int n=1;n<=3;n++){
-            String p=shellScalar("cat "+MUX_DIR+"/pid-"+n+" 2>/dev/null || echo 0");
+            String p=muxControl("pid",n);
             require(p.matches("[1-9][0-9]*"),"missing mux pid "+n);
             int id=Integer.parseInt(p);
             if(pids[n-1]!=0)require(pids[n-1]==id,"mux PID changed");
             pids[n-1]=id;
-            require(shellScalar("kill -0 "+id+" 2>/dev/null && echo alive || echo dead").equals("alive"),"mux ended early "+n);
-            require(shellScalar("cat /proc/"+id+"/comm").equals("ffmpeg"),"not ffmpeg "+n);
+            require(muxControl("alive",n).equals("alive"),"mux ended or identity mismatch "+n);
         }
         require(pids[0]!=pids[1]&&pids[0]!=pids[2]&&pids[1]!=pids[2],"duplicate mux PID");
     }
@@ -482,6 +489,7 @@ public final class GateInstrumentation extends Instrumentation {
         Intent r=new Intent().setClassName(PKG,"com.alwansan.cinemana.composelab.NativeUiProbeActivity")
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("cp_real_owner",true);
         UiFixture fx=new UiFixture(ctx);
+        Throwable primary=null;
         try{
             setStage("remux-seed");
             fx.seedLarge();ctx.startActivity(r);
@@ -499,7 +507,7 @@ public final class GateInstrumentation extends Instrumentation {
             reportFrames("idle",uiPid);
             remuxShell("dumpsys -t 8 gfxinfo "+uiPid+" reset");
             setStage("remux-launch-workers");
-            for(int n=1;n<=3;n++)remuxShell("sh "+MUX_DIR+"/worker.sh "+n+" </dev/null >/dev/null 2>&1 & echo launched");
+            for(int n=1;n<=3;n++)require(muxControl("start",n).equals("launched"),"mux launch failed "+n);
             long deadline=SystemClock.elapsedRealtime()+10000;
             while(SystemClock.elapsedRealtime()<deadline){
                 boolean ready=true;
@@ -521,21 +529,24 @@ public final class GateInstrumentation extends Instrumentation {
             deadline=SystemClock.elapsedRealtime()+60000;
             while(SystemClock.elapsedRealtime()<deadline){
                 boolean done=true;
-                for(int n=1;n<=3;n++)done&=shellScalar("test -f "+MUX_DIR+"/exit-"+n+" && echo yes || echo no").equals("yes");
+                for(int n=1;n<=3;n++)done&=muxControl("done",n).equals("yes");
                 if(done)break;
                 SystemClock.sleep(500);
             }
-            for(int n=1;n<=3;n++)require(shellScalar("cat "+MUX_DIR+"/exit-"+n).equals("0"),"mux failed "+n);
+            for(int n=1;n<=3;n++)require(muxControl("exit",n).equals("0"),"mux failed "+n);
             return "CP_X86_REMUX_UI_IDLE "+idle+"\nCP_X86_REMUX_UI_LOAD "+load+"\n"+
                 "CP_X86_REMUX_UI_PASS workers=3 growth=verified exits=0,0,0 actions=16";
-        }finally{
-            setStage("remux-cleanup");
-            // Only test process IDs, with command identity checked before killing.
+        }catch(Exception|Error t){primary=t;throw t;}finally{
+            // Retain the original failure stage and attempt every slot even if
+            // one cleanup command fails. Fixture cleanup must always run.
+            Log.i(TAG,"CP_REMUX_CLEANUP_BEGIN previousStage="+stage);
+            Throwable cleanupFailure=null;
             for(int n=1;n<=3;n++){
-                String p=shellScalar("cat "+MUX_DIR+"/pid-"+n+" 2>/dev/null || echo 0");
-                if(p.matches("[1-9][0-9]*"))remuxShell("if [ \"$(readlink /proc/"+p+"/cwd 2>/dev/null)\" = "+MUX_DIR+" ] && [ \"$(cat /proc/"+p+"/comm 2>/dev/null)\" = ffmpeg ]; then kill "+p+" 2>/dev/null || true; fi");
+                try{require(muxControl("cleanup",n).equals("ok"),"mux cleanup failed "+n);}
+                catch(Throwable t){Log.e(TAG,"CP_REMUX_CLEANUP_SLOT_FAIL "+n,t);if(cleanupFailure==null)cleanupFailure=t;}
             }
-            fx.cleanup();
+            try{fx.cleanup();}catch(Throwable t){if(cleanupFailure==null)cleanupFailure=t;else cleanupFailure.addSuppressed(t);}
+            if(cleanupFailure!=null){if(primary!=null)primary.addSuppressed(cleanupFailure);else throw new IOException("remux cleanup failed",cleanupFailure);}
         }
     }
     @Override public void onStart(){
