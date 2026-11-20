@@ -1,0 +1,85 @@
+name: CP Native Compose dormant same-package candidate
+on:
+  push:
+    branches: [Native-Compose]
+    paths: ['patches/native-compose-dormant/**', '.github/workflows/native-compose-dormant.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    if: github.ref == 'refs/heads/Native-Compose'
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Download pinned compiler and test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/local-tools"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/org/robolectric/android-all/13-robolectric-9030017/android-all-13-robolectric-9030017.jar -o "$RUNNER_TEMP/local-tools/android.jar"
+          curl --fail --location --retry 3 https://storage.googleapis.com/r8-releases/raw/8.3.37/r8.jar -o "$RUNNER_TEMP/local-tools/r8.jar"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar -o "$RUNNER_TEMP/local-tools/gson.jar"
+          echo '4241c14a7727c34feea6507ec801318a3d4a90f070e4525681079fb94ee4c593  '"$RUNNER_TEMP/local-tools/gson.jar" | sha256sum --check
+      - name: Test account storage and API routing; compile helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 patches/local-account/run_tests.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --gson-jar "$RUNNER_TEMP/local-tools/gson.jar"
+          python3 patches/local-account/build.py --android-jar "$RUNNER_TEMP/local-tools/android.jar" --r8-jar "$RUNNER_TEMP/local-tools/r8.jar"
+          python3 patches/local-account/validate.py
+          python3 scripts/validate_recovery.py
+          python3 scripts/test_reference_guards.py
+          python3 scripts/test_recovery_flow.py
+          python3 scripts/test_apk_dex.py
+          python3 scripts/test_cp_dl.py
+          python3 scripts/test_mux_slots_dl.py
+          bash Cinemana_PATCH252_Project/build.sh
+      - name: Generate isolated allocated Compose code and resources
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: bash patches/native-compose-minified-combined/run-probe.sh
+      - name: Verify full resource table parity
+        run: bash patches/native-compose-resource-coexistence/run-probe.sh
+      - name: Assemble and sign dormant same-package candidate
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: bash patches/native-compose-dormant/run-probe.sh
+      - name: Enable KVM
+        run: |
+          if [[ -c /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi
+      - name: Mandatory original ART dialog and installed launcher gates
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-boot-timeout: 1800
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: |
+            bash scripts/cp_dl_art/run.sh "$RUNNER_TEMP/cp-dormant/signed.apk" && python3 patches/native-compose-dormant/smoke-original.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CP-Dormant-Same-Package-Diagnostics
+          path: |
+            ${{ runner.temp }}/cp-dormant/report
+            ${{ runner.temp }}/cp-resource-coexistence/report
+          if-no-files-found: warn
