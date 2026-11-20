@@ -1930,7 +1930,7 @@
     "release": "cp-compose-lab-16",
     "release_asset": 770317306,
     "auto_refresh_run": 44670220384,
-    "auto_refresh_status": "in_progress",
+    "auto_refresh_status": "success",
     "regression_runs": [
       44670220354,
       44670220363,
@@ -1939,7 +1939,38 @@
     ],
     "active_delay_ms": 2000,
     "idle_delay_ms": 10000,
-    "auto_refresh_verified": false,
+    "auto_refresh_verified": true,
+    "real_download_mkv_pressure_verified": false,
+    "regression_status": "all_success",
+    "pressure_metrics": {
+      "idle_local_median_ms": 282,
+      "idle_local_max_ms": 555,
+      "idle_reply_median_ms": 305,
+      "idle_reply_max_ms": 579,
+      "load_local_median_ms": 674,
+      "load_local_max_ms": 1394,
+      "load_reply_median_ms": 696,
+      "load_reply_max_ms": 1423,
+      "updates": 3520,
+      "overlap_batches": 54
+    }
+  },
+  "native_compose_isolation_84": {
+    "entry": "2b9c726c16dafae5c3b416a3fe8abd1025fa23a6",
+    "code": "17d75a6f75782bda0e88dca616735f9ea0d26e74",
+    "auto_refresh_verified": true,
+    "auto_refresh_run": 44670220384,
+    "release": "cp-compose-lab-17",
+    "release_asset": 770362851,
+    "x86_remux_run": 44754270579,
+    "x86_remux_status": "in_progress",
+    "regression_runs": [
+      44754270678,
+      44754270609,
+      44754272079
+    ],
+    "x86_remux_verified": false,
+    "actual_app_exporter_pressure_verified": false,
     "real_download_mkv_pressure_verified": false
   }
 }
