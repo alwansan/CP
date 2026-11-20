@@ -1586,5 +1586,28 @@
     "startup_runtime_verified": false,
     "compose_renderer_in_original": false,
     "real_engine_connected": false
+  },
+  "native_compose_isolation_70": {
+    "entry": "e017f32ab33c4bef2a145ad1f5c80d9ed3536a9a",
+    "startup_run": 44647868004,
+    "startup_job": 135994964403,
+    "startup_status": "success",
+    "classes": 20001,
+    "dex": 13,
+    "resources": 7425,
+    "main_pid": 4427,
+    "ui_pid": 4493,
+    "dormant_legacy_pid": 3083,
+    "active_legacy_pid": 4029,
+    "external_private_launch": "denied",
+    "artifact": 14589718055,
+    "artifact_sha256": "52f869fae820054d08866a8ca9a7b6208c015acf60a0cef98a903a67d9cf134e",
+    "renderer_code": "7100cb0457369654275be0fdb46c78209a9970ee",
+    "renderer_run": 44649650156,
+    "renderer_status": "in_progress",
+    "standalone_regression_run": 44649650053,
+    "startup_regression_run": 44649650079,
+    "compose_renderer_in_original_verified": false,
+    "real_engine_connected": false
   }
 }
