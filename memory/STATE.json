@@ -1875,9 +1875,38 @@
     "batch_shared_run": 44666455674,
     "batch_room_run": 44666455791,
     "batch_pressure_run": 44666455702,
-    "batch_status": "in_progress",
-    "android_batch_verified": false,
-    "optimized_pressure_verified": false,
+    "batch_status": "success",
+    "android_batch_verified": true,
+    "optimized_pressure_verified": true,
+    "real_download_mkv_pressure_verified": false,
+    "optimized_pressure_metrics": {
+      "idle_local_median_ms": 328,
+      "idle_local_max_ms": 1017,
+      "idle_reply_median_ms": 337,
+      "idle_reply_max_ms": 1028,
+      "load_local_median_ms": 522,
+      "load_local_max_ms": 1119,
+      "load_reply_median_ms": 530,
+      "load_reply_max_ms": 1132,
+      "updates": 2944,
+      "overlap_batches": 45
+    }
+  },
+  "native_compose_isolation_82": {
+    "entry": "0aca1020c0e9adac0522a49c4a43b9b043018e8c",
+    "code": "4f0195323c72901c626d83d4152bd66a074a3f36",
+    "batch_android_verified": true,
+    "presentation_run": 44668430719,
+    "shared_run": 44668430729,
+    "regression_runs": [
+      44668430731,
+      44668430736,
+      44668430714,
+      44668430749
+    ],
+    "presentation_status": "in_progress",
+    "presentation_verified": false,
+    "automatic_refresh": false,
     "real_download_mkv_pressure_verified": false
   }
 }
