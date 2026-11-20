@@ -15,6 +15,7 @@ public final class GateInstrumentation extends Instrumentation {
     private boolean renderer;
     private boolean ownerUi;
     private boolean populatedUi;
+    private boolean pressureUi;
     private static final String TAG="CPNativeGate";
     private static final String PKG="com.cinemana.pro";
     private int recoveries=0;
@@ -93,7 +94,7 @@ public final class GateInstrumentation extends Instrumentation {
                 if(line.contains("mCurrentFocus=")||line.contains("mFocusedApp="))Log.i(TAG,line.trim());
         }catch(Exception e){Log.w(TAG,"diagnostics unavailable",e);}
     }
-    @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));ownerUi="true".equals(args.getString("owner_ui"));populatedUi="true".equals(args.getString("populated_ui"));start();}
+    @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));ownerUi="true".equals(args.getString("owner_ui"));populatedUi="true".equals(args.getString("populated_ui"));pressureUi="true".equals(args.getString("pressure_ui"));start();}
     // Compose virtual accessibility nodes can be enumerated through getChild()
     // even when the provider's text-search implementation returns no result.
     // Retain the exact package/text, visible flag and positive screen bounds.
@@ -180,6 +181,8 @@ public final class GateInstrumentation extends Instrumentation {
         final Class<?> row=type("pw0"),status=type("xc4");
         final java.lang.reflect.Constructor<?> insert;
         boolean armed;
+        int largeRows;
+        volatile boolean writerUnstopped;
         private Class<?> type(String n)throws ClassNotFoundException{return Class.forName("com.shabakaty.downloader."+n);}
         UiFixture(Context ctx)throws Exception{
             require(Build.VERSION.SDK_INT==35 && ("ranchu".equals(Build.HARDWARE)||"goldfish".equals(Build.HARDWARE)
@@ -197,7 +200,7 @@ public final class GateInstrumentation extends Instrumentation {
             insert=type("kw0$c").getConstructor(at,item);
             require(count(ar,"CinemanaDownloadItem")==0&&count(tr,"Downloads")==0,"refuse preexisting rows");
         }
-        String id(int n){return "cp-owner-ui-fixture-00"+n;}
+        String id(int n){return String.format(Locale.ROOT,"cp-owner-ui-fixture-%03d",n);}
         int task(int n){return 720000+n;}
         long count(Object db,String table)throws Exception{
             require("Downloads".equals(table)||"CinemanaDownloadItem".equals(table),"count table");
@@ -246,6 +249,36 @@ public final class GateInstrumentation extends Instrumentation {
             });
             require(count(ar,"CinemanaDownloadItem")==4&&count(tr,"Downloads")==4,"committed fixture counts");
         }
+        void seedLarge()throws Exception{
+            require(count(ar,"CinemanaDownloadItem")==0&&count(tr,"Downloads")==0,"large initial emptiness");
+            largeRows=452;armed=true;
+            transaction(tr,()->{
+                require(count(tr,"Downloads")==0,"large transfer changed");
+                for(int n=1;n<=largeRows;n++)transfer(n,id(n),100,100000,"PROGRESS");
+                return null;
+            });
+            transaction(ar,()->{
+                require(count(ar,"CinemanaDownloadItem")==0,"large app changed");
+                for(int n=1;n<=largeRows;n++){
+                    Object e=item.getConstructor().newInstance();
+                    item.getField("id").set(e,id(n));item.getField("title").set(e,"CP isolated load "+n);
+                    item.getField("downloadTaskId").setInt(e,task(n));item.getField("collectionID").setInt(e,0);
+                    item.getField("path").set(e,"");item.getField("qualityName").set(e,"fixture");
+                    ((java.util.concurrent.Callable<?>)insert.newInstance(ad,e)).call();
+                }
+                return null;
+            });
+            require(count(ar,"CinemanaDownloadItem")==452&&count(tr,"Downloads")==452,"large committed counts");
+        }
+        void writeBatch(int batch)throws Exception{
+            transaction(tr,()->{
+                for(int j=0;j<64;j++){
+                    int n=(batch*64+j)%largeRows+1;
+                    transfer(n,id(n),100L+batch*100L+j,100000,"PROGRESS");
+                }
+                return null;
+            });
+        }
         void advance()throws Exception{
             transaction(tr,()->{transfer(1,id(1),750,1000,"PROGRESS");return null;});
             require(count(tr,"Downloads")==4,"refresh transfer count");
@@ -257,22 +290,82 @@ public final class GateInstrumentation extends Instrumentation {
         }
         void cleanup()throws Exception{
             if(!armed)return;
+            require(!writerUnstopped,"writer still active; refuse concurrent cleanup on disposable emulator");
             // Remove app bindings first; never clear unrelated rows or use engine delete side effects.
             try{
                 transaction(ar,()->{
-                    for(int n=1;n<=4;n++)delete(ar,"DELETE FROM CinemanaDownloadItem WHERE id = ? AND downloadTaskId = ?",id(n),task(n));
+                    for(int n=1;n<=(largeRows>0?largeRows:4);n++)delete(ar,"DELETE FROM CinemanaDownloadItem WHERE id = ? AND downloadTaskId = ?",id(n),task(n));
                     return null;
                 });
             }finally{
                 transaction(tr,()->{
-                    for(int n=1;n<=3;n++)delete(tr,"DELETE FROM Downloads WHERE task_id = ? AND external_id = ?",task(n),id(n));
-                    delete(tr,"DELETE FROM Downloads WHERE task_id = ? AND external_id = ?",task(3),id(5));
+                    for(int n=1;n<=(largeRows>0?largeRows:3);n++)delete(tr,"DELETE FROM Downloads WHERE task_id = ? AND external_id = ?",task(n),id(n));
+                    if(largeRows==0)delete(tr,"DELETE FROM Downloads WHERE task_id = ? AND external_id = ?",task(3),id(5));
                     return null;
                 });
             }
             require(count(ar,"CinemanaDownloadItem")==0&&count(tr,"Downloads")==0,"cleanup not empty");
             armed=false;
         }
+    }
+
+
+    // Accessibility observation latency includes 250ms polling and test dispatch;
+    // not physical touch-to-photon or a frame-rate measurement.
+    private String samples(long[] values){
+        long[] sorted=values.clone();Arrays.sort(sorted);
+        return "medianMs="+sorted[sorted.length/2]+" maxMs="+sorted[sorted.length-1]+" samples="+sorted.length;
+    }
+    private String pairedActions(int firstSerial,int firstCount,java.util.concurrent.atomic.AtomicInteger batches)throws Exception{
+        long[] local=new long[8],reply=new long[8];int start=batches==null?0:batches.get();
+        for(int i=0;i<8;i++){
+            int before=batches==null?0:batches.get();
+            find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
+            long dispatch=SystemClock.elapsedRealtime();
+            clickText(i%2==0?"التالي":"الأولى");
+            long localStart=SystemClock.elapsedRealtime();
+            clickText("CP_COMPOSE_INCREMENT");
+            find("CP_COMPOSE_COUNT_"+(firstCount+i+1),15000).recycle();
+            local[i]=SystemClock.elapsedRealtime()-localStart;
+            find("Reply: "+(firstSerial+i+1),15000).recycle();
+            find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
+            find("صفحة "+(i%2==0?2:1)+" · 24 عنصر",15000).recycle();
+            reply[i]=SystemClock.elapsedRealtime()-dispatch;
+            if(batches!=null)require(batches.get()>=before,"writer count regressed");
+        }
+        int during=batches==null?0:batches.get()-start;
+        if(batches!=null)require(during>=4,"insufficient writes during active measurement");
+        return "local_"+samples(local)+" reply_"+samples(reply)+" overlappingBatches="+during;
+    }
+    private String pressure(UiFixture fixture)throws Exception{
+        java.util.concurrent.atomic.AtomicBoolean stop=new java.util.concurrent.atomic.AtomicBoolean();
+        java.util.concurrent.atomic.AtomicInteger batches=new java.util.concurrent.atomic.AtomicInteger();
+        java.util.concurrent.atomic.AtomicReference<Throwable> error=new java.util.concurrent.atomic.AtomicReference<>();
+        java.util.concurrent.CountDownLatch ready=new java.util.concurrent.CountDownLatch(1);
+        Thread writer=new Thread(()->{
+            try{
+                long deadline=SystemClock.elapsedRealtime()+90000;
+                for(int b=1;b<=256&&!stop.get()&&SystemClock.elapsedRealtime()<deadline;b++){
+                    fixture.writeBatch(b);batches.incrementAndGet();ready.countDown();
+                    SystemClock.sleep(100);
+                }
+            }catch(Throwable t){error.set(t);}finally{ready.countDown();}
+        },"cp-disposable-transfer-pressure");
+        writer.start();
+        String metrics;
+        try{
+            require(ready.await(15,java.util.concurrent.TimeUnit.SECONDS)&&batches.get()>0&&error.get()==null,"writer startup");
+            require(writer.isAlive(),"writer ended before pressure");
+            metrics=pairedActions(14,8,batches);
+            require(writer.isAlive()&&error.get()==null,"writer ended during pressure");
+        }finally{
+            stop.set(true);writer.join(15000);
+            fixture.writerUnstopped=writer.isAlive();
+            require(!fixture.writerUnstopped,"writer did not stop");
+        }
+        require(error.get()==null&&batches.get()>0,"writer failed");
+        require(fixture.count(fixture.ar,"CinemanaDownloadItem")==452&&fixture.count(fixture.tr,"Downloads")==452,"pressure row count");
+        return metrics+" commits="+batches.get()+" updates="+(64*batches.get());
     }
 
     @Override public void onStart(){
@@ -367,6 +460,29 @@ public final class GateInstrumentation extends Instrumentation {
                     find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
                     requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
                     markerResult+="CP_REAL_OWNER_COMPOSE_POPULATED_PASS rows=4 progress=250,750 collision=1 missing=1 cleanup=verified serial=5\n";
+                    if(pressureUi){
+                        setStage("real-owner-ui-paired-pressure");
+                        UiFixture large=new UiFixture(ctx);
+                        String idle,loaded;
+                        try{
+                            large.seedLarge();
+                            clickText("تحديث");find("Reply: 6",15000).recycle();
+                            find("صفحة 1 · 24 عنصر",15000).recycle();
+                            find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
+                            find("CP_COMPOSE_COUNT_0",15000).recycle();
+                            idle=pairedActions(6,0,null);
+                            loaded=pressure(large);
+                            requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+                            Bundle same=ctx.getContentResolver().call(uri,"snapshot",null,null);
+                            require(same!=null&&same.getInt("pid")==ui,"pressure UI process changed");
+                        }finally{large.cleanup();}
+                        clickText("تحديث");find("Reply: 23",15000).recycle();
+                        find("صفحة 1 · 0 عنصر",15000).recycle();
+                        find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
+                        markerResult+="CP_REAL_OWNER_PRESSURE_IDLE "+idle+"\n";
+                        markerResult+="CP_REAL_OWNER_PRESSURE_LOAD "+loaded+"\n";
+                        markerResult+="CP_REAL_OWNER_PRESSURE_PASS rows=452 page=24 actions=16 cleanup=verified serial=23\n";
+                    }
                 }
             }
             result.putString("stream",markerResult);
