@@ -1845,13 +1845,39 @@
     "release": "cp-compose-lab-15",
     "release_asset": 770195312,
     "pressure_run": 44665181703,
-    "pressure_status": "in_progress",
+    "pressure_status": "success",
     "regression_runs": [
       44665181704,
       44665181637,
       44665181636
     ],
-    "actual_room_pressure_verified": false,
+    "actual_room_pressure_verified": true,
+    "real_download_mkv_pressure_verified": false,
+    "regression_status": "all_success",
+    "pressure_metrics": {
+      "idle_local_median_ms": 515,
+      "idle_local_max_ms": 778,
+      "idle_reply_median_ms": 550,
+      "idle_reply_max_ms": 785,
+      "load_local_median_ms": 622,
+      "load_local_max_ms": 1015,
+      "load_reply_median_ms": 647,
+      "load_reply_max_ms": 1022,
+      "updates": 3328,
+      "overlap_batches": 51
+    }
+  },
+  "native_compose_isolation_81": {
+    "entry": "7beb088c27e9f02778435fb22c37f9de8aadd1a3",
+    "code": "a65aabca9ef925c419df5b1dd527c0a016255316",
+    "baseline_run": 44665181703,
+    "baseline_status": "success",
+    "batch_shared_run": 44666455674,
+    "batch_room_run": 44666455791,
+    "batch_pressure_run": 44666455702,
+    "batch_status": "in_progress",
+    "android_batch_verified": false,
+    "optimized_pressure_verified": false,
     "real_download_mkv_pressure_verified": false
   }
 }
