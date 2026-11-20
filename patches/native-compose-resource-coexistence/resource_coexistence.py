@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Scratch resource-only coexistence probe; never modify the recovered project."""
-import argparse,hashlib,json,pathlib,re,shutil,subprocess,sys,xml.etree.ElementTree as ET
+import argparse,hashlib,json,pathlib,re,shutil,subprocess,sys,zipfile,xml.etree.ElementTree as ET
 from collections import Counter
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/"native-compose-audit"))
 from native_dependency_audit import original_resources,lab_resources
@@ -46,6 +46,41 @@ def compare(before,after,side,headers=True):
         if configs(a)!=configs(b):errors.append([side,key,"configuration"])
         if a["body"]!=b["body"]:errors.append([side,key,"value_block"])
     return errors
+# AAPT2 may spell a compiled drawable ZIP path differently across tool versions.
+# Accept ONLY an exact configuration, same file type metadata and byte-identical
+# payload in the two actual APKs. No blanket ignore of drawable differences.
+FILE_VALUE=re.compile(r"^\(([^)]*)\)\s+\(file\)\s+(res/[A-Za-z0-9_.+/-]+)(.*)$")
+def path_valid(key,path):
+    parts=path.split("/")
+    if len(parts)!=3 or parts[0]!="res" or any(x in ("",".","..") for x in parts):return False
+    typ,name=key.split("/",1)
+    if parts[1].split("-",1)[0]!=typ:return False
+    return parts[2].split(".",1)[0]==name
+def payload_hash(z,path):
+    if z.namelist().count(path)!=1:return None
+    info=z.getinfo(path)
+    if info.is_dir() or not 0<info.file_size<=16*1024*1024:return None
+    return hashlib.sha256(z.read(info)).hexdigest()
+def lab_body_compare(key,before,after,left,right):
+    evidence=[]
+    if len(before)!=len(after):return False,evidence
+    ok=True
+    for b,a in zip(before,after):
+        if a==b:continue
+        m=FILE_VALUE.fullmatch(b);n=FILE_VALUE.fullmatch(a)
+        item={"resource":key,"before":b,"after":a,"accepted":False}
+        if m and n:
+            bp,ap=m[2],n[2]
+            item.update({"config_before":m[1],"config_after":n[1],"before_path":bp,"after_path":ap})
+            if (key.startswith("drawable/cpui_") and m[1]==n[1] and m[3]==n[3]
+                    and path_valid(key,bp) and path_valid(key,ap)
+                    and pathlib.PurePosixPath(bp).suffix==pathlib.PurePosixPath(ap).suffix):
+                bh,ah=payload_hash(left,bp),payload_hash(right,ap)
+                item.update({"before_sha256":bh,"after_sha256":ah})
+                if bh is not None and bh==ah:item["accepted"]=True
+        if not item["accepted"]:ok=False
+        evidence.append(item)
+    return ok,evidence
 def prepare(a):
     original=a.original
     old=original_resources(original)
@@ -107,8 +142,22 @@ def verify(a):
     errors.extend(compare(base,merged,"original"))
     # New entries become public in combined table, so header public flag can differ.
     # Still require exact ordered displayed values and configurations.
-    errors.extend(compare(lab,merged,"lab",headers=False))
-    summary={"scope":"resource-only binary dump comparison; no dex, no APK installation, no semantic equivalence beyond dump","original_entries":len(base),"lab_entries":len(lab),"merged_entries":len(merged),"original_config_values":sum(sum(configs(v).values()) for v in base.values()),"lab_config_values":sum(sum(configs(v).values()) for v in lab.values()),"differences":len(errors),"production_modified":False}
+    lab_errors=compare(lab,merged,"lab",headers=False)
+    file_evidence=[]
+    accepted_keys=[]
+    with zipfile.ZipFile(a.labapk) as left,zipfile.ZipFile(a.candidateapk) as right:
+        for issue in lab_errors:
+            side,key,kind=issue
+            if kind=="value_block" and key in lab and key in merged:
+                same,evidence=lab_body_compare(key,lab[key]["body"],merged[key]["body"],left,right)
+                file_evidence.extend(evidence)
+                if same and evidence:
+                    accepted_keys.append(key)
+                    continue
+            errors.append(issue)
+    (a.out/"lab-file-difference-evidence.json").write_text(json.dumps(file_evidence,indent=2))
+    print("CP_LAB_FILE_PATH_PROOF "+json.dumps({"accepted_resources":len(accepted_keys),"different_lines":len(file_evidence),"accepted_lines":sum(x["accepted"] for x in file_evidence)}))
+    summary={"scope":"resource-only binary dump comparison; no dex, no APK installation, no semantic equivalence beyond dump","original_entries":len(base),"lab_entries":len(lab),"merged_entries":len(merged),"original_config_values":sum(sum(configs(v).values()) for v in base.values()),"lab_config_values":sum(sum(configs(v).values()) for v in lab.values()),"differences":len(errors),"byte_identical_lab_path_variants":len(accepted_keys),"production_modified":False}
     (a.out/"binary-summary.json").write_text(json.dumps(summary,indent=2))
     # Report only keys and reasons, never copy original string contents.
     (a.out/"differences.json").write_text(json.dumps(errors,indent=2))
