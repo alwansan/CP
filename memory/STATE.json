@@ -1520,5 +1520,24 @@
     "dormant_status": "in_progress",
     "production_merged": false,
     "activation": false
+  },
+  "native_compose_isolation_67": {
+    "entry": "b6e21de296f619e4465a71a698c38c218a75e886",
+    "dormant_run": 44644447515,
+    "dormant_job": 135983352669,
+    "dormant_status": "failure_clean_checkout_guard_after_original_generation",
+    "original_build_status": "success",
+    "original_classes": 17650,
+    "original_dex": 11,
+    "batch_type_refs": 54,
+    "original_shared_mux_slots": 3,
+    "original_cross_process_death_test": "success",
+    "standalone_r8_build": "success",
+    "retry_code": "88594d2d220a6b2ad695cc8c9c4a2a81b9948f25",
+    "retry_run": 44645188082,
+    "retry_status": "in_progress",
+    "combined_apk_verified": false,
+    "production_merged": false,
+    "activation": false
   }
 }
