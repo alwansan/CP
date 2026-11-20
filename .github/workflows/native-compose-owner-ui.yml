@@ -6,7 +6,7 @@ on:
       - '.github/workflows/native-compose-owner-ui.yml'
       - 'patches/compose-lab/app/src/main/java/com/alwansan/cinemana/composelab/OwnerReadPanel.kt'
       - 'patches/compose-lab/app/src/main/java/com/alwansan/cinemana/composelab/LabOwnerClient.kt'
-    # Session 89: revalidate the isolated row projection under combined pressure.
+    # Session 91: second sequential remux group exercising visible Arabic presentation.
   workflow_dispatch:
 permissions:
   contents: read

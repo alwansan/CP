@@ -20,7 +20,7 @@ adb shell "cat > $REMOTE/worker.sh" <<'EOF'
 set -eu
 cd /data/local/tmp/cp-remux-probe
 n="$1"
-case "$n" in 1|2|3) ;; *) exit 2 ;; esac
+case "$n" in 1|2|3|4|5|6) ;; *) exit 2 ;; esac
 ./ffmpeg -nostdin -hide_banner -loglevel error -y -readrate 2 -i input.mp4 -map 0:v:0 -map 0:a:0 -c copy -f matroska "out-$n.mkv" >"worker-$n.log" 2>&1 &
 pid=$!
 echo "$pid" >"pid-$n"
@@ -39,7 +39,7 @@ set -eu
 cd /data/local/tmp/cp-remux-probe
 action="$1"
 n="$2"
-case "$n" in 1|2|3) ;; *) exit 2 ;; esac
+case "$n" in 1|2|3|4|5|6) ;; *) exit 2 ;; esac
 pid_file="pid-$n"
 read_pid() {
     if [ -f "$pid_file" ]; then

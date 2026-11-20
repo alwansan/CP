@@ -250,12 +250,13 @@ public final class GateInstrumentation extends Instrumentation {
             });
             require(count(ar,"CinemanaDownloadItem")==4&&count(tr,"Downloads")==4,"committed fixture counts");
         }
-        void seedLarge()throws Exception{
+        void seedLarge()throws Exception{seedLarge(100);}
+        void seedLarge(long initialProgress)throws Exception{
             require(count(ar,"CinemanaDownloadItem")==0&&count(tr,"Downloads")==0,"large initial emptiness");
             largeRows=452;armed=true;
             transaction(tr,()->{
                 require(count(tr,"Downloads")==0,"large transfer changed");
-                for(int n=1;n<=largeRows;n++)transfer(n,id(n),100,100000,"PROGRESS");
+                for(int n=1;n<=largeRows;n++)transfer(n,id(n),initialProgress,100000,"PROGRESS");
                 return null;
             });
             transaction(ar,()->{
@@ -275,6 +276,18 @@ public final class GateInstrumentation extends Instrumentation {
             transaction(tr,()->{
                 for(int j=0;j<64;j++){
                     int n=(batch*64+j)%largeRows+1;
+                    transfer(n,id(n),100L+batch*100L+j,100000,"PROGRESS");
+                }
+                return null;
+            });
+        }
+        // Keep the first visible episode at exactly 75% after the first batch;
+        // independently update other rows without overwriting that sentinel.
+        void writePresentationBatch(int batch)throws Exception{
+            transaction(tr,()->{
+                if(batch==1)transfer(1,id(1),75000,100000,"PROGRESS");
+                for(int j=0;j<64;j++){
+                    int n=(batch*64+j)%451+2;
                     transfer(n,id(n),100L+batch*100L+j,100000,"PROGRESS");
                 }
                 return null;
@@ -407,7 +420,7 @@ public final class GateInstrumentation extends Instrumentation {
     // UiAutomation executes an argv-like string, not shell syntax. All
     // compound operations live in a fixed test-only script pushed by adb.
     private String muxControl(String action,int n)throws Exception{
-        require(n>=1&&n<=3,"invalid mux slot");
+        require(n>=1&&n<=6,"invalid diagnostic mux slot");
         require(Arrays.asList("start","pid","size","alive","done","exit","cleanup").contains(action),"invalid mux action");
         return shellScalar("sh "+MUX_DIR+"/control.sh "+action+" "+n);
     }
@@ -416,14 +429,15 @@ public final class GateInstrumentation extends Instrumentation {
         require(value.matches("[0-9]+"),"invalid mux size "+n);
         return Long.parseLong(value);
     }
-    private void activeMuxes(int[] pids)throws Exception{
+    private void activeMuxes(int[] pids)throws Exception{activeMuxes(pids,0);}
+    private void activeMuxes(int[] pids,int offset)throws Exception{
         for(int n=1;n<=3;n++){
-            String p=muxControl("pid",n);
+            String p=muxControl("pid",n+offset);
             require(p.matches("[1-9][0-9]*"),"missing mux pid "+n);
             int id=Integer.parseInt(p);
             if(pids[n-1]!=0)require(pids[n-1]==id,"mux PID changed");
             pids[n-1]=id;
-            require(muxControl("alive",n).equals("alive"),"mux ended or identity mismatch "+n);
+            require(muxControl("alive",n+offset).equals("alive"),"mux ended or identity mismatch "+(n+offset));
         }
         require(pids[0]!=pids[1]&&pids[0]!=pids[2]&&pids[1]!=pids[2],"duplicate mux PID");
     }
@@ -558,6 +572,134 @@ public final class GateInstrumentation extends Instrumentation {
             try{fx.cleanup();}catch(Throwable t){if(cleanupFailure==null)cleanupFailure=t;else cleanupFailure.addSuppressed(t);}
             if(cleanupFailure!=null){if(primary!=null)primary.addSuppressed(cleanupFailure);else throw new IOException("remux cleanup failed",cleanupFailure);}
         }
+    }
+    // A second, sequential group uses file slots 4..6, not additional
+    // simultaneous app slots. The original diagnostics group must finish first.
+    private String remuxPresentation(Context ctx,int uiPid)throws Exception{
+        require("1".equals(shellScalar("getprop ro.kernel.qemu"))&&"35".equals(shellScalar("getprop ro.build.version.sdk"))&&
+            "x86_64".equals(shellScalar("getprop ro.product.cpu.abi")),"presentation disposable emulator only");
+        for(int n=1;n<=3;n++)require(muxControl("exit",n).equals("0")&&muxControl("alive",n).equals("dead"),"previous mux group still active");
+        UiFixture fx=new UiFixture(ctx);
+        java.util.concurrent.atomic.AtomicBoolean stop=new java.util.concurrent.atomic.AtomicBoolean();
+        java.util.concurrent.atomic.AtomicInteger batches=new java.util.concurrent.atomic.AtomicInteger();
+        java.util.concurrent.atomic.AtomicReference<Throwable> error=new java.util.concurrent.atomic.AtomicReference<>();
+        java.util.concurrent.CountDownLatch ready=new java.util.concurrent.CountDownLatch(1);
+        Thread writer=new Thread(()->{
+            try{
+                long deadline=SystemClock.elapsedRealtime()+90000;
+                for(int batch=1;batch<=256&&!stop.get()&&SystemClock.elapsedRealtime()<deadline;batch++){
+                    fx.writePresentationBatch(batch);batches.incrementAndGet();ready.countDown();
+                    SystemClock.sleep(100);
+                }
+            }catch(Throwable t){error.set(t);}finally{ready.countDown();}
+        },"cp-disposable-presentation-pressure");
+        int[] pids=new int[3];long[] sizes=new long[3];
+        Throwable primary=null;
+        boolean launchedActivity=false;
+        try{
+            setStage("presentation-combined-seed");
+            fx.seedLarge(25000);
+            Intent intent=new Intent().setClassName(PKG,"com.alwansan.cinemana.composelab.NativeUiProbeActivity")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("cp_real_owner",true).putExtra("cp_download_presentation",true);
+            ctx.startActivity(intent);launchedActivity=true;
+            find("التنزيلات",45000).recycle();
+            find("صفحة 1 · 24 عنصر",15000).recycle();
+            find("CP isolated load 1",15000).recycle();
+            find("25%",15000).recycle();
+            requireRendererPid(uiPid);
+            setStage("presentation-combined-workers");
+            for(int n=4;n<=6;n++)require(muxControl("start",n).equals("launched"),"presentation mux launch "+n);
+            long deadline=SystemClock.elapsedRealtime()+10000;
+            while(SystemClock.elapsedRealtime()<deadline){
+                boolean readyFiles=true;
+                for(int n=4;n<=6;n++)readyFiles&=muxSize(n)>0;
+                if(readyFiles)break;
+                SystemClock.sleep(200);
+            }
+            activeMuxes(pids,3);
+            for(int n=4;n<=6;n++){sizes[n-4]=muxSize(n);require(sizes[n-4]>0,"empty presentation mux "+n);}
+            remuxShell("dumpsys -t 8 gfxinfo "+uiPid+" reset");
+            setStage("presentation-combined-auto-progress");
+            long autoStart=SystemClock.elapsedRealtime();
+            writer.start();
+            require(ready.await(15,java.util.concurrent.TimeUnit.SECONDS)&&batches.get()>0&&error.get()==null,"presentation writer startup");
+            // No refresh or navigation click before new progress is visible.
+            find("75%",15000).recycle();
+            long autoMs=SystemClock.elapsedRealtime()-autoStart;
+            find("CP isolated load 1",15000).recycle();
+            setStage("presentation-combined-navigation");
+            long nextStart=SystemClock.elapsedRealtime();
+            clickEnabledText("التالي");
+            find("صفحة 2 · 24 عنصر",15000).recycle();
+            long nextMs=SystemClock.elapsedRealtime()-nextStart;
+            long firstStart=SystemClock.elapsedRealtime();
+            clickEnabledText("الأولى");
+            find("صفحة 1 · 24 عنصر",15000).recycle();
+            find("CP isolated load 1",15000).recycle();
+            find("75%",15000).recycle();
+            long firstMs=SystemClock.elapsedRealtime()-firstStart;
+            require(writer.isAlive()&&error.get()==null&&batches.get()>=4,"insufficient presentation write overlap");
+            activeMuxes(pids,3);
+            for(int n=4;n<=6;n++){
+                long end=muxSize(n);require(end>sizes[n-4],"presentation mux did not grow "+n);
+                Log.i(TAG,"CP_REMUX_PRESENTATION_GROWTH slot="+n+" pid="+pids[n-4]+" start="+sizes[n-4]+" end="+end);
+            }
+            reportFrames("presentation-load",uiPid);
+            requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+            stop.set(true);writer.join(15000);
+            fx.writerUnstopped=writer.isAlive();
+            require(!fx.writerUnstopped&&error.get()==null,"presentation writer did not stop cleanly");
+            int commits=batches.get();
+            require(fx.count(fx.ar,"CinemanaDownloadItem")==452&&fx.count(fx.tr,"Downloads")==452,"presentation row count");
+            setStage("presentation-combined-wait-media");
+            deadline=SystemClock.elapsedRealtime()+60000;
+            while(SystemClock.elapsedRealtime()<deadline){
+                boolean done=true;
+                for(int n=4;n<=6;n++)done&=muxControl("done",n).equals("yes");
+                if(done)break;
+                SystemClock.sleep(500);
+            }
+            for(int n=4;n<=6;n++)require(muxControl("exit",n).equals("0"),"presentation mux failed "+n);
+            fx.cleanup();
+            setStage("presentation-combined-empty");
+            find("لا توجد تنزيلات",20000).recycle();
+            clickEnabledText("إغلاق");launchedActivity=false;
+            return "CP_X86_REMUX_PRESENTATION_METRICS autoMs="+autoMs+" nextMs="+nextMs+" firstMs="+firstMs+" commits="+commits+" updates="+(64*commits+1)+"\n"+
+                "CP_X86_REMUX_PRESENTATION_PASS rows=452 page=24 workers=3 growth=verified exits=0,0,0 auto=25,75 navigation=2 empty=observed";
+        }catch(Exception|Error t){primary=t;throw t;}finally{
+            Throwable cleanupFailure=null;
+            stop.set(true);
+            try{writer.join(15000);fx.writerUnstopped=writer.isAlive();require(!fx.writerUnstopped,"presentation writer alive");}
+            catch(Throwable t){cleanupFailure=t;}
+            for(int n=4;n<=6;n++){
+                try{require(muxControl("cleanup",n).equals("ok"),"presentation cleanup "+n);}
+                catch(Throwable t){if(cleanupFailure==null)cleanupFailure=t;else cleanupFailure.addSuppressed(t);}
+            }
+            try{fx.cleanup();}catch(Throwable t){if(cleanupFailure==null)cleanupFailure=t;else cleanupFailure.addSuppressed(t);}
+            if(launchedActivity)try{clickEnabledText("إغلاق");}catch(Throwable t){if(cleanupFailure==null)cleanupFailure=t;else cleanupFailure.addSuppressed(t);}
+            if(cleanupFailure!=null){if(primary!=null)primary.addSuppressed(cleanupFailure);else throw new IOException("presentation cleanup failed",cleanupFailure);}
+        }
+    }
+    // Auto-refresh can temporarily disable navigation. Wait for an enabled
+    // clickable ancestor, rather than treating a busy button as a failure.
+    private void clickEnabledText(String text){
+        long deadline=SystemClock.elapsedRealtime()+15000;
+        do{
+            AccessibilityNodeInfo node=find(text,3000);
+            for(int depth=0;depth<5&&node!=null;depth++){
+                Rect bounds=new Rect();node.getBoundsInScreen(bounds);
+                if(PKG.equals(str(node.getPackageName()))&&node.isVisibleToUser()&&node.isEnabled()&&node.isClickable()&&!bounds.isEmpty()){
+                    boolean accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                    node.recycle();node=null;
+                    if(accepted){Log.i(TAG,"CP_REMUX_PRESENTATION_CLICK "+text);return;}
+                    break;
+                }
+                AccessibilityNodeInfo parent=node.getParent();node.recycle();node=parent;
+            }
+            if(node!=null)node.recycle();
+            SystemClock.sleep(100);
+        }while(SystemClock.elapsedRealtime()<deadline);
+        throw new AssertionError("presentation enabled click timed out "+text);
     }
     @Override public void onStart(){
         Bundle result=new Bundle();
@@ -720,6 +862,7 @@ public final class GateInstrumentation extends Instrumentation {
                             clickText("تحديث");
                             find("صفحة 1 · 0 عنصر",15000).recycle();
                             markerResult+="CP_X86_REMUX_CLEANUP_PASS\n";
+                            markerResult+=remuxPresentation(ctx,ui)+"\n";
                         }
                     }
                 }

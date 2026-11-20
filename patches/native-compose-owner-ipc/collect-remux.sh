@@ -6,7 +6,7 @@ mkdir -p "$OUT"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"; adb shell "rm -rf $REMOTE" >/dev/null 2>&1 || true' EXIT
 mkdir -p "$OUT/device"
-for n in 1 2 3; do
+for n in 1 2 3 4 5 6; do
   adb pull "$REMOTE/exit-$n" "$OUT/device/exit-$n" >/dev/null
   adb pull "$REMOTE/worker-$n.log" "$OUT/device/worker-$n.log" >/dev/null
   adb pull "$REMOTE/out-$n.mkv" "$TMP/out-$n.mkv" >/dev/null
@@ -16,13 +16,14 @@ done
 python3 - "$OUT" <<'PY'
 import json,pathlib,sys
 p=pathlib.Path(sys.argv[1])
-for n in range(1,4):
+for n in range(1,7):
     j=json.loads((p/f"probe-{n}.json").read_text())
     assert {x["codec_type"] for x in j["streams"]}=={"audio","video"}
     assert "matroska" in j["format"]["format_name"]
     assert 59.0<=float(j["format"]["duration"])<=61.0
     assert int(j["format"]["size"])>100000
 print("CP_X86_REMUX_MEDIA_PASS files=3 streams=audio,video duration=60")
+print("CP_X86_REMUX_PRESENTATION_MEDIA_PASS files=3 streams=audio,video duration=60")
 PY
 # Do not upload temporary binaries or synthetic full video copies.
 adb shell "rm -rf $REMOTE"
