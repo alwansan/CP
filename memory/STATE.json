@@ -1539,5 +1539,31 @@
     "combined_apk_verified": false,
     "production_merged": false,
     "activation": false
+  },
+  "native_compose_isolation_68": {
+    "entry": "c94fc72464a8a75b8ef5ba08ff546b4bcba8f260",
+    "dormant_run": 44645188082,
+    "dormant_job": 135985839636,
+    "dormant_status": "success",
+    "original_classes": 17650,
+    "isolated_classes": 2347,
+    "total_classes": 19997,
+    "dex": 12,
+    "resources": 7425,
+    "original_zip_payloads": 2612,
+    "original_art": "success",
+    "original_launcher_pid": 3615,
+    "original_manifest_byte_identical": true,
+    "artifact": 14588896204,
+    "artifact_sha256": "cbec870d6d1764e8ae573f4177cebfdfe730f53bafbe06ac32004e07233c7104",
+    "diagnostic_apk_sha256": "6398bfe9498f83bf4713bbb66296589628bf5ecbf644ebf73211cfdc17fe4c9f",
+    "startup_code": "3608f8ce44c9737a43513aa487b93d456ea7ad57",
+    "startup_run": 44646885091,
+    "startup_job": 135991626093,
+    "startup_status": "in_progress",
+    "compose_renderer_in_original": false,
+    "real_engine_connected": false,
+    "dormant_candidate_verified": true,
+    "production_merged": false
   }
 }
