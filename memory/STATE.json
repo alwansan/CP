@@ -1501,5 +1501,24 @@
     "retry_run": 44643213378,
     "retry_status": "in_progress",
     "production_merged": false
+  },
+  "native_compose_isolation_66": {
+    "entry": "7cc3fe0ac36d2ef4ecce4add4af1fbe77c6d6675",
+    "resource_run": 44643213378,
+    "resource_job": 135979222031,
+    "resource_status": "success",
+    "resource_artifact": 14586709042,
+    "resource_artifact_sha256": "a83ab247114da416fc847cda943c56c97243f1a18567132ecb14f77bac4a7efc",
+    "original_resources": 7162,
+    "lab_resources": 263,
+    "combined_resources": 7425,
+    "differences": 0,
+    "matched_drawables": 12,
+    "matched_file_lines": 58,
+    "dormant_code": "00676baaaa41cc62aff78c1309e9f66513cf1d73",
+    "dormant_run": 44644447515,
+    "dormant_status": "in_progress",
+    "production_merged": false,
+    "activation": false
   }
 }
