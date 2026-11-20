@@ -2214,8 +2214,48 @@
     "renderer_run": 44783951358,
     "startup_run": 44783951605,
     "ipc_run": 44783951399,
+    "status": "completed_success",
+    "presentation_combined_verified": true,
+    "actual_app_exporter_pressure_verified": false,
+    "real_download_mkv_pressure_verified": false,
+    "regression_status": "all_success"
+  },
+  "native_compose_isolation_92": {
+    "entry": "56c25b2106dbb1bc18c450a7c6cd0f4305dbc7a3",
+    "code": "195a275e177121061319f7b32a5c32529d5a2d0a",
+    "verified_presentation_run": 44783951630,
+    "verified_presentation_job": 136453705667,
+    "diagnostic_artifact": 14654628980,
+    "verified_regression_runs": [
+      44783951358,
+      44783951605,
+      44783951399
+    ],
+    "presentation_combined_verified": true,
+    "presentation": {
+      "auto_ms": 1547,
+      "next_ms": 768,
+      "first_ms": 1532,
+      "commits": 40,
+      "updates": 2561
+    },
+    "diagnostic": {
+      "idle_median_ms": 544,
+      "idle_max_ms": 2789,
+      "load_median_ms": 1053,
+      "load_max_ms": 2056,
+      "overlapping_batches": 80,
+      "commits": 81,
+      "updates": 5184
+    },
+    "media_verified_files": 6,
+    "simultaneous_workers": 3,
+    "shared_run": 44790626773,
+    "standalone_run": 44790626743,
+    "combined_run": 44790626744,
+    "ipc_run": 44790626735,
     "status": "in_progress",
-    "presentation_combined_verified": false,
+    "stable_keys_verified": false,
     "actual_app_exporter_pressure_verified": false,
     "real_download_mkv_pressure_verified": false
   }
