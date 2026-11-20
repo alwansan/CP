@@ -1609,5 +1609,31 @@
     "startup_regression_run": 44649650079,
     "compose_renderer_in_original_verified": false,
     "real_engine_connected": false
+  },
+  "native_compose_isolation_71": {
+    "entry": "75e7769093782304d275ee4e4386057f869d755b",
+    "renderer_run": 44649650156,
+    "renderer_job": 136001031839,
+    "renderer_status": "failure_missing_drawn_marker",
+    "static_renderer_pass": true,
+    "classes": 20016,
+    "dex": 13,
+    "resources": 7425,
+    "renderer_artifact": 14590787609,
+    "renderer_artifact_sha256": "5627b74ab7071d278f56c3f7ffa709244c8c1dc926a1e378673a992a214519ad",
+    "startup_regression_run": 44649650079,
+    "startup_regression_status": "failure_marker_not_drawn_launcher_anr_observed_before_instrumentation",
+    "startup_artifact": 14590637380,
+    "standalone_run": 44649650053,
+    "standalone_status": "success",
+    "standalone_release": "cp-compose-lab-13",
+    "standalone_asset": 769911900,
+    "standalone_apk_sha256": "22f40f5a47870194d5c1af84d55317f289f53207031fd3105fe68efa5f522880",
+    "retry_code": "dbf0393b0830ccbfe34a24464f298aef6af497e2",
+    "renderer_retry": 44651370693,
+    "startup_retry": 44651370834,
+    "retry_status": "in_progress",
+    "compose_renderer_in_original_verified": false,
+    "real_engine_connected": false
   }
 }
