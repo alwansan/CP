@@ -2,7 +2,7 @@ name: CP Native Compose actual same-package renderer gate
 on:
   push:
     branches: [Native-Compose]
-    paths: ['.github/workflows/native-compose-renderer.yml']
+    paths: ['.github/workflows/native-compose-renderer.yml', 'patches/native-compose-active-startup/**']
   workflow_dispatch:
 permissions:
   contents: read

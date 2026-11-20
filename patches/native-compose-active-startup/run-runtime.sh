@@ -1,6 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 OUT="$RUNNER_TEMP/cp-nativeui-gate"
+REPORT="$OUT/report"
+mkdir -p "$REPORT"
+# Capture the actual failing interval, including renderer exceptions and window changes.
+adb logcat -v threadtime -s AndroidRuntime:E ActivityManager:I ActivityTaskManager:I WindowManager:I CPNativeGate:I CPNativeUi:I > "$REPORT/live-gate-logcat.txt" 2>&1 &
+LOG_PID=$!
+cleanup() {
+    rc=$?
+    trap - EXIT
+    kill "$LOG_PID" 2>/dev/null || true
+    wait "$LOG_PID" 2>/dev/null || true
+    timeout 30 adb logcat -d -b crash > "$REPORT/gate-crash.txt" 2>&1 || true
+    timeout 30 adb shell dumpsys window displays > "$REPORT/gate-window.txt" 2>&1 || true
+    timeout 30 adb shell dumpsys activity activities > "$REPORT/gate-activity.txt" 2>&1 || true
+    timeout 30 adb shell dumpsys activity lastanr > "$REPORT/gate-lastanr.txt" 2>&1 || true
+    if [[ "$rc" != 0 ]]; then
+        tail -120 "$REPORT/live-gate-logcat.txt" || true
+        cat "$REPORT/gate-crash.txt" || true
+    fi
+    exit "$rc"
+}
+trap cleanup EXIT
 adb install -r "$OUT/gate-signed.apk"
 adb install "$OUT/test-signed.apk"
 python3 patches/native-compose-active-startup/smoke-active-legacy.py
