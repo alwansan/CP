@@ -1684,5 +1684,29 @@
     "owner_probe_status": "in_progress",
     "interactive_gate_verified": true,
     "real_engine_connected": false
+  },
+  "native_compose_isolation_74": {
+    "entry": "f37778f9c4f38491a9a52378d867c9f5723b7b6b",
+    "owner_run": 44654627610,
+    "owner_job": 136017710698,
+    "owner_status": "success_empty_original_room",
+    "owner_pid": 4796,
+    "raw_rows": 0,
+    "main_thread_blocked": true,
+    "renderer_main_pid": 4550,
+    "renderer_ui_pid": 4602,
+    "clicks_verified": 2,
+    "dynamic_name_candidates": 2,
+    "direct_getIdentifier": 0,
+    "reflection_class": 113,
+    "reflection_member": 110,
+    "dynamic_class": 3,
+    "artifact": 14593196947,
+    "artifact_sha256": "77b1f2db63a30f427dbc58fcd175a84f1ce0056522756ca1daf265c5cb09e634",
+    "populated_probe_code": "23c4192bd96dbcc8731759ffea02aae7c20bfa2b",
+    "populated_probe_run": 44655998986,
+    "populated_probe_status": "in_progress",
+    "real_owner_empty_read_verified": true,
+    "real_engine_connected": false
   }
 }
