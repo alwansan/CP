@@ -6,14 +6,16 @@ RES="$RUNNER_TEMP/cp-resource-coexistence"
 BT="$ANDROID_HOME/build-tools/35.0.0"
 SDK="$ANDROID_HOME/platforms/android-35/android.jar"
 P=patches/native-compose-active-startup
+EXTRA=()
+if [[ "${CP_RENDERER_GATE:-0}" == 1 ]]; then EXTRA=(--renderer); fi
 mkdir -p "$OUT/report" "$OUT/classes" "$OUT/dex" "$OUT/test-classes" "$OUT/test-dex"
 # Reuse the verified scratch tree; never patch the recovered app manifest.
-python3 "$P/prepare.py" prepare --manifest "$RES/candidate/AndroidManifest.xml"
+python3 "$P/prepare.py" prepare --manifest "$RES/candidate/AndroidManifest.xml" "${EXTRA[@]}"
 java -jar Cinemana_PATCH252_Project/tools/apktool_2.12.1.jar b -f "$RES/candidate" -p "$RES/framework" -o "$OUT/manifest.apk" > "$OUT/report/manifest-build.log" 2>&1 || { tail -60 "$OUT/report/manifest-build.log"; exit 1; }
 javac -source 8 -target 8 -cp "$SDK" -d "$OUT/classes" "$P"/src/*.java
 jar cf "$OUT/gate.jar" -C "$OUT/classes" .
 "$BT/d8" --min-api 28 --lib "$SDK" --output "$OUT/dex" "$OUT/gate.jar"
-python3 "$P/prepare.py" assemble --dormant "$D/unsigned.apk" --manifestapk "$OUT/manifest.apk" --dex "$OUT/dex/classes.dex" --output "$OUT/unsigned.apk" --aapt2 "$BT/aapt2" --report "$OUT/report"
+python3 "$P/prepare.py" assemble --dormant "$D/unsigned.apk" --manifestapk "$OUT/manifest.apk" --dex "$OUT/dex/classes.dex" --output "$OUT/unsigned.apk" --aapt2 "$BT/aapt2" --report "$OUT/report" --lab "$RUNNER_TEMP/cp-minified-combined/combined-minified.apk" "${EXTRA[@]}"
 javac -source 8 -target 8 -cp "$SDK" -d "$OUT/test-classes" "$P/GateInstrumentation.java"
 jar cf "$OUT/test.jar" -C "$OUT/test-classes" .
 "$BT/d8" --min-api 28 --lib "$SDK" --output "$OUT/test-dex" "$OUT/test.jar"
