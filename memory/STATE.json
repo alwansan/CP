@@ -1724,5 +1724,44 @@
     "ipc_status": "in_progress",
     "real_ipc_verified": false,
     "real_engine_connected": false
+  },
+  "native_compose_isolation_76": {
+    "entry": "d6a51cf2d81a02418236be5a1e1e0f6d3773dcf4",
+    "populated_run": 44657015194,
+    "populated_job": 136025621749,
+    "populated_status": "success",
+    "fixture_rows": 49,
+    "pages": [
+      24,
+      24,
+      1
+    ],
+    "rollback_verified": true,
+    "owner_pid": 4585,
+    "room_artifact": 14593354663,
+    "room_artifact_sha256": "b414aac0ea24aea0fd1753d7702b17cf68c7f9ca2db50eae2372e624fe6eebcc",
+    "ipc_run": 44657456897,
+    "ipc_job": 136027106026,
+    "ipc_status": "success",
+    "ipc_owner_pid": 5095,
+    "ipc_ui_pid": 5145,
+    "ipc_rows": 0,
+    "ipc_classes": 20063,
+    "ipc_dex": 14,
+    "ipc_artifact": 14593898660,
+    "ipc_artifact_sha256": "c172dbe8fe2a1b4ec7f9c39eed1d571e2b6d51bc34bab3e924fcb588e61d65da",
+    "ui_code": "5ad70ad9c075105481e9006d43340dcdea666c40",
+    "ui_run": 44658849600,
+    "ui_status": "in_progress",
+    "regression_runs": [
+      44658849452,
+      44658849335,
+      44658849471,
+      44658849297
+    ],
+    "real_ipc_verified": true,
+    "real_room_populated_verified": true,
+    "real_ui_binding_verified": false,
+    "real_transfer_tracking_verified": false
   }
 }
