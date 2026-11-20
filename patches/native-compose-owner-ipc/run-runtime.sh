@@ -13,3 +13,11 @@ grep -F 'CP_REAL_OWNER_IPC_PASS owner=' "$OUT/report/instrumentation.txt"
 grep -E 'INSTRUMENTATION_CODE: -1' "$OUT/report/instrumentation.txt"
 if grep -Eq 'CP_REAL_OWNER_IPC_FAIL|INSTRUMENTATION_FAILED|Process crashed' "$OUT/report/instrumentation.txt"; then exit 1; fi
 adb logcat -d -b crash > "$OUT/report/crash.txt"
+
+# Re-run the original signed UI instrumentation against the IPC-enabled APK.
+if [[ "${CP_REAL_OWNER_UI_GATE:-0}" == 1 ]]; then
+    timeout 300 adb shell am instrument -w -r -e renderer true -e owner_ui true cp.nativegate.test/.GateInstrumentation | tee "$OUT/report/compose-owner-ui.txt"
+    grep -F 'CP_REAL_OWNER_COMPOSE_UI_PASS owner=' "$OUT/report/compose-owner-ui.txt"
+    grep -E 'INSTRUMENTATION_CODE: -1' "$OUT/report/compose-owner-ui.txt"
+    if grep -Eq 'CP_NATIVEUI_FACTORY_IN_PACKAGE_FAIL|INSTRUMENTATION_FAILED|Process crashed' "$OUT/report/compose-owner-ui.txt"; then exit 1; fi
+fi

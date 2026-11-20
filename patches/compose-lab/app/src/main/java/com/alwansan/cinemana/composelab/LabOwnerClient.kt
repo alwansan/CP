@@ -18,6 +18,9 @@ internal data class OwnerScreen(val state: String = "connecting", val pid: Int =
     val responseSerial: Int = 0)
 internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12000L) {
     private val app = context.applicationContext
+    private val realOwner = app.packageName == "com.cinemana.pro"
+    private val component = if(realOwner) ComponentName("com.cinemana.pro","cp.realowner.RealOwnerService")
+        else ComponentName(app,LabOwnerService::class.java)
     private val ui = Handler(Looper.getMainLooper())
     private val thread = HandlerThread("cp-ui-ipc", android.os.Process.THREAD_PRIORITY_BACKGROUND).apply { start() }
     private val worker = Handler(thread.looper)
@@ -51,12 +54,15 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
         override fun onNullBinding(name: ComponentName) { onServiceDisconnected(name) }
     }
     init {
+        check(!realOwner || (Build.VERSION.SDK_INT>=28 &&
+            android.app.Application.getProcessName()=="com.cinemana.pro:nativeui" &&
+            app.javaClass.name=="cp.nativegate.NativeGateApplication")) { "real owner client outside independent UI" }
         worker.post {
             if (!closed) {
                 gate.open(epoch,SystemClock.elapsedRealtime())
                 armDeadline()
                 try {
-                    bound=app.bindService(Intent(app,LabOwnerService::class.java),connection,Context.BIND_AUTO_CREATE)
+                    bound=app.bindService(Intent().setComponent(component),connection,Context.BIND_AUTO_CREATE)
                     if (!bound) terminal("unavailable")
                 } catch (_: Exception) { terminal("unavailable") }
             }
@@ -71,7 +77,10 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
         val target=remote ?: return false
         val m=Message.obtain(null,what,s,nav)
         m.replyTo=inbox
-        m.data=Bundle().apply { putLong("generation",transportGeneration); if(fixtureDelayMs!=0)putInt("fixtureDelayMs",fixtureDelayMs) }
+        if(realOwner && fixtureDelayMs!=0) return false
+        if(!realOwner || what!=LabOwnerService.ATTACH) {
+            m.data=Bundle().apply { putLong("generation",transportGeneration); if(fixtureDelayMs!=0)putInt("fixtureDelayMs",fixtureDelayMs) }
+        }
         return try { target.send(m); true } catch (_: Exception) { false }
     }
     private fun releaseTransport() {
@@ -109,6 +118,14 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
     }
     private fun receiveChecked(m: Message) {
         val b=m.data
+        if(realOwner) {
+            val expected=when(m.what) {
+                LabOwnerService.ATTACHED,LabOwnerService.REJECTED->setOf("generation","ownerPid")
+                LabOwnerService.PAGE->setOf("generation","ownerPid","status","more","indices","progress","total","states","observations")
+                else->emptySet()
+            }
+            if(expected.isEmpty()||b.keySet()!=expected){ terminal("invalid");return }
+        }
         val g=b.getLong("generation",-1)
         val pid=b.getInt("ownerPid",0)
         if (m.what==LabOwnerService.ATTACHED && m.arg1==0 && remote!=null && gate.phase()==OwnerClientEpoch.Phase.CONNECTING) {

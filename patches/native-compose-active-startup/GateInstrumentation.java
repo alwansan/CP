@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 public final class GateInstrumentation extends Instrumentation {
     private void require(boolean ok,String why){if(!ok)throw new AssertionError(why);}
     private boolean renderer;
+    private boolean ownerUi;
     private static final String TAG="CPNativeGate";
     private static final String PKG="com.cinemana.pro";
     private int recoveries=0;
@@ -91,7 +92,7 @@ public final class GateInstrumentation extends Instrumentation {
                 if(line.contains("mCurrentFocus=")||line.contains("mFocusedApp="))Log.i(TAG,line.trim());
         }catch(Exception e){Log.w(TAG,"diagnostics unavailable",e);}
     }
-    @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));start();}
+    @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));ownerUi="true".equals(args.getString("owner_ui"));start();}
     // Compose virtual accessibility nodes can be enumerated through getChild()
     // even when the provider's text-search implementation returns no result.
     // Retain the exact package/text, visible flag and positive screen bounds.
@@ -216,6 +217,25 @@ public final class GateInstrumentation extends Instrumentation {
                 Bundle rendered=ctx.getContentResolver().call(uri,"snapshot",null,null);
                 require(rendered!=null&&rendered.getBoolean("ready")&&rendered.getInt("pid")==ui,"renderer changed UI process");
                 markerResult+="CP_SAME_PACKAGE_COMPOSE_RENDER_PASS main="+main+" ui="+ui+" clicks=2 rows=48_fixture\n";
+            }
+            if(ownerUi){
+                require(renderer,"owner UI requires baseline renderer test");
+                setStage("real-owner-ui");
+                Intent real=new Intent().setClassName(PKG,"com.alwansan.cinemana.composelab.NativeUiProbeActivity")
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("cp_real_owner",true);
+                ctx.startActivity(real);
+                find("CP_REAL_OWNER_UI_OBSERVED",45000).recycle();
+                find("PID: "+main,15000).recycle();
+                find("صفحة 1 · 0 عنصر",15000).recycle();
+                find("Reply: 1",15000).recycle();
+                clickText("تحديث");
+                find("Reply: 2",15000).recycle();
+                find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
+                find("صفحة 1 · 0 عنصر",15000).recycle();
+                requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+                Bundle realAfter=ctx.getContentResolver().call(uri,"snapshot",null,null);
+                require(realAfter!=null&&realAfter.getBoolean("ready")&&realAfter.getInt("pid")==ui,"owner UI changed process");
+                markerResult+="CP_REAL_OWNER_COMPOSE_UI_PASS owner="+main+" ui="+ui+" first=0 refresh=0 serial=2\n";
             }
             result.putString("stream",markerResult);
             finish(Activity.RESULT_OK,result);

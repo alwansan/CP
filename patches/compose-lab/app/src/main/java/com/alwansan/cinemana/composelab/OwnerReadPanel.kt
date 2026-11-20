@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,Int)->Unit)?=null, close: () -> Unit) {
     val context = LocalContext.current
+    val realOwner = context.packageName == "com.cinemana.pro"
     var client by remember { mutableStateOf<LabOwnerClient?>(null) }
     var reconnect by remember { mutableIntStateOf(0) }
     DisposableEffect(foreground, context, reconnect) {
@@ -27,8 +28,9 @@ internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,
         onDrawState.invoke(state,size.width.toInt(),size.height.toInt())
     }
     Column(Modifier.fillMaxSize().then(drawObserver),verticalArrangement=Arrangement.spacedBy(8.dp)) {
-        Text("قراءة IPC مستقلة · بيانات اختبار فقط")
+        Text(if(realOwner) "تنزيلات Cinemana · قراءة فقط" else "قراءة IPC مستقلة · بيانات اختبار فقط")
         Text("حالة: ${state.state}",Modifier.testTag("owner-status"))
+        if(realOwner && state.state=="observed") Text("CP_REAL_OWNER_UI_OBSERVED")
         Text("PID: ${state.pid}",Modifier.testTag("owner-pid"))
         Text("Reply: ${state.responseSerial}",Modifier.testTag("owner-serial"))
         if (!state.busy && state.pid==0) TextButton(onClick={reconnect++},modifier=Modifier.testTag("owner-reconnect")) {Text("إعادة الاتصال")}

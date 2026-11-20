@@ -28,7 +28,8 @@ class NativeUiProbeActivity : ComponentActivity() {
             samePackageGate = true
             window.statusBarColor = 0xff090a0d.toInt()
             window.navigationBarColor = 0xff090a0d.toInt()
-            setContent { SamePackageRendererGate() }
+            val realOwner = intent.getBooleanExtra("cp_real_owner",false)
+            setContent { SamePackageRendererGate(realOwner,foreground) }
             return
         }
         if (!LabStartupEvidence.uiReady()) { finish(); return }
@@ -50,14 +51,14 @@ class NativeUiProbeActivity : ComponentActivity() {
             }
         }
     }
-    override fun onResume(){super.onResume();if (!samePackageGate) { LabStartupEvidence.uiResume(true);foreground=true };android.util.Log.i("CPNativeUi","CP_NATIVE_UI_RESUME pid="+android.os.Process.myPid())}
+    override fun onResume(){super.onResume();foreground=true;if (!samePackageGate) { LabStartupEvidence.uiResume(true) };android.util.Log.i("CPNativeUi","CP_NATIVE_UI_RESUME pid="+android.os.Process.myPid())}
     override fun onWindowFocusChanged(hasFocus:Boolean){super.onWindowFocusChanged(hasFocus);if (!samePackageGate) LabStartupEvidence.uiFocus(hasFocus);android.util.Log.i("CPNativeUi","focus="+hasFocus)}
-    override fun onPause(){if (!samePackageGate) { foreground=false;LabStartupEvidence.uiResume(false) };super.onPause()}
+    override fun onPause(){foreground=false;if (!samePackageGate) { LabStartupEvidence.uiResume(false) };super.onPause()}
 }
 
 /** Installed real Compose proof only. No queue, DB, owner fixture, network or user data. */
 @Composable
-private fun SamePackageRendererGate() {
+private fun SamePackageRendererGate(realOwner:Boolean,foreground:Boolean) {
     var count by remember { mutableIntStateOf(0) }
     val rows = remember { (1..48).toList() }
     MaterialTheme(colorScheme=darkColorScheme(background=Color(0xff090a0d))) {
@@ -70,7 +71,11 @@ private fun SamePackageRendererGate() {
                 Button(onClick={count++}) { Text("CP_COMPOSE_INCREMENT") }
                 Text("CP_COMPOSE_COUNT_"+count)
                 HorizontalDivider()
-                LazyColumn(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                if(realOwner) {
+                    Box(Modifier.weight(1f)) {
+                        OwnerReadPanel(foreground) { /* diagnostic view stays open */ }
+                    }
+                } else LazyColumn(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(8.dp)) {
                     items(rows,key={it}) { row ->
                         Card(Modifier.fillMaxWidth()) {
                             Column(Modifier.padding(12.dp)) {
