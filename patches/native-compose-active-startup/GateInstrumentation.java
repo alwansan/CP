@@ -74,7 +74,8 @@ public final class GateInstrumentation extends Instrumentation {
         if(node==null||depth>16||budget[0]--<=0)return;
         String text=str(node.getText()),desc=str(node.getContentDescription());
         if(!text.isEmpty()||!desc.isEmpty()){
-            Log.i(TAG,"window "+str(node.getPackageName())+" "+str(node.getViewIdResourceName())+" text="+text.substring(0,Math.min(160,text.length()))+" desc="+desc.substring(0,Math.min(160,desc.length())));
+            Rect db=new Rect();node.getBoundsInScreen(db);
+            Log.i(TAG,"window visible="+node.isVisibleToUser()+" bounds="+db+" clickable="+node.isClickable()+" "+str(node.getPackageName())+" "+str(node.getViewIdResourceName())+" text="+text.substring(0,Math.min(160,text.length()))+" desc="+desc.substring(0,Math.min(160,desc.length())));
         }
         for(int x=0;x<node.getChildCount()&&budget[0]>0;x++){
             AccessibilityNodeInfo child=node.getChild(x);
@@ -91,6 +92,32 @@ public final class GateInstrumentation extends Instrumentation {
         }catch(Exception e){Log.w(TAG,"diagnostics unavailable",e);}
     }
     @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));start();}
+    // Compose virtual accessibility nodes can be enumerated through getChild()
+    // even when the provider's text-search implementation returns no result.
+    // Retain the exact package/text, visible flag and positive screen bounds.
+    private boolean matches(AccessibilityNodeInfo n,String text){
+        Rect bounds=new Rect();n.getBoundsInScreen(bounds);
+        return PKG.equals(str(n.getPackageName()))&&n.isVisibleToUser()&&!bounds.isEmpty()
+            &&(text.equals(str(n.getText()))||text.equals(str(n.getContentDescription())));
+    }
+    private AccessibilityNodeInfo walk(AccessibilityNodeInfo node,String text,int depth,int[] budget){
+        if(node==null||depth>32||budget[0]--<=0)return null;
+        if(matches(node,text))return AccessibilityNodeInfo.obtain(node);
+        for(int x=0;x<node.getChildCount()&&budget[0]>0;x++){
+            AccessibilityNodeInfo child=node.getChild(x);
+            if(child!=null){
+                try{
+                    AccessibilityNodeInfo hit=walk(child,text,depth+1,budget);
+                    if(hit!=null)return hit;
+                }finally{child.recycle();}
+            }
+        }
+        return null;
+    }
+    private void observed(AccessibilityNodeInfo n,String text,String method){
+        Rect b=new Rect();n.getBoundsInScreen(b);
+        Log.i(TAG,"CP_NATIVE_GATE_NODE "+method+" text="+text+" visible="+n.isVisibleToUser()+" bounds="+b);
+    }
     private AccessibilityNodeInfo find(String text,long timeout) {
         long end=SystemClock.elapsedRealtime()+timeout;
         do {
@@ -98,22 +125,46 @@ public final class GateInstrumentation extends Instrumentation {
             if(root!=null) {
                 try {
                     if(recoverLauncher(root))continue;
-                    for(AccessibilityNodeInfo n:root.findAccessibilityNodeInfosByText(text)) {
-                        CharSequence t=n.getText(),d=n.getContentDescription();
-                        if(PKG.equals(str(n.getPackageName()))&&n.isVisibleToUser()&&(text.contentEquals(t==null?"":t)||text.contentEquals(d==null?"":d)))return n;
+                    // Traversal is authoritative for Compose virtual nodes.
+                    AccessibilityNodeInfo hit=walk(root,text,0,new int[]{1024});
+                    if(hit!=null){
+                        observed(hit,text,"tree");
+                        return hit;
                     }
+                    List<AccessibilityNodeInfo> results=root.findAccessibilityNodeInfosByText(text);
+                    try {
+                        for(AccessibilityNodeInfo n:results){
+                            if(matches(n,text)){
+                                observed(n,text,"search");
+                                return AccessibilityNodeInfo.obtain(n);
+                            }
+                        }
+                    }finally{for(AccessibilityNodeInfo n:results)n.recycle();}
                 } finally {root.recycle();}
             }
             SystemClock.sleep(250);
         } while(SystemClock.elapsedRealtime()<end);
         throw new AssertionError("missing drawn text "+text);
     }
+    private void requireFocused(String component) throws IOException {
+        String focus=shell("dumpsys window displays");
+        String suffix=Pattern.quote(PKG+"/"+component);
+        require(Pattern.compile("mCurrentFocus=Window\\{[^\\n}]* "+suffix+"\\}").matcher(focus).find(),"wrong foreground window "+component);
+        require(Pattern.compile("mFocusedApp=ActivityRecord\\{[^\\n}]* "+suffix+"(?: |\\})").matcher(focus).find(),"wrong focused activity "+component);
+        Log.i(TAG,"CP_NATIVE_GATE_FOCUSED "+component);
+    }
     private void clickText(String text){
         AccessibilityNodeInfo n=find(text,30000);
         for(int depth=0;depth<5&&n!=null;depth++){
-            if(n.isClickable()&&n.performAction(AccessibilityNodeInfo.ACTION_CLICK)){n.recycle();return;}
+            Rect bounds=new Rect();n.getBoundsInScreen(bounds);
+            if(PKG.equals(str(n.getPackageName()))&&n.isVisibleToUser()&&n.isEnabled()&&n.isClickable()&&!bounds.isEmpty()){
+                boolean clicked=n.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                Log.i(TAG,"CP_NATIVE_GATE_CLICK "+text+" depth="+depth+" bounds="+bounds+" accepted="+clicked);
+                if(clicked){n.recycle();return;}
+            }
             AccessibilityNodeInfo parent=n.getParent();n.recycle();n=parent;
         }
+        if(n!=null)n.recycle();
         throw new AssertionError("click failed "+text);
     }
     @Override public void onStart(){
@@ -151,6 +202,7 @@ public final class GateInstrumentation extends Instrumentation {
                 setStage("compose-launch");
                 ctx.startActivity(new Intent().setClassName("com.cinemana.pro","com.alwansan.cinemana.composelab.NativeUiProbeActivity").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 find("CP_SAME_PACKAGE_COMPOSE_READY",45000).recycle();
+                requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
                 setStage("compose-content");
                 find("PID: "+ui,15000).recycle();
                 find("CP_COMPOSE_ROW_1",15000).recycle();
@@ -158,9 +210,12 @@ public final class GateInstrumentation extends Instrumentation {
                 setStage("compose-click");
                 clickText("CP_COMPOSE_INCREMENT");
                 find("CP_COMPOSE_COUNT_1",15000).recycle();
+                clickText("CP_COMPOSE_INCREMENT");
+                find("CP_COMPOSE_COUNT_2",15000).recycle();
+                requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
                 Bundle rendered=ctx.getContentResolver().call(uri,"snapshot",null,null);
                 require(rendered!=null&&rendered.getBoolean("ready")&&rendered.getInt("pid")==ui,"renderer changed UI process");
-                markerResult+="CP_SAME_PACKAGE_COMPOSE_RENDER_PASS main="+main+" ui="+ui+" clicks=1 rows=48_fixture\n";
+                markerResult+="CP_SAME_PACKAGE_COMPOSE_RENDER_PASS main="+main+" ui="+ui+" clicks=2 rows=48_fixture\n";
             }
             result.putString("stream",markerResult);
             finish(Activity.RESULT_OK,result);
