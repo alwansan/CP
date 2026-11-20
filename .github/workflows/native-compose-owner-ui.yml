@@ -3,7 +3,7 @@ on:
   push:
     branches: [Native-Compose]
     paths: ['.github/workflows/native-compose-owner-ui.yml']
-    # Session 83: bounded foreground-only auto refresh through the actual owner IPC.
+    # Session 84: actual x86 Android FFmpeg remux and UI pressure (test only).
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,6 +15,7 @@ jobs:
     env:
       CP_RENDERER_GATE: '1'
       CP_REAL_OWNER_UI_GATE: '1'
+      CP_X86_REMUX_GATE: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -23,7 +24,7 @@ jobs:
           java-version: '17'
       - uses: android-actions/setup-android@v3
         with:
-          packages: 'build-tools;35.0.0 platforms;android-35'
+          packages: 'build-tools;35.0.0 platforms;android-35 ndk;27.2.12479018'
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
@@ -81,6 +82,11 @@ jobs:
           KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
           KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
         run: bash patches/native-compose-owner-ipc/build-probe.sh
+      - name: Build pinned disposable Android x86 FFmpeg and synthetic media
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          bash patches/native-compose-owner-ipc/build-remux.sh
       - name: Enable KVM
         run: |
           if [[ -c /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi

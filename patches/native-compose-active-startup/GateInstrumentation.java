@@ -16,6 +16,7 @@ public final class GateInstrumentation extends Instrumentation {
     private boolean ownerUi;
     private boolean populatedUi;
     private boolean pressureUi;
+    private boolean remuxUi;
     private static final String TAG="CPNativeGate";
     private static final String PKG="com.cinemana.pro";
     private int recoveries=0;
@@ -94,7 +95,7 @@ public final class GateInstrumentation extends Instrumentation {
                 if(line.contains("mCurrentFocus=")||line.contains("mFocusedApp="))Log.i(TAG,line.trim());
         }catch(Exception e){Log.w(TAG,"diagnostics unavailable",e);}
     }
-    @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));ownerUi="true".equals(args.getString("owner_ui"));populatedUi="true".equals(args.getString("populated_ui"));pressureUi="true".equals(args.getString("pressure_ui"));start();}
+    @Override public void onCreate(Bundle args){super.onCreate(args);renderer="true".equals(args.getString("renderer"));ownerUi="true".equals(args.getString("owner_ui"));populatedUi="true".equals(args.getString("populated_ui"));pressureUi="true".equals(args.getString("pressure_ui"));remuxUi="true".equals(args.getString("remux_ui"));start();}
     // Compose virtual accessibility nodes can be enumerated through getChild()
     // even when the provider's text-search implementation returns no result.
     // Retain the exact package/text, visible flag and positive screen bounds.
@@ -368,6 +369,99 @@ public final class GateInstrumentation extends Instrumentation {
         return metrics+" commits="+batches.get()+" updates="+(64*batches.get());
     }
 
+    private static final String MUX_DIR="/data/local/tmp/cp-remux-probe";
+    private String shellScalar(String command)throws Exception{return shell(command).trim();}
+    private long muxSize(int n)throws Exception{
+        String s=shellScalar("stat -c %s "+MUX_DIR+"/out-"+n+".mkv 2>/dev/null || echo 0");
+        return Long.parseLong(s);
+    }
+    private void activeMuxes(int[] pids)throws Exception{
+        for(int n=1;n<=3;n++){
+            String p=shellScalar("cat "+MUX_DIR+"/pid-"+n+" 2>/dev/null || echo 0");
+            require(p.matches("[1-9][0-9]*"),"missing mux pid "+n);
+            int id=Integer.parseInt(p);
+            if(pids[n-1]!=0)require(pids[n-1]==id,"mux PID changed");
+            pids[n-1]=id;
+            require(shellScalar("kill -0 "+id+" 2>/dev/null && echo alive || echo dead").equals("alive"),"mux ended early "+n);
+            require(shellScalar("cat /proc/"+id+"/comm").equals("ffmpeg"),"not ffmpeg "+n);
+        }
+        require(pids[0]!=pids[1]&&pids[0]!=pids[2]&&pids[1]!=pids[2],"duplicate mux PID");
+    }
+    private void reportFrames(String phase,String dump){
+        // Require actual nativeui process summary rather than legacy UI numbers.
+        boolean nativeUi=false;int frames=-1;String jank="";
+        for(String line:dump.split("\\n")){
+            if(line.contains("Graphics info for pid"))nativeUi=line.contains("com.cinemana.pro:nativeui");
+            if(nativeUi&&line.contains("Total frames rendered:")){
+                String value=line.substring(line.indexOf(':')+1).trim();
+                if(value.matches("[0-9]+"))frames=Integer.parseInt(value);
+            }
+            if(nativeUi&&line.contains("Janky frames:"))jank=line.trim();
+        }
+        require(frames>0&&!jank.isEmpty(),"missing nativeui frame metrics "+phase);
+        Log.i(TAG,"CP_REMUX_FRAME_SUMMARY "+phase+" frames="+frames+" "+jank);
+    }
+    private String remuxPressure(Context ctx)throws Exception{
+        require("1".equals(shellScalar("getprop ro.kernel.qemu"))&&"35".equals(shellScalar("getprop ro.build.version.sdk"))&&
+            "x86_64".equals(shellScalar("getprop ro.product.cpu.abi")),"remux disposable emulator only");
+        int[] pids=new int[3];long[] startSizes=new long[3];
+        // Open a fresh diagnostic renderer with real owner data, auto refresh disabled.
+        Intent r=new Intent().setClassName(PKG,"com.alwansan.cinemana.composelab.NativeUiProbeActivity")
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("cp_real_owner",true);
+        UiFixture fx=new UiFixture(ctx);
+        try{
+            fx.seedLarge();ctx.startActivity(r);
+            find("CP_REAL_OWNER_UI_OBSERVED",45000).recycle();
+            find("صفحة 1 · 24 عنصر",15000).recycle();
+            find("Reply: 1",15000).recycle();
+            find("CP_COMPOSE_COUNT_0",15000).recycle();
+            shell("dumpsys gfxinfo "+PKG+" reset");
+            String idle=pairedActions(1,0,null);
+            String idleFrames=shell("dumpsys gfxinfo "+PKG+" framestats");
+            reportFrames("idle",idleFrames);
+            Log.i(TAG,"CP_REMUX_IDLE_FRAME_DUMP_BEGIN");
+            for(String line:idleFrames.split("\\n"))if(line.contains("Total frames rendered")||line.contains("Janky frames")||line.contains("percentile"))Log.i(TAG,line);
+            Log.i(TAG,"CP_REMUX_IDLE_FRAME_DUMP_END");
+            shell("dumpsys gfxinfo "+PKG+" reset");
+            for(int n=1;n<=3;n++)shell("sh "+MUX_DIR+"/worker.sh "+n+" </dev/null >/dev/null 2>&1 &");
+            long deadline=SystemClock.elapsedRealtime()+10000;
+            while(SystemClock.elapsedRealtime()<deadline){
+                boolean ready=true;
+                for(int n=1;n<=3;n++)ready&=muxSize(n)>0;
+                if(ready)break;
+                SystemClock.sleep(200);
+            }
+            activeMuxes(pids);
+            for(int n=1;n<=3;n++){startSizes[n-1]=muxSize(n);require(startSizes[n-1]>0,"empty mux");}
+            // Same eight paired actions during three actual Android FFmpeg remuxes.
+            String load=pairedActions(9,8,null);
+            activeMuxes(pids);
+            for(int n=1;n<=3;n++)require(muxSize(n)>startSizes[n-1],"mux output did not grow "+n);
+            String loadedFrames=shell("dumpsys gfxinfo "+PKG+" framestats");
+            reportFrames("load",loadedFrames);
+            Log.i(TAG,"CP_REMUX_LOAD_FRAME_DUMP_BEGIN");
+            for(String line:loadedFrames.split("\\n"))if(line.contains("Total frames rendered")||line.contains("Janky frames")||line.contains("percentile"))Log.i(TAG,line);
+            Log.i(TAG,"CP_REMUX_LOAD_FRAME_DUMP_END");
+            requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+            deadline=SystemClock.elapsedRealtime()+60000;
+            while(SystemClock.elapsedRealtime()<deadline){
+                boolean done=true;
+                for(int n=1;n<=3;n++)done&=shellScalar("test -f "+MUX_DIR+"/exit-"+n+" && echo yes || echo no").equals("yes");
+                if(done)break;
+                SystemClock.sleep(500);
+            }
+            for(int n=1;n<=3;n++)require(shellScalar("cat "+MUX_DIR+"/exit-"+n).equals("0"),"mux failed "+n);
+            return "CP_X86_REMUX_UI_IDLE "+idle+"\nCP_X86_REMUX_UI_LOAD "+load+"\n"+
+                "CP_X86_REMUX_UI_PASS workers=3 growth=verified exits=0,0,0 actions=16";
+        }finally{
+            // Only test process IDs, with command identity checked before killing.
+            for(int n=1;n<=3;n++){
+                String p=shellScalar("cat "+MUX_DIR+"/pid-"+n+" 2>/dev/null || echo 0");
+                if(p.matches("[1-9][0-9]*"))shell("if [ \"$(readlink /proc/"+p+"/cwd 2>/dev/null)\" = "+MUX_DIR+" ] && [ \"$(cat /proc/"+p+"/comm 2>/dev/null)\" = ffmpeg ]; then kill "+p+" 2>/dev/null || true; fi");
+            }
+            fx.cleanup();
+        }
+    }
     @Override public void onStart(){
         Bundle result=new Bundle();
         try {
@@ -523,6 +617,13 @@ public final class GateInstrumentation extends Instrumentation {
                         require(stop>=0&&!afterClose.substring(stop).contains("CP_OWNER_AUTO_BEGIN session="+session+" serial="),"poll after close");
                         markerResult+="CP_REAL_DOWNLOAD_PRESENTATION_PASS titles=verified progress=25,75 completion=transport_only conflict=verified cleanup=verified\n";
                         markerResult+="CP_REAL_DOWNLOAD_AUTO_REFRESH_PASS progress=25,75 empty=observed manualClicks=0 close=verified noPollAfterClose=11500ms\n";
+                        if(remuxUi){
+                            setStage("x86-android-ffmpeg-remux-pressure");
+                            markerResult+=remuxPressure(ctx)+"\n";
+                            clickText("تحديث");
+                            find("صفحة 1 · 0 عنصر",15000).recycle();
+                            markerResult+="CP_X86_REMUX_CLEANUP_PASS\n";
+                        }
                     }
                 }
             }
