@@ -3,7 +3,7 @@ on:
   push:
     branches: [Native-Compose]
     paths: ['.github/workflows/native-compose-owner-ui.yml']
-    # Session 84: actual x86 Android FFmpeg remux and UI pressure (test only).
+    # Session 85: retry remux gate with exact renderer PID and strict frame summary parser.
   workflow_dispatch:
 permissions:
   contents: read
