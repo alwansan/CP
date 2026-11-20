@@ -37,7 +37,8 @@ internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,
     }
     Column(Modifier.fillMaxSize().then(drawObserver),verticalArrangement=Arrangement.spacedBy(8.dp)) {
         OwnerReadHeader(current,realOwner,presentation,{reconnect++},close)
-        OwnerReadRows(current,realOwner,presentation,Modifier.weight(1f))
+        val readSnapshot=remember(current) { { current?.screen ?: OwnerScreen() } }
+        OwnerReadRows(readSnapshot,realOwner,presentation,Modifier.weight(1f))
     }
 }
 
@@ -73,16 +74,20 @@ private fun OwnerReadHeader(current:LabOwnerClient?,realOwner:Boolean,presentati
 }
 
 @Composable
-private fun OwnerReadRows(current:LabOwnerClient?,realOwner:Boolean,presentation:Boolean,modifier:Modifier) {
-    val slice by remember(current,presentation) {
+internal fun OwnerReadRows(readSnapshot:()->OwnerScreen,realOwner:Boolean,presentation:Boolean,modifier:Modifier,onComposed:(()->Unit)?=null) {
+    val slice by remember(readSnapshot,presentation) {
         derivedStateOf(structuralEqualityPolicy()) {
-            ownerListSlice(current?.screen ?: OwnerScreen(),presentation)
+            ownerListSlice(readSnapshot(),presentation)
         }
     }
+    // Optional test observer only; regular application callers supply null.
+    // Observe after a successful composition, not during drawing or IPC.
+    val visible=slice
+    if(onComposed!=null) SideEffect { onComposed() }
     LazyColumn(modifier,verticalArrangement=Arrangement.spacedBy(6.dp)) {
         // Indices are page-local display positions, not persistent episode IDs.
-        items(slice.rows,key={"${slice.page}:${it.index}"},contentType={"ipc"}) { row ->
-            if(presentation) DownloadObservationCard(row,slice.fresh) else Text("عنصر ${row.index+1} · ${row.progress}/${row.total} · ${row.transport}" +
+        items(visible.rows,key={"${visible.page}:${it.index}"},contentType={"ipc"}) { row ->
+            if(presentation) DownloadObservationCard(row,visible.fresh) else Text("عنصر ${row.index+1} · ${row.progress}/${row.total} · ${row.transport}" +
                 if(realOwner) " · ${row.observation}" else "",Modifier.fillMaxWidth().padding(8.dp))
         }
     }
