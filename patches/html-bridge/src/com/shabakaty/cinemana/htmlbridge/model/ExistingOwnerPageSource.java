@@ -63,4 +63,5 @@ public final class ExistingOwnerPageSource implements OwnerPageRead.Source {
         }
     }
     @Override public BoundedDownloadRead.TransferRow transfer(int task)throws Exception{return transfer.transfer(task);}
+    @Override public Map<Integer,BoundedDownloadRead.TransferRow> transferPage(List<Integer> tasks)throws Exception{return transfer.transferPage(tasks);}
 }

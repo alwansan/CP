@@ -1,7 +1,7 @@
 package com.shabakaty.cinemana.htmlbridge.model;
 
 import java.lang.reflect.*;
-import java.util.Objects;
+import java.util.*;
 
 /** Candidate adapter for the exact APKTool helper/field descriptors audited in Html.
  * Kept outside APK build. Call only from an existing native background executor.
@@ -42,47 +42,66 @@ public final class ExistingDaoSource implements BoundedDownloadRead.Source {
             i(item,"collectionID"),s(item,"qualityName"),s(item,"path"));
     }
     @Override public BoundedDownloadRead.TransferRow transfer(int taskId) throws Exception {
+        if(taskId==0)return null;
+        return transferPage(Collections.singletonList(taskId)).get(taskId);
+    }
+    /** A single cursor snapshot for a maximum of 24 distinct native task IDs.
+     * Each indexed subquery has its own LIMIT 2, so collisions cannot starve
+     * another task and the cursor contains at most 48 rows. No raw IN scan. */
+    public Map<Integer,BoundedDownloadRead.TransferRow> transferPage(List<Integer> taskIds)throws Exception{
+        Objects.requireNonNull(taskIds);
+        if(taskIds.size()>OwnerPageRead.PAGE)throw new IllegalArgumentException("task page limit");
+        LinkedHashSet<Integer> keys=new LinkedHashSet<>(taskIds);
+        if(keys.contains(null)||keys.contains(0))throw new IllegalArgumentException("invalid task");
+        if(keys.isEmpty())return Collections.emptyMap();
         if(downloaderDao==null)downloaderDao=exp("getDownloadsDao",appContext,appContext);
         if(downloaderDao==null)throw new IllegalStateException("missing DAO");
-        // The original DAO selects only the first task_id match. Its composite
-        // primary key permits duplicate task IDs. Read at most two matches
-        // in ONE cursor snapshot, so a competing identity cannot be hidden by
-        // a separate count/lookup race. Never open a separate database.
         Class<?> daoType=Class.forName("com.shabakaty.downloader.lz0");
         Class<?> room=Class.forName("com.shabakaty.downloader.vt3");
         Class<?> query=Class.forName("com.shabakaty.downloader.yt3");
         Class<?> cursor=Class.forName("android.database.Cursor");
         Object db=daoType.getField("a").get(downloaderDao);
         if(!room.isInstance(db))throw new IllegalStateException("transfer Room unavailable");
-        Object q=query.getMethod("a",String.class,int.class).invoke(null,
-            "SELECT task_id,external_id,progress_bytes,size_bytes,status FROM Downloads WHERE task_id = ? LIMIT 2",1);
+        StringBuilder sql=new StringBuilder();
+        for(int n=0;n<keys.size();n++){
+            if(n>0)sql.append(" UNION ALL ");
+            sql.append("SELECT * FROM (SELECT task_id,external_id,progress_bytes,size_bytes,status FROM Downloads WHERE task_id = ? LIMIT 2)");
+        }
+        Class<?> status=Class.forName("com.shabakaty.downloader.xc4");
+        Map<Integer,DownloadModel.Transport> states=new HashMap<>();
+        for(Object e:status.getEnumConstants()){
+            int code=status.getField("r").getInt(e);
+            if(states.put(code,DownloadModel.Transport.valueOf(((Enum<?>)e).name()))!=null)
+                throw new IllegalStateException("ambiguous status code");
+        }
+        Object q=query.getMethod("a",String.class,int.class).invoke(null,sql.toString(),keys.size());
         Object c=null;
         try{
-            query.getMethod("h0",int.class,long.class).invoke(q,1,(long)taskId);
+            Method bind=query.getMethod("h0",int.class,long.class);
+            int position=1;for(int task:keys)bind.invoke(q,position++,(long)task);
             room.getMethod("b").invoke(db);
             c=Class.forName("com.shabakaty.downloader.lh0").getMethod("b",room,
                 Class.forName("com.shabakaty.downloader.bi4"),boolean.class,
                 Class.forName("android.os.CancellationSignal")).invoke(null,db,q,false,null);
             Method next=cursor.getMethod("moveToNext"),getInt=cursor.getMethod("getInt",int.class),
                 getLong=cursor.getMethod("getLong",int.class),getString=cursor.getMethod("getString",int.class);
-            if(!Boolean.TRUE.equals(next.invoke(c)))return null;
-            int actual=(Integer)getInt.invoke(c,0),code=(Integer)getInt.invoke(c,4);
-            String id=(String)getString.invoke(c,1);
-            long progress=(Long)getLong.invoke(c,2),total=(Long)getLong.invoke(c,3);
-            if(Boolean.TRUE.equals(next.invoke(c))){
-                // Deliberately invalid identity: both page projections classify
-                // this as CONFLICT and expose neither bytes nor any candidate ID.
-                return new BoundedDownloadRead.TransferRow(null,taskId,-1,-1,null);
-            }
-            Class<?> status=Class.forName("com.shabakaty.downloader.xc4");
-            DownloadModel.Transport state=null;
-            for(Object e:status.getEnumConstants()){
-                if(status.getField("r").getInt(e)==code){
-                    if(state!=null)throw new IllegalStateException("ambiguous status code");
-                    state=DownloadModel.Transport.valueOf(((Enum<?>)e).name());
+            Map<Integer,BoundedDownloadRead.TransferRow> rows=new HashMap<>();
+            Set<Integer> ambiguous=new HashSet<>();
+            int seen=0;
+            while(Boolean.TRUE.equals(next.invoke(c))){
+                if(++seen>keys.size()*2)throw new IllegalStateException("transfer cursor limit");
+                if(Thread.currentThread().isInterrupted())throw new InterruptedException();
+                int actual=(Integer)getInt.invoke(c,0);
+                if(!keys.contains(actual)||ambiguous.contains(actual))throw new IllegalStateException("unexpected task row");
+                if(rows.containsKey(actual)){
+                    ambiguous.add(actual);
+                    rows.put(actual,new BoundedDownloadRead.TransferRow(null,actual,-1,-1,null));
+                    continue;
                 }
+                rows.put(actual,new BoundedDownloadRead.TransferRow((String)getString.invoke(c,1),actual,
+                    (Long)getLong.invoke(c,2),(Long)getLong.invoke(c,3),states.get((Integer)getInt.invoke(c,4))));
             }
-            return new BoundedDownloadRead.TransferRow(id,actual,progress,total,state);
+            return Collections.unmodifiableMap(rows);
         }finally{
             try{if(c!=null)cursor.getMethod("close").invoke(c);}
             finally{query.getMethod("c").invoke(q);}

@@ -19,6 +19,19 @@ public final class OwnerPageReadTest {
             return new BoundedDownloadRead.TransferRow(conflict?"other":String.format(Locale.ROOT,"ep%04d",task),task,100,1000,DownloadModel.Transport.PROGRESS);
         }
     }
+    static class Batched extends Fixture{
+        int calls;boolean failed,unexpected;
+        public Map<Integer,BoundedDownloadRead.TransferRow> transferPage(List<Integer> tasks){
+            calls++;ok(tasks.size()<=24&&new HashSet<>(tasks).size()==tasks.size()&&!tasks.contains(0));
+            if(failed)throw new IllegalStateException("batch unavailable");
+            Map<Integer,BoundedDownloadRead.TransferRow> result=new HashMap<>();
+            for(int task:tasks)if(task!=4)result.put(task,task==3?
+                new BoundedDownloadRead.TransferRow(null,task,-1,-1,null):
+                new BoundedDownloadRead.TransferRow(String.format(Locale.ROOT,"ep%04d",task),task,100,1000,DownloadModel.Transport.PROGRESS));
+            if(unexpected)result.put(999999,result.get(1));
+            return result;
+        }
+    }
     public static void main(String[] args)throws Exception{
         Fixture f=new Fixture();OwnerPageRead reader=new OwnerPageRead(f);
         int count=0,pages=0;String cursor=null;
@@ -36,6 +49,19 @@ public final class OwnerPageReadTest {
         f=new Fixture();try{new OwnerPageRead(f).read("bad cursor");throw new AssertionError();}catch(IllegalArgumentException expected){ok(f.pages==0);}
         f=new Fixture();f.all.clear();ok(new OwnerPageRead(f).read(null).rows.isEmpty());ok(f.transfers==0);
         f=new Fixture();f.all.set(0,new BoundedDownloadRead.AppRow("ep0001",0,0,"q","p"));ok(new OwnerPageRead(f).read(null).rows.get(0).result==BoundedDownloadRead.Result.NO_TRANSPORT_ROW);
+        Batched batch=new Batched();OwnerPageRead.Page bp=new OwnerPageRead(batch).read(null);
+        ok(batch.calls==1&&batch.transfers==0&&batch.pages==2);
+        ok(bp.rows.get(0).result==BoundedDownloadRead.Result.OBSERVED);
+        ok(bp.rows.get(2).result==BoundedDownloadRead.Result.CONFLICT);
+        ok(bp.rows.get(3).result==BoundedDownloadRead.Result.NO_TRANSPORT_ROW);
+        batch.failed=true;bp=new OwnerPageRead(batch).read(null);
+        ok(bp.rows.get(0).result==BoundedDownloadRead.Result.UNAVAILABLE&&batch.transfers==0);
+        batch.failed=false;batch.unexpected=true;bp=new OwnerPageRead(batch).read(null);
+        ok(bp.rows.get(0).result==BoundedDownloadRead.Result.UNAVAILABLE&&batch.transfers==0);
+        batch=new Batched();batch.all.set(1,new BoundedDownloadRead.AppRow("ep0002",1,0,"q","p"));
+        bp=new OwnerPageRead(batch).read(null);
+        ok(batch.calls==1&&batch.transfers==0&&bp.rows.get(1).result==BoundedDownloadRead.Result.CONFLICT);
+        batch=new Batched();batch.all.clear();ok(new OwnerPageRead(batch).read(null).rows.isEmpty()&&batch.calls==0);
         System.out.println("CP_OWNER_PAGE_READ_PASS assertions="+n+" syntheticRows=452 pages=19");
     }
 }

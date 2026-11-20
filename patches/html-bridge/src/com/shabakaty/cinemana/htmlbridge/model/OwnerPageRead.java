@@ -12,6 +12,8 @@ public final class OwnerPageRead {
         void checkOwnerWorker() throws Exception;
         List<BoundedDownloadRead.AppRow> page(String after) throws Exception;
         BoundedDownloadRead.TransferRow transfer(int taskId) throws Exception;
+        // Null explicitly means a legacy fixture without batch support. Real owner never falls back on failure.
+        default Map<Integer,BoundedDownloadRead.TransferRow> transferPage(List<Integer> tasks)throws Exception{return null;}
     }
     public static final class Row {
         public final int index;
@@ -60,12 +62,24 @@ public final class OwnerPageRead {
             List<BoundedDownloadRead.AppRow> first=checked(source.page(nativeCursor),nativeCursor);
             List<Row> rows=new ArrayList<>();
             int n=Math.min(PAGE,first.size());
+            LinkedHashSet<Integer> distinct=new LinkedHashSet<>();
+            for(int i=0;i<n;i++)if(first.get(i).taskId!=0)distinct.add(first.get(i).taskId);
+            Map<Integer,BoundedDownloadRead.TransferRow> batch=null;
+            boolean batchFailed=false;
+            if(!distinct.isEmpty())try{
+                batch=source.transferPage(Collections.unmodifiableList(new ArrayList<>(distinct)));
+                if(batch!=null){
+                    batch=new HashMap<>(batch);
+                    if(!distinct.containsAll(batch.keySet())||batch.containsValue(null))throw new IllegalStateException("invalid transfer page");
+                }
+            }catch(InterruptedException e){throw e;}catch(Exception e){batchFailed=true;}
             for(int i=0;i<n;i++){
                 if(Thread.currentThread().isInterrupted())throw new InterruptedException();
                 BoundedDownloadRead.AppRow a=first.get(i);
                 if(a.taskId==0){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW));continue;}
                 try{
-                    BoundedDownloadRead.TransferRow t=source.transfer(a.taskId);
+                    if(batchFailed){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE));continue;}
+                    BoundedDownloadRead.TransferRow t=batch==null?source.transfer(a.taskId):batch.get(a.taskId);
                     if(t==null){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW));continue;}
                     if(t.taskId!=a.taskId||!a.id.equals(t.externalId)||t.status==null||t.progress<0||t.total< -1||(t.total>0&&t.progress>t.total)){
                         rows.add(unknown(i,BoundedDownloadRead.Result.CONFLICT));continue;

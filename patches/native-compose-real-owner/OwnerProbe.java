@@ -174,6 +174,18 @@ public final class OwnerProbe extends Instrumentation {
                 BoundedDownloadRead.TransferRow ambiguous=source.transfer(task(1));
                 require(ambiguous!=null&&ambiguous.externalId==null&&ambiguous.status==null&&
                     ambiguous.progress==-1&&ambiguous.total==-1,"ambiguous task leaked identity");
+                // Third duplicate must not consume the separate task's quota.
+                insertTransfer(adapter,row,state,1,"cp-transfer-probe-third",950,1000,"PROGRESS");
+                List<Integer> batchTasks=new ArrayList<>();
+                for(int n=1;n<=24;n++)batchTasks.add(task(n));
+                Map<Integer,BoundedDownloadRead.TransferRow> batched=source.transferPage(batchTasks);
+                require(batched.size()==5&&batched.get(task(1)).externalId==null&&
+                    batched.get(task(2)).status==DownloadModel.Transport.COMPLETED&&
+                    batched.get(task(2)).progress==1000&&batched.get(task(4))==null,"bounded batch collision isolation");
+                require(source.transferPage(Collections.emptyList()).isEmpty(),"empty batch");
+                try{source.transferPage(Collections.nCopies(25,task(1)));throw new AssertionError("oversize batch accepted");}
+                catch(IllegalArgumentException expected){ }
+                require(transferCount(tr,rt)==7,"third duplicate missing");
                 OwnerPageRead.Page collision=reader.read(null);
                 require(collision.status==OwnerPageRead.Status.OBSERVED&&collision.rows.size()==7,"collision page");
                 checkTransfer(collision.rows.get(0),0,BoundedDownloadRead.Result.CONFLICT,DownloadModel.Transport.UNKNOWN,-1,-1);
@@ -215,6 +227,7 @@ public final class OwnerProbe extends Instrumentation {
             if(fixture){
                 populated(app,source);
                 transferFixture(app,source);
+                marker+="CP_REAL_OWNER_TRANSFER_BATCH_PASS tasks=24 limitPerTask=2 thirdDuplicate=isolated rollback=verified\n";
                 marker+="CP_REAL_OWNER_TASK_COLLISION_PASS limit=2 conflict=1 rollback=verified\n";
                 marker+="CP_REAL_OWNER_TRANSFER_PASS rows=7 transport=5 progress=250,750 conflicts=2 missing=2 rollback=verified\n";
                 marker+="CP_REAL_OWNER_ROOM_POPULATED_PASS rows=49 pages=3 size=24,24,1 rollback=verified no_transport_rows=49\n";

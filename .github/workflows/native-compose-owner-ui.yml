@@ -3,7 +3,7 @@ on:
   push:
     branches: [Native-Compose]
     paths: ['.github/workflows/native-compose-owner-ui.yml']
-    # Session 80: paired actual Room read/write pressure through Compose.
+    # Session 81: repeat paired pressure with one bounded transfer cursor per page.
   workflow_dispatch:
 permissions:
   contents: read
