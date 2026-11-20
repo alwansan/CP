@@ -370,7 +370,37 @@ public final class GateInstrumentation extends Instrumentation {
     }
 
     private static final String MUX_DIR="/data/local/tmp/cp-remux-probe";
-    private String shellScalar(String command)throws Exception{return shell(command).trim();}
+    // Shell-command output can retain its pipe indefinitely (or a dumpsys
+    // binder can stall). Poll the descriptor with an absolute deadline.
+    // Closing our read end is bounded even if the remote command is wedged.
+    private String remuxShell(String command)throws Exception{
+        long deadline=SystemClock.elapsedRealtime()+20000;
+        Log.i(TAG,"CP_REMUX_SHELL_BEGIN "+command);
+        try(ParcelFileDescriptor fd=getUiAutomation().executeShellCommand(command);
+            ByteArrayOutputStream out=new ByteArrayOutputStream()){
+            android.system.StructPollfd poll=new android.system.StructPollfd();
+            poll.fd=fd.getFileDescriptor();
+            poll.events=(short)(android.system.OsConstants.POLLIN|android.system.OsConstants.POLLHUP);
+            byte[] bytes=new byte[4096];
+            while(true){
+                long left=deadline-SystemClock.elapsedRealtime();
+                if(left<=0)throw new IOException("remux shell deadline: "+command);
+                poll.revents=0;
+                if(android.system.Os.poll(new android.system.StructPollfd[]{poll},(int)left)==0)
+                    throw new IOException("remux shell timeout: "+command);
+                if((poll.revents&(android.system.OsConstants.POLLERR|android.system.OsConstants.POLLNVAL))!=0)
+                    throw new IOException("remux shell pipe error: "+command);
+                if((poll.revents&poll.events)==0)continue;
+                int n=android.system.Os.read(poll.fd,bytes,0,bytes.length);
+                if(n==0)break;
+                if(n<0||out.size()+n>1024*1024)throw new IOException("remux shell output invalid");
+                out.write(bytes,0,n);
+            }
+            Log.i(TAG,"CP_REMUX_SHELL_END bytes="+out.size()+" "+command);
+            return out.toString("UTF-8");
+        }
+    }
+    private String shellScalar(String command)throws Exception{return remuxShell(command).trim();}
     private long muxSize(int n)throws Exception{
         String s=shellScalar("stat -c %s "+MUX_DIR+"/out-"+n+".mkv 2>/dev/null || echo 0");
         return Long.parseLong(s);
@@ -431,7 +461,7 @@ public final class GateInstrumentation extends Instrumentation {
     private void reportFrames(String phase,int pid)throws Exception{
         requireRendererPid(pid);
         // Request the summary, not the per-frame CSV (framestats).
-        String dump=shell("dumpsys gfxinfo "+pid);
+        String dump=remuxShell("dumpsys -t 8 gfxinfo "+pid);
         // Log bounded diagnostic summaries BEFORE asserting, including on failure.
         for(String raw:dump.split("\\n")){
             String line=raw.trim();
@@ -453,18 +483,23 @@ public final class GateInstrumentation extends Instrumentation {
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("cp_real_owner",true);
         UiFixture fx=new UiFixture(ctx);
         try{
+            setStage("remux-seed");
             fx.seedLarge();ctx.startActivity(r);
             find("CP_REAL_OWNER_UI_OBSERVED",45000).recycle();
             find("صفحة 1 · 24 عنصر",15000).recycle();
             find("Reply: 1",15000).recycle();
             find("CP_COMPOSE_COUNT_0",15000).recycle();
+            setStage("remux-idle-reset");
             frameParserSelfTest();
             requireRendererPid(uiPid);
-            shell("dumpsys gfxinfo "+uiPid+" reset");
+            remuxShell("dumpsys -t 8 gfxinfo "+uiPid+" reset");
+            setStage("remux-idle-actions");
             String idle=pairedActions(1,0,null);
+            setStage("remux-idle-frames");
             reportFrames("idle",uiPid);
-            shell("dumpsys gfxinfo "+uiPid+" reset");
-            for(int n=1;n<=3;n++)shell("sh "+MUX_DIR+"/worker.sh "+n+" </dev/null >/dev/null 2>&1 &");
+            remuxShell("dumpsys -t 8 gfxinfo "+uiPid+" reset");
+            setStage("remux-launch-workers");
+            for(int n=1;n<=3;n++)remuxShell("sh "+MUX_DIR+"/worker.sh "+n+" </dev/null >/dev/null 2>&1 & echo launched");
             long deadline=SystemClock.elapsedRealtime()+10000;
             while(SystemClock.elapsedRealtime()<deadline){
                 boolean ready=true;
@@ -475,11 +510,14 @@ public final class GateInstrumentation extends Instrumentation {
             activeMuxes(pids);
             for(int n=1;n<=3;n++){startSizes[n-1]=muxSize(n);require(startSizes[n-1]>0,"empty mux");}
             // Same eight paired actions during three actual Android FFmpeg remuxes.
+            setStage("remux-load-actions");
             String load=pairedActions(9,8,null);
             activeMuxes(pids);
             for(int n=1;n<=3;n++)require(muxSize(n)>startSizes[n-1],"mux output did not grow "+n);
+            setStage("remux-load-frames");
             reportFrames("load",uiPid);
             requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+            setStage("remux-wait-outputs");
             deadline=SystemClock.elapsedRealtime()+60000;
             while(SystemClock.elapsedRealtime()<deadline){
                 boolean done=true;
@@ -491,10 +529,11 @@ public final class GateInstrumentation extends Instrumentation {
             return "CP_X86_REMUX_UI_IDLE "+idle+"\nCP_X86_REMUX_UI_LOAD "+load+"\n"+
                 "CP_X86_REMUX_UI_PASS workers=3 growth=verified exits=0,0,0 actions=16";
         }finally{
+            setStage("remux-cleanup");
             // Only test process IDs, with command identity checked before killing.
             for(int n=1;n<=3;n++){
                 String p=shellScalar("cat "+MUX_DIR+"/pid-"+n+" 2>/dev/null || echo 0");
-                if(p.matches("[1-9][0-9]*"))shell("if [ \"$(readlink /proc/"+p+"/cwd 2>/dev/null)\" = "+MUX_DIR+" ] && [ \"$(cat /proc/"+p+"/comm 2>/dev/null)\" = ffmpeg ]; then kill "+p+" 2>/dev/null || true; fi");
+                if(p.matches("[1-9][0-9]*"))remuxShell("if [ \"$(readlink /proc/"+p+"/cwd 2>/dev/null)\" = "+MUX_DIR+" ] && [ \"$(cat /proc/"+p+"/comm 2>/dev/null)\" = ffmpeg ]; then kill "+p+" 2>/dev/null || true; fi");
             }
             fx.cleanup();
         }

@@ -3,7 +3,7 @@ on:
   push:
     branches: [Native-Compose]
     paths: ['.github/workflows/native-compose-owner-ui.yml']
-    # Session 85: retry remux gate with exact renderer PID and strict frame summary parser.
+    # Session 86: bounded remux shell commands and independent live failure diagnostics.
   workflow_dispatch:
 permissions:
   contents: read

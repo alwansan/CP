@@ -28,7 +28,25 @@ if [[ "${CP_REAL_OWNER_UI_GATE:-0}" == 1 ]]; then
         bash patches/native-compose-owner-ipc/setup-remux.sh
         EXTRA=(-e remux_ui true)
     fi
-    timeout 540 adb shell am instrument -w -r -e renderer true -e owner_ui true -e populated_ui true -e pressure_ui true "${EXTRA[@]}" cp.nativegate.test/.GateInstrumentation | tee "$OUT/report/compose-owner-ui.txt"
+    # Save an independent live log before instrumentation; terminal output can
+    # remain empty if the host timeout kills am instrument. Preserve failure.
+    adb logcat -v threadtime -T 1 -s CPNativeGate:I CPNativeUi:I AndroidRuntime:E ActivityManager:I ActivityTaskManager:I > "$OUT/report/live-owner-ui.txt" 2>&1 &
+    UI_LOG_PID=$!
+    capture_ui_exit() {
+        local rc=$?
+        trap - EXIT
+        kill "$UI_LOG_PID" 2>/dev/null || true
+        wait "$UI_LOG_PID" 2>/dev/null || true
+        timeout 20 adb logcat -d -b crash > "$OUT/report/owner-ui-crash.txt" 2>&1 || true
+        timeout 20 adb shell dumpsys -t 8 activity lastanr > "$OUT/report/owner-ui-lastanr.txt" 2>&1 || true
+        timeout 20 adb shell dumpsys -t 8 window displays > "$OUT/report/owner-ui-window.txt" 2>&1 || true
+        if [[ "$rc" != 0 ]]; then
+            grep -E 'CP_NATIVE_GATE_STAGE|CP_REMUX_|CP_NATIVE_GATE_FAILURE_STAGE|FATAL EXCEPTION|ANR in com.cinemana.pro' "$OUT/report/live-owner-ui.txt" | tail -100 || true
+        fi
+        exit "$rc"
+    }
+    trap capture_ui_exit EXIT
+    timeout --kill-after=10s 540 adb shell am instrument -w -r -e renderer true -e owner_ui true -e populated_ui true -e pressure_ui true "${EXTRA[@]}" cp.nativegate.test/.GateInstrumentation | tee "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_COMPOSE_UI_PASS owner=' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_COMPOSE_POPULATED_PASS rows=4 progress=250,750 collision=1 missing=1 cleanup=verified serial=5' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_PRESSURE_IDLE ' "$OUT/report/compose-owner-ui.txt"
