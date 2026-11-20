@@ -8,6 +8,7 @@ adb install "$OUT/probe.apk"
 timeout 120 adb shell am instrument -w -r -e rollback_fixture true cp.ownerprobe/com.shabakaty.cinemana.htmlbridge.model.OwnerProbe | tee "$OUT/report/instrumentation.txt"
 grep -F 'CP_REAL_OWNER_ROOM_READ_PASS pid=' "$OUT/report/instrumentation.txt"
 grep -F 'CP_REAL_OWNER_ROOM_POPULATED_PASS rows=49 pages=3 size=24,24,1 rollback=verified no_transport_rows=49' "$OUT/report/instrumentation.txt"
+grep -F 'CP_REAL_OWNER_TRANSFER_PASS rows=7 transport=5 progress=250,750 conflicts=2 missing=2 rollback=verified' "$OUT/report/instrumentation.txt"
 grep -E 'INSTRUMENTATION_CODE: -1' "$OUT/report/instrumentation.txt"
 if grep -Eq 'CP_REAL_OWNER_ROOM_READ_FAIL|INSTRUMENTATION_FAILED|Process crashed' "$OUT/report/instrumentation.txt"; then exit 1; fi
 adb uninstall cp.ownerprobe

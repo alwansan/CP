@@ -73,6 +73,105 @@ public final class OwnerProbe extends Instrumentation {
         source.checkOwnerWorker();
         require(source.page(null).isEmpty(),"rollback leaked fixture rows");
     }
+    private long transferCount(Object room,Class<?> roomType)throws Exception{
+        Class<?> qt=Class.forName("com.shabakaty.downloader.yt3");
+        Object query=qt.getMethod("a",String.class,int.class).invoke(null,"SELECT COUNT(*) FROM Downloads",0);
+        android.database.Cursor c=null;
+        try{
+            c=(android.database.Cursor)Class.forName("com.shabakaty.downloader.lh0")
+                .getMethod("b",roomType,Class.forName("com.shabakaty.downloader.bi4"),boolean.class,CancellationSignal.class)
+                .invoke(null,room,query,false,null);
+            require(c.moveToFirst(),"count cursor");
+            return c.getLong(0);
+        }finally{
+            try{if(c!=null)c.close();}finally{qt.getMethod("c").invoke(query);}
+        }
+    }
+    private String transferId(int n){return String.format(Locale.ROOT,"cp-transfer-probe-%03d",n);}
+    private int task(int n){return 710000+n;}
+    private void insertTransfer(Object adapter,Class<?> row,Class<?> state,int n,String id,long progress,long total,String status)throws Exception{
+        Object entry=row.getConstructor().newInstance();
+        row.getField("r").setInt(entry,task(n));row.getField("s").set(entry,id);
+        row.getField("t").setLong(entry,progress);row.getField("y").setLong(entry,total);
+        for(String x:new String[]{"u","v","w","x","B"})row.getField(x).set(entry,"");
+        Object match=null;
+        for(Object e:state.getEnumConstants())if(((Enum<?>)e).name().equals(status))match=e;
+        require(match!=null,"status enum missing");
+        row.getField("z").set(entry,match);
+        Class.forName("com.shabakaty.downloader.x31").getMethod("f",Object.class).invoke(adapter,entry);
+    }
+    private void checkTransfer(OwnerPageRead.Row row,int index,BoundedDownloadRead.Result outcome,
+                               DownloadModel.Transport state,long progress,long total){
+        require(row.index==index&&row.result==outcome&&row.transport==state&&row.progressBytes==progress&&row.totalBytes==total,
+            "transfer projection index="+index+" outcome="+row.result+" state="+row.transport+" progress="+row.progressBytes+" total="+row.totalBytes);
+    }
+    /** Two rollback-only transactions on the original cached Room owners.
+     * No network, actual download scheduling, conversion, media files or durable rows. */
+    private void transferFixture(Context app,ExistingOwnerPageSource source)throws Exception{
+        require(fixture&&Build.VERSION.SDK_INT==35&&
+            ("sdk_gphone64_x86_64".equals(Build.PRODUCT)||Build.FINGERPRINT.contains("/sdk_gphone64_x86_64/")||
+             Build.HARDWARE.equals("ranchu")||Build.HARDWARE.equals("goldfish")),"fixture is emulator-only");
+        source.checkOwnerWorker();
+        require(source.page(null).isEmpty(),"refuse populated app database");
+        Class<?> rt=Class.forName("com.shabakaty.downloader.vt3");
+        Class<?> at=Class.forName("com.shabakaty.downloader.kw0");
+        Object ad=Class.forName("com.shabakaty.cinemana.ca1.DownloadStore263").getMethod("appDao",Context.class).invoke(null,app);
+        Object ar=at.getField("a").get(ad);
+        Method exp=Class.forName("com.shabakaty.cinemana.ca1.Restart108").getMethod("exp",String.class,Object[].class);
+        Object td=exp.invoke(null,"getDownloadsDao",new Object[]{app,app});
+        Class<?> tt=Class.forName("com.shabakaty.downloader.lz0");
+        require(tt.isInstance(td),"unexpected transfer DAO");
+        require(td==exp.invoke(null,"getDownloadsDao",new Object[]{app,app}),"transfer DAO cache not shared");
+        Object tr=tt.getField("a").get(td),adapter=tt.getField("b").get(td);
+        require(rt.isInstance(ar)&&rt.isInstance(tr)&&ar!=tr,"wrong Room owners");
+        require(transferCount(tr,rt)==0,"refuse nonempty transfer database");
+        Class<?> item=Class.forName("com.shabakaty.cinemana.data.db.downloads.CinemanaDownloadItem");
+        Constructor<?> insert=Class.forName("com.shabakaty.downloader.kw0$c").getConstructor(at,item);
+        Class<?> row=Class.forName("com.shabakaty.downloader.pw0"),state=Class.forName("com.shabakaty.downloader.xc4");
+        Method begin=rt.getMethod("i"),end=rt.getMethod("j");
+        begin.invoke(ar);
+        try{
+            require(source.page(null).isEmpty(),"app table changed before fixture");
+            begin.invoke(tr);
+            try{
+                require(transferCount(tr,rt)==0,"transfer table changed before fixture");
+                for(int n=1;n<=7;n++){
+                    Object entry=item.getConstructor().newInstance();
+                    item.getField("id").set(entry,transferId(n));item.getField("title").set(entry,"CP transfer fixture "+n);
+                    item.getField("downloadTaskId").setInt(entry,n==7?0:task(n));
+                    item.getField("collectionID").setInt(entry,0);
+                    item.getField("path").set(entry,"");item.getField("qualityName").set(entry,"fixture");
+                    ((Callable<?>)insert.newInstance(ad,entry)).call();
+                }
+                insertTransfer(adapter,row,state,1,transferId(1),250,1000,"PROGRESS");
+                insertTransfer(adapter,row,state,2,transferId(2),1000,1000,"COMPLETED");
+                insertTransfer(adapter,row,state,3,"cp-transfer-probe-mismatch",400,1000,"PROGRESS");
+                insertTransfer(adapter,row,state,5,transferId(5),1100,1000,"PROGRESS");
+                insertTransfer(adapter,row,state,6,transferId(6),100,0,"PAUSED");
+                require(transferCount(tr,rt)==5,"fixture row count");
+                BoundedDownloadRead.TransferRow direct=source.transfer(task(1));
+                require(direct!=null&&direct.taskId==task(1)&&direct.externalId.equals(transferId(1))&&direct.progress==250&&direct.total==1000&&direct.status==DownloadModel.Transport.PROGRESS,"original transfer read not exact");
+                OwnerPageRead reader=new OwnerPageRead(source);
+                OwnerPageRead.Page first=reader.read(null);
+                require(first.status==OwnerPageRead.Status.OBSERVED&&!first.hasMore&&first.rows.size()==7,"transfer first page");
+                checkTransfer(first.rows.get(0),0,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.PROGRESS,250,1000);
+                checkTransfer(first.rows.get(1),1,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.COMPLETED,1000,1000);
+                checkTransfer(first.rows.get(2),2,BoundedDownloadRead.Result.CONFLICT,DownloadModel.Transport.UNKNOWN,-1,-1);
+                checkTransfer(first.rows.get(3),3,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,DownloadModel.Transport.UNKNOWN,-1,-1);
+                checkTransfer(first.rows.get(4),4,BoundedDownloadRead.Result.CONFLICT,DownloadModel.Transport.UNKNOWN,-1,-1);
+                checkTransfer(first.rows.get(5),5,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.PAUSED,100,-1);
+                checkTransfer(first.rows.get(6),6,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,DownloadModel.Transport.UNKNOWN,-1,-1);
+                insertTransfer(adapter,row,state,1,transferId(1),750,1000,"PROGRESS");
+                OwnerPageRead.Page fresh=reader.read(null);
+                require(fresh.status==OwnerPageRead.Status.OBSERVED&&fresh.rows.size()==7,"transfer refresh page");
+                checkTransfer(fresh.rows.get(0),0,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.PROGRESS,750,1000);
+                checkTransfer(first.rows.get(0),0,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.PROGRESS,250,1000);
+                require(transferCount(tr,rt)==5,"refresh unexpectedly added rows");
+            }finally{end.invoke(tr);}
+        }finally{end.invoke(ar);}
+        source.checkOwnerWorker();
+        require(source.page(null).isEmpty()&&transferCount(tr,rt)==0&&source.transfer(task(1))==null,"rollback leaked fixture");
+    }
     @Override public void onStart(){
         Bundle result=new Bundle();
         try{
@@ -103,6 +202,8 @@ public final class OwnerProbe extends Instrumentation {
             String marker="CP_REAL_OWNER_ROOM_READ_PASS pid="+android.os.Process.myPid()+" raw="+raw.size()+" first="+first.rows.size()+" second="+second.rows.size()+" main_thread_blocked=1\n";
             if(fixture){
                 populated(app,source);
+                transferFixture(app,source);
+                marker+="CP_REAL_OWNER_TRANSFER_PASS rows=7 transport=5 progress=250,750 conflicts=2 missing=2 rollback=verified\n";
                 marker+="CP_REAL_OWNER_ROOM_POPULATED_PASS rows=49 pages=3 size=24,24,1 rollback=verified no_transport_rows=49\n";
             }
             result.putString("stream",marker);
