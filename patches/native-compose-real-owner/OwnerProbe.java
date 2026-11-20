@@ -167,6 +167,18 @@ public final class OwnerProbe extends Instrumentation {
                 checkTransfer(fresh.rows.get(0),0,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.PROGRESS,750,1000);
                 checkTransfer(first.rows.get(0),0,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.PROGRESS,250,1000);
                 require(transferCount(tr,rt)==5,"refresh unexpectedly added rows");
+                // A second external identity with the SAME task_id is legal
+                // under the original composite PK. Do not choose either row.
+                insertTransfer(adapter,row,state,1,"cp-transfer-probe-duplicate",900,1000,"PROGRESS");
+                require(transferCount(tr,rt)==6,"duplicate task fixture count");
+                BoundedDownloadRead.TransferRow ambiguous=source.transfer(task(1));
+                require(ambiguous!=null&&ambiguous.externalId==null&&ambiguous.status==null&&
+                    ambiguous.progress==-1&&ambiguous.total==-1,"ambiguous task leaked identity");
+                OwnerPageRead.Page collision=reader.read(null);
+                require(collision.status==OwnerPageRead.Status.OBSERVED&&collision.rows.size()==7,"collision page");
+                checkTransfer(collision.rows.get(0),0,BoundedDownloadRead.Result.CONFLICT,DownloadModel.Transport.UNKNOWN,-1,-1);
+                checkTransfer(collision.rows.get(1),1,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.COMPLETED,1000,1000);
+                checkTransfer(fresh.rows.get(0),0,BoundedDownloadRead.Result.OBSERVED,DownloadModel.Transport.PROGRESS,750,1000);
             }finally{end.invoke(tr);}
         }finally{end.invoke(ar);}
         source.checkOwnerWorker();
@@ -203,6 +215,7 @@ public final class OwnerProbe extends Instrumentation {
             if(fixture){
                 populated(app,source);
                 transferFixture(app,source);
+                marker+="CP_REAL_OWNER_TASK_COLLISION_PASS limit=2 conflict=1 rollback=verified\n";
                 marker+="CP_REAL_OWNER_TRANSFER_PASS rows=7 transport=5 progress=250,750 conflicts=2 missing=2 rollback=verified\n";
                 marker+="CP_REAL_OWNER_ROOM_POPULATED_PASS rows=49 pages=3 size=24,24,1 rollback=verified no_transport_rows=49\n";
             }

@@ -44,11 +44,48 @@ public final class ExistingDaoSource implements BoundedDownloadRead.Source {
     @Override public BoundedDownloadRead.TransferRow transfer(int taskId) throws Exception {
         if(downloaderDao==null)downloaderDao=exp("getDownloadsDao",appContext,appContext);
         if(downloaderDao==null)throw new IllegalStateException("missing DAO");
-        Object row=exp("readDownloadsByTaskId",downloaderDao,taskId);
-        if(row==null)return null;
-        Object status=field(row,"z");
-        DownloadModel.Transport t=status instanceof Enum?
-            DownloadModel.Transport.valueOf(((Enum<?>)status).name()):DownloadModel.Transport.UNKNOWN;
-        return new BoundedDownloadRead.TransferRow(s(row,"s"),i(row,"r"),l(row,"t"),l(row,"y"),t);
+        // The original DAO selects only the first task_id match. Its composite
+        // primary key permits duplicate task IDs. Read at most two matches
+        // in ONE cursor snapshot, so a competing identity cannot be hidden by
+        // a separate count/lookup race. Never open a separate database.
+        Class<?> daoType=Class.forName("com.shabakaty.downloader.lz0");
+        Class<?> room=Class.forName("com.shabakaty.downloader.vt3");
+        Class<?> query=Class.forName("com.shabakaty.downloader.yt3");
+        Class<?> cursor=Class.forName("android.database.Cursor");
+        Object db=daoType.getField("a").get(downloaderDao);
+        if(!room.isInstance(db))throw new IllegalStateException("transfer Room unavailable");
+        Object q=query.getMethod("a",String.class,int.class).invoke(null,
+            "SELECT task_id,external_id,progress_bytes,size_bytes,status FROM Downloads WHERE task_id = ? LIMIT 2",1);
+        Object c=null;
+        try{
+            query.getMethod("h0",int.class,long.class).invoke(q,1,(long)taskId);
+            room.getMethod("b").invoke(db);
+            c=Class.forName("com.shabakaty.downloader.lh0").getMethod("b",room,
+                Class.forName("com.shabakaty.downloader.bi4"),boolean.class,
+                Class.forName("android.os.CancellationSignal")).invoke(null,db,q,false,null);
+            Method next=cursor.getMethod("moveToNext"),getInt=cursor.getMethod("getInt",int.class),
+                getLong=cursor.getMethod("getLong",int.class),getString=cursor.getMethod("getString",int.class);
+            if(!Boolean.TRUE.equals(next.invoke(c)))return null;
+            int actual=(Integer)getInt.invoke(c,0),code=(Integer)getInt.invoke(c,4);
+            String id=(String)getString.invoke(c,1);
+            long progress=(Long)getLong.invoke(c,2),total=(Long)getLong.invoke(c,3);
+            if(Boolean.TRUE.equals(next.invoke(c))){
+                // Deliberately invalid identity: both page projections classify
+                // this as CONFLICT and expose neither bytes nor any candidate ID.
+                return new BoundedDownloadRead.TransferRow(null,taskId,-1,-1,null);
+            }
+            Class<?> status=Class.forName("com.shabakaty.downloader.xc4");
+            DownloadModel.Transport state=null;
+            for(Object e:status.getEnumConstants()){
+                if(status.getField("r").getInt(e)==code){
+                    if(state!=null)throw new IllegalStateException("ambiguous status code");
+                    state=DownloadModel.Transport.valueOf(((Enum<?>)e).name());
+                }
+            }
+            return new BoundedDownloadRead.TransferRow(id,actual,progress,total,state);
+        }finally{
+            try{if(c!=null)cursor.getMethod("close").invoke(c);}
+            finally{query.getMethod("c").invoke(q);}
+        }
     }
 }
