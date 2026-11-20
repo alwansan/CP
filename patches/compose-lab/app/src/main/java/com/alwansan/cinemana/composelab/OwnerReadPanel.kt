@@ -17,8 +17,8 @@ internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,
     val realOwner = context.packageName == "com.cinemana.pro"
     var client by remember { mutableStateOf<LabOwnerClient?>(null) }
     var reconnect by remember { mutableIntStateOf(0) }
-    DisposableEffect(foreground, context, reconnect) {
-        val connection=if(foreground) LabOwnerClient(context) else null
+    DisposableEffect(foreground, context, reconnect, presentation) {
+        val connection=if(foreground) LabOwnerClient(context,autoRefresh=realOwner && presentation) else null
         client=connection
         onDispose { connection?.close() }
     }
@@ -32,7 +32,7 @@ internal fun OwnerReadPanel(foreground: Boolean, onDrawState: ((OwnerScreen,Int,
         if(presentation) {
             Text("التنزيلات",style=MaterialTheme.typography.headlineMedium)
             Text(when(state.state) {
-                "observed" -> "آخر قراءة من محرك التنزيل"
+                "observed" -> "تحديث تلقائي · آخر قراءة من محرك التنزيل"
                 "connecting","reading" -> "جارٍ تحديث البيانات"
                 "changed" -> "تغيرت القائمة، حدّث البيانات"
                 else -> "تعذر تحديث البيانات"

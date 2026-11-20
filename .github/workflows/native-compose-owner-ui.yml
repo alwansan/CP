@@ -3,7 +3,7 @@ on:
   push:
     branches: [Native-Compose]
     paths: ['.github/workflows/native-compose-owner-ui.yml']
-    # Session 82: native read-only downloads presentation, titles and safe transport labels.
+    # Session 83: bounded foreground-only auto refresh through the actual owner IPC.
   workflow_dispatch:
 permissions:
   contents: read

@@ -496,13 +496,33 @@ public final class GateInstrumentation extends Instrumentation {
                             find("تعارض بيانات النقل",15000).recycle();
                             find("حالة النقل غير متاحة",15000).recycle();
                             screen.advance();
-                            clickText("تحديث");
+                            // No refresh click: only a new owner response can expose 75%.
                             find("75%",15000).recycle();
+                            require(shell("logcat -d -s CPOwnerAuto:I '*:S'").contains("CP_OWNER_AUTO_BEGIN session="),"automatic request evidence");
                             requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
                         }finally{screen.cleanup();}
-                        clickText("تحديث");
-                        find("لا توجد تنزيلات",15000).recycle();
+                        // Auto refresh must also observe removal, without a manual click.
+                        find("لا توجد تنزيلات",20000).recycle();
+                        clickText("إغلاق");
+                        long closedDeadline=SystemClock.elapsedRealtime()+10000;
+                        String autoLog="";
+                        do{
+                            autoLog=shell("logcat -d -s CPOwnerAuto:I '*:S'");
+                            if(autoLog.contains("CP_OWNER_AUTO_CLOSED session="))break;
+                            SystemClock.sleep(100);
+                        }while(SystemClock.elapsedRealtime()<closedDeadline);
+                        java.util.regex.Matcher closeLog=Pattern.compile("CP_OWNER_AUTO_CLOSED session=([a-f0-9]+)").matcher(autoLog);
+                        require(closeLog.find(),"auto client closure evidence");
+                        String session=closeLog.group(1);
+                        int cut=autoLog.lastIndexOf("CP_OWNER_AUTO_CLOSED session="+session);
+                        require(autoLog.substring(0,cut).contains("CP_OWNER_AUTO_BEGIN session="+session+" serial="),"auto/close session mismatch");
+                        // Empty-page idle interval is 10 seconds; observe beyond it.
+                        SystemClock.sleep(11500);
+                        String afterClose=shell("logcat -d -s CPOwnerAuto:I '*:S'");
+                        int stop=afterClose.lastIndexOf("CP_OWNER_AUTO_CLOSED session="+session);
+                        require(stop>=0&&!afterClose.substring(stop).contains("CP_OWNER_AUTO_BEGIN session="+session+" serial="),"poll after close");
                         markerResult+="CP_REAL_DOWNLOAD_PRESENTATION_PASS titles=verified progress=25,75 completion=transport_only conflict=verified cleanup=verified\n";
+                        markerResult+="CP_REAL_DOWNLOAD_AUTO_REFRESH_PASS progress=25,75 empty=observed manualClicks=0 close=verified noPollAfterClose=11500ms\n";
                     }
                 }
             }

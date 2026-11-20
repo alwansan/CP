@@ -17,7 +17,7 @@ internal data class OwnerRow(val index: Int, val progress: Long, val total: Long
 internal data class OwnerScreen(val state: String = "connecting", val pid: Int = 0, val page: Int = 0,
     val rows: List<OwnerRow> = emptyList(), val more: Boolean = false, val busy: Boolean = true,
     val responseSerial: Int = 0)
-internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12000L) {
+internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12000L, private val autoRefresh: Boolean = false) {
     private val app = context.applicationContext
     private val realOwner = app.packageName == "com.cinemana.pro"
     private val component = if(realOwner) ComponentName("com.cinemana.pro","cp.realowner.RealOwnerService")
@@ -40,6 +40,23 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
     private val inbox = Messenger(Handler(thread.looper) { m -> receive(m); true })
     private val deadline = Runnable {
         if (!closed && gate.expire(SystemClock.elapsedRealtime())) terminal("timeout")
+    }
+    // One delayed callback owned by the existing serialized IPC worker.
+    // No additional thread, coroutine loop, polling while detached, or queued catch-up.
+    private val autoTag = Integer.toHexString(System.identityHashCode(this))
+    private val autoTick = Runnable {
+        if (!closed && realOwner && autoRefresh && !queued.get() &&
+            gate.phase()==OwnerClientEpoch.Phase.READY && gate.page()>0) {
+            startRead(3,automatic=true)
+        }
+    }
+    private fun scheduleAuto() {
+        worker.removeCallbacks(autoTick)
+        if (closed || !realOwner || !autoRefresh || gate.phase()!=OwnerClientEpoch.Phase.READY || gate.page()==0) return
+        val active=snapshot.state=="observed" && snapshot.rows.any {
+            it.observation=="OBSERVED" && it.transport in setOf("PENDING","STARTED","PROGRESS","RETRY")
+        }
+        worker.postDelayed(autoTick,if(active) 2000L else 10000L)
     }
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
@@ -73,6 +90,7 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
     private fun publish(next: OwnerScreen) {
         snapshot=next
         ui.post { if (!closed) screen=next }
+        scheduleAuto()
     }
     private fun send(what: Int,s: Int,nav: Int,fixtureDelayMs: Int=0): Boolean {
         val target=remote ?: return false
@@ -86,6 +104,7 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
     }
     private fun releaseTransport() {
         worker.removeCallbacks(deadline)
+        worker.removeCallbacks(autoTick)
         if (transportGeneration>0) send(LabOwnerService.DETACH,0,0)
         transportGeneration=0L; pending=null; remote=null
         if (bound) { try { app.unbindService(connection) } catch (_: IllegalArgumentException) {} }
@@ -102,12 +121,17 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
         if (closed || !queued.compareAndSet(false,true)) return
         if (!worker.post { queued.set(false); startRead(nav,fixtureDelayMs) }) queued.set(false)
     }
-    private fun startRead(nav: Int, fixtureDelayMs: Int=0) {
+    private fun startRead(nav: Int, fixtureDelayMs: Int=0, automatic: Boolean=false) {
         if (closed) return
         val move=when(nav){1->OwnerClientEpoch.Move.FIRST;2->OwnerClientEpoch.Move.NEXT;3->OwnerClientEpoch.Move.REFRESH;else->return}
-        val q=gate.begin(move,SystemClock.elapsedRealtime()) ?: return
+        val q=gate.begin(move,SystemClock.elapsedRealtime())
+        if(q==null){scheduleAuto();return}
+        worker.removeCallbacks(autoTick)
         pending=q
-        publish(snapshot.copy(state="reading",busy=true))
+        // Keep the last successful snapshot visible during automatic reads;
+        // a failed reply still marks it stale and hides progress.
+        publish(snapshot.copy(state=if(automatic && snapshot.state=="observed") "observed" else "reading",busy=true))
+        if(automatic) android.util.Log.i("CPOwnerAuto","CP_OWNER_AUTO_BEGIN session="+autoTag+" serial="+q.serial)
         armDeadline()
         if (!send(LabOwnerService.READ,q.serial,nav,fixtureDelayMs)) {
             gate.sendFailed(q); terminal("unavailable")
@@ -183,6 +207,10 @@ internal class LabOwnerClient(context: Context, private val timeoutMs: Long = 12
     fun close() {
         if(closed)return
         closed=true
-        worker.post { gate.close();releaseTransport();thread.quitSafely() }
+        worker.post {
+            gate.close();releaseTransport()
+            if(realOwner && autoRefresh) android.util.Log.i("CPOwnerAuto","CP_OWNER_AUTO_CLOSED session="+autoTag)
+            thread.quitSafely()
+        }
     }
 }
