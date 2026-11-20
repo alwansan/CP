@@ -1794,5 +1794,21 @@
     "real_transfer_tracking_verified": false,
     "populated_ui_verified": false,
     "duplicate_task_id_ambiguity_open": true
+  },
+  "native_compose_isolation_78": {
+    "entry": "21bfa9444761570b82e17f8b696e9a1bba8438b1",
+    "code": "c8ef1971276174f792ec860dd2fccc5db41fa4ca",
+    "previous_transfer_run": 44661195369,
+    "previous_transfer_status": "in_progress",
+    "collision_run": 44661986433,
+    "collision_job": 136042146931,
+    "collision_status": "in_progress",
+    "shared_run": 44661986007,
+    "shared_job": 136042145570,
+    "shared_status": "success",
+    "shared_assertions": 41221,
+    "duplicate_task_id_guard_candidate": true,
+    "duplicate_task_id_android_verified": false,
+    "populated_ui_verified": false
   }
 }
