@@ -2169,8 +2169,53 @@
     },
     "standalone_run": 44776118961,
     "combined_run": 44776118626,
+    "status": "completed_success",
+    "recomposition_verified": true,
+    "actual_app_exporter_pressure_verified": false,
+    "real_download_mkv_pressure_verified": false,
+    "regression_status": "all_success"
+  },
+  "native_compose_isolation_91": {
+    "entry": "e1dcbad940fe748f22b5a9bfafffa4f23d775d18",
+    "code": "3d2bb575638da347ee5ed98f7196415381ff95ad",
+    "verified_standalone_run": 44776118961,
+    "verified_integrated_run": 44776118626,
+    "verified_integrated_job": 136426271312,
+    "diagnostic_artifact": 14649424940,
+    "standalone_release": "cp-compose-lab-19",
+    "standalone_asset": 772580657,
+    "recomposition_verified": true,
+    "metadata_updates": 8,
+    "composition_commits": {
+      "initial": 1,
+      "after_metadata": 1,
+      "changed": 2,
+      "stale": 3,
+      "fresh": 4,
+      "empty": 5
+    },
+    "combined_verified": true,
+    "overlapping_batches": 32,
+    "commits": 33,
+    "updates": 2112,
+    "idle": {
+      "local_median_ms": 300,
+      "local_max_ms": 543,
+      "reply_median_ms": 309,
+      "reply_max_ms": 553
+    },
+    "load": {
+      "local_median_ms": 306,
+      "local_max_ms": 771,
+      "reply_median_ms": 318,
+      "reply_max_ms": 782
+    },
+    "presentation_run": 44783951630,
+    "renderer_run": 44783951358,
+    "startup_run": 44783951605,
+    "ipc_run": 44783951399,
     "status": "in_progress",
-    "recomposition_verified": false,
+    "presentation_combined_verified": false,
     "actual_app_exporter_pressure_verified": false,
     "real_download_mkv_pressure_verified": false
   }
