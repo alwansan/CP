@@ -15,7 +15,14 @@ public final class GateInstrumentation extends Instrumentation {
             require("com.cinemana.pro".equals(ctx.getPackageName()),"wrong package");
             require("com.shabakaty.cinemana.CinemanaApplication".equals(ctx.getApplicationContext().getClass().getName()),"old Application not preserved");
             int main=android.os.Process.myPid();
-            Bundle b=ctx.getContentResolver().call(Uri.parse("content://com.cinemana.pro.cp-nativeui-gate"),"snapshot",null,null);
+            Uri uri=Uri.parse("content://com.cinemana.pro.cp-nativeui-gate");
+            Bundle b=null;
+            long readyDeadline=SystemClock.elapsedRealtime()+10000;
+            do {
+                b=ctx.getContentResolver().call(uri,"snapshot",null,null);
+                if(b!=null&&b.getBoolean("ready"))break;
+                SystemClock.sleep(100);
+            } while(SystemClock.elapsedRealtime()<readyDeadline);
             require(b!=null&&b.getBoolean("ready"),"startup order");
             require("cp.nativegate.NativeGateApplication".equals(b.getString("application")),"wrong UI Application");
             int ui=b.getInt("pid");

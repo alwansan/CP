@@ -17,11 +17,18 @@ python3 "$P/prepare.py" assemble --dormant "$D/unsigned.apk" --manifestapk "$OUT
 javac -source 8 -target 8 -cp "$SDK" -d "$OUT/test-classes" "$P/GateInstrumentation.java"
 jar cf "$OUT/test.jar" -C "$OUT/test-classes" .
 "$BT/d8" --min-api 28 --lib "$SDK" --output "$OUT/test-dex" "$OUT/test.jar"
-"$BT/aapt" package -f -M "$P/test-manifest.xml" -I "$SDK" -F "$OUT/test-unsigned.apk"
+# aapt v1 expects the canonical AndroidManifest.xml basename.
+mkdir -p "$OUT/test-manifest" "$OUT/test-assets"
+cp "$P/test-manifest.xml" "$OUT/test-manifest/AndroidManifest.xml"
+"$BT/aapt" package -f -M "$OUT/test-manifest/AndroidManifest.xml" -I "$SDK" -A "$OUT/test-assets" -F "$OUT/test-unsigned.apk"
+"$BT/aapt" dump xmltree "$OUT/test-unsigned.apk" AndroidManifest.xml > "$OUT/report/test-manifest-tree.txt"
+grep -F 'cp.nativegate.test' "$OUT/report/test-manifest-tree.txt"
+grep -F 'com.cinemana.pro' "$OUT/report/test-manifest-tree.txt"
 (cd "$OUT/test-dex" && zip -q "$OUT/test-unsigned.apk" classes.dex)
 for n in gate test; do
     if [ "$n" = gate ]; then input="$OUT/unsigned.apk"; else input="$OUT/test-unsigned.apk"; fi
     "$BT/zipalign" -f -p 4 "$input" "$OUT/$n-aligned.apk"
     "$BT/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out "$OUT/$n-signed.apk" "$OUT/$n-aligned.apk"
     "$BT/apksigner" verify --verbose "$OUT/$n-signed.apk"
+    "$BT/zipalign" -c -p 4 "$OUT/$n-signed.apk"
 done
