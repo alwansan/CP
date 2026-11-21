@@ -625,3 +625,11 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 - اختبار النموذج المشترك الجديد 44854590218 (job136693685990) SUCCESS: CP_OWNER_DISPLAY_KEYS_LAZY_PASS constructor=clean invalid=clean empty=clean page=24 stable=verified، CP_OWNER_DISPLAY_KEYS_PASS، CP_OWNER_PAGE_READ_PASS assertions=1482. هذا يثبت صحة البيانات والعزل وظيفياً فقط؛ **لا يوجد بعد قياس يثبت تحسناً في FPS أو خفض الكمون**.
 - تحديث سير العمل 605ed9dffcbe0e1f35351d51d342d4efea9ffb76: إضافة مسار OwnerPageRead.java إلى triggers للبوابة الإلزامية native-compose-owner-ui.yml؛ إعادة الاختبار الشامل الفعلية GitHub Actions #44854644442 **in_progress وقت التسجيل**. لا تُنشئ نسخة إنتاجية أو تتجاوز شروط نجاح البوابة. افحص الحالة/السجل والـArtifacts؛ إذا فشلت شخّص السبب وأصلح فرع العمل حصراً ثم أعد الاختبارات.
 - متابعة: تقييم أداء الواجهة المرئية والإطارات وكمون التفاعل تحت التحويل والكتابة مع الإشارة إلى ضجيج المحاكي؛ اختبار ثبات مفاتيح العناصر في Room/IPC بعد تغيّر ترتيب البيانات إذا أمكن من دون عرض المعرف الخام. لاحقاً اختبار محرك تحويل Cinemana الأصلي على ARM64 وجميع مسارات الشاشات. المهمة المجدولة السابقة معطّلة ولم تُغيَّر. تحديث prompt/RESTORE_SESSION_AR.md وmemory/MEMORY.md وmemory/PLAN_AR.md وmemory/ISSUES_AR.md وmemory/STATE.json وملف جلسة جديد عند كل دفعة، والتحقق من HEAD بعد الدفع.
+
+
+## جلسة 94 — تحديث المخاطر والبوابات 2026-11-21
+| المعرف | الحالة | الدليل والإجراء |
+|---|---|---|
+| NC-KEY-94 | اختبار جديد قيد التحقق | `a667ed445d489fc47f3f4fb68626a1fd9f82bf74`: نقل صف BINARY داخل Room rollback-only مع ثبات HMAC، اختبار isolation للقارئ الجديد؛ run 44855997685 pending في لحظة الكتابة، لا نجاح مفترض |
+| NC-CI-93 | مُغلق: نجاح البوابة المعلقة | run 44854644442 SUCCESS على 605ed9d؛ البوابة المدمجة و6 ملفات MKV اختبارية على x86 لا تبرهن ARM64 أو محرك التصدير الأصلي |
+| NC-PERF-ARM64 | مفتوح | وقت الاستجابة في محاكي أحد الاختبارات وصل 4578ms؛ لا يوجد قياس هاتف مع MkvExporter/Lease115/MuxSlotsDL الأصلي |

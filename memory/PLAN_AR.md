@@ -607,3 +607,10 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 - اختبار النموذج المشترك الجديد 44854590218 (job136693685990) SUCCESS: CP_OWNER_DISPLAY_KEYS_LAZY_PASS constructor=clean invalid=clean empty=clean page=24 stable=verified، CP_OWNER_DISPLAY_KEYS_PASS، CP_OWNER_PAGE_READ_PASS assertions=1482. هذا يثبت صحة البيانات والعزل وظيفياً فقط؛ **لا يوجد بعد قياس يثبت تحسناً في FPS أو خفض الكمون**.
 - تحديث سير العمل 605ed9dffcbe0e1f35351d51d342d4efea9ffb76: إضافة مسار OwnerPageRead.java إلى triggers للبوابة الإلزامية native-compose-owner-ui.yml؛ إعادة الاختبار الشامل الفعلية GitHub Actions #44854644442 **in_progress وقت التسجيل**. لا تُنشئ نسخة إنتاجية أو تتجاوز شروط نجاح البوابة. افحص الحالة/السجل والـArtifacts؛ إذا فشلت شخّص السبب وأصلح فرع العمل حصراً ثم أعد الاختبارات.
 - متابعة: تقييم أداء الواجهة المرئية والإطارات وكمون التفاعل تحت التحويل والكتابة مع الإشارة إلى ضجيج المحاكي؛ اختبار ثبات مفاتيح العناصر في Room/IPC بعد تغيّر ترتيب البيانات إذا أمكن من دون عرض المعرف الخام. لاحقاً اختبار محرك تحويل Cinemana الأصلي على ARM64 وجميع مسارات الشاشات. المهمة المجدولة السابقة معطّلة ولم تُغيَّر. تحديث prompt/RESTORE_SESSION_AR.md وmemory/MEMORY.md وmemory/PLAN_AR.md وmemory/ISSUES_AR.md وmemory/STATE.json وملف جلسة جديد عند كل دفعة، والتحقق من HEAD بعد الدفع.
+
+
+## جلسة 94 — خطة تنفيذ حالية 2026-11-21
+1. التحقق من [44855997685](https://github.com/alwansan/CP/actions/runs/44855997685) على `a667ed445d489fc47f3f4fb68626a1fd9f82bf74`؛ يلزم نجاح ART/Room والـrollback و`CP_REAL_OWNER_KEYS_SHIFT_PASS` بدون إضعاف الشروط.
+2. إذا نجح: إضافة تحقّق استقرار هوية مفاتيح العرض داخل Android IPC الفعلي بعد نقل صف/تغير ترتيب، ببيانات emulator محصورة وتنظيف إجباري فقط؛ لا raw IDs في الرد.
+3. قياس الأداء الحقيقي على هاتف ARM64 تحت ضغط المزامنة وتحويلات MKV الأصلية، مع مقارنة idle/load وFrameMetrics/trace. رقم 4578ms من المحاكي دليل مشكلة أداء محتملة لا إثبات هاتف.
+4. استكمال تكافؤ الشاشات تدريجياً وART والـlifecycle من دون تغيير محرك التحميل أو الـlauncher أو بيانات المستخدم.

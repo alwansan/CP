@@ -12,9 +12,9 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_factory_rotation_complete_r8_resource_transform_pending",
-  "last_session": "memory/sessions/2026-11-19_cp-dl-rotation-r8-resource-transform-54.md",
-  "verified_at": "2026-11-19",
+  "status": "native_compose_original_room_keyshift_ci_pending",
+  "last_session": "memory/sessions/2026-11-21_cp-dl-room-keyshift-94.md",
+  "verified_at": "2026-11-21",
   "app_code_changed": false,
   "new_build_triggered": true,
   "device_test": "B1b1 416 native video dispatch return, zero missing Downloads and storage lock warnings; one ANR; MKV recovery progressed after restart",
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify 44535973795 and 44535973568; resolve residual DEX overlaps and actual resource relinking, test minified runtime",
+  "next": "Verify run 44855997685 and mandatory CP_REAL_OWNER_KEYS_SHIFT_PASS. Preserve rollback-only original Room fixture and ART/legacy renderer; then actual IPC shift and ARM64 pressure.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,10 +41,10 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "68d900e4ce6b7183aa7163840a4e0f9a37d94815",
+  "last_verified_head": "605ed9dffcbe0e1f35351d51d342d4efea9ffb76",
   "branch_actions": {
-    "total_count": 11,
-    "latest_run_id": 44185564726,
+    "total_count": null,
+    "latest_run_id": 44855997685,
     "latest_status": "in_progress",
     "latest_conclusion": null
   },
@@ -2281,5 +2281,17 @@
     "phone_arm64_performance_verified": false,
     "production_apk_created": false,
     "status": "in_progress"
+  },
+  "native_compose_checkpoint": {
+    "session": 94,
+    "as_of": "2026-11-21",
+    "tested_integrated_run": 44854644442,
+    "tested_integrated_conclusion": "success",
+    "tested_sha": "605ed9dffcbe0e1f35351d51d342d4efea9ffb76",
+    "test_only_code_sha": "a667ed445d489fc47f3f4fb68626a1fd9f82bf74",
+    "actual_room_shift_run": 44855997685,
+    "actual_room_shift_conclusion": "pending",
+    "production_apk_created": false,
+    "original_exporter_arm64_verified": false
   }
 }
