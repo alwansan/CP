@@ -637,3 +637,10 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 2. افحص 44867014514 لكل علامات Compose+FrameMetrics الجديدة و3 tests؛ أصلح إذا فشل دون تعديل محرك MKV أو تجاوز CI.
 3. افصل أسباب تأخر الإطارات عبر input/layout/draw/sync/gpu مع عدة عينات عند الإمكان، ولا تعلن تحسن سرعة من اختبار واحد.
 4. بعد ذلك قياس جهاز ARM64 مع مكونات التنزيل الأصلية والتكافؤ البصري للشاشات؛ حافظ على بيانات التحميل.
+
+## Session98 — required next
+1. #44867014514 is failed compile (unknown Android API constant), not app runtime. Fix `bebe7af3b0012c827d7a258ee4f37f9e3f649005` published.
+2. Verify [#44871344400](https://github.com/alwansan/CP/actions/runs/44871344400) end-to-end: signed main/test builds, Android15 `OK (3 tests)`, `CP_COMPOSE_FRAME_PHASES_PASS`, all owner/keyset/pressure markers, artifact and release gate. Preserve assertions on failure.
+3. Record actual idle/load FrameMetrics including unavailable values and sample counts; do not infer improvement from one SwiftShader run.
+4. Continue towards real ARM64 phone/actual MkvExporter/Lease115/MuxSlotsDL test and remaining screen parity without deleting or modifying user media/database.
+

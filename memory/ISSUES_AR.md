@@ -663,3 +663,11 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 | NC-REAL-COMPOSE-SHIFT-96 | CLOSED emulator | 44861616320 SUCCESS and mandatory CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS, companion 44861616324/44861616385/44861616355 SUCCESS |
 | NC-FRAME-PHASES-97 | CI pending | `c9138b4d131160213c0806ff39f22d37c06992bd` updates atomic 64 synthetic snapshot writes + diagnostic frame phases; run 44867014514 in_progress |
 | NC-PERF-ARM64 | OPEN | Emulator idle p95 ~116.8ms and load ~100.1ms, no ARM64 baseline with real original exporter |
+
+## Session98 — tests and blockers
+| ID | Status | Evidence |
+|---|---|---|
+| NC-FRAME-PHASES-97 | FAILED compile | #44867014514, job136732827028: Kotlin unresolved `GPU_COMMAND_DURATION`; emulator did not run; no valid performance data or release for this run |
+| NC-FRAME-PHASES-98 | FIX COMMITTED; CI PENDING | `bebe7af3b0012c827d7a258ee4f37f9e3f649005` uses `GPU_DURATION`, reports unavailable phase values without fake zero; run 44871344400 in progress, gate not yet proven |
+| NC-PERF-ARM64 | OPEN | No original exporter/actual phone pressure FPS evidence; x86 emulator frame measurements remain noisy |
+

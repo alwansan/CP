@@ -671,3 +671,10 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 - Commit [`c9138b4d131160213c0806ff39f22d37c06992bd`](https://github.com/alwansan/CP/commit/c9138b4d131160213c0806ff39f22d37c06992bd) uses `androidx.compose.runtime.snapshots.Snapshot.withMutableSnapshot` for the synthetic progress ticker's 64 in-memory changes every 200ms, one atomic state commit instead of potentially visible intermediate writes. Runtime behavior of original downloader unchanged.
 - FrameMetrics regression reports input/layout/draw/sync/gpu P95 alongside total P95/P99 and callback latency for idle and load. Repeated instrumentation gate requires `CP_COMPOSE_FRAME_PHASES_PASS metrics=input,layout,draw,sync,gpu stages=idle,load`, all prior markers, and `OK (3 tests)`.
 - New test run [44867014514](https://github.com/alwansan/CP/actions/runs/44867014514) **in_progress** at checkpoint; no pass claimed and no new production APK. Next: inspect actual job result and phase split before deciding further optimization.
+
+## Session98 — Compose FrameMetrics compile failure and isolated correction (2026-11-21)
+- GitHub Actions #44867014514, job 136732827028, ended FAILURE before Android instrumentation: Kotlin error `Unresolved reference GPU_COMMAND_DURATION` at `LabTest.kt:44`. Artifact absence was downstream of failed build.
+- Correct `FrameMetrics.GPU_DURATION` is API31+; `COMMAND_ISSUE_DURATION` measures different CPU command issue time. Commit `bebe7af3b0012c827d7a258ee4f37f9e3f649005` changes only standalone lab AndroidTest, preserving total-frame and phase diagnostics and all test gates; missing phase samples are shown as `unavailable`, not 0ns.
+- Follow-up #44871344400 started on exact fix SHA; in progress at checkpoint. Nothing proven on emulator yet in this new run, no new APK production or benchmark acceptance. Prior five session96 runs are verified successes.
+- Original downloader, IPC, Room, MKV slots, data, signing, launcher and account untouched. Real exporter/ARM64 frame timing, all-screen parity and actual phone load remain open.
+

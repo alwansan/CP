@@ -1,0 +1,10 @@
+# CP-DL / Native-Compose — Session98 (2026-11-21)
+
+## Actual result: failure found and repaired
+Prior head at entry `43373800362697945349b16487f28fb52345cd73`. GitHub Actions [44867014514](https://github.com/alwansan/CP/actions/runs/44867014514), job136732827028, completed FAILURE at `Build signed Compose and test APK`: `LabTest.kt:44:52 Unresolved reference 'GPU_COMMAND_DURATION'` in `:app:compileDebugAndroidTestKotlin`. The Android emulator gate never started and the artifact upload found no files.
+
+`FrameMetrics` has a supported `GPU_DURATION` constant (since API31), and separately `COMMAND_ISSUE_DURATION` (since API24); the incorrect hybrid is not an SDK constant. Only `patches/compose-lab/app/src/androidTest/java/com/alwansan/cinemana/composelab/LabTest.kt` was modified in code commit [`bebe7af3b0012c827d7a258ee4f37f9e3f649005`](https://github.com/alwansan/CP/commit/bebe7af3b0012c827d7a258ee4f37f9e3f649005). Missing per-stage metrics retain Android's `-1` unavailable sentinel rather than being reported as 0ns; diagnostic P95 says `unavailable` if needed. All prior JUnit count, `CP_COMPOSE_FRAME_PHASES_PASS`, Compose owner keyset markers and release gate are preserved.
+
+New push-triggered standalone run [#44871344400](https://github.com/alwansan/CP/actions/runs/44871344400) was **in progress** when documented; no PASS or release/phone performance is yet established. Next verify signed Gradle build, API35 instrumentation `OK (3 tests)`, all markers, release gate, asset and metric lines. Any subsequent failure must be diagnosed without bypassing assertions.
+
+Prior verified same-package owner/UI key shift: 44861616320 plus 44861616324/44861616385/44861616355, and standalone lab 44861465616. This repair changes no original Cinemana runtime/IPC/Room/schema/manifest/downloader/account/launcher/signing/MKV files/3 slots/Lease115. The emulator's idle/load frame P95 (116.8/100.1ms from old run) is not a controlled ARM64 phone FPS comparison. Original MkvExporter/Lease115/MuxSlotsDL real workload, parity for other screens and production APK remain open. Existing monitoring automation is disabled and untouched.

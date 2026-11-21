@@ -1,19 +1,16 @@
 <!-- CP-DL-CURRENT-START -->
-# أحدث استعادة — CP-DL / Native-Compose — جلسة 97 (2026-11-21)
+# أحدث استعادة — CP-DL / Native-Compose — جلسة 98 (2026-11-21)
 
-**الهوية:** CP-DL. المستودع `alwansan/CP`؛ فرع الكتابة الوحيد `Native-Compose`؛ `main` و`Html` و`CL` وسائر الفروع للقراءة فقط. لا تغيّر المحرك الأصلي، ملفات التنزيلات أو الحساب، التوقيع، الـlauncher، PATCH274، B1b3-12، 3 MKV slots أو Lease115؛ ولا تعمل force push. اتبع AGENTS.md.
+**النطاق:** CP-DL؛ `alwansan/CP`، الكتابة في `Native-Compose` فقط؛ بقية الفروع وCL للقراءة. احفظ المحرك وRoom والحساب والبيانات/التوقيع/launcher وPATCH274 وB1b3-12 و3 MKV slots وLease115؛ لا force push.
 
-## نتائج موثقة — جلسة96
-- [44861465616](https://github.com/alwansan/CP/actions/runs/44861465616) **SUCCESS** على `7cf5103e947dc45a9d6ced0f40405f6992c0c333`: `OK (3 tests)`, `CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS`, `CP_COMPOSE_LAB_RELEASE_GATE_PASS`. المختبر مستقل وهمي فقط.
-- [44861616320](https://github.com/alwansan/CP/actions/runs/44861616320) **SUCCESS** على `7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3`: في المحاكي API35 ظهرت العلامات `CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS` و`CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS rows=4,5,0 index=0,1 progress=250 cleanup=verified` و`INSTRUMENTATION_CODE: -1`. مرّ اختبار ثلاثة عمال FFmpeg x86 test files أيضاً، لكنه ليس إثبات MkvExporter الإنتاجي.
-- بوابات IPC [44861616324](https://github.com/alwansan/CP/actions/runs/44861616324)، Startup [44861616385](https://github.com/alwansan/CP/actions/runs/44861616385)، Renderer [44861616355](https://github.com/alwansan/CP/actions/runs/44861616355) جميعها **SUCCESS**، attempt1.
-- من سجل Lab: idle total frame duration p95=116800823ns (116.8ms)، loaded p95=100104603ns (100.1ms) في محاكي x86 Swiftshader؛ المتغيرات كبيرة، ليست نتائج هاتف أو حكم كمي بتحسن الأداء؛ لا تقول «بدون لاق».
+## الحالة الحية بعد الجلسة97
+- اختبارات جلسة96 الخمسة ناجحة: standalone [44861465616](https://github.com/alwansan/CP/actions/runs/44861465616) `OK (3 tests)`، real Compose/IPC [44861616320](https://github.com/alwansan/CP/actions/runs/44861616320) `CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS`، وIPC [44861616324](https://github.com/alwansan/CP/actions/runs/44861616324) وstartup [44861616385](https://github.com/alwansan/CP/actions/runs/44861616385) وrenderer [44861616355](https://github.com/alwansan/CP/actions/runs/44861616355)، جميعها SUCCESS في المحاكي API35.
+- **فشل معزول:** [44867014514](https://github.com/alwansan/CP/actions/runs/44867014514) FAILURE في compileDebugAndroidTestKotlin، `LabTest.kt:44:52 Unresolved reference GPU_COMMAND_DURATION`. لم تبدأ instrumentation. رفع artifact فشل تبعاً لغياب build؛ ليس دليلاً على فشل محرك الإنتاج.
+- **الإصلاح المنشور:** [`bebe7af3b0012c827d7a258ee4f37f9e3f649005`](https://github.com/alwansan/CP/commit/bebe7af3b0012c827d7a258ee4f37f9e3f649005) يبدّل الثابت غير الموجود إلى Android `FrameMetrics.GPU_DURATION` (API31+) ويحافظ على `-1` للمرحلة غير المتاحة بدلاً من صفر وهمي. جميع اختبارات ومؤشرات `CP_COMPOSE_FRAME_PHASES_PASS` و`CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS` باقية.
+- **التحقق الجديد غير مكتمل:** [44871344400](https://github.com/alwansan/CP/actions/runs/44871344400) على SHA الإصلاح `in_progress` عند نقطة التوثيق. لا تدّع النجاح أو إصدار APK حتى يثبت `OK (3 tests)`، كل markers، Release gate والملفات.
+- قياسات سابقة من x86 SwiftShader: idle P95 total116.8ms وsynthetic-load100.1ms؛ لا تثبت FPS هاتف أو تحسناً سببيّاً. لا اختبار أصل MkvExporter/Lease115/MuxSlotsDL على ARM64 بعد، ولا APK إنتاجي.
 
-## جلسة97 — العمل الحالي
-- **كود جديد:** `c9138b4d131160213c0806ff39f22d37c06992bd`، لتقليل إشعارات Compose الوسطية من 64 تغييراً وهمياً كل 200ms باستخدام `Snapshot.withMutableSnapshot`، ولجمع `FrameMetrics` مفصلة (input/layout/draw/sync/gpu، idle/load) مع العلامة الإلزامية `CP_COMPOSE_FRAME_PHASES_PASS`. لا تعديل للمحرك أو المستخدم الحقيقي.
-- **التحقق قيد التنفيذ:** [44867014514](https://github.com/alwansan/CP/actions/runs/44867014514) لبوابة Compose Lab. لا تعده ناجحاً حتى يكتمل وتفحص `OK (3 tests)`، markers السابقة والـphase الجديدة. افحص واصلح الأخطاء في Native-Compose فقط ولا تُضعف البوابات.
-- **القادم:** قارن phase metrics قبل وبعد بعناية مع تباين المحاكي، ثم تحسينات مرئية محددة عند الحاجة؛ وقياسات الهاتف ARM64 من APK الإنتاج الأصلي ومحرّك MkvExporter/Lease115/MuxSlotsDL الحقيقي لم تتم بعد. يبقى Compose Lab APK تجريبياً وليس النسخة الإنتاجية.
-- **التوثيق:** `memory/sessions/2026-11-21_cp-dl-compose-frame-phases-97.md` وMEMORY/PLAN/ISSUES/STATE وdocs/NATIVE_COMPOSE_MASTER_AR.md؛ حدّثها بعد نتيجة CI. المهمة المجدولة القديمة معطّلة ولا تعِد تشغيلها دون طلب.
+**التكملة:** افتح CI 44871344400، تحقق من السجلات ومخرجات metrics وArtifacts؛ عالج أي خطأ داخل Native-Compose دون تضعيف البوابات. بعد نجاح الاختبار قارن مراحل input/layout/draw/sync/gpu بحذر، ثم انتقل لقياس محرك MKV الأصلي على الهاتف بشروط حماية بياناته وتكافؤ بقية الصفحات. حدّث `memory/sessions/2026-11-21_cp-dl-frame-phase-fix-98.md` وMEMORY/PLAN/ISSUES/STATE/MASTER وRESTORE. المهمة المجدولة السابقة معطّلة؛ لا تفعّلها من تلقاء نفسك.
 
 <!-- CP-DL-CURRENT-END -->
 

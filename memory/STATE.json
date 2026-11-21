@@ -2283,7 +2283,7 @@
     "status": "in_progress"
   },
   "native_compose_checkpoint": {
-    "session": 97,
+    "session": 98,
     "as_of": "2026-11-21",
     "tested_integrated_run": 44854644442,
     "tested_integrated_conclusion": "success",
@@ -2329,6 +2329,12 @@
     ],
     "frame_phases_code_sha": "c9138b4d131160213c0806ff39f22d37c06992bd",
     "frame_phases_lab_run": 44867014514,
-    "frame_phases_lab_conclusion": "pending"
+    "frame_phases_lab_conclusion": "failure_compile_unresolved_GPU_COMMAND_DURATION",
+    "frame_phases_lab_job": 136732827028,
+    "frame_phase_fix_sha": "bebe7af3b0012c827d7a258ee4f37f9e3f649005",
+    "frame_phase_fix_run": 44871344400,
+    "frame_phase_fix_conclusion": "in_progress",
+    "frame_phase_fix_scope": "isolated_AndroidTest_FrameMetrics_only",
+    "phone_arm64_performance_verified": false
   }
 }

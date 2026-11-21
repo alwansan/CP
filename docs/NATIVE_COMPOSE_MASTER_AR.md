@@ -186,3 +186,9 @@ Code 17d75a6f75782bda0e88dca616735f9ea0d26e74: production bundled assets/ffmpeg 
 
 ## Session97: FrameMetrics تشخيصية ودفعة Snapshot ذرية
 تم التحقق من جميع بوابات جلسة96 (44861465616 و44861616320 و44861616324 و44861616385 و44861616355 SUCCESS). قيم frame duration P95 في محاكي x86 SwiftShader كانت 116.8ms بالخمول و100.1ms مع ضغط synthetic، ولا تثبت سبب بطء محدداً أو FPS فعلي على الهاتف. Commit `c9138b4d131160213c0806ff39f22d37c06992bd` يجمع تغييرات progress synthetic الـ64 في `Snapshot.withMutableSnapshot` ويخرج مراحل FrameMetrics input/layout/draw/sync/gpu لكل من idle/load، مع `CP_COMPOSE_FRAME_PHASES_PASS` إلزامية. بوابة [44867014514](https://github.com/alwansan/CP/actions/runs/44867014514) in_progress عند التوثيق؛ النتيجة غير مثبتة بعد. الـAPK مستقل Lab وليس إنتاجياً.
+
+## Session98 — correct Android FrameMetrics stage API
+- First standalone phase-splitting run #44867014514 failed Kotlin compilation before reaching emulator due to nonexistent `FrameMetrics.GPU_COMMAND_DURATION`; artifact upload also failed because no package was built. Not an engine fault.
+- Patch `bebe7af3b0012c827d7a258ee4f37f9e3f649005` uses `GPU_DURATION` (API31) and preserves missing-value `-1` for input/layout/draw/sync/GPU. Stage P95 is `unavailable` when Android reports no supported samples; never represent missing metrics as 0ns. Frame total and original mandatory smoke/shift/pressure markers unchanged.
+- Follow-up #44871344400 in progress and **unverified** at this writing. Verify build/three Android tests/phase marker/release gate before reporting measured frame phases or a released test APK. No production app build/change. A/B physical ARM64 and original MkvExporter remains outstanding.
+
