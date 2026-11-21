@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Inspect 44857106920 44857106917 44857106969 44857107001; require CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS and ART security gates. Repair only Native-Compose if failure. Then actual ARM64/performance and original export engine evidence.",
+  "next": "Check 44857106920/44857106917/44857107001 and startup rerun 44857106969 attempt2. Require all gated successes and CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS; diagnose app versus infrastructure separately.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -2301,6 +2301,10 @@
       44857106917,
       44857106969,
       44857107001
-    ]
+    ],
+    "startup_gate_run": 44857106969,
+    "startup_gate_attempt": 2,
+    "startup_gate_attempt1_failure": "Robolectric android-all Maven dependency HTTP 404 before compile; rerun failed jobs",
+    "startup_gate_final_conclusion": "pending"
   }
 }

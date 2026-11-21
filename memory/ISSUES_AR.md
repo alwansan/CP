@@ -641,3 +641,5 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 | NC-KEY-94 | تم التحقق على محاكي API35 | CI 44855997685 SUCCESS؛ CP_REAL_OWNER_KEYS_SHIFT_PASS + rollback + new reader isolation |
 | NC-IPC-KEY-95 | بوابات CI قيد التنفيذ، لا نتيجة مثبتة بعد | Code `360fa13d141b0751f9d1ae6308d3dd7c6c5eff07`; four runs 44857106920/44857106917/44857106969/44857107001؛ real owner IPC fixture key shift without exposing raw IDs |
 | NC-PERF-ARM64 | مفتوح | لا دليل من هاتف ARM64 تحت ثلاث عمليات MkvExporter أصلية؛ محاكي x86 لا يكفي |
+
+| CI-DEP-95 | إعادة محاولة بنية تحتية | 44857106969 attempt1 HTTP 404 من repo.maven قبل أي compile؛ attempt2 in_progress بعد rerun-failed-jobs، لا دليل لتراجع التطبيق |

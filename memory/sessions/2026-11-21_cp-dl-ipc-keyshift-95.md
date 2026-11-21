@@ -14,3 +14,7 @@
 - Original owner read service/IPC messages unchanged. Test-only app and transfer tables must start empty, offline API35 emulator, cleanup deletes fixed identities and asserts counts 0/0.
 - Test function returns only opaque display key and position; raw DB identity remains native-only, not logged or emitted. Distinct reader lifetime remains intentionally nonstable, as tested in session94.
 - There is no implication of a final production installer or of zero UI contention.
+
+## CI attempt update (in session)
+- 44857106969 attempt1 failed: Android pinned Robolectric dependency download returned HTTP 404, curl exit22. This is prior to compilation/runtime and occurred only in startup workflow; companion integrated/IPC/renderer workflows passed the same pinned dependency step.
+- Called failed-jobs rerun successfully. Attempt2 in_progress at note checkpoint. No assertions removed or unverified fixes claimed.

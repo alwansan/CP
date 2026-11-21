@@ -620,3 +620,5 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 - أُغلقت بوابة Room/HMAC للدفعة94: 44855997685 SUCCESS و`CP_REAL_OWNER_KEYS_SHIFT_PASS`، على محاكي API35 فقط.
 - تحقق من بوابات IPC/ART/Compose 44857106920 و44857106917 و44857106969 و44857107001 على الشفرة `360fa13d141b0751f9d1ae6308d3dd7c6c5eff07`; في حال الفشل حلله وأصلحه على Native-Compose فقط. لا تعطل الاختبارات أو تمس المحرك/الواجهة الإنتاجية.
 - عند نجاحها، يمكن توسيع الاختبار لثبات مفاتيح Compose LazyColumn عبر إعادة ترتيب live visible rows، وقياس FrameMetrics على هاتف ARM64 تحت محرك MKV الأصلي وملفات المستخدم المحفوظة بلا مسح.
+
+- ملاحظة CI: 44857106969 attempt1 فشل قبل compile بسبب 404 في تنزيل Robolectric من Maven؛ إعادة تشغيل failed job قيد التنفيذ attempt2، لا تُضعف test gates. باقي workflows اجتازت مرحلة التنزيل نفسها.
