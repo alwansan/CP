@@ -633,3 +633,11 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 | NC-KEY-94 | اختبار جديد قيد التحقق | `a667ed445d489fc47f3f4fb68626a1fd9f82bf74`: نقل صف BINARY داخل Room rollback-only مع ثبات HMAC، اختبار isolation للقارئ الجديد؛ run 44855997685 pending في لحظة الكتابة، لا نجاح مفترض |
 | NC-CI-93 | مُغلق: نجاح البوابة المعلقة | run 44854644442 SUCCESS على 605ed9d؛ البوابة المدمجة و6 ملفات MKV اختبارية على x86 لا تبرهن ARM64 أو محرك التصدير الأصلي |
 | NC-PERF-ARM64 | مفتوح | وقت الاستجابة في محاكي أحد الاختبارات وصل 4578ms؛ لا يوجد قياس هاتف مع MkvExporter/Lease115/MuxSlotsDL الأصلي |
+
+
+## جلسة 95 — حالة الدليل 2026-11-21
+| ID | الحالة | الدليل |
+|---|---|---|
+| NC-KEY-94 | تم التحقق على محاكي API35 | CI 44855997685 SUCCESS؛ CP_REAL_OWNER_KEYS_SHIFT_PASS + rollback + new reader isolation |
+| NC-IPC-KEY-95 | بوابات CI قيد التنفيذ، لا نتيجة مثبتة بعد | Code `360fa13d141b0751f9d1ae6308d3dd7c6c5eff07`; four runs 44857106920/44857106917/44857106969/44857107001؛ real owner IPC fixture key shift without exposing raw IDs |
+| NC-PERF-ARM64 | مفتوح | لا دليل من هاتف ARM64 تحت ثلاث عمليات MkvExporter أصلية؛ محاكي x86 لا يكفي |

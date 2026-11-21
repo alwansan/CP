@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_original_room_keyshift_ci_pending",
-  "last_session": "memory/sessions/2026-11-21_cp-dl-room-keyshift-94.md",
+  "status": "native_compose_room_shift_success_ipc_shift_ci_pending",
+  "last_session": "memory/sessions/2026-11-21_cp-dl-ipc-keyshift-95.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify run 44855997685 and mandatory CP_REAL_OWNER_KEYS_SHIFT_PASS. Preserve rollback-only original Room fixture and ART/legacy renderer; then actual IPC shift and ARM64 pressure.",
+  "next": "Inspect 44857106920 44857106917 44857106969 44857107001; require CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS and ART security gates. Repair only Native-Compose if failure. Then actual ARM64/performance and original export engine evidence.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,10 +41,10 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "605ed9dffcbe0e1f35351d51d342d4efea9ffb76",
+  "last_verified_head": "a667ed445d489fc47f3f4fb68626a1fd9f82bf74",
   "branch_actions": {
     "total_count": null,
-    "latest_run_id": 44855997685,
+    "latest_run_id": 44857106920,
     "latest_status": "in_progress",
     "latest_conclusion": null
   },
@@ -2283,15 +2283,24 @@
     "status": "in_progress"
   },
   "native_compose_checkpoint": {
-    "session": 94,
+    "session": 95,
     "as_of": "2026-11-21",
     "tested_integrated_run": 44854644442,
     "tested_integrated_conclusion": "success",
     "tested_sha": "605ed9dffcbe0e1f35351d51d342d4efea9ffb76",
     "test_only_code_sha": "a667ed445d489fc47f3f4fb68626a1fd9f82bf74",
     "actual_room_shift_run": 44855997685,
-    "actual_room_shift_conclusion": "pending",
+    "actual_room_shift_conclusion": "success",
     "production_apk_created": false,
-    "original_exporter_arm64_verified": false
+    "original_exporter_arm64_verified": false,
+    "actual_room_shift_sha": "a667ed445d489fc47f3f4fb68626a1fd9f82bf74",
+    "ipc_shift_code_sha": "360fa13d141b0751f9d1ae6308d3dd7c6c5eff07",
+    "ipc_shift_integrated_run": 44857106920,
+    "ipc_shift_ci_conclusion": "pending",
+    "ipc_other_runs": [
+      44857106917,
+      44857106969,
+      44857107001
+    ]
   }
 }

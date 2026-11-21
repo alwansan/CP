@@ -170,3 +170,7 @@ Code 17d75a6f75782bda0e88dca616735f9ea0d26e74: production bundled assets/ffmpeg 
 
 ## جلسة 94 — التحقق من مفاتيح الصفوف عند تغير ترتيب Room
 انتهت متابعة الجلسة السابقة بنجاح integrated run 44854644442 على SHA 605ed9d. أُضيف اختبار Android أصلي محدود للـHMAC عبر `OwnerProbe.populated`: إدراج صف بترتيب BINARY أصغر داخل outer transaction لا يُسمح لها بالنجاح، مع ثبات مفتاح الصف الذي انتقل من position0 إلى position1 وثبات snapshot السابق وعزل قارئ جديد. يُلزم `run-runtime.sh` العلامة `CP_REAL_OWNER_KEYS_SHIFT_PASS`. الاختبار التابع لكود `a667ed445d489fc47f3f4fb68626a1fd9f82bf74` ورقم run 44855997685 قيد التنفيذ وقت التوثيق. لا يقوم بتشغيل طابور التنزيل أو MKV ولا يصل إلى ملفات المستخدم؛ ويظل IPC بعد reorder على جهاز/محاكي هدفاً منفصلاً.
+
+
+## جلسة 95 — ثبات HMAC عبر IPC الحقيقي
+بوابة Room السابقة [44855997685](https://github.com/alwansan/CP/actions/runs/44855997685) نجحت بعلامة CP_REAL_OWNER_KEYS_SHIFT_PASS. اختبار إضافي في `360fa13d141b0751f9d1ae6308d3dd7c6c5eff07`: private unexported UI probe يتصل بخدمة real-owner الموجودة ويقرأ صفحة محدودة، يعيد مفتاح 64-hex لعنصر تجريبي وحيد دون معرّفه الخام، ثم يضيف test fixture صفاً أصغر بترتيب BINARY، ويعيد IPC القراءة من عملية nativeui ويتحقق أن نفس المفتاح انتقل من index0 إلى1؛ التنظيف صريح ومحدّد. `run-runtime.sh` يجعل العلامة إلزامية. بوابات 44857106920 و44857106917 و44857106969 و44857107001 قيد التنفيذ وقت التوثيق؛ لا تُعد اختبار الهاتف أو FPS أو الوصول إلى محرك MKV الإنتاجي.
