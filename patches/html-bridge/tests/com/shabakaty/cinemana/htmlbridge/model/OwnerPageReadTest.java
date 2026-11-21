@@ -92,6 +92,32 @@ public final class OwnerPageReadTest {
         ok(reader.read(null).rows.get(0).displayKey.equals(target));
         ok(!new OwnerPageRead(f).read(null).rows.get(0).displayKey.equals(target));
         ok(!reader.read(null).rows.get(0).displayKey.contains("ep0002"));
+        // Verify no crypto initialization on constructor, invalid cursor,
+        // empty database or worker rejection. First nonempty read initializes
+        // one secret and subsequent page reads reuse the same reader secret.
+        java.lang.reflect.Field secret=OwnerPageRead.class.getDeclaredField("keySecret");
+        secret.setAccessible(true);
+        OwnerPageRead cold=new OwnerPageRead(new Fixture());
+        ok(secret.get(cold)==null);
+        Fixture denied=new Fixture();denied.denied=true;
+        cold=new OwnerPageRead(denied);
+        try{cold.read(null);throw new AssertionError("worker rejection");}
+        catch(IllegalStateException expected){ok(secret.get(cold)==null);}
+        cold=new OwnerPageRead(new Fixture());
+        try{cold.read("invalid cursor");throw new AssertionError("bad cursor");}
+        catch(IllegalArgumentException expected){ok(secret.get(cold)==null);}
+        Fixture empty=new Fixture();empty.all.clear();
+        cold=new OwnerPageRead(empty);
+        ok(cold.read(null).rows.isEmpty()&&secret.get(cold)==null);
+        cold=new OwnerPageRead(new Fixture());
+        OwnerPageRead.Page keyed=cold.read(null);
+        byte[] identity=(byte[])secret.get(cold);
+        ok(identity!=null&&identity.length==32);
+        ok(keyed.rows.size()==24);
+        ok(cold.read(null).rows.get(0).displayKey.equals(keyed.rows.get(0).displayKey));
+        ok(secret.get(cold)==identity);
+        ok(!new OwnerPageRead(new Fixture()).read(null).rows.get(0).displayKey.equals(keyed.rows.get(0).displayKey));
+        System.out.println("CP_OWNER_DISPLAY_KEYS_LAZY_PASS constructor=clean invalid=clean empty=clean page=24 stable=verified");
         System.out.println("CP_OWNER_DISPLAY_KEYS_PASS stable=verified shift=verified readerIsolation=verified");
         System.out.println("CP_OWNER_PAGE_READ_PASS assertions="+n+" syntheticRows=452 pages=19");
     }

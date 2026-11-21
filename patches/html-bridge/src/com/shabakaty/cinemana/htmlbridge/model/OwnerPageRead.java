@@ -42,15 +42,34 @@ public final class OwnerPageRead {
         }
     }
     private final Source source;
-    private final byte[] keySecret=new byte[32];
-    public OwnerPageRead(Source s){source=Objects.requireNonNull(s);new SecureRandom().nextBytes(keySecret);}
-    // Never persist or expose the salt, raw ID, cursor, transfer ID, or path.
-    // HMAC is keyed per reader lifetime; a process restart may reset UI keys.
-    private String displayKey(String id)throws Exception{
+    // Generated only for the first actual nonempty read on the owner worker:
+    // constructing the service/reader on Android's main thread never blocks on
+    // SecureRandom. No secret, raw ID or cursor crosses the private UI IPC.
+    private volatile byte[] keySecret;
+    public OwnerPageRead(Source s){source=Objects.requireNonNull(s);}
+    private Mac newPageMac()throws Exception{
+        byte[] secret=keySecret;
+        if(secret==null){
+            synchronized(this){
+                secret=keySecret;
+                if(secret==null){
+                    byte[] fresh=new byte[32];
+                    new SecureRandom().nextBytes(fresh);
+                    keySecret=secret=fresh;
+                }
+            }
+        }
+        // Each read owns one local Mac. Never share the mutable Mac between
+        // sessions/threads or create a crypto provider instance per item.
         Mac mac=Mac.getInstance("HmacSHA256");
-        mac.init(new SecretKeySpec(keySecret,"HmacSHA256"));
+        mac.init(new SecretKeySpec(secret,"HmacSHA256"));
+        return mac;
+    }
+    private static String displayKey(Mac mac,String id){
+        // JCA Mac.doFinal resets the instance to its initialized keyed state.
         byte[] bytes=mac.doFinal(id.getBytes(StandardCharsets.UTF_8));
-        char[] digits="0123456789abcdef".toCharArray();char[] out=new char[64];
+        char[] digits="0123456789abcdef".toCharArray();
+        char[] out=new char[64];
         for(int i=0;i<bytes.length;i++){int v=bytes[i]&255;out[2*i]=digits[v>>>4];out[2*i+1]=digits[v&15];}
         return new String(out);
     }
@@ -93,6 +112,8 @@ public final class OwnerPageRead {
             List<BoundedDownloadRead.AppRow> first=checked(source.page(nativeCursor),nativeCursor);
             List<Row> rows=new ArrayList<>();
             int n=Math.min(PAGE,first.size());
+            // One keyed Mac for at most 24 page rows, and none for empty pages.
+            Mac keyMac=n==0?null:newPageMac();
             LinkedHashSet<Integer> distinct=new LinkedHashSet<>();
             for(int i=0;i<n;i++)if(first.get(i).taskId!=0)distinct.add(first.get(i).taskId);
             Map<Integer,BoundedDownloadRead.TransferRow> batch=null;
@@ -107,7 +128,7 @@ public final class OwnerPageRead {
             for(int i=0;i<n;i++){
                 if(Thread.currentThread().isInterrupted())throw new InterruptedException();
                 BoundedDownloadRead.AppRow a=first.get(i);
-                String key=displayKey(a.id);
+                String key=displayKey(keyMac,a.id);
                 if(a.taskId==0){rows.add(unknown(i,BoundedDownloadRead.Result.NO_TRANSPORT_ROW,a.title,key));continue;}
                 try{
                     if(batchFailed){rows.add(unknown(i,BoundedDownloadRead.Result.UNAVAILABLE,a.title,key));continue;}
