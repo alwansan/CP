@@ -61,4 +61,70 @@ class OwnerRecompositionTest {
         assertTrue("removed rows must compose",empty>fresh)
         println("CP_COMPOSE_OWNER_RECOMPOSITION_PASS metadataUpdates=8 unchanged=$initial data=$changed stale=$stale fresh=$fresh empty=$empty")
     }
+
+    @Test fun keyedRowsKeepEpisodeProgressWhenAnEarlierRowArrives() {
+        // Same bounded presentation composable as the owner UI, but synthetic
+        // immutable IPC snapshots. A newly inserted earlier key must not take
+        // the existing row's progress or stale/fresh state.
+        val firstKey="a".repeat(64)
+        val secondKey="b".repeat(64)
+        val earlierKey="c".repeat(64)
+        val first=OwnerRow(0,25,100,"PROGRESS","OBSERVED","حلقة ألف",firstKey)
+        val second=OwnerRow(1,75,100,"PROGRESS","OBSERVED","حلقة باء",secondKey)
+        val state=mutableStateOf(OwnerScreen("observed",501,1,listOf(first,second),false,false,1))
+        val read:()->OwnerScreen={state.value}
+        rule.setContent {
+            MaterialTheme {
+                OwnerReadRows(read,true,true,Modifier.fillMaxSize())
+            }
+        }
+        rule.onNodeWithText("حلقة ألف").assertIsDisplayed()
+        rule.onNodeWithText("حلقة باء").assertIsDisplayed()
+        rule.onNodeWithText("25%").assertIsDisplayed()
+        rule.onNodeWithText("75%").assertIsDisplayed()
+        val oldTop=rule.onNodeWithText("حلقة ألف").fetchSemanticsNode().boundsInRoot.top
+        val originalKey=rule.runOnIdle { state.value.rows.first().displayKey }
+        assertEquals(firstKey,originalKey)
+
+        val earlier=OwnerRow(0,-1,-1,"UNKNOWN","NO_TRANSPORT_ROW","حلقة جديدة",earlierKey)
+        rule.runOnIdle {
+            state.value=state.value.copy(
+                rows=listOf(earlier,first.copy(index=1),second.copy(index=2)),
+                responseSerial=2
+            )
+        }
+        rule.onNodeWithText("حلقة جديدة").assertIsDisplayed()
+        rule.onNodeWithText("حالة النقل غير متاحة").assertIsDisplayed()
+        rule.onNodeWithText("حلقة ألف").assertIsDisplayed()
+        rule.onNodeWithText("حلقة باء").assertIsDisplayed()
+        rule.onNodeWithText("25%").assertIsDisplayed()
+        rule.onNodeWithText("75%").assertIsDisplayed()
+        val shifted=rule.runOnIdle { state.value.rows }
+        assertEquals(listOf(earlierKey,firstKey,secondKey),shifted.map { it.displayKey })
+        assertEquals(listOf(0,1,2),shifted.map { it.index })
+        val insertedTop=rule.onNodeWithText("حلقة جديدة").fetchSemanticsNode().boundsInRoot.top
+        val movedTop=rule.onNodeWithText("حلقة ألف").fetchSemanticsNode().boundsInRoot.top
+        assertTrue("new row must render above the preserved first item",insertedTop<movedTop)
+        assertTrue("old row position must move down",movedTop>oldTop)
+
+        // A changed owner snapshot must not continue showing old progress as
+        // current, even when the serialized keys remain identical.
+        rule.runOnIdle { state.value=state.value.copy(state="changed",responseSerial=3) }
+        rule.onAllNodesWithText("بيانات سابقة").assertCountEquals(3)
+        rule.onNodeWithText("25%").assertDoesNotExist()
+        rule.onNodeWithText("75%").assertDoesNotExist()
+        rule.runOnIdle { state.value=state.value.copy(state="observed",responseSerial=4) }
+        rule.onNodeWithText("25%").assertIsDisplayed()
+        rule.onNodeWithText("75%").assertIsDisplayed()
+        rule.runOnIdle {
+            state.value=state.value.copy(
+                rows=listOf(first,second),responseSerial=5
+            )
+        }
+        rule.onNodeWithText("حلقة جديدة").assertDoesNotExist()
+        rule.onNodeWithText("حلقة ألف").assertIsDisplayed()
+        rule.onNodeWithText("25%").assertIsDisplayed()
+        println("CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS rows=2,3,2 stable=verified progress=25,75 stale=hidden removed=verified")
+    }
+
 }
