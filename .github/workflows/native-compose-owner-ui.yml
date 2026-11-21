@@ -6,7 +6,8 @@ on:
       - '.github/workflows/native-compose-owner-ui.yml'
       - 'patches/compose-lab/app/src/main/java/com/alwansan/cinemana/composelab/OwnerReadPanel.kt'
       - 'patches/compose-lab/app/src/main/java/com/alwansan/cinemana/composelab/LabOwnerClient.kt'
-    # Session 91: second sequential remux group exercising visible Arabic presentation.
+      - 'patches/html-bridge/src/com/shabakaty/cinemana/htmlbridge/model/OwnerPageRead.java'
+    # Session 93: verify lazy HMAC page hashing through the signed original APK and combined pressure.
   workflow_dispatch:
 permissions:
   contents: read
