@@ -622,3 +622,9 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 - عند نجاحها، يمكن توسيع الاختبار لثبات مفاتيح Compose LazyColumn عبر إعادة ترتيب live visible rows، وقياس FrameMetrics على هاتف ARM64 تحت محرك MKV الأصلي وملفات المستخدم المحفوظة بلا مسح.
 
 - ملاحظة CI: 44857106969 attempt1 فشل قبل compile بسبب 404 في تنزيل Robolectric من Maven؛ إعادة تشغيل failed job قيد التنفيذ attempt2، لا تُضعف test gates. باقي workflows اجتازت مرحلة التنزيل نفسها.
+
+
+## خطة بعد جلسة96 (21 نوفمبر 2026)
+1. أغلق نتائج جلسة95: 44857106920/44857106917/44857106969 attempt2/44857107001 كلها SUCCESS. `CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS` مثبت فعلياً عبر IPC في emulator.
+2. افحص [44861465616](https://github.com/alwansan/CP/actions/runs/44861465616) على `7cf5103e947dc45a9d6ced0f40405f6992c0c333`: يجب نجاح ثلاث حالات اختبار Android والعلامة الجديدة دون تعطيل العلامات السابقة؛ وافحص asset/release قبل أي توصية بتثبيت Lab.
+3. بعد النجاح، غطّ انتقال الصف في واجهة Compose المتصلة بالـIPC الفعلي ثم اختبر ضغط MkvExporter/Lease115/MuxSlotsDL الحقيقي على ARM64 بقياسات FrameMetrics/idling. لا تمسّ بيانات المستخدم أو startup الإنتاجي أو الطابور الأصلي.

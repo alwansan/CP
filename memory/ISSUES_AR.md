@@ -643,3 +643,12 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 | NC-PERF-ARM64 | مفتوح | لا دليل من هاتف ARM64 تحت ثلاث عمليات MkvExporter أصلية؛ محاكي x86 لا يكفي |
 
 | CI-DEP-95 | إعادة محاولة بنية تحتية | 44857106969 attempt1 HTTP 404 من repo.maven قبل أي compile؛ attempt2 in_progress بعد rerun-failed-jobs، لا دليل لتراجع التطبيق |
+
+
+## جلسة96 — حالات التحقق
+| ID | الحالة | الدليل |
+|---|---|---|
+| NC-IPC-KEY-95 | تم التحقق على محاكي x86 API35 | Integrated 44857106920 SUCCESS وCP_REAL_OWNER_IPC_KEYS_SHIFT_PASS؛ بقية IPC/startup/renderer SUCCESS |
+| CI-DEP-95 | أُغلق بالنجاح بعد إعادة محاولة | Startup 44857106969 attempt1 اعتماده Maven HTTP404، attempt2 SUCCESS بدون تغيير الاختبار |
+| NC-COMPOSE-KEY-96 | قيد التحقق، لا claim نجاح | Commit `7cf5103e947dc45a9d6ced0f40405f6992c0c333`، run 44861465616 in_progress؛ فحص استقرار 25/75 وfreshness والقائمة بعد reorder |
+| NC-PERF-ARM64 | مفتوح | لا قياس هاتف فعلي مع محرك Cinemana الأصلي والثلاث MKV slots |

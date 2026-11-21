@@ -1,15 +1,13 @@
 <!-- CP-DL-CURRENT-START -->
-# أحدث استعادة — CP-DL / Native-Compose — جلسة 95 (21 نوفمبر 2026)
+# أحدث استعادة — CP-DL / Native-Compose — جلسة 96 (21 نوفمبر 2026)
 
-**الهوية CP-DL؛ فرع الكتابة الوحيد Native-Compose في alwansan/CP**. Html وmain وسائر الفروع وCL للقراءة فقط. لا تعديل للمحرك الأصلي أو التوقيع أو الحساب أو PATCH274 أو B1b3-12 أو الثلاثة MKV slots أو Lease115 أو الـlauncher أو البيانات الحقيقية.
+**ابدأ من هنا.** الهوية CP-DL؛ المستودع `alwansan/CP`؛ فرع الكتابة الوحيد **Native-Compose**. الفروع الأخرى وCL للقراءة فقط. لا تغيير للمحرك الأصلي، الحساب، التوقيع، PATCH274/B1b3-12، 3 MKV slots، Lease115، بيانات المستخدم أو launcher الإنتاجي. لا force-push.
 
-- **رأس شفرة الجلسة95:** `360fa13d141b0751f9d1ae6308d3dd7c6c5eff07`، تحقّق من HEAD الحي دوماً. لا تخلط commits الذاكرة مع commit الشفرة. **الجلسة94 نجحت فعلياً:** run [44855997685](https://github.com/alwansan/CP/actions/runs/44855997685) SUCCESS على `a667ed445d489fc47f3f4fb68626a1fd9f82bf74`; ظهر `CP_REAL_OWNER_KEYS_SHIFT_PASS rows=49 shiftedIndex=1 stable=verified readerIsolation=verified rollback=verified` مع `INSTRUMENTATION_CODE: -1`. اختبار Android Room أصلي ولكن بياناته rollback-only على محاكي API35.
-- **الجلسة95:** اختبار جديد لثبات مفتاح HMAC أثناء انتقال الصف **عبر IPC فعلي بين owner وnativeui**. يستخدم `UiIpcProbeProvider` الخاص وغير المصدّر لأخذ مفتاح عرض عنصر تجريبي (دون المعرّف الخام)، ثم `GateInstrumentation.UiFixture` لإدخال صف 000 سابق في ترتيب BINARY داخل emulator offline والتأكد من انتقال العنصر من index0 إلى index1 وبقاء المفتاح. تنظيف transaction حذف صارم لمفاتيح الاختبار لا حذف شامل. العلامة الإلزامية `CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS rows=4,5 index=0,1 stable=verified cleanup=verified`.
-- **التحقق الجديد قيد التنفيذ لا تدّع نجاحه:** real owner UI [44857106920](https://github.com/alwansan/CP/actions/runs/44857106920)، private IPC [44857106917](https://github.com/alwansan/CP/actions/runs/44857106917)، startup [44857106969](https://github.com/alwansan/CP/actions/runs/44857106969)، renderer [44857107001](https://github.com/alwansan/CP/actions/runs/44857107001). افحص البوابات الأربع، ولا تكرر التشغيل أثناء in-flight. أصلح الفشل في Native-Compose فقط من السجل الفعلي، دون تخفيف شروط ART أو العلامة الإلزامية.
-- **الحدود:** لا إثبات لهاتف ARM64 أو لمحرك MkvExporter/Lease115/MuxSlotsDL الحقيقي تحت ثلاثة تحويلات؛ x86 remux اختبار مستقل. أداء الضغط في المحاكي متقلب (وصل أحد القياسات السابقة 4578ms). Compose Lab #20 حزمة تجريبية منفصلة لا APK الإنتاج.
-- **ملفات الاستعادة:** `memory/sessions/2026-11-21_cp-dl-ipc-keyshift-95.md` ثم MEMORY/STATE/PLAN/ISSUES وNATIVE_COMPOSE_MASTER_AR.md. أعد تحديث هذا الرأس وملفات الذاكرة بعد CI. المهمة المجدولة القديمة معطّلة؛ لا تفعّلها دون طلب.
-
-- **محاولة CI للبداية:** run 44857106969 attempt1 فشل قبل الترجمة بسبب HTTP 404 في تنزيل Robolectric من Maven Central. أُعيد تشغيل الوظيفة الفاشلة فقط، attempt2 كان in_progress؛ بقية البوابات اجتازت اعتماد Maven نفسه. لا تغير شروط الاختبار ولا تنسب الخطأ للكود قبل الدليل.
+- **HEAD لدفعة الشفرة الجديدة:** `7cf5103e947dc45a9d6ced0f40405f6992c0c333`؛ تحقق من HEAD الحي قبل العمل. جلسة95 code `360fa13d141b0751f9d1ae6308d3dd7c6c5eff07` نجحت جميع بواباتها الأربع: real owner UI [44857106920](https://github.com/alwansan/CP/actions/runs/44857106920) SUCCESS، IPC [44857106917](https://github.com/alwansan/CP/actions/runs/44857106917) SUCCESS، startup [44857106969](https://github.com/alwansan/CP/actions/runs/44857106969) SUCCESS في attempt2 بعد 404 Maven attempt1، renderer [44857107001](https://github.com/alwansan/CP/actions/runs/44857107001) SUCCESS. تأكدت من ظهور `CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS rows=4,5 index=0,1 stable=verified cleanup=verified` و`INSTRUMENTATION_CODE: -1`. كانت تجربة محاكي API35 x86 وليس هاتف ARM64.
+- **الجلسة96 / Compose:** اختبار Android UI جديد `keyedRowsKeepEpisodeProgressWhenAnEarlierRowArrives` داخل `OwnerRecompositionTest.kt` على `OwnerReadRows` الحقيقي بمشاهدات synthetic: صفان بمفتاحين ثابتين ونسب 25/75، إدراج صف سابق بموضع أول، بقاء النسب مرتبطة بعناوينها، ثبات المفاتيح بترتيب 2→3→2، إخفاء نسب التقدم عندما تصبح الحالة changed، ثم استعادة refreshed وإزالة الصف. أضيف شرط `CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS rows=2,3,2 stable=verified progress=25,75 stale=hidden removed=verified` مع عدد اختبارات Android المتوقع 3 بدل2 في `patches/compose-lab/run-android-test.sh`.
+- **نتيجة اختبار الجلسة96 معلّقة:** [44861465616](https://github.com/alwansan/CP/actions/runs/44861465616) كان **in_progress** عند التوثيق. لا تدّع نجاحه أو نشر Lab APK جديد حتى يتحقق فعلياً. إذا فشل، راجع logs وأصلحه دون تجاوز اختبار أو لمس المحرك.
+- **الأداء المفتوح:** جلسة95 idle local median360/max1575ms، pressure median547/max667ms عبر المحاكي؛ ليس قياس FPS ولا وصولاً لهاتف ARM64 أو تنفيذ MkvExporter/Lease115/MuxSlotsDL الإنتاجي. X86 remux اختباري فقط، ولا يجوز التعميم بلا اختبارات هاتف. آخر Compose Lab #20 تجريبي مستقل ليس بديل Cinemana الإنتاجي.
+- **وثائق الاستعادة:** `memory/sessions/2026-11-21_cp-dl-compose-keyed-rows-96.md`، MEMORY/STATE/PLAN/ISSUES وNATIVE_COMPOSE_MASTER_AR.md. حدّث هذه الوثائق بعد فحص CI. المهمة المجدولة القديمة معطلة؛ لا تعيد تشغيلها تلقائياً.
 
 <!-- CP-DL-CURRENT-END -->
 
@@ -580,3 +578,7 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 
 ## جلسة 95 — ملاحظة استئناف
 مراجعة نتائج Actions 44857106920/44857106917/44857106969/44857107001 لازمة؛ جميعها كانت in_progress عند كتابة session95، والتفاصيل في memory/sessions/2026-11-21_cp-dl-ipc-keyshift-95.md.
+
+
+## جلسة 96 — متابعة Android Compose
+مرجع memory/sessions/2026-11-21_cp-dl-compose-keyed-rows-96.md؛ CI #44861465616 in_progress في وقت التسجيل. جلسة95 جميع البوابات الأربع SUCCESS.
