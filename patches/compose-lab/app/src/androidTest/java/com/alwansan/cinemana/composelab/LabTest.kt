@@ -29,10 +29,21 @@ class LabTest {
     }
     private fun measure(label: String) {
         val worker = HandlerThread("compose-frame-metrics").apply { start() }
-        val durations = Collections.synchronizedList(mutableListOf<Long>())
+        // Each frame's total and stages share one sample, collected off UI
+        // thread. Stage metrics are diagnostic (not a physical FPS guarantee).
+        val samples = Collections.synchronizedList(mutableListOf<LongArray>())
         val listener = Window.OnFrameMetricsAvailableListener { _, metrics, _ ->
-            val value = metrics.getMetric(FrameMetrics.TOTAL_DURATION)
-            if (value > 0 && durations.size < 4096) durations.add(value)
+            val total = metrics.getMetric(FrameMetrics.TOTAL_DURATION)
+            if (total > 0 && samples.size < 4096) {
+                samples.add(longArrayOf(
+                    total,
+                    metrics.getMetric(FrameMetrics.INPUT_HANDLING_DURATION).coerceAtLeast(0),
+                    metrics.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION).coerceAtLeast(0),
+                    metrics.getMetric(FrameMetrics.DRAW_DURATION).coerceAtLeast(0),
+                    metrics.getMetric(FrameMetrics.SYNC_DURATION).coerceAtLeast(0),
+                    metrics.getMetric(FrameMetrics.GPU_COMMAND_DURATION).coerceAtLeast(0)
+                ))
+            }
         }
         rule.runOnIdle { rule.activity.window.addOnFrameMetricsAvailableListener(listener, Handler(worker.looper)) }
         val callbacks = mutableListOf<Long>()
@@ -48,11 +59,16 @@ class LabTest {
             rule.runOnIdle { rule.activity.window.removeOnFrameMetricsAvailableListener(listener) }
             worker.quitSafely(); worker.join(3000)
         }
-        val frames = synchronized(durations) { durations.sorted() }
+        val frames = synchronized(samples) { samples.toList() }
         check(frames.size >= 10) { "insufficient frame samples" }
-        val p95 = frames[(kotlin.math.ceil(frames.size*.95).toInt()-1).coerceAtLeast(0)]
-        val p99 = frames[(kotlin.math.ceil(frames.size*.99).toInt()-1).coerceAtLeast(0)]
-        println("$label frames=${frames.size} durationP95Ns=$p95 durationP99Ns=$p99 over16_67ms=${frames.count { it > 16666667 }} callbackP95Ms=${callbacks.sorted()[23]}")
+        fun percentile(index: Int, p: Double): Long {
+            val sorted = frames.map { it[index] }.sorted()
+            return sorted[(kotlin.math.ceil(sorted.size*p).toInt()-1).coerceAtLeast(0)]
+        }
+        println("$label frames=${frames.size} durationP95Ns=${percentile(0,.95)} durationP99Ns=${percentile(0,.99)} " +
+            "over16_67ms=${frames.count { it[0] > 16666667 }} callbackP95Ms=${callbacks.sorted()[23]} " +
+            "inputP95Ns=${percentile(1,.95)} layoutP95Ns=${percentile(2,.95)} " +
+            "drawP95Ns=${percentile(3,.95)} syncP95Ns=${percentile(4,.95)} gpuP95Ns=${percentile(5,.95)}")
     }
     // Keep a service binding alive during the timed-out read so the same owner process
     // receives a replacement client while the old ticket is still physically running.
@@ -308,6 +324,7 @@ class LabTest {
             assertTrue(worker > 0 && worker != android.os.Process.myPid())
             val started = SystemClock.elapsedRealtime()
             measure("CP_COMPOSE_LOAD")
+            println("CP_COMPOSE_FRAME_PHASES_PASS metrics=input,layout,draw,sync,gpu stages=idle,load")
             assertEquals(worker, pid())
             assertTrue(SystemClock.elapsedRealtime() - started < 40000)
             println("CP_COMPOSE_LAB_PASS workerPid=$worker uiPid=${android.os.Process.myPid()}")

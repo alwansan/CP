@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
@@ -75,11 +76,15 @@ private fun LabShell(foreground: Boolean) {
             var cursor = 0
             while (true) {
                 delay(200)
-                // 64 synthetic in-memory updates only; no IO, no engine or IPC.
-                repeat(64) { offset ->
-                    val index = (cursor + offset) % TOTAL
-                    val s = progress[index]
-                    s.intValue = (s.intValue + 3) % 101
+                // Commit all 64 synthetic in-memory changes as one atomic
+                // Compose snapshot. No intermediate visible progress state,
+                // no IO, engine, file or IPC work on the UI thread.
+                Snapshot.withMutableSnapshot {
+                    repeat(64) { offset ->
+                        val index = (cursor + offset) % TOTAL
+                        val s = progress[index]
+                        s.intValue = (s.intValue + 3) % 101
+                    }
                 }
                 cursor = (cursor + 64) % TOTAL
             }

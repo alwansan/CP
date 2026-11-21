@@ -22,6 +22,7 @@ grep -F 'CP_OWNER_FIXTURE_DELAY_END' "$OUT/owner-fixture.txt"
 grep -F 'CP_COMPOSE_LAB_PASS' "$OUT/android-metrics.txt"
 grep -F 'CP_COMPOSE_IDLE' "$OUT/android-metrics.txt"
 grep -F 'CP_COMPOSE_LOAD' "$OUT/android-metrics.txt"
+grep -F 'CP_COMPOSE_FRAME_PHASES_PASS metrics=input,layout,draw,sync,gpu stages=idle,load' "$OUT/android-metrics.txt"
 grep -Fx 'INSTRUMENTATION_CODE: -1' "$OUT/android-test.txt"
 grep -F 'OK (3 tests)' "$OUT/android-test.txt"
 if grep -Eq 'FAILURES!!!|INSTRUMENTATION_FAILED|INSTRUMENTATION_ABORTED' "$OUT/android-test.txt"; then exit 1; fi
