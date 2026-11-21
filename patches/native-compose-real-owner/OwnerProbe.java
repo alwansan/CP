@@ -66,6 +66,35 @@ public final class OwnerProbe extends Instrumentation {
                 after=raw.get(count-1).id;seen+=count;
             }
             require(seen==49&&source.page(after).isEmpty(),"page termination");
+            // Validate real Room keyset movement while remaining inside the
+            // original rollback-only outer transaction. No committed rows.
+            OwnerPageRead.Page beforeShift=reader.read(null);
+            require(beforeShift.status==OwnerPageRead.Status.OBSERVED&&beforeShift.rows.size()==24,
+                "pre-shift real Room page");
+            String originalKey=beforeShift.rows.get(0).displayKey;
+            require(originalKey.matches("[0-9a-f]{64}"),"opaque real Room display key");
+            Object earlier=item.getConstructor().newInstance();
+            item.getField("id").set(earlier,fixtureId(0));
+            item.getField("title").set(earlier,"CP disposable earlier key");
+            item.getField("downloadTaskId").setInt(earlier,0);
+            item.getField("collectionID").setInt(earlier,0);
+            item.getField("path").set(earlier,"");
+            item.getField("qualityName").set(earlier,"fixture");
+            ((Callable<?>)insert.newInstance(dao,earlier)).call();
+            OwnerPageRead.Page afterShift=reader.read(null);
+            require(afterShift.status==OwnerPageRead.Status.OBSERVED&&afterShift.rows.size()==24&&afterShift.hasMore,
+                "post-shift real Room page");
+            require(afterShift.rows.get(1).displayKey.equals(originalKey),
+                "same real Room row changed opaque identity after insertion");
+            require(!afterShift.rows.get(0).displayKey.equals(originalKey),
+                "newly inserted row reused another identity");
+            require(beforeShift.rows.get(0).displayKey.equals(originalKey),
+                "previous immutable page was mutated");
+            OwnerPageRead.Page anotherLifetime=new OwnerPageRead(source).read(null);
+            require(anotherLifetime.status==OwnerPageRead.Status.OBSERVED&&
+                anotherLifetime.rows.size()==24&&
+                !anotherLifetime.rows.get(1).displayKey.equals(originalKey),
+                "reader-lifetime keys were not isolated");
         } finally {
             // Never call Room.setTransactionSuccessful (vt3.n) for the outer transaction.
             end.invoke(room);
@@ -226,6 +255,7 @@ public final class OwnerProbe extends Instrumentation {
             String marker="CP_REAL_OWNER_ROOM_READ_PASS pid="+android.os.Process.myPid()+" raw="+raw.size()+" first="+first.rows.size()+" second="+second.rows.size()+" main_thread_blocked=1\n";
             if(fixture){
                 populated(app,source);
+                marker+="CP_REAL_OWNER_KEYS_SHIFT_PASS rows=49 shiftedIndex=1 stable=verified readerIsolation=verified rollback=verified\n";
                 transferFixture(app,source);
                 marker+="CP_REAL_OWNER_TRANSFER_BATCH_PASS tasks=24 limitPerTask=2 thirdDuplicate=isolated rollback=verified\n";
                 marker+="CP_REAL_OWNER_TASK_COLLISION_PASS limit=2 conflict=1 rollback=verified\n";
