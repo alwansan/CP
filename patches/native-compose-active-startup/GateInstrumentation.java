@@ -907,6 +907,35 @@ public final class GateInstrumentation extends Instrumentation {
                 } finally {shift.cleanup();}
                 markerResult+="CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS rows=4,5 index=0,1 stable=verified cleanup=verified\n";
             }
+            if(ownerUi&&populatedUi){
+                setStage("real-owner-compose-keyset-shift");
+                // Android 15 offline emulator only. This is a separate,
+                // scoped real owner Room fixture, never a production dataset.
+                UiFixture visibleShift=new UiFixture(ctx);
+                try{
+                    visibleShift.seed();
+                    Intent screen=new Intent().setClassName(PKG,"com.alwansan.cinemana.composelab.NativeUiProbeActivity")
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("cp_real_owner",true);
+                    ctx.startActivity(screen);
+                    find("CP_REAL_OWNER_UI_OBSERVED",45000).recycle();
+                    find("Reply: 1",15000).recycle();
+                    find("صفحة 1 · 4 عنصر",15000).recycle();
+                    find("عنصر 1 · 250/1000 · PROGRESS · OBSERVED",15000).recycle();
+                    visibleShift.addEarlier();
+                    clickText("تحديث");
+                    find("Reply: 2",15000).recycle();
+                    find("صفحة 1 · 5 عنصر",15000).recycle();
+                    find("عنصر 1 · -1/-1 · UNKNOWN · NO_TRANSPORT_ROW",15000).recycle();
+                    find("عنصر 2 · 250/1000 · PROGRESS · OBSERVED",15000).recycle();
+                    find("عنصر 3 · 1000/1000 · COMPLETED · OBSERVED",15000).recycle();
+                    requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+                } finally {visibleShift.cleanup();}
+                clickText("تحديث");
+                find("Reply: 3",15000).recycle();
+                find("صفحة 1 · 0 عنصر",15000).recycle();
+                find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
+                markerResult+="CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS rows=4,5,0 index=0,1 progress=250 cleanup=verified\n";
+            }
             result.putString("stream",markerResult);
             finish(Activity.RESULT_OK,result);
         } catch(Throwable t){diagnose();Log.e(TAG,"Gate failed",t);result.putString("stream","CP_NATIVEUI_FACTORY_IN_PACKAGE_FAIL "+android.util.Log.getStackTraceString(t));finish(Activity.RESULT_CANCELED,result);}

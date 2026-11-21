@@ -50,6 +50,7 @@ if [[ "${CP_REAL_OWNER_UI_GATE:-0}" == 1 ]]; then
     grep -F 'CP_REAL_OWNER_COMPOSE_UI_PASS owner=' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_COMPOSE_POPULATED_PASS rows=4 progress=250,750 collision=1 missing=1 cleanup=verified serial=5' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS rows=4,5 index=0,1 stable=verified cleanup=verified' "$OUT/report/compose-owner-ui.txt"
+    grep -F 'CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS rows=4,5,0 index=0,1 progress=250 cleanup=verified' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_PRESSURE_IDLE ' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_PRESSURE_LOAD ' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_PRESSURE_PASS rows=452 page=24 actions=16 cleanup=verified serial=23' "$OUT/report/compose-owner-ui.txt"
