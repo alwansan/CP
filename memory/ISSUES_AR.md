@@ -652,3 +652,5 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 | CI-DEP-95 | أُغلق بالنجاح بعد إعادة محاولة | Startup 44857106969 attempt1 اعتماده Maven HTTP404، attempt2 SUCCESS بدون تغيير الاختبار |
 | NC-COMPOSE-KEY-96 | قيد التحقق، لا claim نجاح | Commit `7cf5103e947dc45a9d6ced0f40405f6992c0c333`، run 44861465616 in_progress؛ فحص استقرار 25/75 وfreshness والقائمة بعد reorder |
 | NC-PERF-ARM64 | مفتوح | لا قياس هاتف فعلي مع محرك Cinemana الأصلي والثلاث MKV slots |
+
+| NC-REAL-COMPOSE-SHIFT-96 | قيد التحقق | commit `7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3` مع native UI real IPC/Room disposable fixture: initial 4, shift to5, final0; CI 44861616320 pending، اختبارات الحماية الأخرى pending |

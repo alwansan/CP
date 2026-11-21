@@ -178,3 +178,7 @@ Code 17d75a6f75782bda0e88dca616735f9ea0d26e74: production bundled assets/ffmpeg 
 
 ## جلسة96 — تأكيد IPC وتغطية قائمة Compose الفعلية
 جلسة95 verified four Action gates: 44857106920/44857106917/44857106969 attempt2/44857107001 SUCCESS؛ ثبت اتصال العملية الأصلية بالواجهة مع ثبات مفتاح HMAC عندما ينتقل الصف. التعديل الجديد `7cf5103e947dc45a9d6ced0f40405f6992c0c333` يضيف Android instrumentation على `OwnerReadRows` لانتقال الصف بعد إدراج سابق و25/75 والبيانات القديمة وإعادة التحديث وإزالة الصف؛ يحتفظ بالمفاتيح المعماة ولا يضيف منطق محرك أو حمل DB. يُلزم `run-android-test.sh` العلامة الجديدة وثلاث حالات اختبار. Run 44861465616 قيد التنفيذ وقت الكتابة، ولا يثبت سرعة هاتف ARM64 أو محرك التحويل الأصلي.
+
+
+### اختبار مرئي أصلي إضافي — جلسة96
+أضيف اختبار `CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS` داخل GateInstrumentation للسلوك المرئي على التطبيق الأصلي: row1 250/1000 ثم إدخال صف 000 سابق في owner Room، وبعد refresh تتقدم الهوية القديمة إلى row2 مع بقاء progress صحيح، والصف الأول UNKNOWN ولا يكتسب تقدم غيره، ثم تنظيف scoped بالكامل. Code `7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3`؛ integrated run 44861616320 وstartup/IPC/renderer أخرى queued عند التوثيق، ولم يُدّع نجاحها. اختبارات الجهاز الحقيقي تحت الـMKV exporter الأصلي مفتوحة.

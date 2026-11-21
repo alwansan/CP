@@ -9,6 +9,8 @@
 - **الأداء المفتوح:** جلسة95 idle local median360/max1575ms، pressure median547/max667ms عبر المحاكي؛ ليس قياس FPS ولا وصولاً لهاتف ARM64 أو تنفيذ MkvExporter/Lease115/MuxSlotsDL الإنتاجي. X86 remux اختباري فقط، ولا يجوز التعميم بلا اختبارات هاتف. آخر Compose Lab #20 تجريبي مستقل ليس بديل Cinemana الإنتاجي.
 - **وثائق الاستعادة:** `memory/sessions/2026-11-21_cp-dl-compose-keyed-rows-96.md`، MEMORY/STATE/PLAN/ISSUES وNATIVE_COMPOSE_MASTER_AR.md. حدّث هذه الوثائق بعد فحص CI. المهمة المجدولة القديمة معطلة؛ لا تعيد تشغيلها تلقائياً.
 
+- **دفعة96 الثانية:** commit `7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3` يختبر العرض الفعلي عبر العملية `:nativeui` وقاعدة Room الأصلية عند انتقال عنصر 0→1، ويشترط العلامة `CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS`. بوابات Actions 44861616320/44861616324/44861616385/44861616355 بدأت وكانت queued عند التسجيل. **لا تدّع النجاح قبل فحص النتائج**؛ مختبر Compose #44861465616 أيضاً in_progress.
+
 <!-- CP-DL-CURRENT-END -->
 
 ---

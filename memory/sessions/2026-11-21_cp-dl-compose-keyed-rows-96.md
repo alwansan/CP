@@ -12,3 +12,10 @@
 - Only `Native-Compose` modified. Source branch, Html, main and CL read-only.
 - Production signing, APKTool originals, Room, account, 3 MKV slots, Lease115, UI launcher, and user data untouched.
 - Tests use synthetic immutable snapshots; no unverified production installer released, no real phone performance claim.
+
+
+### جلسة 96 — دفعة كود ثانية: عرض Compose الحقيقي بعد إدراج صف في Room
+- New code `7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3` in `patches/native-compose-active-startup/GateInstrumentation.java` and `patches/native-compose-owner-ipc/run-runtime.sh`.
+- Disposable offline API35 original app / true `:nativeui` Compose owner panel: seed four original Room app + transfer test rows, open private UI over Messenger, wait first page 4 and 250/1000, insert a strictly scoped earlier row (taskId0); tap refresh and require page5 with unknown first + original progress row now index1 + completed row correct; cleanup scoped original rows, refresh must show zero. Mandatory `CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS rows=4,5,0 index=0,1 progress=250 cleanup=verified`. This asserts actual user-visible contents and index shift, not merely service HMAC.
+- Same-package test code remains private and opt-in; no production launcher/engine/DB schema changes or APK release.
+- New four CI gates [44861616320](https://github.com/alwansan/CP/actions/runs/44861616320) (integrated), 44861616324 IPC, 44861616385 startup, 44861616355 renderer were queued at documentation checkpoint. **No verified PASS yet**. Standalone Compose Lab #44861465616 also in_progress.

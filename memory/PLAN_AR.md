@@ -628,3 +628,5 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 1. أغلق نتائج جلسة95: 44857106920/44857106917/44857106969 attempt2/44857107001 كلها SUCCESS. `CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS` مثبت فعلياً عبر IPC في emulator.
 2. افحص [44861465616](https://github.com/alwansan/CP/actions/runs/44861465616) على `7cf5103e947dc45a9d6ced0f40405f6992c0c333`: يجب نجاح ثلاث حالات اختبار Android والعلامة الجديدة دون تعطيل العلامات السابقة؛ وافحص asset/release قبل أي توصية بتثبيت Lab.
 3. بعد النجاح، غطّ انتقال الصف في واجهة Compose المتصلة بالـIPC الفعلي ثم اختبر ضغط MkvExporter/Lease115/MuxSlotsDL الحقيقي على ARM64 بقياسات FrameMetrics/idling. لا تمسّ بيانات المستخدم أو startup الإنتاجي أو الطابور الأصلي.
+
+- دفعة ثانية: تحقق من original same-package Compose UI بعد ترتيب عنصر عبر Room على 44861616320 ورفاقه 44861616324/44861616385/44861616355، مع `CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS` وrollback cleanup. لا تتجاوز اختبارات ART أو الحماية، ولا تعتبر queued نجاحاً.

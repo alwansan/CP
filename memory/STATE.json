@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_ipc_shift_verified_compose_keyed_regression_pending",
+  "status": "native_compose_lab_keyshift_and_real_ui_keyshift_ci_pending",
   "last_session": "memory/sessions/2026-11-21_cp-dl-compose-keyed-rows-96.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify Compose Lab 44861465616 mandatory CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS, three Android tests, and preview release if success. If failure repair Native-Compose only. Then real IPC renderer row-shift and ARM64 original exporter performance.",
+  "next": "Verify standalone Compose Lab 44861465616 and real original Android integrated gate 44861616320 (plus 44861616324 IPC, 44861616385 startup, 44861616355 renderer). Require CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS and CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS. Repair without weakening ART. Then ARM64 phone validation.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -44,8 +44,8 @@
   "last_verified_head": "360fa13d141b0751f9d1ae6308d3dd7c6c5eff07",
   "branch_actions": {
     "total_count": null,
-    "latest_run_id": 44861465616,
-    "latest_status": "in_progress",
+    "latest_run_id": 44861616320,
+    "latest_status": "queued",
     "latest_conclusion": null
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
@@ -2313,6 +2313,14 @@
     ],
     "compose_keyset_code_sha": "7cf5103e947dc45a9d6ced0f40405f6992c0c333",
     "compose_keyset_run": 44861465616,
-    "compose_keyset_conclusion": "pending"
+    "compose_keyset_conclusion": "pending",
+    "actual_ui_keyshift_code_sha": "7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3",
+    "actual_ui_keyshift_integrated_run": 44861616320,
+    "actual_ui_keyshift_other_runs": [
+      44861616324,
+      44861616385,
+      44861616355
+    ],
+    "actual_ui_keyshift_conclusion": "pending"
   }
 }
