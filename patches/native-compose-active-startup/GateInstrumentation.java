@@ -182,6 +182,7 @@ public final class GateInstrumentation extends Instrumentation {
         final Class<?> row=type("pw0"),status=type("xc4");
         final java.lang.reflect.Constructor<?> insert;
         boolean armed;
+        boolean earlierAdded;
         int largeRows;
         volatile boolean writerUnstopped;
         private Class<?> type(String n)throws ClassNotFoundException{return Class.forName("com.shabakaty.downloader."+n);}
@@ -250,6 +251,23 @@ public final class GateInstrumentation extends Instrumentation {
             });
             require(count(ar,"CinemanaDownloadItem")==4&&count(tr,"Downloads")==4,"committed fixture counts");
         }
+        void addEarlier()throws Exception{
+            require(armed&&!earlierAdded&&largeRows==0&&count(ar,"CinemanaDownloadItem")==4,
+                "expected four committed disposable rows");
+            transaction(ar,()->{
+                Object e=item.getConstructor().newInstance();
+                item.getField("id").set(e,id(0));
+                item.getField("title").set(e,"CP disposable UI 0");
+                item.getField("downloadTaskId").setInt(e,0);
+                item.getField("collectionID").setInt(e,0);
+                item.getField("path").set(e,"");
+                item.getField("qualityName").set(e,"fixture");
+                ((java.util.concurrent.Callable<?>)insert.newInstance(ad,e)).call();
+                return null;
+            });
+            earlierAdded=true;
+            require(count(ar,"CinemanaDownloadItem")==5,"earlier row was not committed");
+        }
         void seedLarge()throws Exception{seedLarge(100);}
         void seedLarge(long initialProgress)throws Exception{
             require(count(ar,"CinemanaDownloadItem")==0&&count(tr,"Downloads")==0,"large initial emptiness");
@@ -309,6 +327,7 @@ public final class GateInstrumentation extends Instrumentation {
             try{
                 transaction(ar,()->{
                     for(int n=1;n<=(largeRows>0?largeRows:4);n++)delete(ar,"DELETE FROM CinemanaDownloadItem WHERE id = ? AND downloadTaskId = ?",id(n),task(n));
+                    if(earlierAdded)delete(ar,"DELETE FROM CinemanaDownloadItem WHERE id = ? AND downloadTaskId = ?",id(0),0);
                     return null;
                 });
             }finally{
@@ -866,6 +885,27 @@ public final class GateInstrumentation extends Instrumentation {
                         }
                     }
                 }
+            }
+            if(ownerUi&&populatedUi){
+                setStage("real-owner-ipc-keyshift");
+                // Only the offline API35 disposable emulator. Previous visible
+                // renderer tests have finished; probe may take the service lease.
+                UiFixture shift=new UiFixture(ctx);
+                try {
+                    shift.seed();
+                    Uri proof=Uri.parse("content://com.cinemana.pro.cp-real-owner-ipc-probe");
+                    Bundle before=ctx.getContentResolver().call(proof,"probe-key",null,null);
+                    require(before!=null&&before.getInt("rows")==4&&before.getInt("index")==0&&
+                        before.getInt("ownerPid")==main&&before.getInt("uiPid")==ui,"IPC pre-shift fixture");
+                    String stable=before.getString("key");
+                    require(stable!=null&&stable.matches("[0-9a-f]{64}"),"pre-shift opaque HMAC");
+                    shift.addEarlier();
+                    Bundle afterKey=ctx.getContentResolver().call(proof,"probe-key",null,null);
+                    require(afterKey!=null&&afterKey.getInt("rows")==5&&afterKey.getInt("index")==1&&
+                        afterKey.getInt("ownerPid")==main&&afterKey.getInt("uiPid")==ui&&
+                        stable.equals(afterKey.getString("key")),"IPC key changed after real Room row insertion");
+                } finally {shift.cleanup();}
+                markerResult+="CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS rows=4,5 index=0,1 stable=verified cleanup=verified\n";
             }
             result.putString("stream",markerResult);
             finish(Activity.RESULT_OK,result);

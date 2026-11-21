@@ -30,7 +30,7 @@ public final class UiIpcProbeProvider extends ContentProvider {
         if(generation>0){Bundle b=new Bundle();b.putLong("generation",generation);m.setData(b);}
         remote.send(m);
     }
-    private static int checkPage(Reply r,long generation,int owner){
+    private static int checkPage(Reply r,long generation,int owner,int expectedRows){
         Bundle b=r.data;
         require(b.keySet().equals(new HashSet<>(Arrays.asList("generation","ownerPid","status","more","indices","progress","total","states","observations","titles","displayKeys"))),"unexpected page fields");
         require(b.getLong("generation")==generation&&b.getInt("ownerPid")==owner&&"OBSERVED".equals(b.getString("status")),"not observed owner page");
@@ -39,11 +39,12 @@ public final class UiIpcProbeProvider extends ContentProvider {
         require(ix!=null&&p!=null&&t!=null&&s!=null&&o!=null&&ix.length<=24&&ix.length==p.length&&ix.length==t.length&&ix.length==s.length&&ix.length==o.length&&titles!=null&&ix.length==titles.length&&keys!=null&&ix.length==keys.length,"invalid page array lengths");
         // Fresh disposable emulator: this gate is the actual empty owner page,
         // populated Room and transport fixtures are independent tests.
-        require(ix.length==0&&!b.getBoolean("more"),"expected empty clean emulator database");
+        require((expectedRows<0?(ix.length==4||ix.length==5):ix.length==expectedRows)&&!b.getBoolean("more"),
+            "unexpected owner page size");
         return ix.length;
     }
     @Override public Bundle call(String method,String arg,Bundle extras){
-        require(android.os.Binder.getCallingUid()==android.os.Process.myUid()&&"probe".equals(method)&&arg==null&&extras==null,"unauthorized probe");
+        require(android.os.Binder.getCallingUid()==android.os.Process.myUid()&&("probe".equals(method)||"probe-key".equals(method))&&arg==null&&extras==null,"unauthorized probe");
         require(Looper.myLooper()!=Looper.getMainLooper(),"probe on UI thread");
         Context app=getContext().getApplicationContext();
         require("cp.nativegate.NativeGateApplication".equals(app.getClass().getName()),"wrong UI Application");
@@ -66,15 +67,37 @@ public final class UiIpcProbeProvider extends ContentProvider {
             Reply a=take(q,4,0);
             long g=a.data.getLong("generation");int owner=a.data.getInt("ownerPid");
             require(g>0&&owner>0&&owner!=android.os.Process.myPid(),"owner/UI PID separation");
-            send(remote,me,2,1,1,g);int first=checkPage(take(q,5,1),g,owner);
-            send(remote,me,2,2,3,g);int refresh=checkPage(take(q,5,2),g,owner);
+            send(remote,me,2,1,1,g);
+            Reply firstReply=take(q,5,1);
+            if("probe-key".equals(method)){
+                // Diagnostic same-UID, non-exported provider. Only ephemeral
+                // seeded Room rows are accepted; raw DB IDs never cross IPC.
+                int rows=checkPage(firstReply,g,owner,-1);
+                String[] titles=firstReply.data.getStringArray("titles");
+                String[] keys=firstReply.data.getStringArray("displayKeys");
+                int shifted=rows==5?1:0;
+                require(titles!=null&&keys!=null&&
+                    "CP disposable UI 1".equals(titles[shifted]),"fixture title/order");
+                if(rows==5)require("CP disposable UI 0".equals(titles[0]),"missing inserted earlier fixture");
+                Set<String> seen=new HashSet<>();
+                for(String key:keys)
+                    require(key!=null&&key.matches("[0-9a-f]{64}")&&seen.add(key),"invalid/nonunique opaque key");
+                send(remote,me,3,0,0,g);
+                Bundle result=new Bundle();
+                result.putInt("rows",rows);result.putInt("index",shifted);
+                result.putString("key",keys[shifted]);
+                result.putInt("ownerPid",owner);result.putInt("uiPid",android.os.Process.myPid());
+                return result;
+            }
+            int first=checkPage(firstReply,g,owner,0);
+            send(remote,me,2,2,3,g);int refresh=checkPage(take(q,5,2),g,owner,0);
             send(remote,me,2,3,2,g);Reply rejected=take(q,6,3);
             require(rejected.data.getLong("generation")==g&&rejected.data.getInt("ownerPid")==owner,"unexpected NEXT rejection");
             send(remote,me,3,0,0,g);
             send(remote,me,1,0,0,0);
             Reply a2=take(q,4,0);long g2=a2.data.getLong("generation");
             require(g2>g&&a2.data.getInt("ownerPid")==owner,"session generation did not advance");
-            send(remote,me,2,1,1,g2);checkPage(take(q,5,1),g2,owner);
+            send(remote,me,2,1,1,g2);checkPage(take(q,5,1),g2,owner,0);
             send(remote,me,3,0,0,g2);
             Bundle b=new Bundle();b.putInt("ownerPid",owner);b.putInt("uiPid",android.os.Process.myPid());
             b.putInt("first",first);b.putInt("refresh",refresh);b.putBoolean("nextBlocked",true);b.putBoolean("freshGeneration",true);return b;
