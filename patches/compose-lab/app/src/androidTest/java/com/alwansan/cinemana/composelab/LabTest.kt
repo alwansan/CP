@@ -37,11 +37,11 @@ class LabTest {
             if (total > 0 && samples.size < 4096) {
                 samples.add(longArrayOf(
                     total,
-                    metrics.getMetric(FrameMetrics.INPUT_HANDLING_DURATION).coerceAtLeast(0),
-                    metrics.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION).coerceAtLeast(0),
-                    metrics.getMetric(FrameMetrics.DRAW_DURATION).coerceAtLeast(0),
-                    metrics.getMetric(FrameMetrics.SYNC_DURATION).coerceAtLeast(0),
-                    metrics.getMetric(FrameMetrics.GPU_COMMAND_DURATION).coerceAtLeast(0)
+                    metrics.getMetric(FrameMetrics.INPUT_HANDLING_DURATION),
+                    metrics.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION),
+                    metrics.getMetric(FrameMetrics.DRAW_DURATION),
+                    metrics.getMetric(FrameMetrics.SYNC_DURATION),
+                    metrics.getMetric(FrameMetrics.GPU_DURATION)
                 ))
             }
         }
@@ -65,10 +65,16 @@ class LabTest {
             val sorted = frames.map { it[index] }.sorted()
             return sorted[(kotlin.math.ceil(sorted.size*p).toInt()-1).coerceAtLeast(0)]
         }
+        // FrameMetrics.getMetric returns -1 if a phase is unavailable (not 0 ns).
+        fun phaseP95(index: Int): String {
+            val valid = frames.map { it[index] }.filter { it >= 0 }.sorted()
+            if (valid.isEmpty()) return "unavailable"
+            return valid[(kotlin.math.ceil(valid.size * .95).toInt() - 1).coerceAtLeast(0)].toString()
+        }
         println("$label frames=${frames.size} durationP95Ns=${percentile(0,.95)} durationP99Ns=${percentile(0,.99)} " +
             "over16_67ms=${frames.count { it[0] > 16666667 }} callbackP95Ms=${callbacks.sorted()[23]} " +
-            "inputP95Ns=${percentile(1,.95)} layoutP95Ns=${percentile(2,.95)} " +
-            "drawP95Ns=${percentile(3,.95)} syncP95Ns=${percentile(4,.95)} gpuP95Ns=${percentile(5,.95)}")
+            "inputP95Ns=${phaseP95(1)} layoutP95Ns=${phaseP95(2)} " +
+            "drawP95Ns=${phaseP95(3)} syncP95Ns=${phaseP95(4)} gpuP95Ns=${phaseP95(5)}")
     }
     // Keep a service binding alive during the timed-out read so the same owner process
     // receives a replacement client while the old ticket is still physically running.
