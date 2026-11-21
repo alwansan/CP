@@ -654,3 +654,12 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 | NC-PERF-ARM64 | مفتوح | لا قياس هاتف فعلي مع محرك Cinemana الأصلي والثلاث MKV slots |
 
 | NC-REAL-COMPOSE-SHIFT-96 | قيد التحقق | commit `7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3` مع native UI real IPC/Room disposable fixture: initial 4, shift to5, final0; CI 44861616320 pending، اختبارات الحماية الأخرى pending |
+
+
+## Session97 tracking
+| ID | Status | Evidence |
+|---|---|---|
+| NC-COMPOSE-KEY-96 | CLOSED emulator | 44861465616 SUCCESS, 3 instrumentation tests, keyset shift / staleness marker |
+| NC-REAL-COMPOSE-SHIFT-96 | CLOSED emulator | 44861616320 SUCCESS and mandatory CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS, companion 44861616324/44861616385/44861616355 SUCCESS |
+| NC-FRAME-PHASES-97 | CI pending | `c9138b4d131160213c0806ff39f22d37c06992bd` updates atomic 64 synthetic snapshot writes + diagnostic frame phases; run 44867014514 in_progress |
+| NC-PERF-ARM64 | OPEN | Emulator idle p95 ~116.8ms and load ~100.1ms, no ARM64 baseline with real original exporter |

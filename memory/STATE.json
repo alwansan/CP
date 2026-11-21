@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_lab_keyshift_and_real_ui_keyshift_ci_pending",
-  "last_session": "memory/sessions/2026-11-21_cp-dl-compose-keyed-rows-96.md",
+  "status": "native_compose_keyshift_verified_frame_phases_ci_pending",
+  "last_session": "memory/sessions/2026-11-21_cp-dl-compose-frame-phases-97.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify standalone Compose Lab 44861465616 and real original Android integrated gate 44861616320 (plus 44861616324 IPC, 44861616385 startup, 44861616355 renderer). Require CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS and CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS. Repair without weakening ART. Then ARM64 phone validation.",
+  "next": "Verify Compose Lab run #44867014514 on c9138b4d: OK (3 tests), CP_COMPOSE_FRAME_PHASES_PASS, all prior gates. Check detailed idle vs loaded FrameMetrics with emulator variance; repair only Native-Compose. Then original ARM64 and downloader exporter validation.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -41,11 +41,11 @@
     "prompt/RESTORE_SESSION_AR.md",
     "memory/sessions/"
   ],
-  "last_verified_head": "360fa13d141b0751f9d1ae6308d3dd7c6c5eff07",
+  "last_verified_head": "7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3",
   "branch_actions": {
     "total_count": null,
-    "latest_run_id": 44861616320,
-    "latest_status": "queued",
+    "latest_run_id": 44867014514,
+    "latest_status": "in_progress",
     "latest_conclusion": null
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
@@ -2283,7 +2283,7 @@
     "status": "in_progress"
   },
   "native_compose_checkpoint": {
-    "session": 96,
+    "session": 97,
     "as_of": "2026-11-21",
     "tested_integrated_run": 44854644442,
     "tested_integrated_conclusion": "success",
@@ -2313,7 +2313,7 @@
     ],
     "compose_keyset_code_sha": "7cf5103e947dc45a9d6ced0f40405f6992c0c333",
     "compose_keyset_run": 44861465616,
-    "compose_keyset_conclusion": "pending",
+    "compose_keyset_conclusion": "success",
     "actual_ui_keyshift_code_sha": "7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3",
     "actual_ui_keyshift_integrated_run": 44861616320,
     "actual_ui_keyshift_other_runs": [
@@ -2321,6 +2321,14 @@
       44861616385,
       44861616355
     ],
-    "actual_ui_keyshift_conclusion": "pending"
+    "actual_ui_keyshift_conclusion": "success",
+    "actual_ui_keyshift_other_conclusions": [
+      "success",
+      "success",
+      "success"
+    ],
+    "frame_phases_code_sha": "c9138b4d131160213c0806ff39f22d37c06992bd",
+    "frame_phases_lab_run": 44867014514,
+    "frame_phases_lab_conclusion": "pending"
   }
 }

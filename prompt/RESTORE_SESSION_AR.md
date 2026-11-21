@@ -1,15 +1,19 @@
 <!-- CP-DL-CURRENT-START -->
-# أحدث استعادة — CP-DL / Native-Compose — جلسة 96 (21 نوفمبر 2026)
+# أحدث استعادة — CP-DL / Native-Compose — جلسة 97 (2026-11-21)
 
-**ابدأ من هنا.** الهوية CP-DL؛ المستودع `alwansan/CP`؛ فرع الكتابة الوحيد **Native-Compose**. الفروع الأخرى وCL للقراءة فقط. لا تغيير للمحرك الأصلي، الحساب، التوقيع، PATCH274/B1b3-12، 3 MKV slots، Lease115، بيانات المستخدم أو launcher الإنتاجي. لا force-push.
+**الهوية:** CP-DL. المستودع `alwansan/CP`؛ فرع الكتابة الوحيد `Native-Compose`؛ `main` و`Html` و`CL` وسائر الفروع للقراءة فقط. لا تغيّر المحرك الأصلي، ملفات التنزيلات أو الحساب، التوقيع، الـlauncher، PATCH274، B1b3-12، 3 MKV slots أو Lease115؛ ولا تعمل force push. اتبع AGENTS.md.
 
-- **HEAD لدفعة الشفرة الجديدة:** `7cf5103e947dc45a9d6ced0f40405f6992c0c333`؛ تحقق من HEAD الحي قبل العمل. جلسة95 code `360fa13d141b0751f9d1ae6308d3dd7c6c5eff07` نجحت جميع بواباتها الأربع: real owner UI [44857106920](https://github.com/alwansan/CP/actions/runs/44857106920) SUCCESS، IPC [44857106917](https://github.com/alwansan/CP/actions/runs/44857106917) SUCCESS، startup [44857106969](https://github.com/alwansan/CP/actions/runs/44857106969) SUCCESS في attempt2 بعد 404 Maven attempt1، renderer [44857107001](https://github.com/alwansan/CP/actions/runs/44857107001) SUCCESS. تأكدت من ظهور `CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS rows=4,5 index=0,1 stable=verified cleanup=verified` و`INSTRUMENTATION_CODE: -1`. كانت تجربة محاكي API35 x86 وليس هاتف ARM64.
-- **الجلسة96 / Compose:** اختبار Android UI جديد `keyedRowsKeepEpisodeProgressWhenAnEarlierRowArrives` داخل `OwnerRecompositionTest.kt` على `OwnerReadRows` الحقيقي بمشاهدات synthetic: صفان بمفتاحين ثابتين ونسب 25/75، إدراج صف سابق بموضع أول، بقاء النسب مرتبطة بعناوينها، ثبات المفاتيح بترتيب 2→3→2، إخفاء نسب التقدم عندما تصبح الحالة changed، ثم استعادة refreshed وإزالة الصف. أضيف شرط `CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS rows=2,3,2 stable=verified progress=25,75 stale=hidden removed=verified` مع عدد اختبارات Android المتوقع 3 بدل2 في `patches/compose-lab/run-android-test.sh`.
-- **نتيجة اختبار الجلسة96 معلّقة:** [44861465616](https://github.com/alwansan/CP/actions/runs/44861465616) كان **in_progress** عند التوثيق. لا تدّع نجاحه أو نشر Lab APK جديد حتى يتحقق فعلياً. إذا فشل، راجع logs وأصلحه دون تجاوز اختبار أو لمس المحرك.
-- **الأداء المفتوح:** جلسة95 idle local median360/max1575ms، pressure median547/max667ms عبر المحاكي؛ ليس قياس FPS ولا وصولاً لهاتف ARM64 أو تنفيذ MkvExporter/Lease115/MuxSlotsDL الإنتاجي. X86 remux اختباري فقط، ولا يجوز التعميم بلا اختبارات هاتف. آخر Compose Lab #20 تجريبي مستقل ليس بديل Cinemana الإنتاجي.
-- **وثائق الاستعادة:** `memory/sessions/2026-11-21_cp-dl-compose-keyed-rows-96.md`، MEMORY/STATE/PLAN/ISSUES وNATIVE_COMPOSE_MASTER_AR.md. حدّث هذه الوثائق بعد فحص CI. المهمة المجدولة القديمة معطلة؛ لا تعيد تشغيلها تلقائياً.
+## نتائج موثقة — جلسة96
+- [44861465616](https://github.com/alwansan/CP/actions/runs/44861465616) **SUCCESS** على `7cf5103e947dc45a9d6ced0f40405f6992c0c333`: `OK (3 tests)`, `CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS`, `CP_COMPOSE_LAB_RELEASE_GATE_PASS`. المختبر مستقل وهمي فقط.
+- [44861616320](https://github.com/alwansan/CP/actions/runs/44861616320) **SUCCESS** على `7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3`: في المحاكي API35 ظهرت العلامات `CP_REAL_OWNER_IPC_KEYS_SHIFT_PASS` و`CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS rows=4,5,0 index=0,1 progress=250 cleanup=verified` و`INSTRUMENTATION_CODE: -1`. مرّ اختبار ثلاثة عمال FFmpeg x86 test files أيضاً، لكنه ليس إثبات MkvExporter الإنتاجي.
+- بوابات IPC [44861616324](https://github.com/alwansan/CP/actions/runs/44861616324)، Startup [44861616385](https://github.com/alwansan/CP/actions/runs/44861616385)، Renderer [44861616355](https://github.com/alwansan/CP/actions/runs/44861616355) جميعها **SUCCESS**، attempt1.
+- من سجل Lab: idle total frame duration p95=116800823ns (116.8ms)، loaded p95=100104603ns (100.1ms) في محاكي x86 Swiftshader؛ المتغيرات كبيرة، ليست نتائج هاتف أو حكم كمي بتحسن الأداء؛ لا تقول «بدون لاق».
 
-- **دفعة96 الثانية:** commit `7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3` يختبر العرض الفعلي عبر العملية `:nativeui` وقاعدة Room الأصلية عند انتقال عنصر 0→1، ويشترط العلامة `CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS`. بوابات Actions 44861616320/44861616324/44861616385/44861616355 بدأت وكانت queued عند التسجيل. **لا تدّع النجاح قبل فحص النتائج**؛ مختبر Compose #44861465616 أيضاً in_progress.
+## جلسة97 — العمل الحالي
+- **كود جديد:** `c9138b4d131160213c0806ff39f22d37c06992bd`، لتقليل إشعارات Compose الوسطية من 64 تغييراً وهمياً كل 200ms باستخدام `Snapshot.withMutableSnapshot`، ولجمع `FrameMetrics` مفصلة (input/layout/draw/sync/gpu، idle/load) مع العلامة الإلزامية `CP_COMPOSE_FRAME_PHASES_PASS`. لا تعديل للمحرك أو المستخدم الحقيقي.
+- **التحقق قيد التنفيذ:** [44867014514](https://github.com/alwansan/CP/actions/runs/44867014514) لبوابة Compose Lab. لا تعده ناجحاً حتى يكتمل وتفحص `OK (3 tests)`، markers السابقة والـphase الجديدة. افحص واصلح الأخطاء في Native-Compose فقط ولا تُضعف البوابات.
+- **القادم:** قارن phase metrics قبل وبعد بعناية مع تباين المحاكي، ثم تحسينات مرئية محددة عند الحاجة؛ وقياسات الهاتف ARM64 من APK الإنتاج الأصلي ومحرّك MkvExporter/Lease115/MuxSlotsDL الحقيقي لم تتم بعد. يبقى Compose Lab APK تجريبياً وليس النسخة الإنتاجية.
+- **التوثيق:** `memory/sessions/2026-11-21_cp-dl-compose-frame-phases-97.md` وMEMORY/PLAN/ISSUES/STATE وdocs/NATIVE_COMPOSE_MASTER_AR.md؛ حدّثها بعد نتيجة CI. المهمة المجدولة القديمة معطّلة ولا تعِد تشغيلها دون طلب.
 
 <!-- CP-DL-CURRENT-END -->
 
@@ -584,3 +588,7 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 
 ## جلسة 96 — متابعة Android Compose
 مرجع memory/sessions/2026-11-21_cp-dl-compose-keyed-rows-96.md؛ CI #44861465616 in_progress في وقت التسجيل. جلسة95 جميع البوابات الأربع SUCCESS.
+
+
+## جلسة97 — مرجع المرحلة
+`memory/sessions/2026-11-21_cp-dl-compose-frame-phases-97.md`، تحقق من CI #44867014514 بعد آخر checkpoint، ومن العلامة `CP_COMPOSE_FRAME_PHASES_PASS`.
