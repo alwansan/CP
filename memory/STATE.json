@@ -2254,9 +2254,32 @@
     "standalone_run": 44790626743,
     "combined_run": 44790626744,
     "ipc_run": 44790626735,
-    "status": "in_progress",
-    "stable_keys_verified": false,
+    "status": "completed_success",
+    "stable_keys_verified": true,
     "actual_app_exporter_pressure_verified": false,
-    "real_download_mkv_pressure_verified": false
+    "real_download_mkv_pressure_verified": false,
+    "regression_status": "all_success"
+  },
+  "native_compose_isolation_93": {
+    "entry": "d53fcebed47e76a2640f53ce7c5007bf8de00a6b",
+    "code": "25909a9a8eae701e7db1c9bb4d09cdcd884a915e",
+    "workflow_commit": "605ed9dffcbe0e1f35351d51d342d4efea9ffb76",
+    "verified_prior_runs": {
+      "shared": 44790626773,
+      "standalone": 44790626743,
+      "ipc": 44790626735,
+      "integrated": 44790626744
+    },
+    "verified_shared_run": 44854590218,
+    "verified_shared_job": 136693685990,
+    "shared_assertions": 1482,
+    "keys_lazy_verified": true,
+    "integrated_run": 44854644442,
+    "integrated_status": "in_progress",
+    "actual_app_exporter_pressure_verified": false,
+    "real_download_mkv_pressure_verified": false,
+    "phone_arm64_performance_verified": false,
+    "production_apk_created": false,
+    "status": "in_progress"
   }
 }
