@@ -11,14 +11,14 @@
   "android_library_built": true,
   "android_apk_built": true,
   "production_downloader_modified": false,
-  "feature_parity": "not_validated",
+  "feature_parity": "not_validated_for_real_app",
   "branch_ci": "success",
   "current_scope": [
-    "R1 isolated diagnostic JNI version ABI=1",
-    "R2 synthetic durable ledger and real Linux SIGKILL recovered 500",
-    "R2 bounded stateless shadow JNI typed int arrays",
-    "R2 diagnostic Smali shadowAudit method",
-    "R2 Android15 ART synthetic 500 selection parity gate in progress"
+    "R0 Rust model and 19 host tests including R2 shadow",
+    "R1 JNI version smoke and Android15 isolated signed APK ART success",
+    "R2 synthetic durable file fixture and actual Linux SIGKILL replay success",
+    "R2 synthetic Java int[] to Rust JNI shadow comparison of 500 selections PASS on Android15",
+    "Production Queue110, FileDownloader, Room and FFmpeg remain unchanged"
   ],
   "next": "R2: map Downloads DAO + native task ID ownership across app processes; build bounded passive shadow event adapter with composite keys, no production write or actual downloads.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
@@ -60,7 +60,7 @@
     "resume and recovery after interruptions",
     "MKV workflow orchestration retaining FFmpeg"
   ],
-  "plan_status": "documented_not_implemented",
+  "plan_status": "R0 proof + R1 isolated JNI + R2 synthetic durable fixture and JNI shadow pass; production R2 not integrated",
   "completed": [
     "R0 isolate branch",
     "R0 core simulation",
