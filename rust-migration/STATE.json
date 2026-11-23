@@ -6,7 +6,7 @@
   "source_head": "c68c0d80722765409f8544d499938a656217967b",
   "writable_branch": "experiment/rust-core-migration",
   "date": "2026-11-23",
-  "phase": "R1_signed_APK_emulator_ART_JNI_success_phone_gate_pending",
+  "phase": "R2_synthetic_durable_batch_fixture_CI_pass_R2_production_not_started",
   "jni_integrated": false,
   "android_library_built": true,
   "android_apk_built": true,
@@ -21,12 +21,12 @@
     "R1 Android15 ART test running",
     "R2 source-grounded durable queue contract doc"
   ],
-  "next": "Proceed to R1 full app install/device ABI smoke only when combined with a meaningful user-facing milestone; meanwhile map BatchDownload native m submit, SharedPreferences/Room owner, build R2 synthetic durable batch ledger and replay tests without production activation.",
+  "next": "Map Room Downloads schema and native BatchDownload.call('m') ownership; design passive JNI/Room adapter and exact durable receipt boundary without writing production DB yet. Run actual cross-process/kill fixture test and R1 Android15 regression verification before activation.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
-  "session": "rust-migration/sessions/2026-11-23-r1-jni-integration-03.md",
+  "session": "rust-migration/sessions/2026-11-23-r2-durable-fixture-04.md",
   "android_library_abi": "arm64-v8a",
-  "last_code_commit": "5488ce967886b21891c3a4c381e39579be85cc0d",
+  "last_code_commit": "1b712bb0c347eef4b68700c91a500f588e7759a9",
   "ci_runs": [
     {
       "id": 45110027899,
@@ -72,12 +72,13 @@
     "parity test matrix"
   ],
   "blockers": [
-    "No full Cinemana installed application startup or phone JNI verification",
-    "No durable Rust queue or Room owner mapping",
-    "No active Rust download transfer and real FFmpeg integration",
-    "No same workload performance or complete feature parity tests"
+    "No production Room/SharedPreferences owner adapter; fixture cannot be used for live tasks",
+    "No Android runtime test for fixture filesystem locks/atomic directory fsync",
+    "R1 full application ARM64 phone/startup and :filedownloader owner tests not run",
+    "No real downloader/MKV or UI feature parity under Rust",
+    "R2 old behavior vs new shadow ACK interface not compared"
   ],
-  "status_detail": "No production functionality moved from Java/Smali to Rust; documentation scope expanded only.",
+  "status_detail": "R1 JNI signed candidate passed isolated Android15 ART in prior run; R2 Rust synthetic local-file durable fixture now host-tested and Android arm64 cross-compiled. Production download engine remains original.",
   "protected_branches": [
     "main",
     "feature/download-stability",
@@ -95,17 +96,18 @@
     "memory": "rust-migration/MEMORY_AR.md",
     "restore": "rust-migration/RESTORE_SESSION_AR.md",
     "r1": "rust-migration/R1_JNI_REPORT_AR.md",
-    "r2_contract": "rust-migration/R2_STORAGE_CONTRACT_AR.md"
+    "r2_contract": "rust-migration/R2_STORAGE_CONTRACT_AR.md",
+    "r2_fixture_report": "rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md"
   },
-  "last_verified_action_run": 45112292108,
+  "last_verified_action_run": 45113493256,
   "last_verified_action_result": "success",
   "rust_http_downloads_active": false,
   "mkv_runtime_migrated": false,
   "eta": "Not estimated: acceptance is gated by JNI/ART, durable database integration, performance tests, full feature parity and phone evidence.",
-  "last_ci_run_id": 45112292108,
+  "last_ci_run_id": 45113493256,
   "last_ci_earlier_core_run_id": 45112198686,
   "last_ci_earlier_core_result": "success",
-  "current_ci_result": "success",
+  "current_ci_result": "success_for_Rust_Core_Android15_R1_recheck_in_progress",
   "jni_export_implemented": true,
   "jni_integrated_in_signed_diagnostic_apk": true,
   "jni_integrated_in_production_runtime": false,
@@ -126,5 +128,32 @@
   },
   "r1_android15_signed_apk_art_gate": "passed_isolated_instrumentation",
   "r1_android15_signed_apk_art_run": 45112292108,
-  "r1_device_gate": "not_run"
+  "r1_device_gate": "not_run",
+  "r2_fixture": {
+    "path": "rust-core/src/durable_fixture.rs",
+    "mode": "synthetic_isolated_file_snapshot",
+    "platform_tested": "Linux host tests only",
+    "android_crossbuild": "arm64 pass",
+    "tests": "9 new + 5 existing = 14 passed",
+    "run_id": 45113493256,
+    "run_url": "https://github.com/alwansan/CP/actions/runs/45113493256",
+    "features": [
+      "exclusive advisory flock lifetime lock",
+      "batch payload replay idempotency",
+      "atomic pending->snapshot rename",
+      "fsync pending file and parent directory before receipt",
+      "CRC32 corruption check",
+      "fault injection before/after rename",
+      "two overlapping batches and 500 task replay"
+    ],
+    "max_batch_rows": 1000,
+    "max_unique_tasks": 4096,
+    "max_batches": 256,
+    "snapshot_limit_bytes": 16777216,
+    "production_admission_active": false
+  },
+  "r2_room_database_integrated": false,
+  "r2_production_durable_ack": false,
+  "r2_real_user_data_used": false,
+  "r2_status": "fixture CI passed; no actual Cinemana batch ack or Room integration"
 }

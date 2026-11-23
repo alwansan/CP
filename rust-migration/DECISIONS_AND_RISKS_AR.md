@@ -48,3 +48,9 @@
 ## تحديث R1 JNI — 2026-11-23
 - بوابة R1: artifact signed+DEX-only لا يثبت DexClassLoader/System.loadLibrary؛ run 45112292108 يجرب الاختبار عبر Android15 ART. إذا فشل، افتح logs ولا ترفع APK للمستخدم.
 - خطر جديد RM16: نوع الاختبار معزول ويحمل المكتبة من signed candidate إلى مجلد instrumentation، لذا نجاح ART لا يساوي تشغيل Cinemana الكامل ولا عمل الخدمة :filedownloader. لا تُغلق بوابة phone/live process إلا بتجربة مستقلة.
+
+## قرار R2 synthetic fixture (2026-11-23)
+- ADR13: `DurableFixture` اختبار تعليمي منفصل فقط؛ وجود file snapshot ليس بديلاً لمسار Room/Restart108 الحقيقي. لا يُستدعى عبر JNI من التطبيق.
+- RM17: `flock` advisory لا يحمي من writers لا يستخدمون نفس القفل، ولا يضمن single owner بين خدمات Android التي تتجاهل العقد؛ يجب بناء اختبار process/JNI/Room owner قبل الإنتاج.
+- RM18: كتابة snapshot كاملة في كل دفعة كبيرة O(state size)، محدودة 16 MiB و4096 مهمة فريدة؛ ليست ledger لانهائي. عالج نمو البيانات بجداول WAL/DB عند الاستبدال.
+- RM19: CRC32 فقط لمقاومة تلف عشوائي وليس هجوم/توقيع، وfsync behaviour على Android لم يُختبر بعد. افشل مغلقاً عند فساد file؛ لا reset أو delete user data.

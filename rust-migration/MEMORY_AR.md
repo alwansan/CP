@@ -63,3 +63,9 @@ R1: اسحب call graph ومخطط Room والـservices، وابن JNI ABI read
 - Run 45112292108 completed/success. 5/5 Rust tests PASS، APKTool signed/verify/DEX PASS، ARM64/x86_64 .so packaged.
 - exact signed-candidate isolated ART: `CPRUST_R1_JNI_PASS abi=1`؛ `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`، `INSTRUMENTATION_CODE: -1`.
 - Artifact 14790505739 `Cinemana-CP-Rust-R1-JNI-Diagnostic`؛ ما يزال diagnostic APK وليس تحديثاً للاستخدام؛ لم يُختبر Android 15 **فتح التطبيق الكامل** أو هاتف المالك، ولا تحويل أي download حي إلى Rust.
+
+## تحديث R2 — 2026-11-23 (fixture فقط)
+- Rust `rust-core/src/durable_fixture.rs`: مخزن دفعات اصطناعي بملف snapshot مُكتب atomically و`fsync` قبل receipt، مع `flock` لمالك وحيد وCRC32 لحماية من التمزق، ومقارنة payload كاملة للـbatch ID.
+- `run 45113493256` **SUCCESS**: 14/14 Rust tests، fmt/clippy/Linux/Android arm64 .so. الاختبارات تشمل 500 طلب، 400+500 متداخلة، sim crash قبل/بعد rename، رفض تغير payload، 2nd owner، corruption. الدليل: rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md.
+- **ليس** تخزين مستخدم، ولا ربط Room/Queue110 أو JNI runtime؛ format snapshot غير مناسب لادعاء حل scalable production queue. `Fault` حقن اصطناعي وليس SIGKILL حقيقي؛ لا claim كاملة.
+- الخطوة التالية owner mapping/Room WAL والعقد الدائم الذي يندمج مع المصدر، وتمرين OS kill فعلي في بيئة معزولة.

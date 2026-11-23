@@ -42,3 +42,10 @@ Rust: محرك تحميل الحلقات، إدارة مئات المهام وا
 `INSTRUMENTATION_CODE: -1`.
 Artifact 14790505739 اسمه Cinemana-CP-Rust-R1-JNI-Diagnostic؛ diagnostic only لا release ولا يثبت تطبيق كامل/هاتف/تحميلات real.
 الخطوة: استكمل owner mapping لقاعدة البيانات وBatchDownload native m وحضّر Rust durable batch tests synthetic، مع بقاء FileDownloader/FFmpeg/Room كما هي. أعد الفحص المباشر لـHEAD/Actions عند الاستئناف، وحدّث الملفات باستمرار.
+
+## استعادة أحدث: R2 durable synthetic fixture — 2026-11-23
+- code commit `1b712bb0c347eef4b68700c91a500f588e7759a9`: `rust-core/src/durable_fixture.rs` وTaskKey Ord؛ snapshot atomic rename/fsync وflock advisory single owner، exact-batch ID replay، corrupt fail-closed، حقن fault قبل/بعد rename، بدون dependencies.
+- Run https://github.com/alwansan/CP/actions/runs/45113493256 **SUCCESS**: fmt/clippy، 14/14 tests، Linux library، ARM64 shared lib؛ 9 اختبارات R2 الجديدة. R1 signed APK ART run 45112292108 سابقاً PASS.
+- هذا محرك mock Rust محلي فقط ولا توجد صلة بقاعدة بيانات المستخدم وJNI runtime أو FileDownloader/FFmpeg. اختبار real SIGKILL/Android process ownership لم يحدث بعد.
+- تأكد من أحدث HEAD وCI قبل متابعة. اقرأ rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md وR2_STORAGE_CONTRACT_AR.md.
+- الخطوة: trace owner/schema/Room وBatchDownload.submit، اختبار kill حقيقي، تصميم shadow-only JNI/DB integration، ثم production receipt gate. استمر بتحديث STATE/MEMORY/PLAN/RISKS/RESTORE/session بعد كل خطوة.

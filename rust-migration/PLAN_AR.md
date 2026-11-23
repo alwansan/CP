@@ -111,3 +111,11 @@ P5: كل الميزات/الترقية والتحقق على الهاتف.
 - ✅ Binary ARM64 وx86_64 CI builds. ABI/DEX smoke تحقق.
 - ⬜ Device Android ARM64 full app startup/multi-process JNI smoke ما زال NOT_RUN. لا تفرض تجربة صغيرة على المالك؛ اجمعها مع milestone وظيفي أكبر.
 - ⬜ R2 durable Rust ledger وشيفرة الإنتاج لم تبدأ؛ أكمل حقائق source/Room قبل التعديل.
+
+## R2 نتيجة التنفيذ الجزئي — 2026-11-23
+- ✅ محاكاة محلية لدفعات Rust وأرقام قبول بعد file fsync+rename+dir fsync، قفل flock وحماية من duplicate batch/corruption.
+- ✅ GitHub Actions Run 45113493256: 14/14 tests، fmt/clippy، Linux وAndroid ARM64 .so BUILD PASS.
+- ⬜ التنفيذ داخل Cinemana Android وRoom/SharedPreferences و: filedownloader NOT STARTED. لا app feature flag، لا internet، لا MKV.
+- ⬜ cross-process SIGKILL real fixture test + Android filesystem/ART runtime proof NOT_RUN.
+- ⬜ full process/main thread performance, 500 real episode parity, DB native ACK and rollback NOT_RUN.
+- التفاصيل في `rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md`، الممنوع تعميم synthetic durable ACK إلى user-admission.

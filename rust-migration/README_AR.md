@@ -21,3 +21,6 @@
 - sessions/: سجل كل دفعة بدون الكتابة فوق القديمة
 
 يحافظ المشروع على feature/download-stability كما هو؛ ويمنع حذف ملفات المستخدم وازدواج محركات النقل أو mux. نجاح .so لا يعني نجاح APK ولا اكتمال نقل Rust.
+
+## R2 snapshot fixture — 2026-11-23
+rust-core/src/durable_fixture.rs هي تجربة Rust لمسار حفظ دفعات طلبات 500 حلقة: fsync/rename/dir sync قبل ACK وقفل مالك وحيد ومحاكاة crash وreplay. CI run 45113493256 = 14/14 tests PASS + Android ARM64 cross-build PASS. المصدر الأصلي لا يرسل الطلبات إليها بعد. التفاصيل في R2_DURABLE_FIXTURE_REPORT_AR.md.

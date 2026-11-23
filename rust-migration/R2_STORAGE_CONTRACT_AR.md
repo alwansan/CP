@@ -21,3 +21,7 @@
 
 ## الخطوة التالية لاستكمال التصميم
 تتبّع BatchDownload.call("m") وNativeBatchScope إلى FileDownloader submit الفعلي؛ اربط ذلك بالـRequest110.remember والـRoom native id، وقارن schema وWAL/DAO owners بين عمليتي Android. لا يصح افتراض أن أي واحدة منها sync durable batch على مستوى 500.
+
+## إضافة كود محاكاة R2 — 2026-11-23
+اكتمل اختبار مستقل `rust-core/src/durable_fixture.rs`؛ ليس `Room` أو `SharedPreferences`. يتعامل مع batches in fixed private test dir، ويعطي receipts فقط بعد fsync+atomic rename. CI run 45113493256 SUCCESS، 14 tests.
+لا تربط `DurableFixture::accept_batch` إلى BatchDownload الحقيقي؛ file snapshots والـcross-process owner ليسا مصممين لبيانات المستخدم. ما يزال مخطط DAO والـnative task_id يحتاج تحقق، وما تزال بوابة R2 production غير مجتازة.

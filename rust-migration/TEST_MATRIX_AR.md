@@ -46,3 +46,12 @@ Rust fmt/clippy/test/property → Android ARM64/x86_64 build → JNI load → AP
 - T09 **جزئي PASS** لبناء ARM64/x86_64 packaging، وليس تحميل ARM64 على جهاز حقيقي.
 - Artifact 14790505739، run 45112292108، `CPRUST_R1_JNI_PASS abi=1` و`INSTRUMENTATION_CODE: -1`.
 - T10–T20 وكل ضغط التحميل/التحويل الحقيقي NOT_RUN لنسخة Rust الحالية.
+
+## نتائج الاختبارات synthetic R2 (2026-11-23)
+Run https://github.com/alwansan/CP/actions/runs/45113493256 **SUCCESS** — 14 Rust unit tests: 5 baseline + 9 R2. 
+- T01: **PASS synthetic** 500 intents durable fixture reopen/replay. T02: **جزئي PASS** invalid input, forged len, changed payload; fuzz عشوائي ما يزال NOT_RUN.
+- T03: **جزئي PASS** injection before and after rename/reopen. **real SIGKILL وWAL/Room NOT_RUN**.
+- T04: **NOT_RUN** لـreal scheduler fairness.
+- T07–09: R1 isolated ABI ART السابقة PASS جزئياً، لكنها لم تختبر R2 file I/O على Android.
+- T14: **NOT_RUN** في Room؛ synthetic single-owner flock فقط.
+- T15–20: real UI, 500 download stress, media integrity, MKV, background, phone كلها NOT_RUN مع Rust.
