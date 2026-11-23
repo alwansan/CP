@@ -71,7 +71,38 @@ public final class Probe extends Instrumentation {
                 byte[] buf = new byte[65536]; int n;
                 while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
             }
-            ClassLoader cl = new DexClassLoader(apk.getPath(), ctx.getCodeCacheDir().getPath(), null, ctx.getClassLoader());
+            boolean rustAbiTest = false;
+            try (InputStream input = ctx.getAssets().open("rust_abi_enabled.txt")) {
+                rustAbiTest = input.read() >= 0;
+            } catch (FileNotFoundException expected) {
+                // Existing CP-DL test does not enable the new JNI check.
+            }
+            File nativeDir = new File(ctx.getCodeCacheDir(), "rust-native");
+            if (rustAbiTest) {
+                require(nativeDir.isDirectory() || nativeDir.mkdirs(), "cannot create native dir");
+                String entryName = "lib/" + android.os.Build.SUPPORTED_ABIS[0] + "/libcp_rust_core.so";
+                try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(apk)) {
+                    java.util.zip.ZipEntry entry = zip.getEntry(entryName);
+                    require(entry != null && entry.getSize() > 0, "no native entry in signed candidate: " + entryName);
+                    File nativeLibrary = new File(nativeDir, "libcp_rust_core.so");
+                    try (InputStream in = zip.getInputStream(entry);
+                         FileOutputStream out = new FileOutputStream(nativeLibrary, false)) {
+                        byte[] buf = new byte[65536]; int n;
+                        while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+                    }
+                    require(nativeLibrary.isFile() && nativeLibrary.length() == entry.getSize(),
+                            "copied signed candidate library size mismatch");
+                }
+            }
+            ClassLoader cl = new DexClassLoader(apk.getPath(), ctx.getCodeCacheDir().getPath(),
+                    rustAbiTest ? nativeDir.getPath() : null, ctx.getClassLoader());
+            if (rustAbiTest) {
+                Class<?> rustProbe = Class.forName("com.shabakaty.cinemana.local.RustAbiProbe", true, cl);
+                require(rustProbe.getClassLoader() == cl, "RustAbiProbe wrong classloader");
+                Object version = rustProbe.getMethod("version").invoke(null);
+                require(version instanceof Integer && ((Integer) version).intValue() == 1,
+                        "Rust JNI ABI version mismatch");
+            }
             int classes = 0;
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(ctx.getAssets().open("family.txt")))) {
                 String name;
@@ -165,6 +196,9 @@ public final class Probe extends Instrumentation {
                 }
             } finally { main(activity::finish); }
             result.putString("stream","\nCPDL_ART_PASS family="+classes+" opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1\n");
+            if (rustAbiTest) {
+                result.putString("stream", result.getString("stream") + "CPRUST_R1_JNI_PASS abi=1\n");
+            }
             finish(Activity.RESULT_OK,result);
         } catch (Throwable t) {
             StringWriter trace = new StringWriter(); t.printStackTrace(new PrintWriter(trace));

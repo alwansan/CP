@@ -9,6 +9,9 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 mkdir -p "$tmp/assets" "$tmp/classes" "$tmp/dex"
 cp "$apk" "$tmp/assets/candidate.apk"
+if [[ "${2:-}" == "--rust-jni" ]]; then
+  printf '1\n' > "$tmp/assets/rust_abi_enabled.txt"
+fi
 # Derive every exact family descriptor (including $$) from the built source inventory.
 python3 - "$tmp/assets/family.txt" <<'PY'
 import pathlib,re,sys
@@ -34,6 +37,9 @@ adb install "$tmp/probe.apk"
 # Hard fail for a crash, timeout, missing explicit success, or an unsuccessful instrumentation result.
 timeout 180 adb shell am instrument -w -r cpdl.artprobe/.Probe | tee "$tmp/result.txt"
 grep -F 'CPDL_ART_PASS family=' "$tmp/result.txt"
+if [[ "${2:-}" == "--rust-jni" ]]; then
+  grep -F 'CPRUST_R1_JNI_PASS abi=1' "$tmp/result.txt"
+fi
 grep -E 'INSTRUMENTATION_CODE: -1' "$tmp/result.txt"
 if grep -qE 'CPDL_ART_FAIL|INSTRUMENTATION_FAILED|Process crashed' "$tmp/result.txt"; then exit 1; fi
 adb uninstall cpdl.artprobe
