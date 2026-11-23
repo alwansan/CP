@@ -21,7 +21,7 @@
     "R1 Android15 ART test running",
     "R2 source-grounded durable queue contract doc"
   ],
-  "next": "R2: finish native i44/DownloadActionsHandlerScope.m callbacks and DAO kz0/task id mapping, then build synthetic shadow-only ABI/IPC adapter; do not add writes to Downloads table until verified migration.",
+  "next": "Map Room DAO status/task mapping and protect per-task durable ACK. Build passive JNI shadow adapter and Android process/service integration tests using synthetic data; no real downloader takeover until parity.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
   "session": "rust-migration/sessions/2026-11-23-r2-durable-fixture-04.md",
@@ -100,7 +100,7 @@
     "r2_fixture_report": "rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md",
     "r2_room_audit": "rust-migration/R2_ROOM_SCHEMA_AUDIT_AR.md"
   },
-  "last_verified_action_run": 45113795022,
+  "last_verified_action_run": 45113795068,
   "last_verified_action_result": "success",
   "rust_http_downloads_active": false,
   "mkv_runtime_migrated": false,
@@ -108,7 +108,7 @@
   "last_ci_run_id": 45113795022,
   "last_ci_earlier_core_run_id": 45112198686,
   "last_ci_earlier_core_result": "success",
-  "current_ci_result": "Rust Core success; R1 signed diagnostic crosscheck in_progress at update",
+  "current_ci_result": "success_RustCore_45113795022_and_R1_Android15_ART_45113795068",
   "jni_export_implemented": true,
   "jni_integrated_in_signed_diagnostic_apk": true,
   "jni_integrated_in_production_runtime": false,
@@ -175,5 +175,21 @@
     "external_id"
   ],
   "r2_room_schema_has_batch_id": false,
-  "r2_room_schema_updated_from": "Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/data/db/DownloadsDatabase_Impl$a.smali"
+  "r2_room_schema_updated_from": "Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/data/db/DownloadsDatabase_Impl$a.smali",
+  "last_r1_revalidation": {
+    "run_id": 45113795068,
+    "head_code_sha": "40837af4e89a4c5463305885f488943022c03702",
+    "result": "success",
+    "artifact_id": 14791210489,
+    "name": "Cinemana-CP-Rust-R1-JNI-Diagnostic",
+    "abi": [
+      "arm64-v8a",
+      "x86_64"
+    ],
+    "marker": "CPRUST_R1_JNI_PASS abi=1",
+    "dialog": "CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2",
+    "art_result": "INSTRUMENTATION_CODE: -1",
+    "note": "isolated instrumentation, no full app or phone launch"
+  },
+  "r1_signed_apk_regression_new_run_result": "success"
 }

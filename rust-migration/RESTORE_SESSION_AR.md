@@ -62,3 +62,9 @@ Artifact 14790505739 اسمه Cinemana-CP-Rust-R1-JNI-Diagnostic؛ diagnostic on
 - الجدول `Downloads` يملك PK `(task_id,external_id)` **لا batch_id**؛ لا تعِد استخدام snapshot fixture كDB المستخدم أو تكتب Rust مباشرة لـRoom.
 - `BatchDownload.call(scope,"m")` يعبر NativeBatchScope -> DownloadActionsHandlerScope.m مع i44/FFmpeg plan/coroutine، وهو ليس commit ack.
 - R2 Linux SIGKILL run 45113795022 SUCCESS، لكن Room/Android runtime غير مدمجين. التالي mapper للtask_id والـDAO وكيف يصل ACK إلى queue owner.
+
+## إعادة تحقق R1 مع كود R2 الأخير — 2026-11-23
+- `run 45113795068` **SUCCESS** على code SHA `40837af4e89a4c5463305885f488943022c03702`: Rust 14 tests، signed APK DEX، ART Android15 isolated.
+- Log: `CPRUST_R1_JNI_PASS abi=1`؛ `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`؛ `INSTRUMENTATION_CODE: -1`.
+- Artifact 14791210489 `Cinemana-CP-Rust-R1-JNI-Diagnostic`؛ لا تثبت نسخة تشغيل كاملة أو هاتف أو actual download Rust.
+- `run 45113795022` Rust Core SUCCESS: 14/14 + SIGKILL Linux + ARM64 .so.

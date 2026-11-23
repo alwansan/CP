@@ -20,3 +20,9 @@
 - Rust in-memory ledger موجود لكن لا ينتقل عبر JNI هنا؛ هذا handshake version فقط، لا storage، لا pool، لا MKV.
 - حارس ART الصارم يمنع اعتبار artifact ذا نتيجة نهائية إن فشل التشغيل، ولا يسمح بنشر نسخة تحديث للمستخدم.
 - تحدد نتيجة ART وعملية اختبار Android على الهاتف عند milestone أكبر قبل فتح R2. إن فشل test، سجل السبب/أصلحه/أعد البناء، ولا تكتف بتجميع.
+
+## إعادة تحقق R1 مع كود R2 الأخير — 2026-11-23
+- `run 45113795068` **SUCCESS** على code SHA `40837af4e89a4c5463305885f488943022c03702`: Rust 14 tests، signed APK DEX، ART Android15 isolated.
+- Log: `CPRUST_R1_JNI_PASS abi=1`؛ `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`؛ `INSTRUMENTATION_CODE: -1`.
+- Artifact 14791210489 `Cinemana-CP-Rust-R1-JNI-Diagnostic`؛ لا تثبت نسخة تشغيل كاملة أو هاتف أو actual download Rust.
+- `run 45113795022` Rust Core SUCCESS: 14/14 + SIGKILL Linux + ARM64 .so.

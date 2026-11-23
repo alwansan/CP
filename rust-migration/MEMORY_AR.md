@@ -80,3 +80,9 @@ R1: اسحب call graph ومخطط Room والـservices، وابن JNI ABI read
 - Room `DownloadsDatabase.p()` يرجع DAO obfuscated `kz0`; `ut3.a()` builder، MkvExporter.getDownloadsDao يحفظ `DL_SHARED_DAO` داخلياً.
 - `NativeBatchScope` يمتد `DownloadActionsHandlerScope.m()` التي تستخدم MkvPlanStore و`i44` API وcoroutines. مجرد `BatchDownload.call("m")` ليس receipt durable.
 - راجع `rust-migration/R2_ROOM_SCHEMA_AUDIT_AR.md` قبل R2 shadow adapter. لا تكتب Rust إلى Room schema مباشرة.
+
+## إعادة تحقق R1 مع كود R2 الأخير — 2026-11-23
+- `run 45113795068` **SUCCESS** على code SHA `40837af4e89a4c5463305885f488943022c03702`: Rust 14 tests، signed APK DEX، ART Android15 isolated.
+- Log: `CPRUST_R1_JNI_PASS abi=1`؛ `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`؛ `INSTRUMENTATION_CODE: -1`.
+- Artifact 14791210489 `Cinemana-CP-Rust-R1-JNI-Diagnostic`؛ لا تثبت نسخة تشغيل كاملة أو هاتف أو actual download Rust.
+- `run 45113795022` Rust Core SUCCESS: 14/14 + SIGKILL Linux + ARM64 .so.
