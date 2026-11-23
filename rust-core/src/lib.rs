@@ -3,7 +3,9 @@
 //! Never replace Queue110/MkvExporter until a durable Android adapter is tested.
 use std::collections::{HashMap, HashSet};
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub mod durable_fixture;
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct TaskKey {
     pub source: String,
     pub episode_id: String,
