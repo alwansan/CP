@@ -72,6 +72,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 patches/local-account/run_tests.py --android-jar "$RUNNER_TEMP/rust-r1-tools/android.jar" --gson-jar "$RUNNER_TEMP/rust-r1-tools/gson.jar"
+          mkdir -p patches/local-account/src/com/shabakaty/cinemana/local
+          cp rust-migration/android/RustShadowEventWorker.java patches/local-account/src/com/shabakaty/cinemana/local/RustShadowEventWorker.java
           python3 patches/local-account/build.py --android-jar "$RUNNER_TEMP/rust-r1-tools/android.jar" --r8-jar "$RUNNER_TEMP/rust-r1-tools/r8.jar"
           python3 patches/local-account/validate.py
           python3 scripts/validate_recovery.py

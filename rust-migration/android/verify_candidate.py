@@ -23,6 +23,9 @@ root = Path("Cinemana_PATCH252_Project/app")
 probe = root / "smali_classes11/com/shabakaty/cinemana/local/RustAbiProbe.smali"
 body = probe.read_text()
 assert body.count(".method private static native nativeVersion()I") == 1
+assert "RustShadowEventWorker.smali" in (p.name for p in probe.parent.glob("RustShadowEventWorker*.smali"))
+worker_body = (probe.parent / "RustShadowEventWorker.smali").read_text()
+assert "nativeAudit([I[Ljava/lang/String;[J[I)J" in worker_body
 assert body.count(".method private static native nativeShadowAudit([I[I)J") == 1
 assert body.count("Lcom/shabakaty/cinemana/local/RustAbiProbe;->nativeShadowAudit([I[I)J") == 1
 assert body.count("Lcom/shabakaty/cinemana/local/RustAbiProbe;->nativeVersion()I") == 1
