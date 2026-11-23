@@ -1,0 +1,134 @@
+name: CP Rust R1 signed JNI diagnostic (isolated)
+on:
+  push:
+    branches: [experiment/rust-core-migration]
+    paths:
+      - 'rust-core/**'
+      - 'rust-migration/android/**'
+      - 'scripts/cp_dl_art/**'
+      - '.github/workflows/rust-r1-jni.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cp-rust-r1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-r1-jni:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0 platforms;android-35'
+      - name: Rust unit, lint and format checks
+        run: |
+          cargo fmt --manifest-path rust-core/Cargo.toml -- --check
+          cargo clippy --manifest-path rust-core/Cargo.toml --all-targets -- -D warnings
+          cargo test --manifest-path rust-core/Cargo.toml --all-targets
+      - name: Cross-build both Android ABIs, and stage native libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup target add aarch64-linux-android x86_64-linux-android
+          NDK="${ANDROID_NDK_LATEST_HOME:-${ANDROID_NDK_HOME:-}}"
+          if [ -z "$NDK" ]; then
+            SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+            test -n "$SDK_ROOT" && test -d "$SDK_ROOT/ndk"
+            NDK="$(find "$SDK_ROOT/ndk" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+          fi
+          BIN="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          test -x "$BIN/aarch64-linux-android24-clang"
+          test -x "$BIN/x86_64-linux-android24-clang"
+          CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$BIN/aarch64-linux-android24-clang" cargo build --manifest-path rust-core/Cargo.toml --release --target aarch64-linux-android
+          CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER="$BIN/x86_64-linux-android24-clang" cargo build --manifest-path rust-core/Cargo.toml --release --target x86_64-linux-android
+          file rust-core/target/aarch64-linux-android/release/libcp_rust_core.so
+          file rust-core/target/x86_64-linux-android/release/libcp_rust_core.so
+          mkdir -p Cinemana_PATCH252_Project/app/lib/arm64-v8a Cinemana_PATCH252_Project/app/lib/x86_64
+          cp rust-core/target/aarch64-linux-android/release/libcp_rust_core.so Cinemana_PATCH252_Project/app/lib/arm64-v8a/
+          cp rust-core/target/x86_64-linux-android/release/libcp_rust_core.so Cinemana_PATCH252_Project/app/lib/x86_64/
+      - name: Fetch pinned Java helper dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rust-r1-tools"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/org/robolectric/android-all/13-robolectric-9030017/android-all-13-robolectric-9030017.jar -o "$RUNNER_TEMP/rust-r1-tools/android.jar"
+          curl --fail --location --retry 3 https://storage.googleapis.com/r8-releases/raw/8.3.37/r8.jar -o "$RUNNER_TEMP/rust-r1-tools/r8.jar"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar -o "$RUNNER_TEMP/rust-r1-tools/gson.jar"
+          echo '4241c14a7727c34feea6507ec801318a3d4a90f070e4525681079fb94ee4c593  '"$RUNNER_TEMP/rust-r1-tools/gson.jar" | sha256sum --check
+      - name: Assemble APKTool candidate with isolated Smali handshake
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 patches/local-account/run_tests.py --android-jar "$RUNNER_TEMP/rust-r1-tools/android.jar" --gson-jar "$RUNNER_TEMP/rust-r1-tools/gson.jar"
+          python3 patches/local-account/build.py --android-jar "$RUNNER_TEMP/rust-r1-tools/android.jar" --r8-jar "$RUNNER_TEMP/rust-r1-tools/r8.jar"
+          python3 patches/local-account/validate.py
+          python3 scripts/validate_recovery.py
+          python3 scripts/test_reference_guards.py
+          python3 scripts/test_recovery_flow.py
+          python3 scripts/test_apk_dex.py
+          python3 scripts/test_cp_dl.py
+          python3 scripts/test_mux_slots_dl.py
+          cp rust-migration/android/RustAbiProbe.smali Cinemana_PATCH252_Project/app/smali_classes11/com/shabakaty/cinemana/local/RustAbiProbe.smali
+          bash Cinemana_PATCH252_Project/build.sh
+      - name: Align/sign/verify isolated signed APK (no release publication)
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_PASSWORD: ${{ secrets.CINEMANA_KEY_PASSWORD || secrets.CINEMANA_KEYSTORE_PASSWORD || 'android' }}
+          KEY_ALIAS: ${{ vars.CINEMANA_KEY_ALIAS || 'androiddebugkey' }}
+        run: |
+          set -euo pipefail
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          "$tools/zipalign" -f -p 4 Cinemana_PATCH252_Project/output/Cinemana_PATCH252_unsigned.apk "$RUNNER_TEMP/cp-rust-r1-aligned.apk"
+          "$tools/apksigner" sign --ks signing/checkpoint145-debug.keystore --ks-key-alias "$KEY_ALIAS" --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD --out Cinemana_PATCH252_Project/output/Cinemana_CP_Rust_R1_probe_signed.apk "$RUNNER_TEMP/cp-rust-r1-aligned.apk"
+          "$tools/apksigner" verify --verbose Cinemana_PATCH252_Project/output/Cinemana_CP_Rust_R1_probe_signed.apk
+          "$tools/zipalign" -c -p 4 Cinemana_PATCH252_Project/output/Cinemana_CP_Rust_R1_probe_signed.apk
+          python3 scripts/verify_apk_dex.py Cinemana_PATCH252_Project/output/Cinemana_CP_Rust_R1_probe_signed.apk --smali-root Cinemana_PATCH252_Project/app
+          python3 rust-migration/android/verify_candidate.py Cinemana_PATCH252_Project/output/Cinemana_CP_Rust_R1_probe_signed.apk
+          sha256sum Cinemana_PATCH252_Project/output/Cinemana_CP_Rust_R1_probe_signed.apk > Cinemana_PATCH252_Project/output/CP_RUST_R1_SHA256SUMS.txt
+      - name: Diagnostic APK artifact only (not a production update)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cinemana-CP-Rust-R1-JNI-Diagnostic
+          path: |
+            Cinemana_PATCH252_Project/output/Cinemana_CP_Rust_R1_probe_signed.apk
+            Cinemana_PATCH252_Project/output/CP_RUST_R1_SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7
+      - name: Detect emulator acceleration (strict ART)
+        id: emulator_accel
+        shell: bash
+        run: |
+          set -euo pipefail
+          opts="-no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim"
+          if [[ ! -c /dev/kvm ]]; then
+            sudo modprobe kvm || true
+            if grep -qm1 vmx /proc/cpuinfo; then sudo modprobe kvm_intel || true; fi
+            if grep -qm1 svm /proc/cpuinfo; then sudo modprobe kvm_amd || true; fi
+          fi
+          if [[ -c /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi
+          if [[ ! -c /dev/kvm || ! -r /dev/kvm || ! -w /dev/kvm ]]; then opts="$opts -accel off"; fi
+          echo "options=$opts" >> "$GITHUB_OUTPUT"
+      - name: Android15 ART real dialog + native JNI from signed candidate
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-boot-timeout: 1800
+          emulator-options: ${{ steps.emulator_accel.outputs.options }}
+          script: bash scripts/cp_dl_art/run.sh Cinemana_PATCH252_Project/output/Cinemana_CP_Rust_R1_probe_signed.apk --rust-jni
