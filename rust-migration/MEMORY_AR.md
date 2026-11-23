@@ -58,3 +58,8 @@ R1: اسحب call graph ومخطط Room والـservices، وابن JNI ABI read
 - اختبار ART معزول وسيناريو Dialog الحقيقي يستخدم DexClassLoader على signed candidate ويتحقق من Rust native version، لكنه ليس اختبار فتح التطبيق على هاتف.
 - مراجعة كود إضافية: BatchDownload$Screen -> BatchDownload.call("m")، Queue110.remember -> Queue110.save -> Restart108.put (SharedPreferences commit) per task؛ لا يوجد دليل أن 500 عنصر commit في معاملة واحدة. Queue110.scanBody يستعمل DAO عبر Restart108.exp -> MkvExporter.getDownloadsDao. راجع R2_STORAGE_CONTRACT_AR.md.
 - المطلوب التالي: نتيجة ART ثم Android runtime/phone ABI proof ونقاط ملكية DB، لا نقل actual bytes قبل ذلك.
+
+## نتيجة Android15 ART النهائية — 2026-11-23
+- Run 45112292108 completed/success. 5/5 Rust tests PASS، APKTool signed/verify/DEX PASS، ARM64/x86_64 .so packaged.
+- exact signed-candidate isolated ART: `CPRUST_R1_JNI_PASS abi=1`؛ `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`، `INSTRUMENTATION_CODE: -1`.
+- Artifact 14790505739 `Cinemana-CP-Rust-R1-JNI-Diagnostic`؛ ما يزال diagnostic APK وليس تحديثاً للاستخدام؛ لم يُختبر Android 15 **فتح التطبيق الكامل** أو هاتف المالك، ولا تحويل أي download حي إلى Rust.

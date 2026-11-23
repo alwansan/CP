@@ -7,3 +7,8 @@ Source experiment/rust-core-migration؛ مرجع source feature/download-stabili
 - تم فحص سلسلة Smali: BatchDownload$Screen.enqueue -> reflective BatchDownload.call m، Queue110.remember/save -> Restart108.put commit، وQueue110.scanBody -> MkvExporter.getDownloadsDao. مخطط R2 موجود في rust-migration/R2_STORAGE_CONTRACT_AR.md.
 - لا حاجة لاختبار مستخدم للهاتف الآن؛ الهدف خفض التجارب الصغيرة مع تسجيلها في CI، وتجربة الجهاز عند milestone كبير.
 - خطوة المتابعة: احصل على نتيجة run 45112292108؛ أصلح الفشل إن وجد، ثم سجل النتيجة وحدّث الملفات الخمسة قبل العمل المقبل.
+
+## نتيجة النهائية للتحقق R1 (نفس جلسة03)
+- Run 45112292108 **completed/success**. 5 Rust tests OK؛ cross-ABI compile، signed APK verification، Artifact id 14790505739.
+- Android15 x86_64 ART actual signed candidate via isolated probe: `CPRUST_R1_JNI_PASS abi=1`، و`CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1` و`INSTRUMENTATION_CODE: -1`.
+- لا Android arm64 phone load أو background service real use، ولا actual download speed improvement. R1 diagnostics successful، لكن R2 production gates still blocked.

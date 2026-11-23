@@ -33,3 +33,12 @@ Rust: محرك تحميل الحلقات، إدارة مئات المهام وا
 - عند كتابة هذا التحديث، Android15 emulator ART ما زال in_progress؛ تحقق من نتيجة الخطوة وخذ logs قبل أي إعلان كامل. `scripts/cp_dl_art/run.sh ... --rust-jni` هو حارس ART.
 - اقرأ rust-migration/R1_JNI_REPORT_AR.md وR2_STORAGE_CONTRACT_AR.md. الثانية تثبت Queue110.remember → save → Restart108.put (SharedPreferences commit per task) وBatchDownload native dispatch؛ لا تحسبه batch atomic ACK.
 - أي تعديل لاحق يجب أن يحدث STATE/MEMORY/PLAN/هذه الرسالة وآخر سجل. التفعيل الفعلي لطابور Rust مؤجل إلى إثبات R2.
+
+## نتيجة RUN نهائية — R1 JNI
+تأكد بتاريخ 2026-11-23 من run https://github.com/alwansan/CP/actions/runs/45112292108: **COMPLETED / SUCCESS**. 
+اختبار Android 15 isolated instrumentation من signed candidate أصدر:
+`CPRUST_R1_JNI_PASS abi=1`
+`CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`
+`INSTRUMENTATION_CODE: -1`.
+Artifact 14790505739 اسمه Cinemana-CP-Rust-R1-JNI-Diagnostic؛ diagnostic only لا release ولا يثبت تطبيق كامل/هاتف/تحميلات real.
+الخطوة: استكمل owner mapping لقاعدة البيانات وBatchDownload native m وحضّر Rust durable batch tests synthetic، مع بقاء FileDownloader/FFmpeg/Room كما هي. أعد الفحص المباشر لـHEAD/Actions عند الاستئناف، وحدّث الملفات باستمرار.

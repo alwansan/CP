@@ -39,3 +39,10 @@
 ## ربط بنظام CI
 Rust fmt/clippy/test/property → Android ARM64/x86_64 build → JNI load → APKTool assemble+sign+verify DEX → Android15 ART smoke → device stress/parity → release guarded.
 لا تتخطى ART بسبب نقص KVM، ولا تصدر APK تجريبياً كأن ميزاته مكتملة.
+
+## دليل R1 المحدد — 2026-11-23
+- T07 **جزئي PASS** لواجهة JNI الصحيحة فقط: JNI ABI=1 loaded from signed diagnostic candidate via Android15 x86_64 ART؛ wrong version/null/teardown لم تختبر بعد.
+- T08 **جزئي PASS** لفحص الشاشة: 54 class families، 2 opens، 4 laterRefresh callback paths، 2 closes، 6 backend classes وshared slot tests. ليس اختبار full application install.
+- T09 **جزئي PASS** لبناء ARM64/x86_64 packaging، وليس تحميل ARM64 على جهاز حقيقي.
+- Artifact 14790505739، run 45112292108، `CPRUST_R1_JNI_PASS abi=1` و`INSTRUMENTATION_CODE: -1`.
+- T10–T20 وكل ضغط التحميل/التحويل الحقيقي NOT_RUN لنسخة Rust الحالية.

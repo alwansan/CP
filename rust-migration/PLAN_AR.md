@@ -105,3 +105,9 @@ P5: كل الميزات/الترقية والتحقق على الهاتف.
 - signed diagnostic APK verified في run 45112292108؛ artifact 14790505739 متاح على Actions. اختبار exact candidate Android15 ART قيد التنفيذ عند هذا التحديث؛ لا اعتبار بوابة R1 كاملة قبل النتيجة.
 - الوثيقتان R1_JNI_REPORT_AR.md وR2_STORAGE_CONTRACT_AR.md تبينان حدود التحقق وسلسلة قبول الدفعات الموثقة.
 - R2 لم يبدأ implementation بعد، حافظ على single writer/Queue110 SharedPreferences commit وRoom، ولا تعتبر `enqueue_admitted` وصل ACK لدفعة كاملة.
+
+### R1 نجاح بوابة ART المعزولة — 2026-11-23
+- ✅ Run 45112292108 succeeded: verified signed diagnostic APK, JNI ABI=1 on Android15 x86_64 emulator, opens=2/refresh_paths=4/closes=2 لـBatchDownload.
+- ✅ Binary ARM64 وx86_64 CI builds. ABI/DEX smoke تحقق.
+- ⬜ Device Android ARM64 full app startup/multi-process JNI smoke ما زال NOT_RUN. لا تفرض تجربة صغيرة على المالك؛ اجمعها مع milestone وظيفي أكبر.
+- ⬜ R2 durable Rust ledger وشيفرة الإنتاج لم تبدأ؛ أكمل حقائق source/Room قبل التعديل.

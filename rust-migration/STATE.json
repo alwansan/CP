@@ -6,7 +6,7 @@
   "source_head": "c68c0d80722765409f8544d499938a656217967b",
   "writable_branch": "experiment/rust-core-migration",
   "date": "2026-11-23",
-  "phase": "R1_JNI_diagnostic_signed_candidate_ART_in_progress",
+  "phase": "R1_signed_APK_emulator_ART_JNI_success_phone_gate_pending",
   "jni_integrated": false,
   "android_library_built": true,
   "android_apk_built": true,
@@ -21,7 +21,7 @@
     "R1 Android15 ART test running",
     "R2 source-grounded durable queue contract doc"
   ],
-  "next": "Check CI run 45112292108's Android15 ART test. On failure inspect job logs and repair; on success record exact proof, then study Room/source-owner contract before R2. Do not enable Rust download engine.",
+  "next": "Proceed to R1 full app install/device ABI smoke only when combined with a meaningful user-facing milestone; meanwhile map BatchDownload native m submit, SharedPreferences/Room owner, build R2 synthetic durable batch ledger and replay tests without production activation.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
   "session": "rust-migration/sessions/2026-11-23-r1-jni-integration-03.md",
@@ -72,11 +72,10 @@
     "parity test matrix"
   ],
   "blockers": [
-    "Pending Android15 ART handshake and actual BatchDownload dialog result",
-    "No in-app runtime initialization or phone verification",
-    "No durable Rust queue and DB owner mapping",
-    "No Rust HTTP transfer/MKV integration",
-    "No full feature parity"
+    "No full Cinemana installed application startup or phone JNI verification",
+    "No durable Rust queue or Room owner mapping",
+    "No active Rust download transfer and real FFmpeg integration",
+    "No same workload performance or complete feature parity tests"
   ],
   "status_detail": "No production functionality moved from Java/Smali to Rust; documentation scope expanded only.",
   "protected_branches": [
@@ -98,7 +97,7 @@
     "r1": "rust-migration/R1_JNI_REPORT_AR.md",
     "r2_contract": "rust-migration/R2_STORAGE_CONTRACT_AR.md"
   },
-  "last_verified_action_run": 45110176247,
+  "last_verified_action_run": 45112292108,
   "last_verified_action_result": "success",
   "rust_http_downloads_active": false,
   "mkv_runtime_migrated": false,
@@ -106,7 +105,7 @@
   "last_ci_run_id": 45112292108,
   "last_ci_earlier_core_run_id": 45112198686,
   "last_ci_earlier_core_result": "success",
-  "current_ci_result": "in_progress_ART_pending",
+  "current_ci_result": "success",
   "jni_export_implemented": true,
   "jni_integrated_in_signed_diagnostic_apk": true,
   "jni_integrated_in_production_runtime": false,
@@ -117,8 +116,15 @@
     "name": "Cinemana-CP-Rust-R1-JNI-Diagnostic",
     "url": "https://github.com/alwansan/CP/actions/runs/45112292108",
     "sign_verify": true,
-    "android15_art": "in_progress",
+    "android15_art": "pass",
     "rust_abi": "ARM64 and x86_64",
-    "safe_to_distribute_as_update": false
-  }
+    "safe_to_distribute_as_update": false,
+    "art_exact_signed_candidate": true,
+    "test_result": "CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2; CPRUST_R1_JNI_PASS abi=1",
+    "art_marker": "INSTRUMENTATION_CODE: -1",
+    "zip_sha256": "b2e9a04e9a25836adbc0bf80f29d3aed40ea9eab6482e0ac41d5116262461a63"
+  },
+  "r1_android15_signed_apk_art_gate": "passed_isolated_instrumentation",
+  "r1_android15_signed_apk_art_run": 45112292108,
+  "r1_device_gate": "not_run"
 }
