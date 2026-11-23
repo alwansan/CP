@@ -102,6 +102,36 @@ public final class Probe extends Instrumentation {
                 Object version = rustProbe.getMethod("version").invoke(null);
                 require(version instanceof Integer && ((Integer) version).intValue() == 1,
                         "Rust JNI ABI version mismatch");
+                // R2 is an observational JNI probe with SYNTHETIC IDs only.
+                // It does not consult the user's Room DB or enqueue anything.
+                Method shadow = rustProbe.getMethod("shadowAudit", int[].class, int[].class);
+                int[] synthetic500 = new int[500];
+                for (int i = 0; i < 400; i++) synthetic500[i] = i + 1;
+                for (int i = 400; i < 500; i++) synthetic500[i] = i - 399;
+                int[] known200 = new int[200];
+                for (int i = 0; i < 200; i++) known200[i] = i + 1;
+                long expected = (200L << 40) | (200L << 20) | 100L;
+                long observed = ((Long) shadow.invoke(null, synthetic500, known200)).longValue();
+                require(observed == expected, "R2 shadow 500 selected counts mismatch");
+                require(((Long) shadow.invoke(null, synthetic500, known200)).longValue() == expected,
+                        "R2 shadow second call must be stateless");
+                require(((Long) shadow.invoke(null, new int[0], new int[0])).longValue() == 0,
+                        "R2 empty shadow counts mismatch");
+                try {
+                    shadow.invoke(null, new int[]{0}, new int[0]);
+                    throw new AssertionError("R2 invalid synthetic ID was accepted");
+                } catch (InvocationTargetException expectedException) {
+                    require(expectedException.getCause() instanceof IllegalArgumentException,
+                            "R2 invalid ID must fail with IllegalArgumentException");
+                }
+                try {
+                    shadow.invoke(null, new int[1001], new int[0]);
+                    throw new AssertionError("R2 oversized synthetic batch was accepted");
+                } catch (InvocationTargetException expectedException) {
+                    require(expectedException.getCause() instanceof IllegalArgumentException,
+                            "R2 oversized batch must be rejected before copying");
+                }
+
             }
             int classes = 0;
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(ctx.getAssets().open("family.txt")))) {
@@ -198,6 +228,8 @@ public final class Probe extends Instrumentation {
             result.putString("stream","\nCPDL_ART_PASS family="+classes+" opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1\n");
             if (rustAbiTest) {
                 result.putString("stream", result.getString("stream") + "CPRUST_R1_JNI_PASS abi=1\n");
+                result.putString("stream", result.getString("stream")
+                        + "CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1\n");
             }
             finish(Activity.RESULT_OK,result);
         } catch (Throwable t) {

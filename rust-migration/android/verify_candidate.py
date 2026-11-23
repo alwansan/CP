@@ -23,6 +23,8 @@ root = Path("Cinemana_PATCH252_Project/app")
 probe = root / "smali_classes11/com/shabakaty/cinemana/local/RustAbiProbe.smali"
 body = probe.read_text()
 assert body.count(".method private static native nativeVersion()I") == 1
+assert body.count(".method private static native nativeShadowAudit([I[I)J") == 1
+assert body.count("Lcom/shabakaty/cinemana/local/RustAbiProbe;->nativeShadowAudit([I[I)J") == 1
 assert body.count("Lcom/shabakaty/cinemana/local/RustAbiProbe;->nativeVersion()I") == 1
 assert 'const-string v0, "cp_rust_core"' in body
 # Confirm there is no production entry-point hook.

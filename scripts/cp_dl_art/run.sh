@@ -39,6 +39,7 @@ timeout 180 adb shell am instrument -w -r cpdl.artprobe/.Probe | tee "$tmp/resul
 grep -F 'CPDL_ART_PASS family=' "$tmp/result.txt"
 if [[ "${2:-}" == "--rust-jni" ]]; then
   grep -F 'CPRUST_R1_JNI_PASS abi=1' "$tmp/result.txt"
+  grep -F 'CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1' "$tmp/result.txt"
 fi
 grep -E 'INSTRUMENTATION_CODE: -1' "$tmp/result.txt"
 if grep -qE 'CPDL_ART_FAIL|INSTRUMENTATION_FAILED|Process crashed' "$tmp/result.txt"; then exit 1; fi
