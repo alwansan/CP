@@ -99,3 +99,9 @@ P3: نقل HTTP إذا أثبت تفوقاً على FileDownloader؛ هذا قر
 P4: MKV completion proof وإغلاق ثغرات recovery المتبقية.
 P5: كل الميزات/الترقية والتحقق على الهاتف.
 متى نعتبر المشروع منتهياً؟ ليس بتاريخ مقطوع، بل بمرور R7 وكل البوابات الحرجة؛ لا توجد مدة موثوقة قبل R1/R2 وقياسات الأداء الحقيقية.
+
+## حالة تنفيذ R1 الحالية — 2026-11-23
+- JNI read-only C export وSmali probe حقق فحوص Rust Linux وARM64/x86_64 build.
+- signed diagnostic APK verified في run 45112292108؛ artifact 14790505739 متاح على Actions. اختبار exact candidate Android15 ART قيد التنفيذ عند هذا التحديث؛ لا اعتبار بوابة R1 كاملة قبل النتيجة.
+- الوثيقتان R1_JNI_REPORT_AR.md وR2_STORAGE_CONTRACT_AR.md تبينان حدود التحقق وسلسلة قبول الدفعات الموثقة.
+- R2 لم يبدأ implementation بعد، حافظ على single writer/Queue110 SharedPreferences commit وRoom، ولا تعتبر `enqueue_admitted` وصل ACK لدفعة كاملة.

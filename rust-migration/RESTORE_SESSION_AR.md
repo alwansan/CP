@@ -26,3 +26,10 @@ Rust: محرك تحميل الحلقات، إدارة مئات المهام وا
 
 ## إلزام تحديث مستمر
 عند كل نتيجة/فشل/قرار/اختبار: حدّث rust-migration/STATE.json، MEMORY_AR.md، PLAN_AR.md، DECISIONS_AND_RISKS_AR.md، هذه الرسالة، وسجل جلسة مستقل. تحقق من HEAD/Actions عند الانتهاء. لا تدّع تشغيل عمل في الخلفية لمجرد كتابة خطة.
+
+## نقطة التقدم الإضافية — جلسة R1 JNI 03 (2026-11-23)
+- تابع commit الكود 5488ce967886b21891c3a4c381e39579be85cc0d ومسار .github/workflows/rust-r1-jni.yml.
+- مكتبة Rust تصدر رمز JNI version=1، Smali bridge معزول، وCI بنا المكتبات ARM64/x86_64 ثم حزم APK تشخيصي موقّع ونجحت فحوص DEX. Run 45112292108 / artifact 14790505739. لا يوجد Release.
+- عند كتابة هذا التحديث، Android15 emulator ART ما زال in_progress؛ تحقق من نتيجة الخطوة وخذ logs قبل أي إعلان كامل. `scripts/cp_dl_art/run.sh ... --rust-jni` هو حارس ART.
+- اقرأ rust-migration/R1_JNI_REPORT_AR.md وR2_STORAGE_CONTRACT_AR.md. الثانية تثبت Queue110.remember → save → Restart108.put (SharedPreferences commit per task) وBatchDownload native dispatch؛ لا تحسبه batch atomic ACK.
+- أي تعديل لاحق يجب أن يحدث STATE/MEMORY/PLAN/هذه الرسالة وآخر سجل. التفعيل الفعلي لطابور Rust مؤجل إلى إثبات R2.

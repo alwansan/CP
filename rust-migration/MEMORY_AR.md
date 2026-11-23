@@ -50,3 +50,11 @@
 
 ## الخطوة التالية المعتمدة
 R1: اسحب call graph ومخطط Room والـservices، وابن JNI ABI read-only داخل APK تجريبي، وافحص ART/ABI/device دون تشغيل أي نقل Rust. إذا أثبتت هذه البوابة السلامة، ننتقل إلى durable queue R2.
+
+## جلسة R1 JNI — 2026-11-23
+- كود Rust: native JNI export `Java_com_shabakaty_cinemana_local_RustAbiProbe_nativeVersion` بإرجاع version=1 فقط، بلا state أو network.
+- `RustAbiProbe.smali` فقط في rust-migration/android/، يُضاف إلى generated classes11 أثناء workflow الخاص بالفرع، وليس خطاف تشغيل production.
+- exact signed APK diagnostic مع `libcp_rust_core.so` لكل من ARM64/x86_64، وhelper compile وDEX/zipalign/sign checks نجحت في run 45112292108؛ اختبار Android15 ART كان in_progress عند توثيق هذا التقدم. artifact id 14790505739، لا Release.
+- اختبار ART معزول وسيناريو Dialog الحقيقي يستخدم DexClassLoader على signed candidate ويتحقق من Rust native version، لكنه ليس اختبار فتح التطبيق على هاتف.
+- مراجعة كود إضافية: BatchDownload$Screen -> BatchDownload.call("m")، Queue110.remember -> Queue110.save -> Restart108.put (SharedPreferences commit) per task؛ لا يوجد دليل أن 500 عنصر commit في معاملة واحدة. Queue110.scanBody يستعمل DAO عبر Restart108.exp -> MkvExporter.getDownloadsDao. راجع R2_STORAGE_CONTRACT_AR.md.
+- المطلوب التالي: نتيجة ART ثم Android runtime/phone ABI proof ونقاط ملكية DB، لا نقل actual bytes قبل ذلك.

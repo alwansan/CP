@@ -44,3 +44,7 @@
 
 ## تحديث السجل
 لكل خطر أضف first failure, reproduction fixture, evidence SHA/run, owner, status (open/mitigating/verified), no guesses. لا تختزل 0 observed crashes إلى ضمان شامل.
+
+## تحديث R1 JNI — 2026-11-23
+- بوابة R1: artifact signed+DEX-only لا يثبت DexClassLoader/System.loadLibrary؛ run 45112292108 يجرب الاختبار عبر Android15 ART. إذا فشل، افتح logs ولا ترفع APK للمستخدم.
+- خطر جديد RM16: نوع الاختبار معزول ويحمل المكتبة من signed candidate إلى مجلد instrumentation، لذا نجاح ART لا يساوي تشغيل Cinemana الكامل ولا عمل الخدمة :filedownloader. لا تُغلق بوابة phone/live process إلا بتجربة مستقلة.
