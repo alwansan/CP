@@ -1,10 +1,10 @@
 # خطة الترحيل الآمن — 2026-11-23
-## R0 — تأسيس (الحالي)
+## R0 — تأسيس (مكتمل: CI Linux + Android ARM64 .so؛ غير مدمج بالتطبيق)
 1. فرع منفصل وإبقاء مصدر download-stability كما هو.
 2. وحدة Rust in-memory فقط واختبارات هوية الدفعة/generation/state، CI مستقل.
-3. لا APK أو مكتبة Android مثبتة بعد؛ تحقق من نتائج Actions قبل ادعاء نجاح.
+3. نجح run 45110102602 (fmt/clippy/tests/Linux)، وrun 45110176247 (Android ARM64 .so، artifact 14788429301). المكتبة ليست APK ولم تُحمّل داخل التطبيق؛ اختبار JNI/ART لا يزال مطلوباً.
 
-## R1 — ربط مشاهدات بلا تغيير التشغيل
+## R1 — ربط مشاهدات بلا تغيير التشغيل (التالي)
 1. خريطة Smali الفعلية: Queue110, BatchDownload, Restart108, MkvExporter, MkvReconciler, FileDownloader, Room, FFmpeg, process/service and UI callbacks.
 2. صمم واجهة FFI/JNI صغيرة ذات إصدارات وتحقق من handles/stale callbacks وانهيارات Rust، مع عدم تنفيذ I/O على main.
 3. بناء cargo-ndk لـ arm64-v8a عبر Actions ثم حزم libcp_rust_core.so في APK تجريبي، اختبارات التحميل داخل Android ART/device.

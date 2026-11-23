@@ -6,21 +6,48 @@
   "source_head": "c68c0d80722765409f8544d499938a656217967b",
   "writable_branch": "experiment/rust-core-migration",
   "date": "2026-11-23",
-  "phase": "R0_foundation",
+  "phase": "R0_Android_arm64_library_built_not_integrated",
   "jni_integrated": false,
-  "android_library_built": false,
+  "android_library_built": true,
   "android_apk_built": false,
   "production_downloader_modified": false,
   "feature_parity": "not_yet_validated",
-  "branch_ci": "pending",
+  "branch_ci": "success",
   "current_scope": [
     "in-memory batch dedupe simulation",
     "generation fencing",
     "state transition tests",
     "host CI"
   ],
-  "next": "Check Rust Core workflow result; map APKTool/Smali call paths and build a JNI read-only Android integration before any production replacement",
+  "next": "Map actual Smali Java entrypoints and test JNI ABI/ART in isolated Android lab. Do not activate any download work until durable storage and parity checks.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
-  "session": "rust-migration/sessions/2026-11-23-r0.md"
+  "session": "rust-migration/sessions/2026-11-23-r0.md",
+  "android_library_abi": "arm64-v8a",
+  "last_code_commit": "54f66df4402bdc20e72376f3a024bdcc281ab012",
+  "ci_runs": [
+    {
+      "id": 45110027899,
+      "result": "failure",
+      "reason": "rustfmt differences; corrected"
+    },
+    {
+      "id": 45110102602,
+      "result": "success",
+      "verification": "cargo fmt, clippy, 5 unit tests, Linux release library"
+    },
+    {
+      "id": 45110176247,
+      "result": "success",
+      "verification": "cargo fmt, clippy, 5 unit tests, Linux release library, Android arm64-v8a native cdylib upload"
+    }
+  ],
+  "android_artifact": {
+    "id": 14788429301,
+    "name": "cp-rust-core-arm64-experimental",
+    "size_zip_bytes": 193809,
+    "run_id": 45110176247,
+    "url": "https://github.com/alwansan/CP/actions/runs/45110176247",
+    "is_installable_apk": false
+  }
 }
