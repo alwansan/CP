@@ -176,10 +176,21 @@ impl Ledger {
     }
 }
 
-/// ABI smoke test only. Not a JNI bridge and not integrated into the APK.
+/// ABI smoke version only: no downloader/network/FFmpeg/DB state.
 #[no_mangle]
 pub extern "C" fn cp_rust_core_abi_version() -> u32 {
     1
+}
+
+/// Read-only JNI entrypoint. No dereference of JNIEnv or class pointers.
+/// Deliberately no JNI crate dependency until a stateful bridge is designed.
+#[allow(non_snake_case)]
+#[no_mangle]
+pub extern "system" fn Java_com_shabakaty_cinemana_local_RustAbiProbe_nativeVersion(
+    _env: *mut std::ffi::c_void,
+    _class: *mut std::ffi::c_void,
+) -> i32 {
+    cp_rust_core_abi_version() as i32
 }
 
 #[cfg(test)]
