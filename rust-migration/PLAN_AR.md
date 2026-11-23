@@ -119,3 +119,9 @@ P5: كل الميزات/الترقية والتحقق على الهاتف.
 - ⬜ cross-process SIGKILL real fixture test + Android filesystem/ART runtime proof NOT_RUN.
 - ⬜ full process/main thread performance, 500 real episode parity, DB native ACK and rollback NOT_RUN.
 - التفاصيل في `rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md`، الممنوع تعميم synthetic durable ACK إلى user-admission.
+
+## بوابة اختبار إضافية R2 — 2026-11-23
+- ✅ child process SIGKILL test على Linux: قفل فلِك يتحرر بعد kill، 0 intents قبل الحفظ، و500 بعد حفظ فعلي؛ receipt exact replay.
+- ✅ CI run 45113795022: 14/14 Rust unit، fmt/clippy، Linux وARM64 .so، `CP_R2_SIGKILL_PASS`.
+- ⬜ SIGKILL أثناء write/fsync/rename الحقيقي مع fault timing instrumentation ما زال غير مجرَّب؛ الاختبار الحالي يغطي kill قبل commit وبعده، وfault injection يغطي نافذتي rename.
+- ⬜ Android process/file lock/Room/WAL, live download and MKV, phone acceptance كلها NOT_RUN.

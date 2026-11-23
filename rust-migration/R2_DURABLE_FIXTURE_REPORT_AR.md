@@ -29,3 +29,10 @@
 2. بناء اختبارات process-crash مع actual child process/kill وchecksum/reopen، وحل no-admission-loss عبر request batch commit في مخزن متوافق مع Room أو durable adapter عند الالتزام.
 3. Shadow-only JNI bridge: Rust تقارن IDs/receipts مع المنتج دون إصدار أوامر تنزيل؛ تأكد أن ACK لا يسبق المعاملة الفعلية.
 4. بعد passing كل ذلك ومعايير الهاتف يمكن نقل مسؤولية admission داخل Android. لا تحول المجدول أو HTTP أو FFmpeg الآن.
+
+## نجاح اختبار العملية المنفصلة (R2 SIGKILL)
+- Rust worker `rust-core/src/bin/r2_fixture_worker.rs`، وPython `rust-migration/tests/test_sigkill.py` يعملان فقط في دليل مؤقت `cp-r2-sigkill-*`، بلا بيانات من هاتف المالك.
+- `run 45113795022` **completed/success**: fmt/clippy، 14 unit tests، Linux+ARM64 build؛ فحص SIGKILL الحقيقي:
+  `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`.
+- يفتح worker القفل ثم يموت قبل أي commit، ويعاد فتح المخزن الفارغ. ثم يكتب 500 intents بعقد fsync ويرسل marker، يُقتل بـSIGKILL مع حيازة lock، ثم يعيد process آخر فتح الـ500، مع منع مالك منافس أثناء حيازة القفل.
+- لا يستنتج من ذلك ضمان Android FS/Room/actual media/kill mid-fsync؛ بوابة R2 الإنتاجية لا تزال مفتوحة.

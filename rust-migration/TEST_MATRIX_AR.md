@@ -55,3 +55,8 @@ Run https://github.com/alwansan/CP/actions/runs/45113493256 **SUCCESS** — 14 R
 - T07–09: R1 isolated ABI ART السابقة PASS جزئياً، لكنها لم تختبر R2 file I/O على Android.
 - T14: **NOT_RUN** في Room؛ synthetic single-owner flock فقط.
 - T15–20: real UI, 500 download stress, media integrity, MKV, background, phone كلها NOT_RUN مع Rust.
+
+## اختبار SIGKILL الحقيقي Linux — 2026-11-23
+- T03 **partial PASS**: run 45113795022، processes synthetic subprocess kill قبل commit وبعده؛ stdout proof `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`.
+- T14 **partial PASS synthetic** لرفض مالك ثاني عند lock، ثم تحرير flock بعد SIGKILL؛ ما يزال Room WAL وAndroid :filedownloader NOT_RUN.
+- لا يوجد proof لـOS kill أثناء writes الفعلية، ولا اختبار fsync directory على Android filesystem. لا تخلط النجاح ببوابة production.

@@ -69,3 +69,8 @@ R1: اسحب call graph ومخطط Room والـservices، وابن JNI ABI read
 - `run 45113493256` **SUCCESS**: 14/14 Rust tests، fmt/clippy/Linux/Android arm64 .so. الاختبارات تشمل 500 طلب، 400+500 متداخلة، sim crash قبل/بعد rename، رفض تغير payload، 2nd owner، corruption. الدليل: rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md.
 - **ليس** تخزين مستخدم، ولا ربط Room/Queue110 أو JNI runtime؛ format snapshot غير مناسب لادعاء حل scalable production queue. `Fault` حقن اصطناعي وليس SIGKILL حقيقي؛ لا claim كاملة.
 - الخطوة التالية owner mapping/Room WAL والعقد الدائم الذي يندمج مع المصدر، وتمرين OS kill فعلي في بيئة معزولة.
+
+## عملية قتل فعلية SIGKILL — 2026-11-23
+- `rust-core/src/bin/r2_fixture_worker.rs` + `rust-migration/tests/test_sigkill.py`: اختبار Linux child process بـSIGKILL فعلي بدل الاكتفاء بحقن Error. اختبار 1 يقتل مالك القفل قبل أي commit ويتحقق من 0 tasks، واختبار 2 يثبت حفظ 500 intents ثم يقتل المالِك مع بقاء القفل مفتوحاً، وبعدها يفتحها process آخر دون فقد أو تكرار.
+- Run 45113795022 **SUCCESS**؛ marker `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`، Rust unit 14/14 وAndroid ARM64 crossbuild PASS.
+- حدود الدليل: ليس قتل وسط write/fsync فعلي، وليس Android process ولا Room/FFmpeg. لا تبدأ production.

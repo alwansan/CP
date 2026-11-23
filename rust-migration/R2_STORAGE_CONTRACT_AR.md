@@ -25,3 +25,7 @@
 ## إضافة كود محاكاة R2 — 2026-11-23
 اكتمل اختبار مستقل `rust-core/src/durable_fixture.rs`؛ ليس `Room` أو `SharedPreferences`. يتعامل مع batches in fixed private test dir، ويعطي receipts فقط بعد fsync+atomic rename. CI run 45113493256 SUCCESS، 14 tests.
 لا تربط `DurableFixture::accept_batch` إلى BatchDownload الحقيقي؛ file snapshots والـcross-process owner ليسا مصممين لبيانات المستخدم. ما يزال مخطط DAO والـnative task_id يحتاج تحقق، وما تزال بوابة R2 production غير مجتازة.
+
+## دليل الاسترداد الجديد
+- CI 45113795022 PASSED actual Linux subprocess SIGKILL + lock release + 500 intents reopening, run marker `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`. 
+- مخزن fixture لا يزال غير ملائم لحالة SharedPreferences/Room الأصلية، ولا يعني Android R2 gate PASS.

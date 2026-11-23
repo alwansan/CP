@@ -21,3 +21,8 @@
 - أعد mapping لملكية Room/Downloads DAO وBatchDownload.call(m) وnative service؛ قرر how to shadow receipts without duplication.
 - أضف actual child process SIGKILL fixture test (Linux/Android بعد ذلك) ثم JNI read-only/synthetic bridge، وبعدها حسم بوابة R2.
 - حدّث ملفات الحالة والخطة والذاكرة والاستعادة والمخاطر/الاختبارات في كل جلسة.
+
+## متابعة جلسة04: child process SIGKILL
+- Add rust-core/src/bin/r2_fixture_worker.rs and rust-migration/tests/test_sigkill.py; workflow rust-core-check.yml now builds worker and runs Python test.
+- Run 45113795022 SUCCESS: 14/14 unit، fmt/clippy، Linux, ARM64 build، and `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`.
+- هذا SIGKILL حقيقي قبل وبعد commit فقط، لا mid-write OS kill ولا Android. فرع الأصل untouched؛ لا production APK.

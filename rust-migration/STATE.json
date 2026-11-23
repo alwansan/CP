@@ -6,7 +6,7 @@
   "source_head": "c68c0d80722765409f8544d499938a656217967b",
   "writable_branch": "experiment/rust-core-migration",
   "date": "2026-11-23",
-  "phase": "R2_synthetic_durable_batch_fixture_CI_pass_R2_production_not_started",
+  "phase": "R2_host_batch_fixture_and_real_SIGKILL_recovery_pass_Android_Room_not_integrated",
   "jni_integrated": false,
   "android_library_built": true,
   "android_apk_built": true,
@@ -21,12 +21,12 @@
     "R1 Android15 ART test running",
     "R2 source-grounded durable queue contract doc"
   ],
-  "next": "Map Room Downloads schema and native BatchDownload.call('m') ownership; design passive JNI/Room adapter and exact durable receipt boundary without writing production DB yet. Run actual cross-process/kill fixture test and R1 Android15 regression verification before activation.",
+  "next": "R2: map actual Room DAO, native submit and per-task commit; design shadow-only, versioned asynchronous JNI interface to compare receipts without touching user DB. Test Android private-dir fsync and real two-process native ownership before any production switch.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
   "session": "rust-migration/sessions/2026-11-23-r2-durable-fixture-04.md",
   "android_library_abi": "arm64-v8a",
-  "last_code_commit": "1b712bb0c347eef4b68700c91a500f588e7759a9",
+  "last_code_commit": "40837af4e89a4c5463305885f488943022c03702",
   "ci_runs": [
     {
       "id": 45110027899,
@@ -99,15 +99,15 @@
     "r2_contract": "rust-migration/R2_STORAGE_CONTRACT_AR.md",
     "r2_fixture_report": "rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md"
   },
-  "last_verified_action_run": 45113493256,
+  "last_verified_action_run": 45113795022,
   "last_verified_action_result": "success",
   "rust_http_downloads_active": false,
   "mkv_runtime_migrated": false,
   "eta": "Not estimated: acceptance is gated by JNI/ART, durable database integration, performance tests, full feature parity and phone evidence.",
-  "last_ci_run_id": 45113493256,
+  "last_ci_run_id": 45113795022,
   "last_ci_earlier_core_run_id": 45112198686,
   "last_ci_earlier_core_result": "success",
-  "current_ci_result": "success_for_Rust_Core_Android15_R1_recheck_in_progress",
+  "current_ci_result": "Rust Core success; R1 signed diagnostic crosscheck in_progress at update",
   "jni_export_implemented": true,
   "jni_integrated_in_signed_diagnostic_apk": true,
   "jni_integrated_in_production_runtime": false,
@@ -150,10 +150,22 @@
     "max_unique_tasks": 4096,
     "max_batches": 256,
     "snapshot_limit_bytes": 16777216,
-    "production_admission_active": false
+    "production_admission_active": false,
+    "process_sigkill_test": "passed_Linux_real_child_process_SIGKILL",
+    "process_sigkill_run": 45113795022,
+    "process_sigkill_proof": "CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1",
+    "process_sigkill_worker": "rust-core/src/bin/r2_fixture_worker.rs",
+    "process_sigkill_runner": "rust-migration/tests/test_sigkill.py",
+    "process_sigkill_scope": "two Linux child processes: kill before commit and kill after durable commit; not mid-write or Android ART",
+    "rust_test_count": 14,
+    "android_arm64_compiled": true
   },
   "r2_room_database_integrated": false,
   "r2_production_durable_ack": false,
   "r2_real_user_data_used": false,
-  "r2_status": "fixture CI passed; no actual Cinemana batch ack or Room integration"
+  "r2_status": "fixture CI passed; no actual Cinemana batch ack or Room integration",
+  "r2_fixture_android_runtime_proven": false,
+  "r2_real_download_engine_activated": false,
+  "r1_signed_apk_regression_last_proven_run": 45113493277,
+  "r1_signed_apk_regression_new_run": 45113795068
 }

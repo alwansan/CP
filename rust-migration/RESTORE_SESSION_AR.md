@@ -49,3 +49,10 @@ Artifact 14790505739 اسمه Cinemana-CP-Rust-R1-JNI-Diagnostic؛ diagnostic on
 - هذا محرك mock Rust محلي فقط ولا توجد صلة بقاعدة بيانات المستخدم وJNI runtime أو FileDownloader/FFmpeg. اختبار real SIGKILL/Android process ownership لم يحدث بعد.
 - تأكد من أحدث HEAD وCI قبل متابعة. اقرأ rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md وR2_STORAGE_CONTRACT_AR.md.
 - الخطوة: trace owner/schema/Room وBatchDownload.submit، اختبار kill حقيقي، تصميم shadow-only JNI/DB integration، ثم production receipt gate. استمر بتحديث STATE/MEMORY/PLAN/RISKS/RESTORE/session بعد كل خطوة.
+
+## آخر تقدم مؤكد R2 — Linux SIGKILL subprocess
+- Killed actual child processes in synthetic fixture tests: rust-core/src/bin/r2_fixture_worker.rs + rust-migration/tests/test_sigkill.py.
+- Run https://github.com/alwansan/CP/actions/runs/45113795022 **COMPLETED/SUCCESS**: 14/14 unit، fmt/clippy، Linux and arm64 .so، `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`.
+- Code commit 40837af4e89a4c5463305885f488943022c03702. وثائق التخزين: R2_DURABLE_FIXTURE_REPORT_AR.md، R2_STORAGE_CONTRACT_AR.md.
+- R1 signed candidate rebuilt SUCCESS في run 45113493277 بعد Rust module، لكن rerun جديد 45113795068 كان in_progress أثناء هذا التحديث؛ اقرأ نتيجة workflow عند الاستئناف.
+- لا تعلن R2 production أو أي APK متكامل: لم يُربط Rust بRoom/Queue110، ولم يجر أي اختبار نقل حقيقي/هاتف. التالي owner mapping وshadow-only Android bridge، بلا تغير مستخدم.
