@@ -12,6 +12,7 @@ import dalvik.system.DexClassLoader;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Isolated, offline test of the exact signed release APK's classes.
@@ -42,6 +43,105 @@ public final class Probe extends Instrumentation {
     private static void require(boolean ok, String msg) {
         if (!ok) throw new AssertionError(msg);
     }
+    /**
+     * R2 separate Java worker loaded from the EXACT signed diagnostic APK.
+     * This never observes actual Room rows, accounts, or network transfers.
+     */
+    private static void verifyCompositeShadowWorker(ClassLoader cl) throws Throwable {
+        Class<?> type = Class.forName("com.shabakaty.cinemana.local.RustShadowEventWorker", true, cl);
+        require(type.getClassLoader() == cl, "R2 worker class loader");
+        Object worker = type.getDeclaredConstructor().newInstance();
+        Method audit = type.getMethod("audit", int[].class, String[].class, long[].class, int[].class);
+        Method block = type.getMethod("diagnosticBlock", CountDownLatch.class, CountDownLatch.class);
+        Method rejectedCount = type.getMethod("rejectedCount");
+        Method close = type.getMethod("close");
+        int[] ids = new int[500], roles = new int[500];
+        String[] external = new String[500];
+        long[] gen = new long[500];
+        for (int i = 0; i < 300; i++) {
+            ids[i] = i + 1;
+            external[i] = "synthetic-external-" + ids[i];
+            gen[i] = 5;
+            roles[i] = 0;
+        }
+        for (int i = 300; i < 400; i++) {
+            ids[i] = i - 299;
+            external[i] = "synthetic-external-" + ids[i];
+            gen[i] = 5;
+            roles[i] = 1;
+        }
+        for (int i = 400; i < 450; i++) {
+            ids[i] = i - 299;
+            external[i] = "synthetic-external-" + ids[i];
+            gen[i] = 5;
+            roles[i] = 0;
+        }
+        for (int i = 450; i < 500; i++) {
+            ids[i] = i - 299;
+            external[i] = "synthetic-external-" + ids[i];
+            gen[i] = 4;
+            roles[i] = 0;
+        }
+        long expected = (300L << 48) | (100L << 36) | (50L << 24) | (50L << 12);
+        try {
+            @SuppressWarnings("unchecked")
+            Future<Long> first = (Future<Long>) audit.invoke(worker, ids, external, gen, roles);
+            require(first.get(20, TimeUnit.SECONDS).longValue() == expected,
+                    "R2 composite cross-process counts mismatch");
+            @SuppressWarnings("unchecked")
+            Future<Long> again = (Future<Long>) audit.invoke(worker, ids, external, gen, roles);
+            require(again.get(20, TimeUnit.SECONDS).longValue() == expected,
+                    "R2 composite must remain observational and stateless");
+
+            // Invalid URL-looking external ID must not be accepted as a task key.
+            @SuppressWarnings("unchecked")
+            Future<Long> invalid = (Future<Long>) audit.invoke(
+                    worker, new int[]{1}, new String[]{"https://invalid.example/token"},
+                    new long[]{5}, new int[]{0});
+            try {
+                invalid.get(20, TimeUnit.SECONDS);
+                throw new AssertionError("R2 URL-looking external ID was accepted");
+            } catch (ExecutionException correctlyRejected) {
+                require(correctlyRejected.getCause() instanceof IllegalArgumentException,
+                        "R2 composite validation must surface an IllegalArgumentException");
+            }
+            // One worker deliberately blocked, 16 pending requests, 17th rejected.
+            CountDownLatch entered = new CountDownLatch(1);
+            CountDownLatch release = new CountDownLatch(1);
+            Future<?> barrier = (Future<?>) block.invoke(worker, entered, release);
+            try {
+                require(entered.await(10, TimeUnit.SECONDS), "R2 worker did not block");
+                List<Future<?>> pending = new ArrayList<>();
+                for (int i = 0; i < 16; i++) {
+                    pending.add((Future<?>) audit.invoke(worker, ids, external, gen, roles));
+                }
+                try {
+                    audit.invoke(worker, ids, external, gen, roles);
+                    throw new AssertionError("R2 queue overload was silently accepted");
+                } catch (InvocationTargetException correctlyRejected) {
+                    require(correctlyRejected.getCause() instanceof RejectedExecutionException,
+                            "R2 overload must be visible to the caller");
+                }
+                require(((Number) rejectedCount.invoke(worker)).longValue() == 1,
+                        "R2 queue did not count rejected shadow observations");
+                // The pending queue must own snapshots; mutating inputs after
+                // submit must not change the JNI event batch.
+                ids[0] = 0;
+                external[0] = "https://invalid.example/modified";
+                release.countDown();
+                barrier.get(20, TimeUnit.SECONDS);
+                for (Future<?> future : pending) {
+                    require(((Long) future.get(20, TimeUnit.SECONDS)).longValue() == expected,
+                            "R2 queued observation mutated after submit");
+                }
+            } finally {
+                release.countDown();
+            }
+        } finally {
+            close.invoke(worker);
+        }
+    }
+
     private static Field field(Class<?> c, String name) throws Exception {
         Field f = c.getDeclaredField(name); f.setAccessible(true); return f;
     }
@@ -102,6 +202,7 @@ public final class Probe extends Instrumentation {
                 Object version = rustProbe.getMethod("version").invoke(null);
                 require(version instanceof Integer && ((Integer) version).intValue() == 1,
                         "Rust JNI ABI version mismatch");
+                verifyCompositeShadowWorker(cl);
                 // R2 is an observational JNI probe with SYNTHETIC IDs only.
                 // It does not consult the user's Room DB or enqueue anything.
                 Method shadow = rustProbe.getMethod("shadowAudit", int[].class, int[].class);
@@ -230,6 +331,8 @@ public final class Probe extends Instrumentation {
                 result.putString("stream", result.getString("stream") + "CPRUST_R1_JNI_PASS abi=1\n");
                 result.putString("stream", result.getString("stream")
                         + "CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1\n");
+                result.putString("stream", result.getString("stream")
+                        + "CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1\n");
             }
             finish(Activity.RESULT_OK,result);
         } catch (Throwable t) {
