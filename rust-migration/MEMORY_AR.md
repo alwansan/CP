@@ -86,3 +86,10 @@ R1: اسحب call graph ومخطط Room والـservices، وابن JNI ABI read
 - Log: `CPRUST_R1_JNI_PASS abi=1`؛ `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`؛ `INSTRUMENTATION_CODE: -1`.
 - Artifact 14791210489 `Cinemana-CP-Rust-R1-JNI-Diagnostic`؛ لا تثبت نسخة تشغيل كاملة أو هاتف أو actual download Rust.
 - `run 45113795022` Rust Core SUCCESS: 14/14 + SIGKILL Linux + ARM64 .so.
+
+## جلسة R2 Shadow JNI — 2026-11-23
+- أضيفت `shadow_audit.rs` و`jni_shadow.rs` باستخدام jni=0.21.1 لنقل **مصفوفة أرقام اصطناعية** عبر JNI (حد 1000/4096)، وحساب 200 new/200 existing/100 duplicate من 500 معرّف؛ الاستثناءات Java بدل silent bad ACK.
+- `RustAbiProbe.smali` حصلت على `shadowAudit([I[I)J`، وART صار يرفض النجاح بدون marker اختبار 500 وinvalid/oversize.
+- `run 45115514740` SUCCESS: 19/19 tests، clippy/fmt، SIGKILL Linux، ARM64 native build. `run 45115514777` signed Android15 ART **لم يتحقق بعد** أثناء تحديث الملفات.
+- read-only فقط ولا اتصال بـRoom أو Downloads / الهاتف. الخطة التالية typed async event bridge بعد إثبات mapping `(task_id,external_id)` ومُلكية الخدمة.
+- تقرير مستقل `rust-migration/R2_SHADOW_JNI_REPORT_AR.md`.

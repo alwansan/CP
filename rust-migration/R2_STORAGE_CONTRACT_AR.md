@@ -32,3 +32,9 @@
 
 ## ربط بالschema الحقيقي — 2026-11-23
 راجع `R2_ROOM_SCHEMA_AUDIT_AR.md` لحقيقة CREATE TABLE Downloads التي تستخدم composite PK `(task_id,external_id)` دون batch_id، والـDAO `kz0` و`DownloadActionsHandlerScope.m`. لا تستبدل `Queue110.remember/save` بRust snapshot fixture. أي إضافة batch_header تتطلب new additive schema/versioned migration بعد فحص Room والكود.
+
+## حالة Shadow JNI — 2026-11-23
+- ✅ تم ترحيل **مقارنة دفعات اصطناعية** إلى JNI: مصفوفتان bounded من Java إلى Rust، و`long` packed 3 counts، مع reject للمدخلات غير الصحيحة. Rust core CI 45115514740 = 19/19 PASS + ARM64/host/SIGKILL.
+- ⏳ signed APK x86_64 Android15 ART run 45115514777 قيد التحقق؛ لا تضع PASS حتى تظهر `CPRUST_R2_SHADOW_PASS`.
+- ⬜ لا integration مع Room أو live download؛ لا step من R3/R4/R5 بدأ.
+- ⬜ next: mapper لصيغة identity `(task_id,external_id)`، asynchronous passive event capture من source owner، database commit receipts فقط في owner لاحقاً.

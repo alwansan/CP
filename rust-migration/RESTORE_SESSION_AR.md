@@ -68,3 +68,10 @@ Artifact 14790505739 اسمه Cinemana-CP-Rust-R1-JNI-Diagnostic؛ diagnostic on
 - Log: `CPRUST_R1_JNI_PASS abi=1`؛ `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`؛ `INSTRUMENTATION_CODE: -1`.
 - Artifact 14791210489 `Cinemana-CP-Rust-R1-JNI-Diagnostic`؛ لا تثبت نسخة تشغيل كاملة أو هاتف أو actual download Rust.
 - `run 45113795022` Rust Core SUCCESS: 14/14 + SIGKILL Linux + ARM64 .so.
+
+## جلسة R2 Shadow JNI — 2026-11-23 (الأحدث)
+- اقرأ `rust-migration/R2_SHADOW_JNI_REPORT_AR.md` و`rust-migration/sessions/2026-11-23-r2-shadow-jni-05.md`.
+- Rust `shadow_audit.rs` و`jni_shadow.rs` + `RustAbiProbe.smali` صاروا يقبلون Arrays synthetic ID من Android ويحسبون counts جديدة/موجودة/مكررة بحدود صارمة؛ لا كتابة ولا تنزيل، لا إنتاج.
+- CI 45115514740 **SUCCESS**: 19/19 tests، fmt/clippy، Linux SIGKILL، ARM64 library. Code SHA 4534e7dea2bb595e0036dbf789202c493fd08064.
+- signed APK Android15 JNI ART run 45115514777 كان in_progress؛ **افحص نتيجته والـlog** قبل أي إعلان أو تفعيل. يجب أن يحتوي `CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1`.
+- source baseline feature/download-stability ممنوع تعديله. لا Room أو APP full startup أو real Rust downloading؛ استكمل تتبع owner وtask IDs بعد انتهاء فحص ART، ولا تطلب اختبار صاحب الهاتف لخطوة صغيرة.

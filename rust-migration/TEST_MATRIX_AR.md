@@ -60,3 +60,9 @@ Run https://github.com/alwansan/CP/actions/runs/45113493256 **SUCCESS** — 14 R
 - T03 **partial PASS**: run 45113795022، processes synthetic subprocess kill قبل commit وبعده؛ stdout proof `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`.
 - T14 **partial PASS synthetic** لرفض مالك ثاني عند lock، ثم تحرير flock بعد SIGKILL؛ ما يزال Room WAL وAndroid :filedownloader NOT_RUN.
 - لا يوجد proof لـOS kill أثناء writes الفعلية، ولا اختبار fsync directory على Android filesystem. لا تخلط النجاح ببوابة production.
+
+## R2 shadow JNI synthetic host evidence (2026-11-23)
+- T01/T02 **PASS synthetic** 19/19 Rust unit: 500 opaque integer IDs مع 200 new+200 existing+100 duplicates، replay stateless، empty/0/negative/oversized رفض.
+- CI `45115514740` **SUCCESS** Linux SIGKILL، fmt/clippy، Android ARM64 cross-build.
+- Android ART JNI 500 array gate `45115514777` **PENDING** عند تحديث هذه الوثيقة؛ لا تضع PASS قبل marker log.
+- T03 real DB transactions وT14 Room ownership وT15 real queue stress/phone: NOT_RUN.

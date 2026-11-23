@@ -137,3 +137,9 @@ P5: كل الميزات/الترقية والتحقق على الهاتف.
 - Log: `CPRUST_R1_JNI_PASS abi=1`؛ `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`؛ `INSTRUMENTATION_CODE: -1`.
 - Artifact 14791210489 `Cinemana-CP-Rust-R1-JNI-Diagnostic`؛ لا تثبت نسخة تشغيل كاملة أو هاتف أو actual download Rust.
 - `run 45113795022` Rust Core SUCCESS: 14/14 + SIGKILL Linux + ARM64 .so.
+
+## حالة Shadow JNI — 2026-11-23
+- ✅ تم ترحيل **مقارنة دفعات اصطناعية** إلى JNI: مصفوفتان bounded من Java إلى Rust، و`long` packed 3 counts، مع reject للمدخلات غير الصحيحة. Rust core CI 45115514740 = 19/19 PASS + ARM64/host/SIGKILL.
+- ⏳ signed APK x86_64 Android15 ART run 45115514777 قيد التحقق؛ لا تضع PASS حتى تظهر `CPRUST_R2_SHADOW_PASS`.
+- ⬜ لا integration مع Room أو live download؛ لا step من R3/R4/R5 بدأ.
+- ⬜ next: mapper لصيغة identity `(task_id,external_id)`، asynchronous passive event capture من source owner، database commit receipts فقط في owner لاحقاً.

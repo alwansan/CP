@@ -58,3 +58,9 @@
 ## تحديث RM17/RM19 — Linux SIGKILL real subprocess
 - حل جزئي لخطر stale ownership في Linux fixture: kill process يحرر flock ويعيد reader فتح 500 tasks (run 45113795022). القفل advisory لا يكفي مع Room writers لا يتبعون نفس العقد.
 - يبقى خطر crash أثناء write/fsync/device power loss، وAndroid behavior وproduction schema، مفتوحاً؛ CRC32 لا يثبت authenticity.
+
+## ADR14 / RM20 — JNI Shadow v1
+- قرار: استلام أرقام ID اصطناعية للتشخيص فقط، بلا URL/path/account، وبـread-only JNI return pack وJava exceptions.
+- خطر RM20: `task_id` الأصلي ليس هوية مستقرة للحلقة منفرداً؛ composite `(task_id, external_id)`، ويلزم إضافة المصدر/الجودة/حساب إن وجدت. لا تقل إن مقارنة الـ500 هي تكافؤ مع Queue110 الحقيقي.
+- خطر RM21: استدعاء JNI يعمل بشكل متزامن؛ يجب اختباره خارج main وبحدود arrays، وتصميم async event queue bounded قبل real sources.
+- خطر RM22: jni=0.21.1 pinned direct dependency لكن Cargo.lock/transitive pin/dependency audit لم تُحسم بعد؛ خطر supply chain وحجم APK، قياس قبل production.
