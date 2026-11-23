@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "project": "Cinemana Pro Rust experiment",
+  "repository": "alwansan/CP",
+  "source_branch": "feature/download-stability",
+  "source_head": "c68c0d80722765409f8544d499938a656217967b",
+  "writable_branch": "experiment/rust-core-migration",
+  "date": "2026-11-23",
+  "phase": "R0_foundation",
+  "jni_integrated": false,
+  "android_library_built": false,
+  "android_apk_built": false,
+  "production_downloader_modified": false,
+  "feature_parity": "not_yet_validated",
+  "branch_ci": "pending",
+  "current_scope": [
+    "in-memory batch dedupe simulation",
+    "generation fencing",
+    "state transition tests",
+    "host CI"
+  ],
+  "next": "Check Rust Core workflow result; map APKTool/Smali call paths and build a JNI read-only Android integration before any production replacement",
+  "restore": "rust-migration/RESTORE_SESSION_AR.md",
+  "plan": "rust-migration/PLAN_AR.md",
+  "session": "rust-migration/sessions/2026-11-23-r0.md"
+}
