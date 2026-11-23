@@ -65,7 +65,6 @@ pub extern "system" fn Java_com_shabakaty_cinemana_local_RustAbiProbe_nativeShad
     }
 }
 
-
 fn read_events(
     env: &mut JNIEnv<'_>,
     task_ids: &JIntArray<'_>,
@@ -115,8 +114,7 @@ fn read_events(
             task_id: ids[index],
             external_id: external,
             generation: gens[index],
-            process_role: u8::try_from(roles[index])
-                .map_err(|_| ShadowError::InvalidInput)?,
+            process_role: u8::try_from(roles[index]).map_err(|_| ShadowError::InvalidInput)?,
         });
     }
     Ok(events)
