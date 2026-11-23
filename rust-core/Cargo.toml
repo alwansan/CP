@@ -8,3 +8,4 @@ publish = false
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
+jni = { version = "=0.21.1", default-features = false }

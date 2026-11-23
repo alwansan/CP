@@ -21,3 +21,17 @@
 
 .method private static native nativeVersion()I
 .end method
+
+# R2 diagnostic JNI only. Operates on synthetic opaque integer IDs.
+# No storage, file download or DB access; never invoked by app lifecycle.
+.method public static shadowAudit([I[I)J
+    .locals 2
+    invoke-static {}, Lcom/shabakaty/cinemana/local/RustAbiProbe;->version()I
+    move-result v0
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/local/RustAbiProbe;->nativeShadowAudit([I[I)J
+    move-result-wide v0
+    return-wide v0
+.end method
+
+.method private static native nativeShadowAudit([I[I)J
+.end method

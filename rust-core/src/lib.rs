@@ -4,6 +4,7 @@
 use std::collections::{HashMap, HashSet};
 
 pub mod durable_fixture;
+pub mod shadow_audit;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct TaskKey {
