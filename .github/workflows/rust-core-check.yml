@@ -4,6 +4,7 @@ on:
     branches: [experiment/rust-core-migration]
     paths:
       - 'rust-core/**'
+      - 'rust-migration/tests/**'
       - '.github/workflows/rust-core-check.yml'
   workflow_dispatch:
 
@@ -24,6 +25,12 @@ jobs:
         run: cargo clippy --manifest-path rust-core/Cargo.toml --all-targets -- -D warnings
       - name: Unit tests
         run: cargo test --manifest-path rust-core/Cargo.toml --all-targets
+      - name: Isolated process SIGKILL, lock release and durable replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --manifest-path rust-core/Cargo.toml --bin r2_fixture_worker
+          python3 rust-migration/tests/test_sigkill.py rust-core/target/debug/r2_fixture_worker
       - name: Host library build (not APK)
         run: cargo build --manifest-path rust-core/Cargo.toml --release
       - name: Build Android ARM64 native library
