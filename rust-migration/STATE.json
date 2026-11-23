@@ -6,7 +6,7 @@
   "source_head": "c68c0d80722765409f8544d499938a656217967b",
   "writable_branch": "experiment/rust-core-migration",
   "date": "2026-11-23",
-  "phase": "R0_Android_arm64_library_built_not_integrated",
+  "phase": "R0_planning_and_audit_complete_R1_integration_pending",
   "jni_integrated": false,
   "android_library_built": true,
   "android_apk_built": false,
@@ -14,15 +14,16 @@
   "feature_parity": "not_yet_validated",
   "branch_ci": "success",
   "current_scope": [
-    "in-memory batch dedupe simulation",
-    "generation fencing",
-    "state transition tests",
-    "host CI"
+    "previous: in-memory Rust model + 5 tests",
+    "previous: Linux and ARM64 shared-library CI success",
+    "this session: verified source components and existing reports",
+    "this session: written complete migration plan R0–R7",
+    "this session: risks / ADRs / parity test matrix and automatic handoff protocol"
   ],
-  "next": "Map actual Smali Java entrypoints and test JNI ABI/ART in isolated Android lab. Do not activate any download work until durable storage and parity checks.",
+  "next": "R1 read actual JNI and Smali entrypoint call graph, trace database owner across processes, package read-only Rust ABI probe into isolated signed APK, test ART and device before R2.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
-  "session": "rust-migration/sessions/2026-11-23-r0.md",
+  "session": "rust-migration/sessions/2026-11-23-r1-planning-02.md",
   "android_library_abi": "arm64-v8a",
   "last_code_commit": "54f66df4402bdc20e72376f3a024bdcc281ab012",
   "ci_runs": [
@@ -49,5 +50,54 @@
     "run_id": 45110176247,
     "url": "https://github.com/alwansan/CP/actions/runs/45110176247",
     "is_installable_apk": false
-  }
+  },
+  "last_reviewed_source_head": "c68c0d80722765409f8544d499938a656217967b",
+  "plan_version": 2,
+  "owner_approved_scope": [
+    "episode download engine",
+    "batch enqueue and hundreds-of-tasks queue",
+    "Rust async tasks and resource governance",
+    "resume and recovery after interruptions",
+    "MKV workflow orchestration retaining FFmpeg"
+  ],
+  "plan_status": "documented_not_implemented",
+  "completed": [
+    "R0 isolate branch",
+    "R0 core simulation",
+    "R0 CI Linux and Android ARM64 .so",
+    "architecture targeted audit",
+    "full migration plan v2",
+    "risk/decision register",
+    "parity test matrix"
+  ],
+  "blockers": [
+    "No JNI or exact signed APK ART load proof",
+    "No durable batch ACK in Rust; requires DB owner/schema mapping",
+    "No same-workload baseline vs Rust measurements",
+    "No Rust HTTP transfer or MKV runtime integration",
+    "No full Android device feature parity or safe rollout proof"
+  ],
+  "status_detail": "No production functionality moved from Java/Smali to Rust; documentation scope expanded only.",
+  "protected_branches": [
+    "main",
+    "feature/download-stability",
+    "Html",
+    "feature/local-account",
+    "experiment/rea-source-recovery"
+  ],
+  "documents": {
+    "entry": "rust-migration/README_AR.md",
+    "rules": "rust-migration/AGENTS.md",
+    "plan": "rust-migration/PLAN_AR.md",
+    "audit": "rust-migration/ARCHITECTURE_AUDIT_AR.md",
+    "decisions_and_risks": "rust-migration/DECISIONS_AND_RISKS_AR.md",
+    "test_matrix": "rust-migration/TEST_MATRIX_AR.md",
+    "memory": "rust-migration/MEMORY_AR.md",
+    "restore": "rust-migration/RESTORE_SESSION_AR.md"
+  },
+  "last_verified_action_run": 45110176247,
+  "last_verified_action_result": "success",
+  "rust_http_downloads_active": false,
+  "mkv_runtime_migrated": false,
+  "eta": "Not estimated: acceptance is gated by JNI/ART, durable database integration, performance tests, full feature parity and phone evidence."
 }
