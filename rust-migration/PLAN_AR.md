@@ -143,3 +143,18 @@ P5: كل الميزات/الترقية والتحقق على الهاتف.
 - ⏳ signed APK x86_64 Android15 ART run 45115514777 قيد التحقق؛ لا تضع PASS حتى تظهر `CPRUST_R2_SHADOW_PASS`.
 - ⬜ لا integration مع Room أو live download؛ لا step من R3/R4/R5 بدأ.
 - ⬜ next: mapper لصيغة identity `(task_id,external_id)`، asynchronous passive event capture من source owner، database commit receipts فقط في owner لاحقاً.
+
+## R2 Shadow JNI confirmed on Android 15 — 2026-11-23
+
+GitHub Actions run 45115514777 completed SUCCESS on code SHA 4534e7dea2bb595e0036dbf789202c493fd08064. Signed APK DEX checks, ARM64 and x86_64 Rust native builds, and isolated x86_64 ART instrumentation passed. Artifact 14791611443 (Cinemana-CP-Rust-R1-JNI-Diagnostic).
+
+Exact log markers:
+- CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1
+- CPRUST_R1_JNI_PASS abi=1
+- CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1
+- INSTRUMENTATION_CODE: -1
+
+Rust host run 45115514740 also completed SUCCESS: 19/19 unit tests, Clippy, fmt, real Linux SIGKILL regression fixture, Linux/Android ARM64 builds.
+
+SCOPE: Arrays are synthetic. Signed APK was loaded in isolated ART instrumentation, not as the installed Cinemana app on a phone. No production Room, Queue110, network/FFmpeg data flow, real durable ACK, or live downloader integration has been validated. Do not release as production.
+Milestone achieved: synthetic JNI shadow gate PASS. R2 production remains blocked on real event owner + durable receipt and device parity.

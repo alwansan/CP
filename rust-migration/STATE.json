@@ -6,7 +6,7 @@
   "source_head": "c68c0d80722765409f8544d499938a656217967b",
   "writable_branch": "experiment/rust-core-migration",
   "date": "2026-11-23",
-  "phase": "R2_synthetic_JNI_shadow_audit_19_host_tests_pass_signed_ART_pending",
+  "phase": "R2_synthetic_shadow_JNI_Android15_ART_PASS_live_Cinemana_not_integrated",
   "jni_integrated": false,
   "android_library_built": true,
   "android_apk_built": true,
@@ -20,7 +20,7 @@
     "R2 diagnostic Smali shadowAudit method",
     "R2 Android15 ART synthetic 500 selection parity gate in progress"
   ],
-  "next": "Verify Android15 ART run 45115514777. Fix any JNI/DEX/ART failures and rerun. Then trace native task_id and Room DAO lifecycle and devise shadow-only real event bridge that never dispatches data or writes DB.",
+  "next": "R2: map Downloads DAO + native task ID ownership across app processes; build bounded passive shadow event adapter with composite keys, no production write or actual downloads.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
   "session": "rust-migration/sessions/2026-11-23-r2-shadow-jni-05.md",
@@ -71,13 +71,13 @@
     "parity test matrix"
   ],
   "blockers": [
-    "R2 signed Android15 JNI synthetic-array ART test pending (run 45115514777)",
-    "JNI audit uses ephemeral numeric IDs; not canonical source/episode identity or production Queue110 mapping",
-    "No read-only Room/Queue110 event hook in real application or multi-process owner bridge",
-    "No Rust durable receipts tied to Room/SharedPreferences commit",
-    "No real Android ARM64 full app install, actual downloading, MKV/parity measurements"
+    "Full Cinemana ARM64 app startup, background service and phone NOT_RUN",
+    "Synthetic integer IDs are not stable composite episode identity",
+    "No production Room or Queue110 read-only listener and no cross-process single owner",
+    "No durable batch ACK from original SharedPreferences/Room",
+    "No Rust HTTP or FFmpeg migration or end-to-end download/media tests"
   ],
-  "status_detail": "R1 JNI signed candidate passed isolated Android15 ART in prior run; R2 Rust synthetic local-file durable fixture now host-tested and Android arm64 cross-compiled. Production download engine remains original.",
+  "status_detail": "R2 synthetic Java int[] -> Rust JNI shadow audit 500 IDs PASSED isolated signed APK ART; 19/19 Rust tests and Linux SIGKILL passed; no production downloader or Room changes",
   "protected_branches": [
     "main",
     "feature/download-stability",
@@ -100,7 +100,7 @@
     "r2_room_audit": "rust-migration/R2_ROOM_SCHEMA_AUDIT_AR.md",
     "r2_shadow": "rust-migration/R2_SHADOW_JNI_REPORT_AR.md"
   },
-  "last_verified_action_run": 45115514740,
+  "last_verified_action_run": 45115514777,
   "last_verified_action_result": "success",
   "rust_http_downloads_active": false,
   "mkv_runtime_migrated": false,
@@ -108,7 +108,7 @@
   "last_ci_run_id": 45115514777,
   "last_ci_earlier_core_run_id": 45112198686,
   "last_ci_earlier_core_result": "success",
-  "current_ci_result": "Rust Core 45115514740 SUCCESS; R2 Android15 signed APK 45115514777 in progress",
+  "current_ci_result": "Rust host 45115514740 SUCCESS; signed Android15 x86_64 ART 45115514777 SUCCESS",
   "jni_export_implemented": true,
   "jni_integrated_in_signed_diagnostic_apk": true,
   "jni_integrated_in_production_runtime": false,
@@ -203,9 +203,17 @@
     "host_tests": "19/19 PASS",
     "host_ci_run": 45115514740,
     "art_run": 45115514777,
-    "art_status": "pending",
+    "art_status": "passed_isolated_Android15_x86_64",
     "real_db_access": false,
     "real_download_dispatch": false,
-    "android_phone_test": false
-  }
+    "android_phone_test": false,
+    "art_artifact_id": 14791611443,
+    "art_marker": "CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1",
+    "instrumentation_result": "INSTRUMENTATION_CODE: -1",
+    "app_installed_and_opened": false,
+    "ack_durable": false,
+    "real_downloads_touched": false
+  },
+  "r2_room_schema_version": 2,
+  "r2_room_auto_migration": "1_to_2"
 }

@@ -21,3 +21,7 @@
 
 ## حالة الإثبات
 فُحصت الملفات في GitHub مباشرة، لا قاعدة بيانات المستخدم. CI R2 fixture SUCCESS 45113795022 (14 unit + Linux subprocess SIGKILL + ARM64 crossbuild) مستقل تماماً. تشغيل Rust الحقيقي/Room/Android file I/O والحفظ للتحميلات الحية: **لم يبدأ**.
+
+## Room migration code inspection — 2026-11-23
+
+The real APK Smali file app/smali/com/shabakaty/downloader/data/db/DownloadsDatabase_Impl.smali passes schema version 2 into DownloadsDatabase_Impl$a. The source file app/smali/com/shabakaty/downloader/data/db/a.smali is DownloadsDatabase_AutoMigration_1_2_Impl, explicitly mapping migration 1 to 2. It rebuilds _new_Downloads, copies existing columns via INSERT SELECT, drops the old table, renames, and restores the unique index on task_id + external_id. The Downloads table has no batch_id. Do not modify Room schema version 2 or this migration in the Rust diagnostic phase. Any real batch-header migration requires separate compatibility validation.
