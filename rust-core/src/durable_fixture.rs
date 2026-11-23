@@ -400,3 +400,160 @@ fn decode(bytes: &[u8]) -> io::Result<Snapshot> {
     }
     Ok(Snapshot { batches, tasks })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+
+    struct TestDir(PathBuf);
+    impl TestDir {
+        fn new() -> Self {
+            let number = COUNTER.fetch_add(1, Ordering::Relaxed);
+            let dir = std::env::temp_dir().join(format!(
+                "cp-rust-r2-{}-{}", std::process::id(), number
+            ));
+            fs::create_dir_all(&dir).unwrap();
+            Self(dir)
+        }
+    }
+
+    impl Drop for TestDir {
+        fn drop(&mut self) {
+            fs::remove_dir_all(&self.0).unwrap();
+        }
+    }
+
+    fn key(n: usize) -> TaskKey {
+        TaskKey::new("fixture", &format!("episode-{n}"), "1080p", "mkv")
+    }
+
+    #[test]
+    fn durable_five_hundred_and_replay_after_reopen() {
+        let dir = TestDir::new();
+        let requested: Vec<_> = (0..500).map(key).collect();
+        let expected;
+        {
+            let mut first = DurableFixture::open(&dir.0).unwrap();
+            expected = first.accept_batch("main-500", &requested).unwrap();
+            assert_eq!(expected.accepted_unique, 500);
+            assert_eq!(first.task_count(), 500);
+        }
+        let mut reopened = DurableFixture::open(&dir.0).unwrap();
+        assert_eq!(reopened.task_count(), 500);
+        assert_eq!(reopened.batch_count(), 1);
+        assert_eq!(reopened.accept_batch("main-500", &requested).unwrap(), expected);
+        assert_eq!(reopened.batch_count(), 1);
+    }
+
+    #[test]
+    fn crash_before_rename_keeps_previous_ack_only() {
+        let dir = TestDir::new();
+        {
+            let mut first = DurableFixture::open(&dir.0).unwrap();
+            first.accept_batch("first", &[key(1)]).unwrap();
+            assert_eq!(
+                first.accept_with_fault("second", &[key(2)], Fault::BeforeRename),
+                Err(AdmissionError::Io)
+            );
+            assert_eq!(first.accept_batch("third", &[key(3)]), Err(AdmissionError::Unavailable));
+        }
+        let mut reopened = DurableFixture::open(&dir.0).unwrap();
+        assert_eq!(reopened.task_count(), 1);
+        assert_eq!(reopened.batch_count(), 1);
+        assert_eq!(reopened.accept_batch("second", &[key(2)]).unwrap().accepted_unique, 1);
+    }
+
+    #[test]
+    fn crash_after_rename_replay_is_idempotent() {
+        let dir = TestDir::new();
+        {
+            let mut first = DurableFixture::open(&dir.0).unwrap();
+            assert_eq!(
+                first.accept_with_fault("ambiguous", &[key(1)], Fault::AfterRename),
+                Err(AdmissionError::Io)
+            );
+        }
+        let mut reopened = DurableFixture::open(&dir.0).unwrap();
+        assert_eq!(reopened.task_count(), 1);
+        let receipt = reopened.accept_batch("ambiguous", &[key(1)]).unwrap();
+        assert_eq!(receipt.accepted_unique, 1);
+        assert_eq!(reopened.batch_count(), 1);
+    }
+
+    #[test]
+    fn conflicting_id_and_different_duplicate_payload_fail_closed() {
+        let dir = TestDir::new();
+        let mut ledger = DurableFixture::open(&dir.0).unwrap();
+        ledger.accept_batch("batch", &[key(1), key(1)]).unwrap();
+        assert_eq!(ledger.accept_batch("batch", &[key(1)]), Err(AdmissionError::Conflict));
+        assert_eq!(ledger.accept_batch("batch", &[key(2)]), Err(AdmissionError::Conflict));
+        assert_eq!(ledger.task_count(), 1);
+    }
+
+    #[test]
+    fn separate_openers_cannot_both_own_ledger() {
+        let dir = TestDir::new();
+        let _first = DurableFixture::open(&dir.0).unwrap();
+        assert_eq!(DurableFixture::open(&dir.0).err().unwrap().kind(), io::ErrorKind::WouldBlock);
+    }
+
+    #[test]
+    fn corrupted_snapshot_does_not_reset_accepted_work() {
+        let dir = TestDir::new();
+        {
+            let mut ledger = DurableFixture::open(&dir.0).unwrap();
+            ledger.accept_batch("batch", &[key(1)]).unwrap();
+        }
+        let path = dir.0.join("rust-fixture.snapshot");
+        let mut bytes = fs::read(&path).unwrap();
+        bytes[21] ^= 0xff;
+        fs::write(path, bytes).unwrap();
+        assert_eq!(DurableFixture::open(&dir.0).err().unwrap().kind(), io::ErrorKind::InvalidData);
+    }
+
+    #[test]
+    fn overlapping_batches_have_correct_existing_counts() {
+        let dir = TestDir::new();
+        let mut ledger = DurableFixture::open(&dir.0).unwrap();
+        let one: Vec<_> = (0..400).map(key).collect();
+        let two: Vec<_> = (200..700).map(key).collect();
+        assert_eq!(ledger.accept_batch("first", &one).unwrap().accepted_unique, 400);
+        let receipt = ledger.accept_batch("second", &two).unwrap();
+        assert_eq!(receipt.accepted_unique, 300);
+        assert_eq!(receipt.existing_unique, 200);
+        assert_eq!(ledger.task_count(), 700);
+        drop(ledger);
+        let reopened = DurableFixture::open(&dir.0).unwrap();
+        assert_eq!(reopened.task_count(), 700);
+    }
+
+    #[test]
+    fn invalid_inputs_and_capacity_rejected() {
+        let dir = TestDir::new();
+        let mut ledger = DurableFixture::open(&dir.0).unwrap();
+        assert_eq!(ledger.accept_batch("", &[]), Err(AdmissionError::InvalidInput));
+        assert_eq!(ledger.accept_batch("batch", &[TaskKey::new("", "1", "h", "m")]), Err(AdmissionError::InvalidInput));
+        let too_many: Vec<_> = (0..1001).map(key).collect();
+        assert_eq!(ledger.accept_batch("batch", &too_many), Err(AdmissionError::InvalidInput));
+        assert_eq!(ledger.task_count(), 0);
+    }
+
+    #[test]
+    fn invalid_utf8_or_forged_length_rejected_even_with_valid_checksum() {
+        let dir = TestDir::new();
+        {
+            let mut ledger = DurableFixture::open(&dir.0).unwrap();
+            ledger.accept_batch("batch", &[key(1)]).unwrap();
+        }
+        let path = dir.0.join("rust-fixture.snapshot");
+        let mut bytes = fs::read(&path).unwrap();
+        bytes[26] = 0xff;
+        let checksum = crc32(&bytes[20..]);
+        bytes[16..20].copy_from_slice(&checksum.to_le_bytes());
+        fs::write(&path, bytes).unwrap();
+        assert!(DurableFixture::open(&dir.0).is_err());
+    }
+}
