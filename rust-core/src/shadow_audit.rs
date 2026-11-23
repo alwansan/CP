@@ -98,8 +98,14 @@ mod tests {
         assert_eq!(audit(&[0], &[]), Err(ShadowError::InvalidInput));
         assert_eq!(audit(&[-1], &[]), Err(ShadowError::InvalidInput));
         assert_eq!(audit(&[1], &[0]), Err(ShadowError::InvalidInput));
-        assert_eq!(audit(&vec![1; MAX_SELECTED + 1], &[]), Err(ShadowError::InvalidInput));
-        assert_eq!(audit(&[], &vec![1; MAX_KNOWN + 1]), Err(ShadowError::InvalidInput));
+        assert_eq!(
+            audit(&vec![1; MAX_SELECTED + 1], &[]),
+            Err(ShadowError::InvalidInput)
+        );
+        assert_eq!(
+            audit(&[], &vec![1; MAX_KNOWN + 1]),
+            Err(ShadowError::InvalidInput)
+        );
     }
 
     #[test]

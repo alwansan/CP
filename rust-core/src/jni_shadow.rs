@@ -12,7 +12,9 @@ fn read_bounded(
     array: &JIntArray<'_>,
     max: usize,
 ) -> Result<Vec<i32>, ShadowError> {
-    let size = env.get_array_length(array).map_err(|_| ShadowError::JniAccess)?;
+    let size = env
+        .get_array_length(array)
+        .map_err(|_| ShadowError::JniAccess)?;
     let len = usize::try_from(size).map_err(|_| ShadowError::InvalidInput)?;
     if len > max {
         return Err(ShadowError::InvalidInput);
