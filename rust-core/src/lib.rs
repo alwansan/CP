@@ -108,8 +108,12 @@ impl Ledger {
         }
         let mut accepted_unique = 0;
         for key in &unique {
-            if let std::collections::hash_map::Entry::Vacant(entry) = self.tasks.entry(key.clone()) {
-                entry.insert(TaskState { stage: Stage::IntentSaved, generation: 0 });
+            if let std::collections::hash_map::Entry::Vacant(entry) = self.tasks.entry(key.clone())
+            {
+                entry.insert(TaskState {
+                    stage: Stage::IntentSaved,
+                    generation: 0,
+                });
                 accepted_unique += 1;
             }
         }
@@ -118,10 +122,13 @@ impl Ledger {
             existing_unique: unique.len() - accepted_unique,
             duplicates_in_request: requested.len() - unique.len(),
         };
-        self.batches.insert(batch_id.to_owned(), Batch {
-            keys: unique,
-            receipt: receipt.clone(),
-        });
+        self.batches.insert(
+            batch_id.to_owned(),
+            Batch {
+                keys: unique,
+                receipt: receipt.clone(),
+            },
+        );
         Ok(receipt)
     }
 
@@ -160,7 +167,10 @@ impl Ledger {
         if state.stage != Stage::Cancelled {
             return Err(LedgerError::InvalidTransition);
         }
-        state.generation = state.generation.checked_add(1).ok_or(LedgerError::GenerationExhausted)?;
+        state.generation = state
+            .generation
+            .checked_add(1)
+            .ok_or(LedgerError::GenerationExhausted)?;
         state.stage = Stage::IntentSaved;
         Ok(state.generation)
     }
@@ -186,14 +196,23 @@ mod tests {
         let first = ledger.accept_batch("request-1", &keys).unwrap();
         assert_eq!(first.accepted_unique, 400);
         assert_eq!(ledger.accept_batch("request-1", &keys).unwrap(), first);
-        assert_eq!(ledger.accept_batch("request-2", &keys).unwrap().existing_unique, 400);
+        assert_eq!(
+            ledger
+                .accept_batch("request-2", &keys)
+                .unwrap()
+                .existing_unique,
+            400
+        );
     }
 
     #[test]
     fn conflicting_request_id_is_rejected_without_mutation() {
         let mut ledger = Ledger::default();
         ledger.accept_batch("same", &[key(1)]).unwrap();
-        assert_eq!(ledger.accept_batch("same", &[key(2)]), Err(LedgerError::BatchIdConflict));
+        assert_eq!(
+            ledger.accept_batch("same", &[key(2)]),
+            Err(LedgerError::BatchIdConflict)
+        );
         assert_eq!(ledger.state(&key(2)), None);
     }
 
@@ -212,7 +231,10 @@ mod tests {
         ledger.transition(&key(1), 0, Stage::Cancelled).unwrap();
         let new_generation = ledger.restart_cancelled(&key(1), 0).unwrap();
         assert_eq!(new_generation, 1);
-        assert_eq!(ledger.transition(&key(1), 0, Stage::Resolving), Err(LedgerError::StaleGeneration));
+        assert_eq!(
+            ledger.transition(&key(1), 0, Stage::Resolving),
+            Err(LedgerError::StaleGeneration)
+        );
         ledger.transition(&key(1), 1, Stage::Resolving).unwrap();
     }
 
@@ -220,15 +242,27 @@ mod tests {
     fn cannot_skip_verification_or_cancel_done_work() {
         let mut ledger = Ledger::default();
         ledger.accept_batch("one", &[key(1)]).unwrap();
-        assert_eq!(ledger.transition(&key(1), 0, Stage::Done), Err(LedgerError::InvalidTransition));
+        assert_eq!(
+            ledger.transition(&key(1), 0, Stage::Done),
+            Err(LedgerError::InvalidTransition)
+        );
         let path = [
-            Stage::Resolving, Stage::Ready, Stage::Transferring,
-            Stage::SourceVerified, Stage::MuxReady, Stage::MuxRunning,
-            Stage::OutputVerified, Stage::DbCommitted, Stage::Done,
+            Stage::Resolving,
+            Stage::Ready,
+            Stage::Transferring,
+            Stage::SourceVerified,
+            Stage::MuxReady,
+            Stage::MuxRunning,
+            Stage::OutputVerified,
+            Stage::DbCommitted,
+            Stage::Done,
         ];
         for stage in path {
             ledger.transition(&key(1), 0, stage).unwrap();
         }
-        assert_eq!(ledger.transition(&key(1), 0, Stage::Cancelled), Err(LedgerError::InvalidTransition));
+        assert_eq!(
+            ledger.transition(&key(1), 0, Stage::Cancelled),
+            Err(LedgerError::InvalidTransition)
+        );
     }
 }
