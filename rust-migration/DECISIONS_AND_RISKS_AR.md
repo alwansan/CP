@@ -79,3 +79,9 @@ Rust host run 45115514740 also completed SUCCESS: 19/19 unit tests, Clippy, fmt,
 
 SCOPE: Arrays are synthetic. Signed APK was loaded in isolated ART instrumentation, not as the installed Cinemana app on a phone. No production Room, Queue110, network/FFmpeg data flow, real durable ACK, or live downloader integration has been validated. Do not release as production.
 ADR15: Preserve Room v2 and its 1->2 migration; Rust may not directly mutate Downloads. RM20 unstable numeric IDs, RM21 UI-thread sync risk and RM22 JNI dependency lock remain OPEN.
+
+## ADR16/RM23–25 (2026-11-23)
+- ADR16: First shadow proof is composite row key (task_id,external_id), not episode ID, and generation is test metadata; choose actual stable ID mapping before production.
+- RM23: DAO lz0 selectors by only task_id or external_id may return nonunique rows under Room composite PK; never infer uniqueness from partial selectors.
+- RM24: Bounded diagnostic worker rejects observations on overload (counter increments); this is NOT a permissible admission-drop policy for actual user transfers. Future production event loss must be visible and reconcilable/replayed via authoritative DB.
+- RM25: Multiple Android processes could instantiate competing workers/schedulers if ever hooked; current class is not hooked and is CI-only. Require explicit one-owner IPC design, fail isolation and thread-use benchmark.

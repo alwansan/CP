@@ -158,3 +158,9 @@ Rust host run 45115514740 also completed SUCCESS: 19/19 unit tests, Clippy, fmt,
 
 SCOPE: Arrays are synthetic. Signed APK was loaded in isolated ART instrumentation, not as the installed Cinemana app on a phone. No production Room, Queue110, network/FFmpeg data flow, real durable ACK, or live downloader integration has been validated. Do not release as production.
 Milestone achieved: synthetic JNI shadow gate PASS. R2 production remains blocked on real event owner + durable receipt and device parity.
+
+## R2 composite identity & bounded async worker — 2026-11-23
+- ✅ Rust audit model task_id+external_id + generation/role, 500 synthetic events counters. 24/24 unit tests on Linux, fmt/clippy, Rust ARM64 library, Linux SIGKILL PASS in run 45117076600.
+- ✅ Diagnostic Java worker compiled only in experimental signed candidate; off-main + cloned arrays + bounded 16 pending + visible rejection (does NOT decide actual admission).
+- ⏳ Android15 ART composite/JNI/queue-overload test 45117076689 pending final result; no claim of Android PASS yet.
+- ⬜ Real passive Queue110/Room subscription, actual process ownership/identity, durable batch ACK and production feature parity NOT_STARTED.

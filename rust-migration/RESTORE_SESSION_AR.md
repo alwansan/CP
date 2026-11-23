@@ -94,3 +94,11 @@ SCOPE: Arrays are synthetic. Signed APK was loaded in isolated ART instrumentati
 
 The real APK Smali file app/smali/com/shabakaty/downloader/data/db/DownloadsDatabase_Impl.smali passes schema version 2 into DownloadsDatabase_Impl$a. The source file app/smali/com/shabakaty/downloader/data/db/a.smali is DownloadsDatabase_AutoMigration_1_2_Impl, explicitly mapping migration 1 to 2. It rebuilds _new_Downloads, copies existing columns via INSERT SELECT, drops the old table, renames, and restores the unique index on task_id + external_id. The Downloads table has no batch_id. Do not modify Room schema version 2 or this migration in the Rust diagnostic phase. Any real batch-header migration requires separate compatibility validation.
 RESTORE NEXT: Map native task_id + external_id + stable episode source, Android service ownership and bounded passive-only event bridge; do not write/download from Rust.
+
+## 2026-11-23 R2 composite event observer checkpoint
+- Rust `shadow_events.rs`: task_id+external_id composite Room-row model (not stable episode key), generation & role (main/:filedownloader) for synthetic first/mirror/repeat/stale/advance comparisons. 500 test -> first300/mirror100/repeat50/stale50. No DB or actual source event tap.
+- `RustShadowEventWorker.java` CI-only staging to diagnostic APK: 1 off-main worker + 16 bounded pending batches, deep copies arrays, overload throws/counters, rejects URL-looking external IDs in Rust. JNI typed String[]+long[]+int[]; local ref cleanup.
+- `45117076600` SUCCESS Rust Core: 24/24 tests, fmt/clippy, SIGKILL & ARM64 .so; `45117076689` Android15 ART pending at checkpoint. More in R2_COMPOSITE_WORKER_REPORT_AR.md.
+- `lz0.smali` Room DAO has WHERE task_id and WHERE external_id queries independently even though schema composite primary key; do not treat partial selector as unique. Source branch unchanged.
+
+Next: Verify signed Android15 ART run 45117076689 and update this checkpoint. Do not activate production downloader.

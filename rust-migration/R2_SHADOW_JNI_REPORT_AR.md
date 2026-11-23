@@ -42,3 +42,9 @@ Exact log markers:
 Rust host run 45115514740 also completed SUCCESS: 19/19 unit tests, Clippy, fmt, real Linux SIGKILL regression fixture, Linux/Android ARM64 builds.
 
 SCOPE: Arrays are synthetic. Signed APK was loaded in isolated ART instrumentation, not as the installed Cinemana app on a phone. No production Room, Queue110, network/FFmpeg data flow, real durable ACK, or live downloader integration has been validated. Do not release as production.
+
+## 2026-11-23 R2 composite event observer checkpoint
+- Rust `shadow_events.rs`: task_id+external_id composite Room-row model (not stable episode key), generation & role (main/:filedownloader) for synthetic first/mirror/repeat/stale/advance comparisons. 500 test -> first300/mirror100/repeat50/stale50. No DB or actual source event tap.
+- `RustShadowEventWorker.java` CI-only staging to diagnostic APK: 1 off-main worker + 16 bounded pending batches, deep copies arrays, overload throws/counters, rejects URL-looking external IDs in Rust. JNI typed String[]+long[]+int[]; local ref cleanup.
+- `45117076600` SUCCESS Rust Core: 24/24 tests, fmt/clippy, SIGKILL & ARM64 .so; `45117076689` Android15 ART pending at checkpoint. More in R2_COMPOSITE_WORKER_REPORT_AR.md.
+- `lz0.smali` Room DAO has WHERE task_id and WHERE external_id queries independently even though schema composite primary key; do not treat partial selector as unique. Source branch unchanged.

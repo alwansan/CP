@@ -81,3 +81,9 @@ Rust host run 45115514740 also completed SUCCESS: 19/19 unit tests, Clippy, fmt,
 
 SCOPE: Arrays are synthetic. Signed APK was loaded in isolated ART instrumentation, not as the installed Cinemana app on a phone. No production Room, Queue110, network/FFmpeg data flow, real durable ACK, or live downloader integration has been validated. Do not release as production.
 T07/T08 PASS only for isolated synthetic JNI and existing batch dialog ART; T03/T14/T15-T20 real DB, physical transfer, phone, and media parity NOT_RUN.
+
+## R2 composite event & async worker gate — 2026-11-23
+- T01/T02 **PASS synthetic Linux** on run 45117076600: 24/24 tests, including composite key, 500 first=300/mirror=100/repeated=50/stale=50, stale generation, invalid URL-like IDs and oversize.
+- T03 **PASS synthetic** Linux SIGKILL before/after commit as prior.
+- T07/T08 **PENDING Android15 ART** run 45117076689 with runtime worker queue saturation + JNI snapshot test; do not claim PASS without marker.
+- T09 real app ARM64 install, T14 Room owner/DAO, T15–20 500 real downloads/MKV/UI performance all NOT_RUN.

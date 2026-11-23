@@ -6,7 +6,7 @@
   "source_head": "c68c0d80722765409f8544d499938a656217967b",
   "writable_branch": "experiment/rust-core-migration",
   "date": "2026-11-23",
-  "phase": "R2_synthetic_shadow_JNI_Android15_ART_PASS_live_Cinemana_not_integrated",
+  "phase": "R2_composite_shadow_event_worker_host_pass_Android15_ART_pending",
   "jni_integrated": false,
   "android_library_built": true,
   "android_apk_built": true,
@@ -14,18 +14,18 @@
   "feature_parity": "not_validated_for_real_app",
   "branch_ci": "success",
   "current_scope": [
-    "R0 Rust model and 19 host tests including R2 shadow",
-    "R1 JNI version smoke and Android15 isolated signed APK ART success",
-    "R2 synthetic durable file fixture and actual Linux SIGKILL replay success",
-    "R2 synthetic Java int[] to Rust JNI shadow comparison of 500 selections PASS on Android15",
-    "Production Queue110, FileDownloader, Room and FFmpeg remain unchanged"
+    "R1 isolated signed JNI APK ART validated previously",
+    "R2 synthetic durable ledger with Linux SIGKILL recovery",
+    "R2 synthetic primitive JNI compare validated previously",
+    "R2 Room-row-shaped composite key + process/generation passive event model (Rust host passed)",
+    "R2 bounded diagnostic-only Java worker stages in signed APK (Android ART running)"
   ],
-  "next": "R2: map Downloads DAO + native task ID ownership across app processes; build bounded passive shadow event adapter with composite keys, no production write or actual downloads.",
+  "next": "Inspect Android15 ART run 45117076689; repair if failed. Then implement tightly scoped opt-in passive Queue110 shadow hook behind disabled-by-default flag, with no JNI/database blocking on UI or transfer worker, and verify no behavioral regressions.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
-  "session": "rust-migration/sessions/2026-11-23-r2-shadow-jni-05.md",
+  "session": "rust-migration/sessions/2026-11-23-r2-composite-worker-06.md",
   "android_library_abi": "arm64-v8a",
-  "last_code_commit": "4534e7dea2bb595e0036dbf789202c493fd08064",
+  "last_code_commit": "3ed0c052694f04fe52172435a6474053cc238f2e",
   "ci_runs": [
     {
       "id": 45110027899,
@@ -71,11 +71,11 @@
     "parity test matrix"
   ],
   "blockers": [
-    "Full Cinemana ARM64 app startup, background service and phone NOT_RUN",
-    "Synthetic integer IDs are not stable composite episode identity",
-    "No production Room or Queue110 read-only listener and no cross-process single owner",
-    "No durable batch ACK from original SharedPreferences/Room",
-    "No Rust HTTP or FFmpeg migration or end-to-end download/media tests"
+    "Android15 ART diagnostic composite JNI/worker+overflow test pending: run 45117076689",
+    "No real Queue110/Room event tap in either Android process",
+    "No task ID to stable logical episode identity mapping or durable Room batch ACK",
+    "No real background service owner/writer collision proof",
+    "No ARM64 installed full app, real downloads, or MKV parity under Rust"
   ],
   "status_detail": "R2 synthetic Java int[] -> Rust JNI shadow audit 500 IDs PASSED isolated signed APK ART; 19/19 Rust tests and Linux SIGKILL passed; no production downloader or Room changes",
   "protected_branches": [
@@ -98,17 +98,18 @@
     "r2_contract": "rust-migration/R2_STORAGE_CONTRACT_AR.md",
     "r2_fixture_report": "rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md",
     "r2_room_audit": "rust-migration/R2_ROOM_SCHEMA_AUDIT_AR.md",
-    "r2_shadow": "rust-migration/R2_SHADOW_JNI_REPORT_AR.md"
+    "r2_shadow": "rust-migration/R2_SHADOW_JNI_REPORT_AR.md",
+    "r2_composite_worker": "rust-migration/R2_COMPOSITE_WORKER_REPORT_AR.md"
   },
-  "last_verified_action_run": 45115514777,
+  "last_verified_action_run": 45117076600,
   "last_verified_action_result": "success",
   "rust_http_downloads_active": false,
   "mkv_runtime_migrated": false,
   "eta": "Not estimated: acceptance is gated by JNI/ART, durable database integration, performance tests, full feature parity and phone evidence.",
-  "last_ci_run_id": 45115514777,
+  "last_ci_run_id": 45117076689,
   "last_ci_earlier_core_run_id": 45112198686,
   "last_ci_earlier_core_result": "success",
-  "current_ci_result": "Rust host 45115514740 SUCCESS; signed Android15 x86_64 ART 45115514777 SUCCESS",
+  "current_ci_result": "Rust Core 45117076600 SUCCESS (24/24, SIGKILL, ARM64); signed Android15 ART 45117076689 still running",
   "jni_export_implemented": true,
   "jni_integrated_in_signed_diagnostic_apk": true,
   "jni_integrated_in_production_runtime": false,
@@ -215,5 +216,27 @@
     "real_downloads_touched": false
   },
   "r2_room_schema_version": 2,
-  "r2_room_auto_migration": "1_to_2"
+  "r2_room_auto_migration": "1_to_2",
+  "r2_composite_events": {
+    "model": "rust-core/src/shadow_events.rs",
+    "bridge": "rust-core/src/jni_shadow.rs:RustShadowEventWorker.nativeAudit",
+    "worker": "rust-migration/android/RustShadowEventWorker.java",
+    "staging": "CI-only copy into patches/local-account/src before build.py; never app entrypoint",
+    "identity": "(task_id,external_id) with event generation and process role 0=main/1=:filedownloader",
+    "markers": "500 events: first=300 mirror=100 duplicate=50 stale=50 advanced=0",
+    "worker_backpressure": "one worker, 16 queued batches, reject+count on overload, synchronous enqueue snapshots cloned; never acceptable as user admission discard",
+    "host_tests": "24/24 PASS",
+    "host_ci_run": 45117076600,
+    "android_art_ci_run": 45117076689,
+    "android_art_result": "in_progress",
+    "production_hook": false,
+    "actual_user_data": false,
+    "network_or_mkv": false,
+    "durable_ack": false
+  },
+  "r2_room_dao_selectors": {
+    "task_id": "lz0.a: SELECT * FROM Downloads WHERE ? = task_id (not necessarily unique under composite PK)",
+    "external_id": "lz0.f: SELECT * FROM Downloads WHERE ? = external_id (not necessarily unique under composite PK)",
+    "key": "Downloads PRIMARY KEY(task_id,external_id)"
+  }
 }
