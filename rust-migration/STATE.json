@@ -21,7 +21,7 @@
     "R1 Android15 ART test running",
     "R2 source-grounded durable queue contract doc"
   ],
-  "next": "R2: map actual Room DAO, native submit and per-task commit; design shadow-only, versioned asynchronous JNI interface to compare receipts without touching user DB. Test Android private-dir fsync and real two-process native ownership before any production switch.",
+  "next": "R2: finish native i44/DownloadActionsHandlerScope.m callbacks and DAO kz0/task id mapping, then build synthetic shadow-only ABI/IPC adapter; do not add writes to Downloads table until verified migration.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
   "session": "rust-migration/sessions/2026-11-23-r2-durable-fixture-04.md",
@@ -97,7 +97,8 @@
     "restore": "rust-migration/RESTORE_SESSION_AR.md",
     "r1": "rust-migration/R1_JNI_REPORT_AR.md",
     "r2_contract": "rust-migration/R2_STORAGE_CONTRACT_AR.md",
-    "r2_fixture_report": "rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md"
+    "r2_fixture_report": "rust-migration/R2_DURABLE_FIXTURE_REPORT_AR.md",
+    "r2_room_audit": "rust-migration/R2_ROOM_SCHEMA_AUDIT_AR.md"
   },
   "last_verified_action_run": 45113795022,
   "last_verified_action_result": "success",
@@ -167,5 +168,12 @@
   "r2_fixture_android_runtime_proven": false,
   "r2_real_download_engine_activated": false,
   "r1_signed_apk_regression_last_proven_run": 45113493277,
-  "r1_signed_apk_regression_new_run": 45113795068
+  "r1_signed_apk_regression_new_run": 45113795068,
+  "r2_room_schema_reviewed": true,
+  "r2_room_schema_primary_key": [
+    "task_id",
+    "external_id"
+  ],
+  "r2_room_schema_has_batch_id": false,
+  "r2_room_schema_updated_from": "Cinemana_PATCH252_Project/app/smali/com/shabakaty/downloader/data/db/DownloadsDatabase_Impl$a.smali"
 }

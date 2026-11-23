@@ -125,3 +125,9 @@ P5: كل الميزات/الترقية والتحقق على الهاتف.
 - ✅ CI run 45113795022: 14/14 Rust unit، fmt/clippy، Linux وARM64 .so، `CP_R2_SIGKILL_PASS`.
 - ⬜ SIGKILL أثناء write/fsync/rename الحقيقي مع fault timing instrumentation ما زال غير مجرَّب؛ الاختبار الحالي يغطي kill قبل commit وبعده، وfault injection يغطي نافذتي rename.
 - ⬜ Android process/file lock/Room/WAL, live download and MKV, phone acceptance كلها NOT_RUN.
+
+## تحقيق Room والـnative dispatch (مراجعة 2026-11-23)
+- ✅ عُثر على CREATE TABLE للـDownloads، PRIMARY KEY `(task_id,external_id)` ولا batch_id، وDAO `kz0` مع continuation methods؛ تم توثيقه في R2_ROOM_SCHEMA_AUDIT_AR.md.
+- ✅ تبيّن أن NativeBatchScope يمتد DownloadActionsHandlerScope.m وفيه MkvPlanStore/i44/Coroutines؛ native method return ليس durable batch receipt.
+- ⬜ تتبع callback `i44.c` وid 생성/Room DAO transactions ومسؤولي main/:filedownloader ما زال مفتوحاً.
+- ⬜ لا يُسمح بـRust writes على Downloads أو migrations ضمن هذه المرحلة قبل التحقق من schema/version.

@@ -74,3 +74,9 @@ R1: اسحب call graph ومخطط Room والـservices، وابن JNI ABI read
 - `rust-core/src/bin/r2_fixture_worker.rs` + `rust-migration/tests/test_sigkill.py`: اختبار Linux child process بـSIGKILL فعلي بدل الاكتفاء بحقن Error. اختبار 1 يقتل مالك القفل قبل أي commit ويتحقق من 0 tasks، واختبار 2 يثبت حفظ 500 intents ثم يقتل المالِك مع بقاء القفل مفتوحاً، وبعدها يفتحها process آخر دون فقد أو تكرار.
 - Run 45113795022 **SUCCESS**؛ marker `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`، Rust unit 14/14 وAndroid ARM64 crossbuild PASS.
 - حدود الدليل: ليس قتل وسط write/fsync فعلي، وليس Android process ولا Room/FFmpeg. لا تبدأ production.
+
+## اكتشاف schema الأصلي — 2026-11-23
+- `DownloadsDatabase_Impl$a.smali` ينشئ `Downloads` بPRIMARY KEY `(task_id,external_id)` وfields progress_bytes/title/url/img/path/size_bytes/status/last_updated؛ لا `batch_id`.
+- Room `DownloadsDatabase.p()` يرجع DAO obfuscated `kz0`; `ut3.a()` builder، MkvExporter.getDownloadsDao يحفظ `DL_SHARED_DAO` داخلياً.
+- `NativeBatchScope` يمتد `DownloadActionsHandlerScope.m()` التي تستخدم MkvPlanStore و`i44` API وcoroutines. مجرد `BatchDownload.call("m")` ليس receipt durable.
+- راجع `rust-migration/R2_ROOM_SCHEMA_AUDIT_AR.md` قبل R2 shadow adapter. لا تكتب Rust إلى Room schema مباشرة.

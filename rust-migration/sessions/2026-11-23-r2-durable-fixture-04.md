@@ -26,3 +26,8 @@
 - Add rust-core/src/bin/r2_fixture_worker.rs and rust-migration/tests/test_sigkill.py; workflow rust-core-check.yml now builds worker and runs Python test.
 - Run 45113795022 SUCCESS: 14/14 unit، fmt/clippy، Linux, ARM64 build، and `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`.
 - هذا SIGKILL حقيقي قبل وبعد commit فقط، لا mid-write OS kill ولا Android. فرع الأصل untouched؛ لا production APK.
+
+## تحقيق إضافي: مخطط Room الفعلي
+- قُرئ `DownloadsDatabase_Impl$a.smali` واستُخرج CREATE TABLE Downloads والمفتاح المركب (task_id, external_id) وغياب batch_id؛ DAO `kz0` وbuilder `ut3` ومخزن `DL_SHARED_DAO`.
+- قُرئ `NativeBatchScope` و`DownloadActionsHandlerScope.m` + `i44` interface؛ يظهر المسار الأصلي المرتبط بالـnative وcoroutine وMkvPlanStore.
+- نُشرت الخريطة `rust-migration/R2_ROOM_SCHEMA_AUDIT_AR.md`؛ لا runtime/DB change أو اختبارات هاتف.

@@ -56,3 +56,9 @@ Artifact 14790505739 اسمه Cinemana-CP-Rust-R1-JNI-Diagnostic؛ diagnostic on
 - Code commit 40837af4e89a4c5463305885f488943022c03702. وثائق التخزين: R2_DURABLE_FIXTURE_REPORT_AR.md، R2_STORAGE_CONTRACT_AR.md.
 - R1 signed candidate rebuilt SUCCESS في run 45113493277 بعد Rust module، لكن rerun جديد 45113795068 كان in_progress أثناء هذا التحديث؛ اقرأ نتيجة workflow عند الاستئناف.
 - لا تعلن R2 production أو أي APK متكامل: لم يُربط Rust بRoom/Queue110، ولم يجر أي اختبار نقل حقيقي/هاتف. التالي owner mapping وshadow-only Android bridge، بلا تغير مستخدم.
+
+## آخر ملاحظة schema R2 — 2026-11-23
+- اقرأ rust-migration/R2_ROOM_SCHEMA_AUDIT_AR.md. فُحص DownloadsDatabase_Impl$a وDownloadsDatabase/DAOImpl/kz0 وut3 وDownloadActionsHandlerScope وNativeBatchScope.
+- الجدول `Downloads` يملك PK `(task_id,external_id)` **لا batch_id**؛ لا تعِد استخدام snapshot fixture كDB المستخدم أو تكتب Rust مباشرة لـRoom.
+- `BatchDownload.call(scope,"m")` يعبر NativeBatchScope -> DownloadActionsHandlerScope.m مع i44/FFmpeg plan/coroutine، وهو ليس commit ack.
+- R2 Linux SIGKILL run 45113795022 SUCCESS، لكن Room/Android runtime غير مدمجين. التالي mapper للtask_id والـDAO وكيف يصل ACK إلى queue owner.

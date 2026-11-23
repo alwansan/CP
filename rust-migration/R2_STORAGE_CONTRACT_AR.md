@@ -29,3 +29,6 @@
 ## دليل الاسترداد الجديد
 - CI 45113795022 PASSED actual Linux subprocess SIGKILL + lock release + 500 intents reopening, run marker `CP_R2_SIGKILL_PASS before_commit=0 after_commit=500 lock_released=1 replay=1`. 
 - مخزن fixture لا يزال غير ملائم لحالة SharedPreferences/Room الأصلية، ولا يعني Android R2 gate PASS.
+
+## ربط بالschema الحقيقي — 2026-11-23
+راجع `R2_ROOM_SCHEMA_AUDIT_AR.md` لحقيقة CREATE TABLE Downloads التي تستخدم composite PK `(task_id,external_id)` دون batch_id، والـDAO `kz0` و`DownloadActionsHandlerScope.m`. لا تستبدل `Queue110.remember/save` بRust snapshot fixture. أي إضافة batch_header تتطلب new additive schema/versioned migration بعد فحص Room والكود.
