@@ -6,7 +6,7 @@
   "source_head": "c68c0d80722765409f8544d499938a656217967b",
   "writable_branch": "experiment/rust-core-migration",
   "date": "2026-11-23",
-  "phase": "R2_composite_shadow_event_worker_host_pass_Android15_ART_pending",
+  "phase": "R2_composite_shadow_worker_Android15_signed_ART_success_production_unconnected",
   "jni_integrated": false,
   "android_library_built": true,
   "android_apk_built": true,
@@ -20,7 +20,7 @@
     "R2 Room-row-shaped composite key + process/generation passive event model (Rust host passed)",
     "R2 bounded diagnostic-only Java worker stages in signed APK (Android ART running)"
   ],
-  "next": "Inspect Android15 ART run 45117076689; repair if failed. Then implement tightly scoped opt-in passive Queue110 shadow hook behind disabled-by-default flag, with no JNI/database blocking on UI or transfer worker, and verify no behavioral regressions.",
+  "next": "R2 next: opt-in disabled-by-default passive observation at the post-commit Queue110 path with fail isolation, nonblocking caller and no user-data logging; integrate behind a safe feature flag in experiment branch only and ART regression-test before any phone milestone.",
   "restore": "rust-migration/RESTORE_SESSION_AR.md",
   "plan": "rust-migration/PLAN_AR.md",
   "session": "rust-migration/sessions/2026-11-23-r2-composite-worker-06.md",
@@ -71,13 +71,13 @@
     "parity test matrix"
   ],
   "blockers": [
-    "Android15 ART diagnostic composite JNI/worker+overflow test pending: run 45117076689",
-    "No real Queue110/Room event tap in either Android process",
-    "No task ID to stable logical episode identity mapping or durable Room batch ACK",
-    "No real background service owner/writer collision proof",
-    "No ARM64 installed full app, real downloads, or MKV parity under Rust"
+    "Diagnostic ART passes, but no actual passive Queue110/Room event hook or runtime process owner",
+    "Composite row ID and test generation are not stable canonical episode identity",
+    "No durable batch receipt from actual SharedPreferences/Room commit",
+    "No ARM64 installed full app, true multi-process synchronization proof or 200–500 real episode parity tests",
+    "No Rust HTTP downloader, MKV or background lifecycle migration"
   ],
-  "status_detail": "R2 synthetic Java int[] -> Rust JNI shadow audit 500 IDs PASSED isolated signed APK ART; 19/19 Rust tests and Linux SIGKILL passed; no production downloader or Room changes",
+  "status_detail": "CI confirmed 24/24 Rust tests, SIGKILL recovery, ARM64/x86_64 native libraries, signed APK and isolated Android15 ART with Java async bounded queue+500 typed composite event observations. NO production Queue110/Room/download or FFmpeg integration.",
   "protected_branches": [
     "main",
     "feature/download-stability",
@@ -101,7 +101,7 @@
     "r2_shadow": "rust-migration/R2_SHADOW_JNI_REPORT_AR.md",
     "r2_composite_worker": "rust-migration/R2_COMPOSITE_WORKER_REPORT_AR.md"
   },
-  "last_verified_action_run": 45117076600,
+  "last_verified_action_run": 45117076689,
   "last_verified_action_result": "success",
   "rust_http_downloads_active": false,
   "mkv_runtime_migrated": false,
@@ -109,7 +109,7 @@
   "last_ci_run_id": 45117076689,
   "last_ci_earlier_core_run_id": 45112198686,
   "last_ci_earlier_core_result": "success",
-  "current_ci_result": "Rust Core 45117076600 SUCCESS (24/24, SIGKILL, ARM64); signed Android15 ART 45117076689 still running",
+  "current_ci_result": "Rust Core run 45117076600 SUCCESS (24/24); diagnostic Android15 signed APK run 45117076689 SUCCESS",
   "jni_export_implemented": true,
   "jni_integrated_in_signed_diagnostic_apk": true,
   "jni_integrated_in_production_runtime": false,
@@ -228,11 +228,26 @@
     "host_tests": "24/24 PASS",
     "host_ci_run": 45117076600,
     "android_art_ci_run": 45117076689,
-    "android_art_result": "in_progress",
+    "android_art_result": "success_isolated_Android15_x86_64",
     "production_hook": false,
     "actual_user_data": false,
     "network_or_mkv": false,
-    "durable_ack": false
+    "durable_ack": false,
+    "android_art_run": 45117076689,
+    "android_artifact_id": 14792057535,
+    "artifact_name": "Cinemana-CP-Rust-R1-JNI-Diagnostic",
+    "android_art_log_marker": "CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1",
+    "android_art_additional_markers": [
+      "CPRUST_R1_JNI_PASS abi=1",
+      "CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1",
+      "CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1",
+      "INSTRUMENTATION_CODE: -1"
+    ],
+    "actual_app_install": false,
+    "physical_phone_test": false,
+    "real_Cinemana_event_tap": false,
+    "external_id_string_logged": false,
+    "production_ready": false
   },
   "r2_room_dao_selectors": {
     "task_id": "lz0.a: SELECT * FROM Downloads WHERE ? = task_id (not necessarily unique under composite PK)",

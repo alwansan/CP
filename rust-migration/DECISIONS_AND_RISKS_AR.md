@@ -85,3 +85,8 @@ ADR15: Preserve Room v2 and its 1->2 migration; Rust may not directly mutate Dow
 - RM23: DAO lz0 selectors by only task_id or external_id may return nonunique rows under Room composite PK; never infer uniqueness from partial selectors.
 - RM24: Bounded diagnostic worker rejects observations on overload (counter increments); this is NOT a permissible admission-drop policy for actual user transfers. Future production event loss must be visible and reconcilable/replayed via authoritative DB.
 - RM25: Multiple Android processes could instantiate competing workers/schedulers if ever hooked; current class is not hooked and is CI-only. Require explicit one-owner IPC design, fail isolation and thread-use benchmark.
+
+## اختبار RM23/RM24/25 والبوابات (2026-11-23)
+- **CI proof**: 45117076689 PASS Android15 x86_64 composite key events (500), single async worker وbounded overload. يظل خطر production overload مفتوحاً لأن مراقبة التشخيص يمكنها reject، بعكس admission الحقيقي الذي يحتاج durable replay.
+- RM23 (nonunique WHERE task_id under composite PK) مفتوح، لكن الـmodel يفصل task_id+external_id في الاختبار.
+- RM25 (two real Android process ownership) مفتوح؛ role=0/1 حالياً synthetic، لا IPC أو listener حي.

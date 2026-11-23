@@ -117,3 +117,8 @@ The real APK Smali file app/smali/com/shabakaty/downloader/data/db/DownloadsData
 - `RustShadowEventWorker.java` CI-only staging to diagnostic APK: 1 off-main worker + 16 bounded pending batches, deep copies arrays, overload throws/counters, rejects URL-looking external IDs in Rust. JNI typed String[]+long[]+int[]; local ref cleanup.
 - `45117076600` SUCCESS Rust Core: 24/24 tests, fmt/clippy, SIGKILL & ARM64 .so; `45117076689` Android15 ART pending at checkpoint. More in R2_COMPOSITE_WORKER_REPORT_AR.md.
 - `lz0.smali` Room DAO has WHERE task_id and WHERE external_id queries independently even though schema composite primary key; do not treat partial selector as unique. Source branch unchanged.
+
+## بوابة R2 composite events — نجحت (2026-11-23)
+- run 45117076600 Rust Core **SUCCESS**: 24/24 tests، fmt/clippy، SIGKILL Linux، ARM64 library.
+- run 45117076689 signed diagnostic APK Android15 isolated ART **SUCCESS**: `CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1`, واستمرار `CPRUST_R2_SHADOW_PASS` و`CPRUST_R1_JNI_PASS` و`CPDL_ART_PASS`. Artifact 14792057535؛ لا production APK.
+- الهدف التالي: passive Queue110 hook مصمم ليكون optional/disabled-by-default، nonblocking/fail-isolated، ولا يمسّ DB أو يرسل transfer/MKV؛ يحتاج حماية الـcallback execution وتأكيد source process.

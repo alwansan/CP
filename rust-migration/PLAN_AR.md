@@ -164,3 +164,8 @@ Milestone achieved: synthetic JNI shadow gate PASS. R2 production remains blocke
 - ✅ Diagnostic Java worker compiled only in experimental signed candidate; off-main + cloned arrays + bounded 16 pending + visible rejection (does NOT decide actual admission).
 - ⏳ Android15 ART composite/JNI/queue-overload test 45117076689 pending final result; no claim of Android PASS yet.
 - ⬜ Real passive Queue110/Room subscription, actual process ownership/identity, durable batch ACK and production feature parity NOT_STARTED.
+
+## بوابة R2 composite events — نجحت (2026-11-23)
+- run 45117076600 Rust Core **SUCCESS**: 24/24 tests، fmt/clippy، SIGKILL Linux، ARM64 library.
+- run 45117076689 signed diagnostic APK Android15 isolated ART **SUCCESS**: `CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1`, واستمرار `CPRUST_R2_SHADOW_PASS` و`CPRUST_R1_JNI_PASS` و`CPDL_ART_PASS`. Artifact 14792057535؛ لا production APK.
+- الهدف التالي: passive Queue110 hook مصمم ليكون optional/disabled-by-default، nonblocking/fail-isolated، ولا يمسّ DB أو يرسل transfer/MKV؛ يحتاج حماية الـcallback execution وتأكيد source process.

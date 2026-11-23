@@ -18,7 +18,7 @@
 
 ## CI والحدود عند تحديث التقرير
 - Rust Core run \`45117076600\` **SUCCESS**: format/clippy، **24/24 Rust unit tests**، SIGKILL Linux synthetic، ARM64 .so.
-- Android15 diagnostic signed APK/ART run \`45117076689\` **قيد التنفيذ** عند توثيق هذا checkpoint. لا تعتبر Marker ناجحاً إلا من logs الفعلية؛ إذا فشل فامسك بالـstack trace وأصلح ثم أعد البناء.
+- Android15 diagnostic signed APK/ART run `45117076689` **COMPLETED SUCCESS**؛ exact marker مثبت أدناه.
 - الاختبار لا يدّعي إنشاء غرفة مهام حيّة ولا حفظ فوري لدى Room ولا ACK حقيقي، ولا قياس سرعة تنزيل، ولا APK إنتاجي قابل لاستبدال النسخة المثبتة.
 - رفض الـshadow overload هنا يعني **تُحذف المقارنة التشخيصية فقط ويُبلّغ عن ذلك**، ولا يحق إسقاط تنزيلات المستخدم أو اعتبار observation مفقود = task completed.
 
@@ -26,3 +26,15 @@
 1. تثبيت نتيجة Android15 ART الجديدة مع marker + artifact id + signed candidate SHA؛ إصلاح أي فشل دون تجاوز الاختبار.
 2. تصميم passive opt-in hook بعد \`Queue110.save\` مع I/O=zero in caller، fail-isolated، ومنع ازدواجية مع \`:filedownloader\`، مع feature flag disabled-by-default.
 3. فحص lifecycle/ownership الفعلي للـDAO وworker قبل تثبيت أي app user test؛ وفي حال فشل اختبار الهاتف يجب معرفة log صغير مفصل دون تجارب بسيطة كثيرة.
+
+## النتيجة النهائية المؤكدة من سجلات GitHub Actions
+- **Rust Core run 45117076600: SUCCESS** — cargo fmt/clippy و **24/24 Rust tests**، real SIGKILL Linux، ARM64 shared library.
+- **Android diagnostic signed APK run 45117076689: SUCCESS** — جرى تجميع ARM64 وx86_64 .so، توليد classes11 Java/Smali، التوقيع وDEX verification، وAndroid15 ART فحص من APK الموقع نفسه. Artifact ID **14792057535**، `Cinemana-CP-Rust-R1-JNI-Diagnostic`، حجمه zipped **47780005 bytes**؛ diagnostic not release.
+- `CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1`
+- `CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1`
+- `CPRUST_R1_JNI_PASS abi=1`
+- `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`
+- `INSTRUMENTATION_CODE: -1`
+- اختُبرت Java worker off-main وqueue bounded=16 وrejectedCount=1 مع deep-cloning قبل الطلب؛ نجاح هذه الأدوات التشخيصية لا يساوي تحمل queue الإنتاجية أو ضمان عدم فقد طلبات المستخدم.
+
+**حدود الإثبات**: ART في isolated instrumentation على x86_64. لا إطلاق كامل لـCinemana على جهاز مالك، لا قراءة/كتابة DB للمستخدم، لا تنزيل/تحويل MKV على Rust، لا إثبات أن الأرقام الاصطناعية تعكس العمليات الحية.

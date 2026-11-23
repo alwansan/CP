@@ -87,3 +87,9 @@ T07/T08 PASS only for isolated synthetic JNI and existing batch dialog ART; T03/
 - T03 **PASS synthetic** Linux SIGKILL before/after commit as prior.
 - T07/T08 **PENDING Android15 ART** run 45117076689 with runtime worker queue saturation + JNI snapshot test; do not claim PASS without marker.
 - T09 real app ARM64 install, T14 Room owner/DAO, T15–20 500 real downloads/MKV/UI performance all NOT_RUN.
+
+## نتائج composite event worker — 2026-11-23
+- T02 **PASS synthetic**: Rust 24/24 + أرقام 500، key distinct عند task_id نفسه وexternalId مختلف، generation fencing، inputs invalid/URL rejected.
+- T07/T08 **PASS isolated Android15**: run 45117076689 marker `CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1`، اختبار R2 القديم 500، R1 JNI=1 ونافذة BatchDownload، `INSTRUMENTATION_CODE: -1`. بقي full app NOT_RUN.
+- T14 **غير مكتمل**: queue bounded 16+overload rejection in diagnostic JVM فقط، وليس multi-process Room/real service.
+- T15–T20 real download/MKV/UI/phone/idle tests كلها NOT_RUN لهذا المسار الجديد.

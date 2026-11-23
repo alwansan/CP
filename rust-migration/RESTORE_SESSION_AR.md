@@ -102,3 +102,9 @@ RESTORE NEXT: Map native task_id + external_id + stable episode source, Android 
 - `lz0.smali` Room DAO has WHERE task_id and WHERE external_id queries independently even though schema composite primary key; do not treat partial selector as unique. Source branch unchanged.
 
 Next: Verify signed Android15 ART run 45117076689 and update this checkpoint. Do not activate production downloader.
+
+## بوابة R2 composite events — نجحت (2026-11-23)
+- run 45117076600 Rust Core **SUCCESS**: 24/24 tests، fmt/clippy، SIGKILL Linux، ARM64 library.
+- run 45117076689 signed diagnostic APK Android15 isolated ART **SUCCESS**: `CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1`, واستمرار `CPRUST_R2_SHADOW_PASS` و`CPRUST_R1_JNI_PASS` و`CPDL_ART_PASS`. Artifact 14792057535؛ لا production APK.
+- الهدف التالي: passive Queue110 hook مصمم ليكون optional/disabled-by-default، nonblocking/fail-isolated، ولا يمسّ DB أو يرسل transfer/MKV؛ يحتاج حماية الـcallback execution وتأكيد source process.
+آخر commit CODE المؤكد 3ed0c052694f04fe52172435a6474053cc238f2e؛ اتبع أحدث HEAD وتحقق من source feature/download-stability. لا تخلط artifact التشخيصي مع APK إنتاجي.

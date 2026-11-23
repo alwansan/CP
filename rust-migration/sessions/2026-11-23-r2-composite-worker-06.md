@@ -8,3 +8,15 @@
   CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1
 - No phone tests requested, preserving user's preference for fewer major-gate trials.
 - Next: inspect ART, repair any failure; only then consider disabled-by-default passive source hook with no modifications to Queue110/Room semantics.
+
+## النتيجة النهائية المؤكدة من سجلات GitHub Actions
+- **Rust Core run 45117076600: SUCCESS** — cargo fmt/clippy و **24/24 Rust tests**، real SIGKILL Linux، ARM64 shared library.
+- **Android diagnostic signed APK run 45117076689: SUCCESS** — جرى تجميع ARM64 وx86_64 .so، توليد classes11 Java/Smali، التوقيع وDEX verification، وAndroid15 ART فحص من APK الموقع نفسه. Artifact ID **14792057535**، `Cinemana-CP-Rust-R1-JNI-Diagnostic`، حجمه zipped **47780005 bytes**؛ diagnostic not release.
+- `CPRUST_R2_EVENTS_PASS selected=500 first=300 mirrored=100 repeated=50 stale=50 advanced=0 async=1 saturated=1 invalid_rejected=1`
+- `CPRUST_R2_SHADOW_PASS selected=500 new=200 existing=200 duplicates=100 invalid_rejected=1 oversized_rejected=1`
+- `CPRUST_R1_JNI_PASS abi=1`
+- `CPDL_ART_PASS family=54 opens=2 refresh_paths=4 closes=2 backend=6 synthetic_slots=2 lease_duplicate_rejected=1`
+- `INSTRUMENTATION_CODE: -1`
+- اختُبرت Java worker off-main وqueue bounded=16 وrejectedCount=1 مع deep-cloning قبل الطلب؛ نجاح هذه الأدوات التشخيصية لا يساوي تحمل queue الإنتاجية أو ضمان عدم فقد طلبات المستخدم.
+
+**حدود الإثبات**: ART في isolated instrumentation على x86_64. لا إطلاق كامل لـCinemana على جهاز مالك، لا قراءة/كتابة DB للمستخدم، لا تنزيل/تحويل MKV على Rust، لا إثبات أن الأرقام الاصطناعية تعكس العمليات الحية.
