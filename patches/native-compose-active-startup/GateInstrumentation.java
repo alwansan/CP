@@ -150,6 +150,30 @@ public final class GateInstrumentation extends Instrumentation {
         } while(SystemClock.elapsedRealtime()<end);
         throw new AssertionError("missing drawn text "+text);
     }
+    private void requireLightTextOnDarkBackground(String text) {
+        AccessibilityNodeInfo node=find(text,15000);
+        Rect bounds=new Rect();
+        try{node.getBoundsInScreen(bounds);}finally{node.recycle();}
+        for(int attempt=0;attempt<10;attempt++){
+            android.graphics.Bitmap screenshot=getUiAutomation().takeScreenshot();
+            require(screenshot!=null,"missing screenshot for "+text);
+            try{
+                Rect visible=new Rect(bounds);
+                require(visible.intersect(0,0,screenshot.getWidth(),screenshot.getHeight()),"offscreen text: "+text);
+                int[] pixels=new int[visible.width()*visible.height()];
+                screenshot.getPixels(pixels,0,visible.width(),visible.left,visible.top,visible.width(),visible.height());
+                int pale=0,dark=0;
+                for(int pixel:pixels){
+                    int red=(pixel>>16)&255,green=(pixel>>8)&255,blue=pixel&255;
+                    if(red>=160&&green>=160&&blue>=160)pale++;
+                    if(red<=32&&green<=32&&blue<=32)dark++;
+                }
+                if(pale>=24&&dark>pixels.length/2)return;
+            }finally{screenshot.recycle();}
+            SystemClock.sleep(150);
+        }
+        throw new AssertionError("unreadable text on dark background: "+text);
+    }
     private void requireFocused(String component) throws IOException {
         String focus=shell("dumpsys window displays");
         String suffix=Pattern.quote(PKG+"/"+component);
@@ -957,6 +981,10 @@ public final class GateInstrumentation extends Instrumentation {
                 clickText("التنزيلات");
                 find("تحديث تلقائي · آخر قراءة من محرك التنزيل",45000).recycle();
                 requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+                requireLightTextOnDarkBackground("التنزيلات");
+                requireLightTextOnDarkBackground("تحديث تلقائي · آخر قراءة من محرك التنزيل");
+                requireLightTextOnDarkBackground("لا توجد تنزيلات");
+                markerResult+="CP_DOWNLOADS_TEXT_CONTRAST_PASS title=status=empty=readable\n";
                 clickText("إغلاق");
                 find("التنزيلات",30000).recycle();
                 requireFocused(home);

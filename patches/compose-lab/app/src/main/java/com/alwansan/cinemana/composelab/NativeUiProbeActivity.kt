@@ -37,8 +37,11 @@ class NativeUiProbeActivity : ComponentActivity() {
         window.statusBarColor=0xff090a0d.toInt()
         window.navigationBarColor=0xff090a0d.toInt()
         setContent {
-            MaterialTheme(colorScheme=darkColorScheme(background=Color(0xff090a0d))) {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            MaterialTheme(colorScheme=darkColorScheme(background=Color(0xff090a0d), onBackground=Color(0xfff8f4ee))) {
+                CompositionLocalProvider(
+                LocalLayoutDirection provides LayoutDirection.Rtl,
+                LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+            ) {
                     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).windowInsetsPadding(WindowInsets.safeDrawing).padding(16.dp)) {
                         Text("CP_NATIVE_UI_READY")
                         Text("PID: "+android.os.Process.myPid())
@@ -62,8 +65,11 @@ class NativeUiProbeActivity : ComponentActivity() {
 private fun SamePackageRendererGate(realOwner:Boolean,foreground:Boolean,presentation:Boolean,close:()->Unit) {
     var count by remember { mutableIntStateOf(0) }
     val rows = remember { (1..48).toList() }
-    MaterialTheme(colorScheme=darkColorScheme(background=Color(0xff090a0d))) {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+    MaterialTheme(colorScheme=darkColorScheme(background=Color(0xff090a0d), onBackground=Color(0xfff8f4ee))) {
+        CompositionLocalProvider(
+                LocalLayoutDirection provides LayoutDirection.Rtl,
+                LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+            ) {
             Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
                 .windowInsetsPadding(WindowInsets.safeDrawing).padding(16.dp)) {
                 if(presentation) {
