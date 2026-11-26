@@ -175,11 +175,19 @@ public final class GateInstrumentation extends Instrumentation {
         throw new AssertionError("unreadable text on dark background: "+text);
     }
     private void requireFocused(String component) throws IOException {
-        String focus=shell("dumpsys window displays");
         String suffix=Pattern.quote(PKG+"/"+component);
-        require(Pattern.compile("mCurrentFocus=Window\\{[^\\n}]* "+suffix+"\\}").matcher(focus).find(),"wrong foreground window "+component);
-        require(Pattern.compile("mFocusedApp=ActivityRecord\\{[^\\n}]* "+suffix+"(?: |\\})").matcher(focus).find(),"wrong focused activity "+component);
-        Log.i(TAG,"CP_NATIVE_GATE_FOCUSED "+component);
+        Pattern window=Pattern.compile("mCurrentFocus=Window\\{[^\\n}]* "+suffix+"\\}");
+        Pattern activity=Pattern.compile("mFocusedApp=ActivityRecord\\{[^\\n}]* "+suffix+"(?: |\\})");
+        long deadline=SystemClock.elapsedRealtime()+10000;
+        do{
+            String focus=shell("dumpsys window displays");
+            if(window.matcher(focus).find()&&activity.matcher(focus).find()){
+                Log.i(TAG,"CP_NATIVE_GATE_FOCUSED "+component);
+                return;
+            }
+            SystemClock.sleep(150);
+        }while(SystemClock.elapsedRealtime()<deadline);
+        throw new AssertionError("window and activity did not focus: "+component);
     }
     private void clickText(String text){
         AccessibilityNodeInfo n=find(text,30000);
@@ -986,8 +994,8 @@ public final class GateInstrumentation extends Instrumentation {
                 requireLightTextOnDarkBackground("لا توجد تنزيلات");
                 markerResult+="CP_DOWNLOADS_TEXT_CONTRAST_PASS title=status=empty=readable\n";
                 clickText("إغلاق");
-                find("التنزيلات",30000).recycle();
                 requireFocused(home);
+                find("التنزيلات",30000).recycle();
                 markerResult+="CP_HOME_COMPOSE_DOWNLOADS_PASS open=bottom_navigation close=home\n";
                 setStage("downloads-preview-entry");
                 String downloads = "com.shabakaty.cinemana.ui.downloads.DownloadsActivity";
