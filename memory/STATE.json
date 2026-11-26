@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_downloads_preview_entry_ci_pending",
+  "status": "native_compose_downloads_preview_return_fixed_ci_pending",
   "last_session": "memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
@@ -45,8 +45,8 @@
   "branch_actions": {
     "total_count": null,
     "latest_run_id": 45864996189,
-    "latest_status": "in_progress",
-    "latest_conclusion": null
+    "latest_status": "completed",
+    "latest_conclusion": "failure"
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -2337,6 +2337,8 @@
     "frame_phase_fix_scope": "isolated_AndroidTest_FrameMetrics_only",
     "frame_phase_fix_artifact": 14693194429,
     "phone_candidate_run": 45864560029,
+    "phone_candidate_artifact": 15141275868,
+    "downloads_preview_entry_conclusion": "failure_legacy_recreate_on_return",
     "downloads_preview_entry_run": 45864996189,
     "downloads_preview_entry_code_sha": "7e8693e1919df66b0b9cdaa11cc97e93ea34b1bf",
     "phone_arm64_performance_verified": false

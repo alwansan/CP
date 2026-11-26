@@ -48,6 +48,8 @@
 # instance fields
 .field private modHasResumedBefore:Z
 
+.field modReturningFromComposePreview:Z
+
 .field public final v:Lcom/shabakaty/downloader/kf2;
 
 
@@ -188,7 +190,7 @@
     .line 13
     invoke-static {p1, v0, v1, v2}, Lcom/shabakaty/downloader/ol3;->h(Landroidx/appcompat/widget/Toolbar;Landroidx/navigation/NavController;Lcom/shabakaty/downloader/m9;I)V
 
-    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ui/downloads/DownloadsComposePreview;->addAction(Landroid/app/Activity;Landroidx/appcompat/widget/Toolbar;)V
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ui/downloads/DownloadsComposePreview;->addAction(Lcom/shabakaty/cinemana/ui/downloads/DownloadsActivity;Landroidx/appcompat/widget/Toolbar;)V
 
     return-void
 .end method
@@ -202,6 +204,15 @@
 
     invoke-static {p0, v0}, Lcom/shabakaty/cinemana/features/DownloadTrace;->log(Landroid/content/Context;Ljava/lang/String;)V
 
+    # Keep the existing nav host when the private preview closes.
+    iget-boolean v0, p0, Lcom/shabakaty/cinemana/ui/downloads/DownloadsActivity;->modReturningFromComposePreview:Z
+    if-eqz v0, :legacy_resume
+
+    const/4 v0, 0x0
+    iput-boolean v0, p0, Lcom/shabakaty/cinemana/ui/downloads/DownloadsActivity;->modReturningFromComposePreview:Z
+    return-void
+
+    :legacy_resume
     iget-boolean v0, p0, Lcom/shabakaty/cinemana/ui/downloads/DownloadsActivity;->modHasResumedBefore:Z
 
     if-eqz v0, :cond_0
