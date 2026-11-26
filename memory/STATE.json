@@ -29,7 +29,7 @@
     "inventory_only": false,
     "pinned_sha": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0",
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8",
-    "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
+    "current_head": "c664bf94173778ffa13541060d44c01162c4d22c"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
   "next": "Verify downloads toolbar Compose preview entry, final same-package APK ART and phone candidate artifact on current Native-Compose; then validate original ARM64 exporter and migrate remaining real routes.",
@@ -44,7 +44,7 @@
   "last_verified_head": "7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3",
   "branch_actions": {
     "total_count": null,
-    "latest_run_id": 44867014514,
+    "latest_run_id": 45864996189,
     "latest_status": "in_progress",
     "latest_conclusion": null
   },
@@ -2335,6 +2335,10 @@
     "frame_phase_fix_run": 44871344400,
     "frame_phase_fix_conclusion": "success",
     "frame_phase_fix_scope": "isolated_AndroidTest_FrameMetrics_only",
+    "frame_phase_fix_artifact": 14693194429,
+    "phone_candidate_run": 45864560029,
+    "downloads_preview_entry_run": 45864996189,
+    "downloads_preview_entry_code_sha": "7e8693e1919df66b0b9cdaa11cc97e93ea34b1bf",
     "phone_arm64_performance_verified": false
   }
 }
