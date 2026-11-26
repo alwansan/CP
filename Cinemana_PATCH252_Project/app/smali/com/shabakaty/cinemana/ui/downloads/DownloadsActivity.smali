@@ -188,6 +188,8 @@
     .line 13
     invoke-static {p1, v0, v1, v2}, Lcom/shabakaty/downloader/ol3;->h(Landroidx/appcompat/widget/Toolbar;Landroidx/navigation/NavController;Lcom/shabakaty/downloader/m9;I)V
 
+    invoke-static {p0, p1}, Lcom/shabakaty/cinemana/ui/downloads/DownloadsComposePreview;->addAction(Landroid/app/Activity;Landroidx/appcompat/widget/Toolbar;)V
+
     return-void
 .end method
 

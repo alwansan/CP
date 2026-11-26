@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_frame_phases_verified_phone_candidate_ci_pending",
+  "status": "native_compose_downloads_preview_entry_ci_pending",
   "last_session": "memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify final same-package APK ART and phone candidate artifact on current Native-Compose; then validate original ARM64 exporter and migrate remaining real routes.",
+  "next": "Verify downloads toolbar Compose preview entry, final same-package APK ART and phone candidate artifact on current Native-Compose; then validate original ARM64 exporter and migrate remaining real routes.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
