@@ -671,3 +671,7 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 | NC-FRAME-PHASES-98 | FIX COMMITTED; CI PENDING | `bebe7af3b0012c827d7a258ee4f37f9e3f649005` uses `GPU_DURATION`, reports unavailable phase values without fake zero; run 44871344400 in progress, gate not yet proven |
 | NC-PERF-ARM64 | OPEN | No original exporter/actual phone pressure FPS evidence; x86 emulator frame measurements remain noisy |
 
+
+
+## جلسة 99 — مرشح الهاتف
+نجح اختبار مراحل الإطارات في 44871344400. بوابة ART الجديدة تتحقق من الـAPK المدمج الموقّع نفسه قبل حفظ مرشح ARM64. اختبار محرك MKV الأصلي على الهاتف وتكافؤ الواجهات الكاملة مفتوحان. راجع `memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md`.

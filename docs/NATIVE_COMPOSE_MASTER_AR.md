@@ -192,3 +192,7 @@ Code 17d75a6f75782bda0e88dca616735f9ea0d26e74: production bundled assets/ffmpeg 
 - Patch `bebe7af3b0012c827d7a258ee4f37f9e3f649005` uses `GPU_DURATION` (API31) and preserves missing-value `-1` for input/layout/draw/sync/GPU. Stage P95 is `unavailable` when Android reports no supported samples; never represent missing metrics as 0ns. Frame total and original mandatory smoke/shift/pressure markers unchanged.
 - Follow-up #44871344400 in progress and **unverified** at this writing. Verify build/three Android tests/phase marker/release gate before reporting measured frame phases or a released test APK. No production app build/change. A/B physical ARM64 and original MkvExporter remains outstanding.
 
+
+
+## جلسة 99 — مرشح الهاتف
+نجح اختبار مراحل الإطارات في 44871344400. بوابة ART الجديدة تتحقق من الـAPK المدمج الموقّع نفسه قبل حفظ مرشح ARM64. اختبار محرك MKV الأصلي على الهاتف وتكافؤ الواجهات الكاملة مفتوحان. راجع `memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md`.

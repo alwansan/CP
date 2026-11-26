@@ -678,3 +678,7 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 - Follow-up #44871344400 started on exact fix SHA; in progress at checkpoint. Nothing proven on emulator yet in this new run, no new APK production or benchmark acceptance. Prior five session96 runs are verified successes.
 - Original downloader, IPC, Room, MKV slots, data, signing, launcher and account untouched. Real exporter/ARM64 frame timing, all-screen parity and actual phone load remain open.
 
+
+
+## جلسة 99 — مرشح الهاتف
+نجح اختبار مراحل الإطارات في 44871344400. بوابة ART الجديدة تتحقق من الـAPK المدمج الموقّع نفسه قبل حفظ مرشح ARM64. اختبار محرك MKV الأصلي على الهاتف وتكافؤ الواجهات الكاملة مفتوحان. راجع `memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md`.

@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_keyshift_verified_frame_phases_ci_pending",
-  "last_session": "memory/sessions/2026-11-21_cp-dl-compose-frame-phases-97.md",
+  "status": "native_compose_frame_phases_verified_phone_candidate_ci_pending",
+  "last_session": "memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -32,7 +32,7 @@
     "current_head": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify Compose Lab run #44867014514 on c9138b4d: OK (3 tests), CP_COMPOSE_FRAME_PHASES_PASS, all prior gates. Check detailed idle vs loaded FrameMetrics with emulator variance; repair only Native-Compose. Then original ARM64 and downloader exporter validation.",
+  "next": "Verify final same-package APK ART and phone candidate artifact on current Native-Compose; then validate original ARM64 exporter and migrate remaining real routes.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -2333,7 +2333,7 @@
     "frame_phases_lab_job": 136732827028,
     "frame_phase_fix_sha": "bebe7af3b0012c827d7a258ee4f37f9e3f649005",
     "frame_phase_fix_run": 44871344400,
-    "frame_phase_fix_conclusion": "in_progress",
+    "frame_phase_fix_conclusion": "success",
     "frame_phase_fix_scope": "isolated_AndroidTest_FrameMetrics_only",
     "phone_arm64_performance_verified": false
   }

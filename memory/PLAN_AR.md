@@ -644,3 +644,7 @@ Code195a275e177121061319f7b32a5c32529d5a2d0a: add reader-lifetime opaque HMAC-SH
 3. Record actual idle/load FrameMetrics including unavailable values and sample counts; do not infer improvement from one SwiftShader run.
 4. Continue towards real ARM64 phone/actual MkvExporter/Lease115/MuxSlotsDL test and remaining screen parity without deleting or modifying user media/database.
 
+
+
+## جلسة 99 — مرشح الهاتف
+نجح اختبار مراحل الإطارات في 44871344400. بوابة ART الجديدة تتحقق من الـAPK المدمج الموقّع نفسه قبل حفظ مرشح ARM64. اختبار محرك MKV الأصلي على الهاتف وتكافؤ الواجهات الكاملة مفتوحان. راجع `memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md`.

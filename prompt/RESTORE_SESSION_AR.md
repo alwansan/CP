@@ -1,16 +1,12 @@
 <!-- CP-DL-CURRENT-START -->
-# أحدث استعادة — CP-DL / Native-Compose — جلسة 98 (2026-11-21)
+# أحدث استعادة — CP-DL / Native-Compose — جلسة 99 — 2026-11-26
 
-**النطاق:** CP-DL؛ `alwansan/CP`، الكتابة في `Native-Compose` فقط؛ بقية الفروع وCL للقراءة. احفظ المحرك وRoom والحساب والبيانات/التوقيع/launcher وPATCH274 وB1b3-12 و3 MKV slots وLease115؛ لا force push.
+- نقطة البداية `b7e286ce6c521db97f983601c0aaf692a7a39009`، العمل على `Native-Compose` فقط.
+- نجاح [44871344400](https://github.com/alwansan/CP/actions/runs/44871344400) وتأكيد `OK (3 tests)` و`CP_COMPOSE_FRAME_PHASES_PASS` وإصدار `cp-compose-lab-23` المستقل. نجاح [44861616320](https://github.com/alwansan/CP/actions/runs/44861616320) للربط المدمج السابق.
+- أضفنا ART على APK المدمج النهائي الموقّع نفسه وإخراج مرشح هاتف يتطلب نجاح البوابات وتوقيع APK والتحقق من اسم الحزمة ووجود ARM64 والمحاذاة. يحفظ SHA256 وSHA المصدر. لم تُغيّر بيئة التطبيق ولا التوقيع ولا مسار الإقلاع ولا صلاحيات مكونات الاختبار.
+- تحقق من أحدث تشغيل `CP Native Compose real owner UI data binding gate` على الفرع ومن artifact `CP-Native-Compose-Phone-Candidate`. إخراج المرشح جديد ولم تُتحقق نتيجته بعد. قياس محرك MKV الأصلي على ARM64 والتكافؤ لمسارات التطبيق الكاملة والإصدار النهائي ما زالت مفتوحة.
 
-## الحالة الحية بعد الجلسة97
-- اختبارات جلسة96 الخمسة ناجحة: standalone [44861465616](https://github.com/alwansan/CP/actions/runs/44861465616) `OK (3 tests)`، real Compose/IPC [44861616320](https://github.com/alwansan/CP/actions/runs/44861616320) `CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS`، وIPC [44861616324](https://github.com/alwansan/CP/actions/runs/44861616324) وstartup [44861616385](https://github.com/alwansan/CP/actions/runs/44861616385) وrenderer [44861616355](https://github.com/alwansan/CP/actions/runs/44861616355)، جميعها SUCCESS في المحاكي API35.
-- **فشل معزول:** [44867014514](https://github.com/alwansan/CP/actions/runs/44867014514) FAILURE في compileDebugAndroidTestKotlin، `LabTest.kt:44:52 Unresolved reference GPU_COMMAND_DURATION`. لم تبدأ instrumentation. رفع artifact فشل تبعاً لغياب build؛ ليس دليلاً على فشل محرك الإنتاج.
-- **الإصلاح المنشور:** [`bebe7af3b0012c827d7a258ee4f37f9e3f649005`](https://github.com/alwansan/CP/commit/bebe7af3b0012c827d7a258ee4f37f9e3f649005) يبدّل الثابت غير الموجود إلى Android `FrameMetrics.GPU_DURATION` (API31+) ويحافظ على `-1` للمرحلة غير المتاحة بدلاً من صفر وهمي. جميع اختبارات ومؤشرات `CP_COMPOSE_FRAME_PHASES_PASS` و`CP_COMPOSE_OWNER_KEYSET_SHIFT_PASS` باقية.
-- **التحقق الجديد غير مكتمل:** [44871344400](https://github.com/alwansan/CP/actions/runs/44871344400) على SHA الإصلاح `in_progress` عند نقطة التوثيق. لا تدّع النجاح أو إصدار APK حتى يثبت `OK (3 tests)`، كل markers، Release gate والملفات.
-- قياسات سابقة من x86 SwiftShader: idle P95 total116.8ms وsynthetic-load100.1ms؛ لا تثبت FPS هاتف أو تحسناً سببيّاً. لا اختبار أصل MkvExporter/Lease115/MuxSlotsDL على ARM64 بعد، ولا APK إنتاجي.
-
-**التكملة:** افتح CI 44871344400، تحقق من السجلات ومخرجات metrics وArtifacts؛ عالج أي خطأ داخل Native-Compose دون تضعيف البوابات. بعد نجاح الاختبار قارن مراحل input/layout/draw/sync/gpu بحذر، ثم انتقل لقياس محرك MKV الأصلي على الهاتف بشروط حماية بياناته وتكافؤ بقية الصفحات. حدّث `memory/sessions/2026-11-21_cp-dl-frame-phase-fix-98.md` وMEMORY/PLAN/ISSUES/STATE/MASTER وRESTORE. المهمة المجدولة السابقة معطّلة؛ لا تفعّلها من تلقاء نفسك.
+مرجع المتابعة `memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md`.
 
 <!-- CP-DL-CURRENT-END -->
 

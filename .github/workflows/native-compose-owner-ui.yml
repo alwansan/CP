@@ -108,7 +108,7 @@ jobs:
           emulator-boot-timeout: 1800
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: |
-            bash scripts/cp_dl_art/run.sh "$RUNNER_TEMP/cp-dormant/signed.apk" && python3 patches/native-compose-dormant/smoke-original.py && bash patches/native-compose-active-startup/run-runtime.sh && bash patches/native-compose-owner-ipc/run-runtime.sh
+            bash scripts/cp_dl_art/run.sh "$RUNNER_TEMP/cp-dormant/signed.apk" && python3 patches/native-compose-dormant/smoke-original.py && bash patches/native-compose-active-startup/run-runtime.sh && bash patches/native-compose-owner-ipc/run-runtime.sh && bash scripts/cp_dl_art/run.sh "$RUNNER_TEMP/cp-real-owner-ipc/signed.apk"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -122,3 +122,25 @@ jobs:
             ${{ runner.temp }}/cp-minified-combined/report/final-summary.json
             ${{ runner.temp }}/cp-isolation-probe/isolation-summary.json
           if-no-files-found: warn
+      - name: Stage the verified same-package phone candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          candidate="$RUNNER_TEMP/cp-real-owner-ipc/signed.apk"
+          "$tools/apksigner" verify --verbose --print-certs "$candidate"
+          "$tools/zipalign" -c -p 4 "$candidate"
+          "$tools/aapt2" dump badging "$candidate" > "$RUNNER_TEMP/cp-phone-candidate-badging.txt"
+          grep -E "^package: name='com\.cinemana\.pro' " "$RUNNER_TEMP/cp-phone-candidate-badging.txt"
+          grep -E "^native-code: .*'arm64-v8a'" "$RUNNER_TEMP/cp-phone-candidate-badging.txt"
+          mkdir "$RUNNER_TEMP/cp-phone-candidate"
+          cd "$RUNNER_TEMP/cp-phone-candidate"
+          cp "$candidate" Cinemana-Pro-Native-Compose-Candidate.apk
+          sha256sum Cinemana-Pro-Native-Compose-Candidate.apk > SHA256SUMS.txt
+          printf '%s\n' "$GITHUB_SHA" > SOURCE_COMMIT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CP-Native-Compose-Phone-Candidate
+          path: ${{ runner.temp }}/cp-phone-candidate
+          if-no-files-found: error
+          compression-level: 0
