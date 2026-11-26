@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/native-compose-owner-ui.yml'
       - 'Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/ui/downloads/Downloads*.smali'
+      - 'Cinemana_PATCH252_Project/app/smali/com/shabakaty/cinemana/ui/home_activity/Home*.smali'
       - 'patches/compose-lab/app/src/main/java/com/alwansan/cinemana/composelab/OwnerReadPanel.kt'
       - 'patches/compose-lab/app/src/main/java/com/alwansan/cinemana/composelab/LabOwnerClient.kt'
       - 'patches/html-bridge/src/com/shabakaty/cinemana/htmlbridge/model/OwnerPageRead.java'

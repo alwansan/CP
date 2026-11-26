@@ -47,6 +47,7 @@ if [[ "${CP_REAL_OWNER_UI_GATE:-0}" == 1 ]]; then
     }
     trap capture_ui_exit EXIT
     timeout --kill-after=10s 540 adb shell am instrument -w -r -e renderer true -e owner_ui true -e populated_ui true -e pressure_ui true "${EXTRA[@]}" cp.nativegate.test/.GateInstrumentation | tee "$OUT/report/compose-owner-ui.txt"
+    grep -F 'CP_HOME_COMPOSE_DOWNLOADS_PASS open=bottom_navigation close=home' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_DOWNLOADS_COMPOSE_PREVIEW_ENTRY_PASS open=toolbar close=legacy' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_COMPOSE_UI_PASS owner=' "$OUT/report/compose-owner-ui.txt"
     grep -F 'CP_REAL_OWNER_COMPOSE_POPULATED_PASS rows=4 progress=250,750 collision=1 missing=1 cleanup=verified serial=5' "$OUT/report/compose-owner-ui.txt"

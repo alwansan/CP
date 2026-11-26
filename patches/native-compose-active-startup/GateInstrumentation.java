@@ -949,6 +949,18 @@ public final class GateInstrumentation extends Instrumentation {
             if(ownerUi){
                 // Open the legacy Fragment after the disposable Room workloads have cleaned up.
                 // Its existing lifecycle workers are outside the synthetic workload's control.
+                setStage("home-compose-downloads-entry");
+                String home = "com.shabakaty.cinemana.ui.home_activity.HomeActivity";
+                ctx.startActivity(new Intent().setClassName(PKG,home).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                find("التنزيلات",45000).recycle();
+                requireFocused(home);
+                clickText("التنزيلات");
+                find("تحديث تلقائي · آخر قراءة من محرك التنزيل",45000).recycle();
+                requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+                clickText("إغلاق");
+                find("التنزيلات",30000).recycle();
+                requireFocused(home);
+                markerResult+="CP_HOME_COMPOSE_DOWNLOADS_PASS open=bottom_navigation close=home\n";
                 setStage("downloads-preview-entry");
                 String downloads = "com.shabakaty.cinemana.ui.downloads.DownloadsActivity";
                 ctx.startActivity(new Intent().setClassName(PKG,downloads).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

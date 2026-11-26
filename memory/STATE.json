@@ -12,8 +12,8 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_signed_downloads_preview_verified_arm64_device_pending",
-  "last_session": "memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md",
+  "status": "native_compose_home_downloads_entry_ci_pending",
+  "last_session": "memory/sessions/2026-11-26_cp-dl-compose-home-entry-100.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
   "new_build_triggered": true,
@@ -29,7 +29,7 @@
     "inventory_only": false,
     "pinned_sha": "4b0bc931567f9dcdc197576bc2a9f5f5e0d4f8c0",
     "internal_log_decode": "read local uploaded ZIP with 8 replacement characters; raw Android log valid UTF-8",
-    "current_head": "c664bf94173778ffa13541060d44c01162c4d22c"
+    "current_head": "2468e3bfee53cc69dfaeb23e0e19801f55ab9d0c"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
   "next": "Validate original ARM64 exporter on the signed phone candidate and migrate remaining real routes while retaining legacy functional parity.",

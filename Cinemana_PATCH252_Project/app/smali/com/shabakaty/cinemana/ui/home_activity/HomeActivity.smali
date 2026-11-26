@@ -1588,6 +1588,11 @@
     :cond_3
     invoke-virtual {p0}, Lcom/shabakaty/cinemana/ui/home_activity/HomeActivity;->J0()V
 
+    iget-object v0, p0, Lcom/shabakaty/downloader/xi;->t:Landroidx/databinding/ViewDataBinding;
+    check-cast v0, Lcom/shabakaty/downloader/y2;
+    iget-object v0, v0, Lcom/shabakaty/downloader/y2;->O:Lcom/google/android/material/bottomnavigation/BottomNavigationView;
+    invoke-static {p0, v0}, Lcom/shabakaty/cinemana/ui/home_activity/HomeComposeDownloads;->install(Landroid/app/Activity;Lcom/google/android/material/bottomnavigation/BottomNavigationView;)V
+
     return-void
 .end method
 

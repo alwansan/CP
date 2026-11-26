@@ -14,9 +14,8 @@
     return-void
 .end method
 
-.method public static addAction(Lcom/shabakaty/cinemana/ui/downloads/DownloadsActivity;Landroidx/appcompat/widget/Toolbar;)V
+.method public static createIntent(Landroid/app/Activity;)Landroid/content/Intent;
     .locals 5
-
     sget v0, Landroid/os/Build$VERSION;->SDK_INT:I
     const/16 v1, 0x1c
     if-lt v0, v1, :unavailable
@@ -48,6 +47,20 @@
     invoke-virtual {v2, v1, v0}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Z)Landroid/content/Intent;
     const-string v1, "cp_download_presentation"
     invoke-virtual {v2, v1, v0}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Z)Landroid/content/Intent;
+
+    return-object v2
+
+    :unavailable
+    const/4 v0, 0x0
+    return-object v0
+.end method
+
+.method public static addAction(Lcom/shabakaty/cinemana/ui/downloads/DownloadsActivity;Landroidx/appcompat/widget/Toolbar;)V
+    .locals 4
+
+    invoke-static {p0}, Lcom/shabakaty/cinemana/ui/downloads/DownloadsComposePreview;->createIntent(Landroid/app/Activity;)Landroid/content/Intent;
+    move-result-object v2
+    if-eqz v2, :unavailable
 
     invoke-virtual {p1}, Landroidx/appcompat/widget/Toolbar;->getMenu()Landroid/view/Menu;
     move-result-object v1
