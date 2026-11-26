@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_downloads_preview_verified_isolated_gate_pending",
+  "status": "native_compose_signed_downloads_preview_verified_arm64_device_pending",
   "last_session": "memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
@@ -32,7 +32,7 @@
     "current_head": "c664bf94173778ffa13541060d44c01162c4d22c"
   },
   "build_note": "B1b2 signed release verified; no new build in restoration session",
-  "next": "Verify downloads toolbar Compose preview entry, final same-package APK ART and phone candidate artifact on current Native-Compose; then validate original ARM64 exporter and migrate remaining real routes.",
+  "next": "Validate original ARM64 exporter on the signed phone candidate and migrate remaining real routes while retaining legacy functional parity.",
   "mandatory_handoff": [
     "memory/MEMORY.md",
     "memory/STATE.json",
@@ -45,8 +45,8 @@
   "branch_actions": {
     "total_count": null,
     "latest_run_id": 45870093731,
-    "latest_status": "in_progress",
-    "latest_conclusion": null
+    "latest_status": "completed",
+    "latest_conclusion": "success"
   },
   "audit": "docs/DOWNLOAD_PRESSURE_AUDIT_AR.md",
   "issue_ids": [
@@ -2348,6 +2348,9 @@
     "downloads_preview_polling_validation_conclusion": "failure_room_changed_before_polling_test",
     "downloads_preview_isolated_gate_run": 45870093731,
     "downloads_preview_isolated_gate_sha": "76e921b9c6909135d0342756d7dd6bce692e13fd",
+    "downloads_preview_isolated_gate_conclusion": "success",
+    "downloads_preview_phone_candidate_artifact": 15142912615,
+    "downloads_preview_phone_candidate_apk_sha256": "d95363796bc987883e12650dfff95a5c7a87c33e46df7f4dc2b0ce72e80bcb77",
     "downloads_preview_entry_code_sha": "7e8693e1919df66b0b9cdaa11cc97e93ea34b1bf",
     "phone_arm64_performance_verified": false
   }
