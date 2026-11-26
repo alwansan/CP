@@ -772,17 +772,6 @@ public final class GateInstrumentation extends Instrumentation {
             }
             if(ownerUi){
                 require(renderer,"owner UI requires baseline renderer test");
-                setStage("downloads-preview-entry");
-                String downloads = "com.shabakaty.cinemana.ui.downloads.DownloadsActivity";
-                ctx.startActivity(new Intent().setClassName(PKG,downloads).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                clickText("معاينة التنزيلات");
-                find("التنزيلات",45000).recycle();
-                find("تحديث تلقائي · آخر قراءة من محرك التنزيل",45000).recycle();
-                requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
-                clickText("إغلاق");
-                find("معاينة التنزيلات",30000).recycle();
-                requireFocused(downloads);
-                markerResult+="CP_DOWNLOADS_COMPOSE_PREVIEW_ENTRY_PASS open=toolbar close=legacy\n";
                 setStage("real-owner-ui");
                 Intent real=new Intent().setClassName(PKG,"com.alwansan.cinemana.composelab.NativeUiProbeActivity")
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("cp_real_owner",true);
@@ -956,6 +945,21 @@ public final class GateInstrumentation extends Instrumentation {
                 find("صفحة 1 · 0 عنصر",15000).recycle();
                 find("CP_REAL_OWNER_UI_OBSERVED",15000).recycle();
                 markerResult+="CP_REAL_OWNER_COMPOSE_KEYSET_SHIFT_PASS rows=4,5,0 index=0,1 progress=250 cleanup=verified\n";
+            }
+            if(ownerUi){
+                // Open the legacy Fragment after the disposable Room workloads have cleaned up.
+                // Its existing lifecycle workers are outside the synthetic workload's control.
+                setStage("downloads-preview-entry");
+                String downloads = "com.shabakaty.cinemana.ui.downloads.DownloadsActivity";
+                ctx.startActivity(new Intent().setClassName(PKG,downloads).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                clickText("معاينة التنزيلات");
+                find("التنزيلات",45000).recycle();
+                find("تحديث تلقائي · آخر قراءة من محرك التنزيل",45000).recycle();
+                requireFocused("com.alwansan.cinemana.composelab.NativeUiProbeActivity");
+                clickText("إغلاق");
+                find("معاينة التنزيلات",30000).recycle();
+                requireFocused(downloads);
+                markerResult+="CP_DOWNLOADS_COMPOSE_PREVIEW_ENTRY_PASS open=toolbar close=legacy\n";
             }
             result.putString("stream",markerResult);
             finish(Activity.RESULT_OK,result);
