@@ -36,7 +36,7 @@
     move-result-object v1
 
     # Keep home navigation's selected item when opening the separate screen.
-    const v2, 0x7f08015f
+    const v2, 0x7f08016c
     invoke-interface {v1, v2}, Landroid/view/MenuItem;->setIcon(I)Landroid/view/MenuItem;
     new-instance v2, Lcom/shabakaty/cinemana/ui/home_activity/HomeComposeDownloads;
     invoke-direct {v2, p0, v0}, Lcom/shabakaty/cinemana/ui/home_activity/HomeComposeDownloads;-><init>(Landroid/app/Activity;Landroid/content/Intent;)V
