@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_home_downloads_entry_ci_pending",
+  "status": "native_compose_home_downloads_entry_ci_verified_phone_pending",
   "last_session": "memory/sessions/2026-11-26_cp-dl-compose-home-entry-100.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
@@ -44,7 +44,7 @@
   "last_verified_head": "7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3",
   "branch_actions": {
     "total_count": null,
-    "latest_run_id": 45870093731,
+    "latest_run_id": 45874250192,
     "latest_status": "completed",
     "latest_conclusion": "success"
   },
@@ -2350,6 +2350,9 @@
     "downloads_preview_isolated_gate_sha": "76e921b9c6909135d0342756d7dd6bce692e13fd",
     "downloads_preview_isolated_gate_conclusion": "success",
     "downloads_preview_phone_candidate_artifact": 15142912615,
+    "home_downloads_entry_run": 45874250192,
+    "home_downloads_entry_artifact": 15143803930,
+    "home_downloads_entry_apk_sha256": "e2883420bac0020159add3ef75e8e70f41b34bc1f3c854bdb4cfd5f05a649199",
     "downloads_preview_phone_candidate_apk_sha256": "d95363796bc987883e12650dfff95a5c7a87c33e46df7f4dc2b0ce72e80bcb77",
     "downloads_preview_entry_code_sha": "7e8693e1919df66b0b9cdaa11cc97e93ea34b1bf",
     "phone_arm64_performance_verified": false

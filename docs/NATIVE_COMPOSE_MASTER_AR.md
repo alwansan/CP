@@ -208,3 +208,5 @@ Code 17d75a6f75782bda0e88dca616735f9ea0d26e74: production bundled assets/ffmpeg 
 نجحت البوابة المدمجة 45870093731 وخرج APK الموقّع بمعاينة التنزيلات في artifact 15142912615. تحقق الملف والتوقيع بعد التنزيل. تكافؤ بقية الشاشات وتجربة ARM64 الأصلية مفتوحان.
 
 جلسة 100: تجربة الهاتف لم تفتح المعاينة من الرئيسية. أضيف مسار واضح من شريط التنقل الرئيسي وبوابة للوصول والرجوع؛ راجع `memory/sessions/2026-11-26_cp-dl-compose-home-entry-100.md`.
+
+نجح [45874250192](https://github.com/alwansan/CP/actions/runs/45874250192) على `69f2d58516afcac6e5127c0b9e0509f054d400cc`. ثبت فتح شاشة Compose من شريط الرئيسية والعودة إليها عبر `CP_HOME_COMPOSE_DOWNLOADS_PASS`، ونجحت بوابة ART والضغط 452 سجلاً وثلاث عمليات FFmpeg اختبارية. [APK الموقّع](https://github.com/alwansan/CP/actions/runs/45874250192/artifacts/15143803930)، وتحقق SHA256 بعد التنزيل `e2883420bac0020159add3ef75e8e70f41b34bc1f3c854bdb4cfd5f05a649199`. أداء الهاتف ونقل باقي الشاشات قيد المتابعة.

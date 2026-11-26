@@ -5,7 +5,8 @@
 - أضيف عنصر «التنزيلات» بأيقونته إلى شريط التنقل الرئيسي عند وجود مكونات Compose الخاصة وخانة متاحة. يفتح عرض القراءة الحقيقي، ويعود إلى الرئيسية عند الإغلاق. مسار المعاينة داخل التنزيلات القديمة يبقى متاحاً. يستخدم المساران intent خاصاً واحداً.
 - أضيف تحقق Android لفتح العنصر من HomeActivity وقراءة حالة المحرك والعودة إلى الرئيسية، بعد تنظيف ضغط Room. بوابة APK الموقّع تشترط النجاح. تكافؤ بقية الشاشات واختبار MKV الأصلي على ARM64 مفتوحان.
 
-متابعة: تحقق من أحدث تشغيل لبوابة Owner UI على Native-Compose وعلامة CP_HOME_COMPOSE_DOWNLOADS_PASS قبل تسليم مرشح الهاتف. مرجع الجلسة: memory/sessions/2026-11-26_cp-dl-compose-home-entry-100.md
+نجح [45874250192](https://github.com/alwansan/CP/actions/runs/45874250192) على `69f2d58516afcac6e5127c0b9e0509f054d400cc`. ثبت فتح شاشة Compose من شريط الرئيسية والعودة إليها عبر `CP_HOME_COMPOSE_DOWNLOADS_PASS`، ونجحت بوابة ART والضغط 452 سجلاً وثلاث عمليات FFmpeg اختبارية. [APK الموقّع](https://github.com/alwansan/CP/actions/runs/45874250192/artifacts/15143803930)، وتحقق SHA256 بعد التنزيل `e2883420bac0020159add3ef75e8e70f41b34bc1f3c854bdb4cfd5f05a649199`. أداء الهاتف ونقل باقي الشاشات قيد المتابعة.
+مرجع الجلسة: memory/sessions/2026-11-26_cp-dl-compose-home-entry-100.md
 
 # أحدث استعادة — CP-DL / Native-Compose — جلسة 99 — 2026-11-26
 
