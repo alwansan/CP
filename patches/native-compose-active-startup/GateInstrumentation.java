@@ -846,6 +846,10 @@ public final class GateInstrumentation extends Instrumentation {
                         markerResult+="CP_REAL_OWNER_PRESSURE_LOAD "+loaded+"\n";
                         markerResult+="CP_REAL_OWNER_PRESSURE_PASS rows=452 page=24 actions=16 cleanup=verified serial=23\n";
                         setStage("real-download-presentation");
+                        Pattern closedPattern=Pattern.compile("CP_OWNER_AUTO_CLOSED session=([a-f0-9]+)");
+                        java.util.Set<String> previouslyClosed=new java.util.HashSet<>();
+                        java.util.regex.Matcher priorClose=closedPattern.matcher(shell("logcat -d -s CPOwnerAuto:I '*:S'"));
+                        while(priorClose.find())previouslyClosed.add(priorClose.group(1));
                         UiFixture screen=new UiFixture(ctx);
                         try{
                             screen.seed();
@@ -868,17 +872,23 @@ public final class GateInstrumentation extends Instrumentation {
                         find("لا توجد تنزيلات",20000).recycle();
                         clickText("إغلاق");
                         long closedDeadline=SystemClock.elapsedRealtime()+10000;
-                        String autoLog="";
+                        String session=null;
                         do{
-                            autoLog=shell("logcat -d -s CPOwnerAuto:I '*:S'");
-                            if(autoLog.contains("CP_OWNER_AUTO_CLOSED session="))break;
+                            String autoLog=shell("logcat -d -s CPOwnerAuto:I '*:S'");
+                            java.util.regex.Matcher closeLog=closedPattern.matcher(autoLog);
+                            while(closeLog.find()){
+                                String candidate=closeLog.group(1);
+                                if(previouslyClosed.contains(candidate))continue;
+                                String begin="CP_OWNER_AUTO_BEGIN session="+candidate+" serial=";
+                                if(autoLog.substring(0,closeLog.start()).contains(begin)){
+                                    require(session==null,"multiple newly closed polling sessions");
+                                    session=candidate;
+                                }
+                            }
+                            if(session!=null)break;
                             SystemClock.sleep(100);
                         }while(SystemClock.elapsedRealtime()<closedDeadline);
-                        java.util.regex.Matcher closeLog=Pattern.compile("CP_OWNER_AUTO_CLOSED session=([a-f0-9]+)").matcher(autoLog);
-                        require(closeLog.find(),"auto client closure evidence");
-                        String session=closeLog.group(1);
-                        int cut=autoLog.lastIndexOf("CP_OWNER_AUTO_CLOSED session="+session);
-                        require(autoLog.substring(0,cut).contains("CP_OWNER_AUTO_BEGIN session="+session+" serial="),"auto/close session mismatch");
+                        require(session!=null,"auto client closure with matching polling evidence");
                         // Empty-page idle interval is 10 seconds; observe beyond it.
                         SystemClock.sleep(11500);
                         String afterClose=shell("logcat -d -s CPOwnerAuto:I '*:S'");
