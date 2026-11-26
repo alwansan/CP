@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_downloads_preview_return_fixed_ci_pending",
+  "status": "native_compose_downloads_preview_verified_polling_validation_pending",
   "last_session": "memory/sessions/2026-11-26_cp-dl-compose-phone-candidate-99.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
@@ -44,7 +44,7 @@
   "last_verified_head": "7c64036f0f57ccdffd4f8bdf6a3c9e7bd63d5ee3",
   "branch_actions": {
     "total_count": null,
-    "latest_run_id": 45866766985,
+    "latest_run_id": 45868608238,
     "latest_status": "in_progress",
     "latest_conclusion": null
   },
@@ -2342,6 +2342,9 @@
     "downloads_preview_entry_run": 45864996189,
     "downloads_preview_return_fix_run": 45866766985,
     "downloads_preview_return_fix_sha": "9f2b6988f263b1e321991db717325a93324a454d",
+    "downloads_preview_return_fix_conclusion": "entry_and_return_pass_later_polling_test_failed",
+    "downloads_preview_polling_validation_run": 45868608238,
+    "downloads_preview_polling_validation_sha": "7e611ba1605ef1e609ce3bdbdc4ed5408ca687e7",
     "downloads_preview_entry_code_sha": "7e8693e1919df66b0b9cdaa11cc97e93ea34b1bf",
     "phone_arm64_performance_verified": false
   }
