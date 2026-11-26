@@ -12,7 +12,7 @@
     "artifact_id": 12881579576,
     "release": "local-account-PATCH274-10"
   },
-  "status": "native_compose_contrast_candidate_verified_icon_retry",
+  "status": "native_compose_contrast_and_icon_candidate_verified_phone_pending",
   "last_session": "memory/sessions/2026-11-26_cp-dl-compose-phone-contrast-101.md",
   "verified_at": "2026-11-21",
   "app_code_changed": false,
@@ -2355,6 +2355,7 @@
     "phone_contrast_pass_run": 45877242918,
     "phone_contrast_artifact": 15147195277,
     "phone_contrast_icon_retry_run": 45879366577,
+    "phone_contrast_icon_artifact": 15148690813,
     "home_downloads_entry_apk_sha256": "e2883420bac0020159add3ef75e8e70f41b34bc1f3c854bdb4cfd5f05a649199",
     "downloads_preview_phone_candidate_apk_sha256": "d95363796bc987883e12650dfff95a5c7a87c33e46df7f4dc2b0ce72e80bcb77",
     "downloads_preview_entry_code_sha": "7e8693e1919df66b0b9cdaa11cc97e93ea34b1bf",
